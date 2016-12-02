@@ -11,7 +11,7 @@ namespace GTIWebAPI.Models
     public class DbEnter : IdentityDbContext<ApplicationUser>
     {
         public DbEnter()
-            : base("Data Source=192.168.0.226;Initial Catalog=Crew;User ID=sa;Password=12345")
+            : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
         {
         }
 
