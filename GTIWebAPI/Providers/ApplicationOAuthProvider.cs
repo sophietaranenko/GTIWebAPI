@@ -28,6 +28,7 @@ namespace GTIWebAPI.Providers
             _publicClientId = publicClientId;
         }
 
+        
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
