@@ -28,8 +28,6 @@ namespace GTIWebAPI.Models.Employees
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? RegistrationDate { get; set; }
 
-        public int? AddressId { get; set; }
-
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
@@ -76,6 +74,5 @@ namespace GTIWebAPI.Models.Employees
         public string IssuedBy { get; set; }
         public bool? Deleted { get; set; }
 
-        public virtual Address Address { get; set; }
     }
 }

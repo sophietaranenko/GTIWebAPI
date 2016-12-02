@@ -5,12 +5,24 @@ using System.Web;
 
 namespace GTIWebAPI.Models.Service
 {
+    /// <summary>
+    /// Class for Age (for Russian language)
+    /// </summary>
     public class Age
     {
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="ageCount">ages in int</param>
         public Age(int? ageCount)
         {
             this.AgeCount = ageCount;
         }
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="dateOfBirth">DateTime date of birth to count ages</param>
         public Age(DateTime? dateOfBirth)
         {
             if (dateOfBirth != null)
@@ -21,8 +33,15 @@ namespace GTIWebAPI.Models.Service
                 AgeCount = age;
             }
         }
-
+        /// <summary>
+        /// field to store ages in int
+        /// </summary>
         public int? AgeCount { get; set; }
+
+        /// <summary>
+        /// Ages in string "25 лет", "23 года", "21 год"
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string result = "";

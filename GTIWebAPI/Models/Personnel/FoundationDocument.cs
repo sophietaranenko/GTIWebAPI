@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Personnel
 {
+    using Employees;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -9,11 +10,11 @@ namespace GTIWebAPI.Models.Personnel
     [Table("FoundationDocument")]
     public partial class FoundationDocument
     {
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        //public FoundationDocument()
-        //{
-        //    EmployeeFoundationDoc = new HashSet<EmployeeFoundationDoc>();
-        //}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public FoundationDocument()
+        {
+            EmployeeFoundationDoc = new HashSet<EmployeeFoundationDoc>();
+        }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -25,8 +26,7 @@ namespace GTIWebAPI.Models.Personnel
 
         public bool? Deleted { get; set; }
 
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeeFoundationDoc> EmployeeFoundationDoc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeFoundationDoc> EmployeeFoundationDoc { get; set; }
     }
 }

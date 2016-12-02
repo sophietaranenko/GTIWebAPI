@@ -36,6 +36,6 @@ namespace GTIWebAPI.Models.Employees
         public string Category { get; set; }
         public bool? Deleted { get; set; }
 
-        public virtual Employee Employee { get; set; }
+       // public virtual Employee Employee { get; set; }
     }
 }

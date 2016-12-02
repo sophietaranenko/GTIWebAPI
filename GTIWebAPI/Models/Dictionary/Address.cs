@@ -10,7 +10,7 @@
     using System.Web.Mvc;
 
     [Table("Address")]
-    public partial class Address 
+    public partial class Address
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -48,6 +48,53 @@
         public byte? VillageType { get; set; }
 
         public byte? PlaceType { get; set; }
+
+        public string RegionTypeString
+        {
+            get
+            {
+                if (RegionType != null)
+                {
+                    return Enum.GetName(typeof(Region), RegionType);
+                }
+                return "";
+            }
+        }
+        public string LocalityTypeString
+        {
+            get
+            {
+                if (LocalityType != null )
+                { 
+                return Enum.GetName(typeof(Locality), LocalityType);
+                }
+                return "";
+            }
+        }
+        public string VillageTypeString
+        {
+            get
+            {
+                if (VillageType != null)
+                {
+                    return Enum.GetName(typeof(Village), VillageType);
+                }
+                return "";
+
+            }
+        }
+        public string PlaceTypeString
+        {
+            get
+            {
+                if (PlaceType != null)
+                {
+                    return Enum.GetName(typeof(Place), PlaceType);
+                }
+                return "";
+            }
+        }
+
 
         public SelectList GetRegionType()
         {

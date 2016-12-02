@@ -10,65 +10,69 @@
     using System.Linq;
     using System.Web.Mvc;
 
+    /// <summary>
+    /// Class for Employee table
+    /// </summary>
     [Table("Employee")]
     public partial class Employee : IUserable
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Employee()
-        {
-            //EmployeeDrivingLicense = new HashSet<EmployeeDrivingLicense>();
-            //EmployeeEducation = new HashSet<EmployeeEducation>();
-            //EmployeeLanguage = new HashSet<EmployeeLanguage>();
-            //EmployeeMilitaryCard = new HashSet<EmployeeMilitaryCard>();
-            //EmployeePassport = new HashSet<EmployeePassport>();
-            //EmployeePhoto = new HashSet<EmployeePhoto>();
-        }
+        /// <summary>
+        /// Id of Employee
+        /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string userName;
         public int Id { get; set; }
 
+        /// <summary>
+        /// short value of Employee Sex (can be 1 or 2) 
+        /// </summary>
         public short? Sex { get; set; }
 
+        /// <summary>
+        /// Employee identity code
+        /// </summary>
         [Column("IdentityCodeChar")]
         [StringLength(20)]
         public string IdentityCode { get; set; }
 
+        /// <summary>
+        /// Employee's date of birth
+        /// </summary>
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
 
+        /// <summary>
+        /// Id of Employee's Address of permanent residence in Address table 
+        /// </summary>
         public int? AddressId { get; set; }
+
+        /// <summary>
+        /// Deleted mark
+        /// </summary>
         public bool? Deleted { get; set; }
+        
+        /// <summary>
+        /// Connection to AspNetUsers
+        /// </summary>
         public string UserId { get; set; }
 
-        public Address Address { get; set; }
-
+        /// <summary>
+        /// Cropped profile picture of employee
+        /// </summary>
         public byte[] ProfilePicture { get; set; }
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeeDrivingLicense> EmployeeDrivingLicense { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeeEducation> EmployeeEducation { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeeLanguage> EmployeeLanguage { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeeMilitaryCard> EmployeeMilitaryCard { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeePassport> EmployeePassport { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<EmployeePhoto> EmployeePhoto { get; set; }
-
+        /// <summary>
+        /// Age, counted from date of birth
+        /// </summary>
         public Age Age
         {
             get { return new Age(DateOfBirth); }
         }
 
+        /// <summary>
+        /// TableName (for service, part of interface IUserable)
+        /// </summary>
         public string TableName
         {
             get
@@ -77,22 +81,19 @@
             }
         }
 
-        //public string GetUserName()
-        //{
-        //    EmployeePassport passport = EmployeePassport.OrderByDescending(p => p.IssuedWhen).Take(1).FirstOrDefault();
-        //    return passport.FirstName.Substring(0, 1) + ". " +
-        //        passport.SecondName.Substring(0, 1) + ". " +
-        //        passport.Surname;
-        //}
-
-        public SelectList GetSexList()
+        /// <summary>
+        /// String value of Employee Sex
+        /// </summary>
+        public string SexString
         {
-            var SexList = Enum.GetValues(typeof(Sex)).Cast<Sex>().Select(v => new SelectListItem
+            get
             {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(SexList, "Value", "Text");
-        }
+                if (Sex != null)
+                {
+                    return Enum.GetName(typeof(Sex), Sex);
+                }
+                return "";
+            }
+        } 
     }
 }

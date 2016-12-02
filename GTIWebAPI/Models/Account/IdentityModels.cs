@@ -21,7 +21,7 @@ namespace GTIWebAPI.Models.Account
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345", throwIfV1Schema: false)
+            : base("Data Source=192.168.0.226;Initial Catalog=Crew;User ID=sa;Password=12345", throwIfV1Schema: false)
         {
         }
         

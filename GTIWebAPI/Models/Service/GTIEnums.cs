@@ -25,6 +25,14 @@ namespace GTIWebAPI.Models.Service
         ПГТ = 3
     }
 
+    public enum FormStudy
+    {
+        Очная = 1,
+        Заочная = 2,
+        Вечерняя = 3,
+        Дистанционная = 4
+    }
+
     public enum Village
     {
         Микрорайон = 1,

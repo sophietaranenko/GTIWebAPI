@@ -20,7 +20,7 @@ namespace GTIWebAPI.Models.Employees
         public bool? Deleted { get; set; }
         public bool? ProfilePicture { get; set; }
 
-        public virtual Employee Employee { get; set; }
+       // public virtual Employee Employee { get; set; }
         [NotMapped]
         public HttpPostedFileBase File { get; set; }
     }

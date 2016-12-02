@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Context
     public class DbPersonnel : DbContext
     {
         public DbPersonnel()
-            : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
+            : base("Data Source=192.168.0.226;Initial Catalog=Crew;User ID=sa;Password=12345")
         {
         }
         public virtual DbSet<Address> Address { get; set; }
@@ -84,11 +84,19 @@ namespace GTIWebAPI.Models.Context
             {
                 string error = e.ToString();
             }
-             
+
             return employeeList;
         }
 
-     
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ContactType>()
+                .HasMany(e => e.EmployeeContact)
+                .WithOptional(e => e.ContactType)
+                .HasForeignKey(e => e.Type);
+        }
+
+
 
     }
 }
