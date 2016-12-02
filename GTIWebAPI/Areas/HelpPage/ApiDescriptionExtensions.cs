@@ -5,6 +5,9 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Areas.HelpPage
 {
+    /// <summary>
+    /// class ApiDescriptionExtensions
+    /// </summary>
     public static class ApiDescriptionExtensions
     {
         /// <summary>
