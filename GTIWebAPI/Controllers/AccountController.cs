@@ -19,6 +19,9 @@ using GTIWebAPI.Results;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Controller for manipulating with user account
+    /// </summary>
     [Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
@@ -26,10 +29,18 @@ namespace GTIWebAPI.Controllers
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
+        /// <summary>
+        /// ctor empty
+        /// </summary>
         public AccountController()
         {
         }
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="accessTokenFormat"></param>
         public AccountController(ApplicationUserManager userManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
@@ -37,6 +48,9 @@ namespace GTIWebAPI.Controllers
             AccessTokenFormat = accessTokenFormat;
         }
 
+        /// <summary>
+        /// property UserManager
+        /// </summary>
         public ApplicationUserManager UserManager
         {
             get
@@ -49,8 +63,16 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// AccessTokenFormat
+        /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
+
+        /// <summary>
+        /// Get information about user
+        /// </summary>
+        /// <returns>UserIfoViewModel</returns>
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
@@ -66,6 +88,10 @@ namespace GTIWebAPI.Controllers
             };
         }
 
+        /// <summary>
+        /// Logout
+        /// </summary>
+        /// <returns>200</returns>
         // POST api/Account/Logout
         [Route("Logout")]
         public IHttpActionResult Logout()
@@ -74,6 +100,12 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get Manage Info 
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="generateState"></param>
+        /// <returns></returns>
         // GET api/Account/ManageInfo?returnUrl=%2F&generateState=true
         [Route("ManageInfo")]
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
@@ -114,6 +146,11 @@ namespace GTIWebAPI.Controllers
             };
         }
 
+        /// <summary>
+        /// Change passpord
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>200</returns>
         // POST api/Account/ChangePassword
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
@@ -134,6 +171,11 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Set passport
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>200</returns>
         // POST api/Account/SetPassword
         [Route("SetPassword")]
         public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
@@ -153,6 +195,12 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+
+        /// <summary>
+        /// Add external login (not useful for GTI)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>200</returns>
         // POST api/Account/AddExternalLogin
         [Route("AddExternalLogin")]
         public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
@@ -191,6 +239,11 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method deleting login from AspNetUsers
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>200</returns>
         // POST api/Account/RemoveLogin
         [Route("RemoveLogin")]
         public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
@@ -220,6 +273,12 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// GetExtenal login (not useful for GTI)
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
         // GET api/Account/ExternalLogin
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
@@ -277,6 +336,12 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get external logins (not useful for GTI)
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="generateState"></param>
+        /// <returns></returns>
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
         [AllowAnonymous]
         [Route("ExternalLogins")]
@@ -318,6 +383,11 @@ namespace GTIWebAPI.Controllers
             return logins;
         }
 
+        /// <summary>
+        /// Register (not useful fro GTI)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
@@ -340,6 +410,11 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// RegisterExternal (not useful for GTI)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         // POST api/Account/RegisterExternal
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
@@ -373,6 +448,10 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Dispose AccountConrtoller (to destroy connections)
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
