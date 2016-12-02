@@ -3,8 +3,15 @@ using System.Web.Optimization;
 
 namespace GTIWebAPI
 {
+    /// <summary>
+    /// Dundles configuration class 
+    /// </summary>
     public class BundleConfig
     {
+        /// <summary>
+        /// All css and js in one bundle, for we can use one string of plug in instead of many 
+        /// </summary>
+        /// <param name="bundles"></param>
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {

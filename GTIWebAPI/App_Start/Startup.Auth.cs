@@ -13,13 +13,24 @@ using GTIWebAPI.Models.Account;
 
 namespace GTIWebAPI
 {
+    /// <summary>
+    /// public partial class Startup
+    /// </summary>
     public partial class Startup
     {
+        /// <summary>
+        /// OAuthAuthorizationServerOptions OAuthOptions
+        /// </summary>
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
+        /// <summary>
+        /// UserId
+        /// </summary>
         public static string PublicClientId { get; private set; }
 
-        // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+        /// <summary>
+        /// For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+        /// </summary>
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context and user manager to use a single instance per request
