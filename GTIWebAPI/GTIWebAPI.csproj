@@ -34,6 +34,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>AppData/XmlDocument.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,6 +45,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=5.2.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.5.2.0\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -59,6 +64,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -213,6 +219,9 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AddressesController.cs" />
+    <Compile Include="Controllers\EmployeeEducationsController.cs" />
+    <Compile Include="Controllers\EmployeePassportsController.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -224,6 +233,27 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Dictionary\Address.cs" />
+    <Compile Include="Models\Dictionary\AddressDTO.cs" />
+    <Compile Include="Models\Dictionary\OfficeDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeCarDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeContactDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeDrivingLicenseDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeEditDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeEducationDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeFoundationDocDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeGunDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeInternationalPassportDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeLanguageDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeMilitaryCardDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeOfficeDTO.cs" />
+    <Compile Include="Models\Employees\EmployeePassportDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeViewDTO.cs" />
+    <Compile Include="Models\Employees\LanguageDTO.cs" />
+    <Compile Include="Models\Personnel\ContactTypeDTO.cs" />
+    <Compile Include="Models\Personnel\DepartmentDTO.cs" />
+    <Compile Include="Models\Personnel\FoundationDocumentDTO.cs" />
+    <Compile Include="Models\Personnel\ProfessionDTO.cs" />
     <Compile Include="Models\Service\Age.cs" />
     <Compile Include="Models\Account\ApplicationRole.cs" />
     <Compile Include="Models\Account\ApplicationRoleManager.cs" />
@@ -268,6 +298,7 @@
     <Compile Include="Models\Employees\EmployeeSicklist.cs" />
     <Compile Include="Models\Employees\EmployeeView.cs" />
     <Compile Include="Models\Personnel\FoundationDocument.cs" />
+    <Compile Include="Models\Service\EnumItem.cs" />
     <Compile Include="Models\Service\GTIEnums.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\Accounting\Incoterms.cs" />
@@ -291,6 +322,9 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\XmlDocument.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -345,9 +379,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
