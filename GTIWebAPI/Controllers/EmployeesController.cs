@@ -83,7 +83,8 @@ namespace GTIWebAPI.Controllers
                     DateOfBirth = employee.DateOfBirth,
                     Age = employee.Age.ToString(),
                     ProfilePicture = employee.ProfilePicture,
-                    UserId = employee.UserId
+                    UserId = employee.UserId,
+                    AddressId = employee.AddressId
                 };
             Address address = db.Address.Find(employee.AddressId);
             employeeDTO.Address = new AddressDTO
@@ -123,41 +124,48 @@ namespace GTIWebAPI.Controllers
                 });
 
             List<EmployeePassport> passports = db.EmployeePassport.Where(p => p.Deleted != true && p.EmployeeId == id).ToList();
-            employeeDTO.EmployeePassport = passports.Select(p =>
-                new EmployeePassportDTO
-                {
-                    Id = p.Id,
-                    Address = new AddressDTO
-                    {
-                        Id = p.Address.Id,
-                        Apartment = p.Address.Apartment,
-                        BuildingNumber = p.Address.BuildingNumber,
-                        Country = p.Address.Country,
-                        Housing = p.Address.Housing,
-                        LocalityName = p.Address.LocalityName,
-                        LocalityType = p.Address.LocalityType,
-                        LocalityTypeString = p.Address.LocalityTypeString,
-                        PlaceName = p.Address.PlaceName,
-                        PlaceType = p.Address.PlaceType,
-                        PlaceTypeString = p.Address.PlaceTypeString,
-                        PostIndex = p.Address.PostIndex,
-                        RegionName = p.Address.RegionName,
-                        RegionType = p.Address.RegionType,
-                        RegionTypeString = p.Address.RegionTypeString,
-                        VillageName = p.Address.VillageName,
-                        VillageType = p.Address.VillageType,
-                        VillageTypeString = p.Address.VillageTypeString
-                    },
-                    SecondName = p.SecondName,
-                    Seria = p.Seria,
-                    AddressId = p.AddressId,
-                    EmployeeId = p.EmployeeId,
-                    FirstName = p.FirstName,
-                    IssuedBy = p.IssuedBy,
-                    IssuedWhen = p.IssuedWhen,
-                    Surname = p.Surname,
-                    Number = p.Number
-                });
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
+            employeeDTO.EmployeePassport = Mapper.Map<IEnumerable<EmployeePassportDTO>>(passports);
+            //List<EmployeePassport> passports = db.EmployeePassport.Where(p => p.Deleted != true && p.EmployeeId == id).ToList();
+            //employeeDTO.EmployeePassport = passports.Select(p =>
+            //    new EmployeePassportDTO
+            //    {
+            //        Id = p.Id,
+            //        Address = new AddressDTO
+            //        {
+            //            Id = p.Address.Id,
+            //            Apartment = p.Address.Apartment,
+            //            BuildingNumber = p.Address.BuildingNumber,
+            //            Country = p.Address.Country,
+            //            Housing = p.Address.Housing,
+            //            LocalityName = p.Address.LocalityName,
+            //            LocalityType = p.Address.LocalityType,
+            //            LocalityTypeString = p.Address.LocalityTypeString,
+            //            PlaceName = p.Address.PlaceName,
+            //            PlaceType = p.Address.PlaceType,
+            //            PlaceTypeString = p.Address.PlaceTypeString,
+            //            PostIndex = p.Address.PostIndex,
+            //            RegionName = p.Address.RegionName,
+            //            RegionType = p.Address.RegionType,
+            //            RegionTypeString = p.Address.RegionTypeString,
+            //            VillageName = p.Address.VillageName,
+            //            VillageType = p.Address.VillageType,
+            //            VillageTypeString = p.Address.VillageTypeString
+            //        },
+            //        SecondName = p.SecondName,
+            //        Seria = p.Seria,
+            //        AddressId = p.AddressId,
+            //        EmployeeId = p.EmployeeId,
+            //        FirstName = p.FirstName,
+            //        IssuedBy = p.IssuedBy,
+            //        IssuedWhen = p.IssuedWhen,
+            //        Surname = p.Surname,
+            //        Number = p.Number
+            //    });
 
             List<EmployeeMilitaryCard> cards = db.EmployeeMilitaryCard.Where(m => m.Deleted != true && m.EmployeeId == id).ToList();
             employeeDTO.EmployeeMilitaryCard = cards.Select(m =>
@@ -438,7 +446,6 @@ namespace GTIWebAPI.Controllers
             List<EmployeeCar> cars = db.EmployeeCar.Where(c => c.Deleted != true && c.EmployeeId == id).ToList();
             Mapper.Initialize(m => m.CreateMap<EmployeeCar, EmployeeCarDTO>());
             employeeDTO.EmployeeCar = Mapper.Map<IEnumerable<EmployeeCarDTO>>(cars);
-
 
             return Ok(employeeDTO);
         }
