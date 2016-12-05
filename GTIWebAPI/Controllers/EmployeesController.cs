@@ -494,7 +494,7 @@ namespace GTIWebAPI.Controllers
             {
                 db.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!EmployeeExists(id))
                 {
