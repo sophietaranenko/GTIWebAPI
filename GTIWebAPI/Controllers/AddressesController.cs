@@ -12,6 +12,8 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Service;
 using AutoMapper;
+using System.Threading;
+
 
 namespace GTIWebAPI.Controllers
 {
@@ -34,6 +36,7 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(AddressDTO))]
         public IHttpActionResult GetAddressView(int id)
         {
+            var princip = Thread.CurrentPrincipal;
             Address address = db.Address.Find(id);
             if (address == null)
             {
