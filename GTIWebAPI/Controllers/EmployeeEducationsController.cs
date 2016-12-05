@@ -61,7 +61,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("GetEducationView")]
+        [Route("GetEducationView", Name = "GetEducationView")]
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult GetEmployeeEducationView(int id)
         {
@@ -166,7 +166,8 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
             EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-            return CreatedAtRoute("DefaultApi", new { id = dto.Id }, dto);
+            //return Ok();
+            return CreatedAtRoute("GetEducationView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -185,9 +186,23 @@ namespace GTIWebAPI.Controllers
                 return NotFound();
             }
 
-            db.EmployeeEducation.Remove(employeeEducation);
-            db.SaveChanges();
-
+            employeeEducation.Deleted = true;
+            db.Entry(employeeEducation).State = EntityState.Modified;
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EmployeeEducationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
             EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
 
