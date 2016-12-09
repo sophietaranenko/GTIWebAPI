@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Employees
     using System.Data.Entity.Spatial;
 
     [Table("EmployeeLanguage")]
-    public partial class EmployeeLanguage 
+    public partial class EmployeeLanguage : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -28,7 +29,7 @@ namespace GTIWebAPI.Models.Employees
 
         public int? Type { get; set; }
 
-        [StringLength(50)]
+        [StringLength(250)]
         public string Definition { get; set; }
 
         [StringLength(250)]
@@ -38,5 +39,12 @@ namespace GTIWebAPI.Models.Employees
         public virtual Employee Employee { get; set; }
 
         public virtual Language Language { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeLanguage";
+            }
+        }
     }
 }
