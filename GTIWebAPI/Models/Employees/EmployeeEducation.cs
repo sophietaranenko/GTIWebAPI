@@ -50,19 +50,19 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Education institution name 
         /// </summary>
-        [StringLength(150)]
+        [StringLength(250)]
         public string Institution { get; set; }
 
         /// <summary>
         /// Specialty name
         /// </summary>
-        [StringLength(50)]
+        [StringLength(250)]
         public string Specialty { get; set; }
 
         /// <summary>
         /// Qualification name
         /// </summary>
-        [StringLength(50)]
+        [StringLength(150)]
         public string Qualification { get; set; }
 
         /// <summary>

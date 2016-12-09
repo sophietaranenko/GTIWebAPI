@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Service;
     using Personnel;
     using System;
     using System.Collections.Generic;
@@ -8,15 +9,17 @@ namespace GTIWebAPI.Models.Employees
     using System.Data.Entity.Spatial;
 
     [Table("EmployeeFoundationDoc")]
-    public partial class EmployeeFoundationDoc
+    public partial class EmployeeFoundationDoc : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        [StringLength(5)]
+        [StringLength(10)]
         public string Seria { get; set; }
 
-        public int? Number { get; set; }
+        [Column("NumberChar")]
+        [StringLength(25)]
+        public string Number { get; set; }
 
         [StringLength(250)]
         public string Description { get; set; }
@@ -31,8 +34,17 @@ namespace GTIWebAPI.Models.Employees
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
 
         public DateTime? IssuedWhen { get; set; }
+        [StringLength(250)]
         public string IssuedBy { get; set; }
 
         public virtual FoundationDocument FoundationDocument { get; set; }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeFoundationDoc";
+            }
+        }
     }
 }
