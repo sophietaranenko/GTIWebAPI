@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Employees
 {
+    /// <summary>
+    /// DTO для EmployeeCar
+    /// </summary>
     public class EmployeeCarDTO
     {
         public int Id { get; set; }
@@ -26,7 +29,7 @@ namespace GTIWebAPI.Models.Employees
 
         public DateTime? PeriodOfValidity { get; set; }
 
-        public int? Number { get; set; }
+        public string Number { get; set; }
 
         public string Seria { get; set; }
 
@@ -40,8 +43,14 @@ namespace GTIWebAPI.Models.Employees
 
         public string IdentificationNumber { get; set; }
 
+        /// <summary>
+        /// A, B, C, D ...
+        /// </summary>
         public string VehicleCategory { get; set; }
 
+        /// <summary>
+        /// Бензин, D ... 
+        /// </summary>
         public string FuelType { get; set; }
 
         public string Colour { get; set; }
@@ -51,6 +60,7 @@ namespace GTIWebAPI.Models.Employees
         public string Owner { get; set; }
 
         public string GivenName { get; set; }
+
         public string IssuedBy { get; set; }
     }
 }
