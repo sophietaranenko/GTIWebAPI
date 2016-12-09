@@ -4,6 +4,9 @@ namespace GTIWebAPI.Models.Employees
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Web;
 
+    /// <summary>
+    /// Class for employee photo 
+    /// </summary>
     [Table("EmployeePhoto")]
     public partial class EmployeePhoto 
     {

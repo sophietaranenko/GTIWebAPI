@@ -166,6 +166,11 @@ namespace GTIWebAPI.Controllers
             return StatusCode(HttpStatusCode.Created);
         }
 
+        /// <summary>
+        /// Delete all rights by user
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
         [Route("DeleteUserRights")]
@@ -188,7 +193,10 @@ namespace GTIWebAPI.Controllers
             return Ok(rightsDTO);
         }
 
-
+        /// <summary>
+        /// Get all controllers
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetControllers")]
         public IEnumerable<ControllerDTO> GetControllers()
@@ -199,6 +207,11 @@ namespace GTIWebAPI.Controllers
             return dtoList;
         }
 
+        /// <summary>
+        /// Get all actions of controller
+        /// </summary>
+        /// <param name="controllerId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetActions")]
         public IEnumerable<ActionDTO> GetActions(int controllerId)

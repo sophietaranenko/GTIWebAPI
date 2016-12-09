@@ -290,7 +290,7 @@ namespace GTIWebAPI.Controllers
                     Id = c.Id,
                     ContactType = new ContactTypeDTO { Id = c.ContactType.Id, Name = c.ContactType.Name },
                     EmployeeId = c.EmployeeId,
-                    Type = c.Type,
+                    ContactTypeId = c.ContactTypeId,
                     Value = c.Value
                 });
 

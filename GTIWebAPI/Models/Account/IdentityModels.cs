@@ -15,17 +15,31 @@ using GTIWebAPI.Models.Service;
 namespace GTIWebAPI.Models.Account
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
+    /// <summary>
+    /// User of application
+    /// </summary>
     public class ApplicationUser : IdentityUser
     {
+        /// <summary>
+        /// Ctor
+        /// </summary>
         public ApplicationUser() : base()
         {
             UserRights = new List<UserRight>();    
         }
 
-        //public int ImageId { get; set; }
+        /// <summary>
+        /// Profile picture
+        /// </summary>
         public virtual UserImage Image { get; set; }
+        /// <summary>
+        /// Collection of rights
+        /// </summary>
         public virtual ICollection<UserRight> UserRights { get; set; }
 
+        /// <summary>
+        /// Collection of rights in another form of representation
+        /// </summary>
         public List<UserRightDTO> UserRightsDto
         {
             get
@@ -79,6 +93,12 @@ namespace GTIWebAPI.Models.Account
             }
         }
 
+        /// <summary>
+        /// method that creates a new Claims Identity 
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="authenticationType"></param>
+        /// <returns></returns>
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -115,8 +135,11 @@ namespace GTIWebAPI.Models.Account
         public DbSet<UserImage> UserImage { get; set; }
 
         public DbSet<Controller> Controllers { get; set; }
+
         public DbSet<Action> Actions { get; set; }
+
         public DbSet<OfficeSecurity> OfficeSecurity { get; set; }
+
         public object Address { get; internal set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -146,30 +169,6 @@ namespace GTIWebAPI.Models.Account
             modelBuilder.Entity<ApplicationUser>()
                             .HasOptional(s => s.Image) 
                             .WithRequired(ad => ad.ApplicationUser);
-
-
-
-
-
-            //modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers").HasKey<string>(u => u.Id).Ignore(u => u.Discriminator);
-            //modelBuilder.Entity<IdentityUserLogin>().ToTable("AspNetUserLogins").HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId });
-            //modelBuilder.Entity<IdentityRole>().ToTable("AspNetRoles").HasKey<string>(r => r.Id);
-            //modelBuilder.Entity<IdentityUserRole>().ToTable("AspNetUserRoles").HasKey(r => new { r.UserId, r.RoleId });
-            //modelBuilder.Entity<IdentityUserClaim>().ToTable("AspNetUserClaims").HasKey(c => c.Id);
-
-
-            //modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers").HasKey<string>(u => u.Id);
-            //modelBuilder.Entity<IdentityUserLogin>().HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId });
-            ////modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id);
-            //modelBuilder.Entity<IdentityUserRole>().HasKey(r => new { r.UserId, r.RoleId });
-            //modelBuilder.Entity<IdentityUserClaim>().ToTable("AspNetUserClaims").HasKey(c => c.Id);
-
-            //modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers");
-            //modelBuilder.Entity<IdentityUserLogin>().ToTable("AspNetUserLogins");
-            //modelBuilder.Entity<IdentityRole>().ToTable("AspNetRoles");
-            //modelBuilder.Entity<IdentityUserRole>().ToTable("AspNetUserRoles");
-            //modelBuilder.Entity<IdentityUserClaim>().ToTable("AspNetUserClaims");
-
         }
     }
 

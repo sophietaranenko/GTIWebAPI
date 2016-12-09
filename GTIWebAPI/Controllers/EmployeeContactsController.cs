@@ -248,6 +248,10 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
+        /// <summary>
+        /// Types of contact 
+        /// </summary>
+        /// <returns></returns>
         [Route("GetContactTypes")]
         [HttpGet]
         public IEnumerable<ContactTypeDTO> GetContactTypes()

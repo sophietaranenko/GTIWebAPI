@@ -22,6 +22,7 @@ namespace GTIWebAPI.Models.Employees
         public DateTime? IssuedWhen { get; set; }
 
         public string IssuedBy { get; set; }
+        public int? FoundationDocumentId { get; set; }
 
         public FoundationDocumentDTO FoundationDocument { get; set; }
     }

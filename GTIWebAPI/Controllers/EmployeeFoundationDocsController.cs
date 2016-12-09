@@ -245,6 +245,10 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
+        /// <summary>
+        /// Get all types of foundation documents
+        /// </summary>
+        /// <returns></returns>
         [Route("GetFoundationDocuments")]
         [HttpGet]
         public IEnumerable<FoundationDocumentDTO> GetFoundationDocuments()

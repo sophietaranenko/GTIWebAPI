@@ -244,6 +244,10 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
+        /// <summary>
+        /// Get all languages that employee can know
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetLanguages")]
         public IEnumerable<LanguageDTO> GetLanguages()

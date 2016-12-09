@@ -221,8 +221,8 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <returns>Collection of EnumItem objects</returns>
         [HttpGet]
-        [Route("GetVillage")]
-        public IEnumerable<EnumItem> GetVillageTypes()
+        [Route("GetStudyForms")]
+        public IEnumerable<EnumItem> GetStudyForms()
         {
             var studyList = Enum.GetValues(typeof(FormStudy)).Cast<FormStudy>().Select(v => new EnumItem
             {

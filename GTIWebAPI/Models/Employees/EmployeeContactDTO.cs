@@ -10,7 +10,7 @@ namespace GTIWebAPI.Models.Employees
     {
         public int Id { get; set; }
 
-        public int? Type { get; set; }
+        public int? ContactTypeId { get; set; }
 
         public string Value { get; set; }
 

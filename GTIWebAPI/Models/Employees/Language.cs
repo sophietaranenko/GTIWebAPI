@@ -6,6 +6,9 @@ namespace GTIWebAPI.Models.Employees
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
+    /// <summary>
+    /// Languages that employee can have
+    /// </summary>
     [Table("Language")]
     public partial class Language 
     {

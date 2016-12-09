@@ -10,6 +10,7 @@ namespace GTIWebAPI.Models.Employees
         public int Id { get; set; }
 
         public int? EmployeeId { get; set; }
+        public int? LanguageId { get; set; }
 
         public DateTime? DateBegin { get; set; }
 

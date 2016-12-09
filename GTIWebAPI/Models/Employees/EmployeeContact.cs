@@ -14,7 +14,8 @@
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? Type { get; set; }
+        [Column("Type")]
+        public int? ContactTypeId { get; set; }
 
         [StringLength(250)]
         public string Value { get; set; }

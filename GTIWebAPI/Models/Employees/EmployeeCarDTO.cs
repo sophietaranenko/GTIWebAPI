@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace GTIWebAPI.Models.Employees
 {
     /// <summary>
-    /// DTO для EmployeeCar
+    /// DTO for EmployeeCar
     /// </summary>
     public class EmployeeCarDTO
     {

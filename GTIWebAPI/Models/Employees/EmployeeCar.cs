@@ -7,7 +7,7 @@ namespace GTIWebAPI.Models.Employees
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// Данные из тех паспорта автомобля
+    /// Data from car registration document
     /// </summary>
     [Table("EmployeeCar")]
     public partial class EmployeeCar : GTITable
@@ -32,7 +32,7 @@ namespace GTIWebAPI.Models.Employees
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? RegistrationDate { get; set; }
 
-        public int? AddressId { get; set; }
+        //public int? AddressId { get; set; }
 
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]

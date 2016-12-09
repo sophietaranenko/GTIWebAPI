@@ -25,6 +25,10 @@ namespace GTIWebAPI.Models.Employees
         public string Description { get; set; }
 
         public int? EmployeeId { get; set; }
+
+        /// <summary>
+        /// Id to table FoundationDocument
+        /// </summary>
         [Column("FoundationDocId")]
         public int? FoundationDocumentId { get; set; }
 

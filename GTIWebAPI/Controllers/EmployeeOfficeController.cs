@@ -251,9 +251,9 @@ namespace GTIWebAPI.Controllers
         }
 
         /// <summary>
-        /// Get study form types
+        /// Get offices 
         /// </summary>
-        /// <returns>Collection of EnumItem objects</returns>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetOffices")]
         public IEnumerable<OfficeDTO> GetOffices()
@@ -264,7 +264,10 @@ namespace GTIWebAPI.Controllers
             return dtos;
         }
 
-
+        /// <summary>
+        /// Get professions
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetProfessions")]
         public IEnumerable<ProfessionDTO> GetProfessions()
@@ -275,6 +278,10 @@ namespace GTIWebAPI.Controllers
             return dtos;
         }
 
+        /// <summary>
+        /// Get departments 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetDepartments")]
         public IEnumerable<DepartmentDTO> GetDepartments()

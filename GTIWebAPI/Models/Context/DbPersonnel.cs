@@ -94,7 +94,7 @@ namespace GTIWebAPI.Models.Context
             modelBuilder.Entity<ContactType>()
                 .HasMany(e => e.EmployeeContact)
                 .WithOptional(e => e.ContactType)
-                .HasForeignKey(e => e.Type);
+                .HasForeignKey(e => e.ContactTypeId);
         }
 
 
