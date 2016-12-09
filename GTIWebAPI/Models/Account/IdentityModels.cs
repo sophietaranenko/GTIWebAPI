@@ -24,7 +24,7 @@ namespace GTIWebAPI.Models.Account
 
         //public int ImageId { get; set; }
         public virtual UserImage Image { get; set; }
-        public ICollection<UserRight> UserRights { get; set; }
+        public virtual ICollection<UserRight> UserRights { get; set; }
 
         public List<UserRightDTO> UserRightsDto
         {
