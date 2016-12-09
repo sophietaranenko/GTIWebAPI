@@ -20,17 +20,17 @@ namespace GTIWebAPI.Models
             return new DbEnter();
         }
         public virtual DbSet<EditRoleModel> EditRoleModels { get; set; }
-        public virtual DbSet<ApplicationRole> IdentityRoles { get; set; }
+        //public virtual DbSet<ApplicationRole> IdentityRoles { get; set; }
         public virtual DbSet<LoginEditViewModel> LoginDetailViewModels { get; set; }
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Employee> Employee { get; set; }
 
-        public virtual int NewId(string tableName)
-        {
-            SqlParameter table = new SqlParameter("@table_name", tableName);
-            int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
-            return result;
-        }
+        //public virtual int NewId(string tableName)
+        //{
+        //    SqlParameter table = new SqlParameter("@table_name", tableName);
+        //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+        //    return result;
+        //}
     }
 }

@@ -12,6 +12,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using AutoMapper;
 using GTIWebAPI.Models.Service;
+using GTIWebAPI.Filters;
 
 namespace GTIWebAPI.Controllers
 {
@@ -28,6 +29,7 @@ namespace GTIWebAPI.Controllers
         /// Get all education documents
         /// </summary>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         public IEnumerable<EmployeeEducationDTO> GetEmployeeEducation()
@@ -44,6 +46,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeId">Employee id</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEducationsByEmployeeId")]
         public IEnumerable<EmployeeEducationDTO> GetEmployeeEducationByEmployeeId(int employeeId)
@@ -60,6 +63,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEducationView", Name = "GetEducationView")]
         [ResponseType(typeof(EmployeeEducationDTO))]
@@ -80,6 +84,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEducationEdit")]
         [ResponseType(typeof(EmployeeEducationDTO))]
@@ -101,6 +106,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">id of document</param>
         /// <param name="employeeEducation">EmployeeEducation document</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpPut]
         [Route("PutEducation")]
         [ResponseType(typeof(void))]
@@ -136,14 +142,15 @@ namespace GTIWebAPI.Controllers
         /// <summary>
         /// Insert new employee education document
         /// </summary>
-        /// <param name="employeeEducation">EmployeeEducation object contains id = null</param>
+        /// <param name="employeeEducation">EmployeeEducation object contains id = 0</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpPost]
         [Route("PostEducation")]
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult PostEmployeeEducation(EmployeeEducation employeeEducation)
         {
-            employeeEducation.Id = db.NewId("EmployeeEducation");
+            employeeEducation.Id = employeeEducation.NewId(db);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -175,6 +182,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">id of document</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpDelete]
         [Route("DeleteEducation")]
         [ResponseType(typeof(EmployeeEducationDTO))]
@@ -205,7 +213,6 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
             EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-
             return Ok(dto);
         }
 

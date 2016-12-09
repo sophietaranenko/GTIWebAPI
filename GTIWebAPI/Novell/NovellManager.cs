@@ -76,11 +76,11 @@ namespace GTIWebAPI.Novell
             using (Models.Context.DbPersonnel db = new Models.Context.DbPersonnel())
             {
                 Models.Dictionary.Address address = new Models.Dictionary.Address();
-                address.Id = db.NewId("Address");
+                address.Id = address.NewId(db);
                 //db.Address.Add(address);
 
                 Models.Employees.Employee employee = new Models.Employees.Employee();
-                employee.Id = db.NewId("Employee");
+                employee.Id = employee.NewId(db);
                 employee.UserId = userId;
                 employee.AddressId = address.Id;
                 db.Employee.Add(employee);

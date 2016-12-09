@@ -12,13 +12,14 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using AutoMapper;
 using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Filters;
 
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
     /// Controller for employee passports
     /// </summary>
-  //  [Authorize]
+    //  [Authorize]
     [RoutePrefix("api/EmployeePassports")]
     public class EmployeePassportsController : ApiController
     {
@@ -28,6 +29,7 @@ namespace GTIWebAPI.Controllers
         /// Get all employee passports
         /// </summary>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         public IEnumerable<EmployeePassportDTO> GetAll()
@@ -48,6 +50,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
         /// <returns>Collection of EmployeePassportDTO</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetPassportsByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
@@ -69,8 +72,9 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">EmployeePassport id</param>
         /// <returns>EmployeePassportEditDTO object</returns>
+        [GTIFilter]
         [HttpGet]
-        [Route("GetPassportView")]
+        [Route("GetPassportView", Name = "GetPassportView")]
         [ResponseType(typeof(EmployeePassportDTO))]
         public IHttpActionResult GetPassportView(int id)
         {
@@ -93,6 +97,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">EmployeePassport id</param>
         /// <returns>EmployeePassportEditDTO object</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetPassportEdit")]
         [ResponseType(typeof(EmployeePassportDTO))]
@@ -103,7 +108,11 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeePassport, EmployeePassportDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
             EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(passport);
             return Ok(dto);
         }
@@ -114,6 +123,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">Passport id</param>
         /// <param name="employeePassport">EmployeePassport object</param>
         /// <returns>204 - No content</returns>
+        [GTIFilter]
         [HttpPut]
         [Route("PutPassport")]
         [ResponseType(typeof(void))]
@@ -156,6 +166,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeePassport">EmployeePassport object</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpPost]
         [Route("PostPassport")]
         [ResponseType(typeof(EmployeePassportDTO))]
@@ -165,8 +176,8 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            employeePassport.Id = db.NewId("EmployeePassport");
-            employeePassport.Address.Id = db.NewId("Address");
+            employeePassport.Id = employeePassport.NewId(db);
+            employeePassport.Address.Id = employeePassport.Address.NewId(db);
             employeePassport.AddressId = employeePassport.Address.Id;
             if (!ModelState.IsValid)
             {
@@ -189,9 +200,13 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeePassport, EmployeePassportDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
             EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
-            return CreatedAtRoute("DefaultApi", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetPassportView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -199,6 +214,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">Passport Id</param>
         /// <returns>200</returns>
+        [GTIFilter]
         [HttpDelete]
         [Route("DeletePassport")]
         [ResponseType(typeof(EmployeePassport))]
@@ -226,7 +242,11 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeePassport, EmployeePassportDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
             EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
             return Ok(dto);
         }

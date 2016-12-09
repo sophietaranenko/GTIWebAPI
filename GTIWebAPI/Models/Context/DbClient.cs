@@ -13,7 +13,7 @@ using GTIWebAPI.Models.Dictionary;
 
 namespace GTIWebAPI.Models.Context 
 {
-    public class DbClient : DbContext
+    public class DbClient: DbContext
     {
         public DbClient()
             : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
@@ -48,12 +48,12 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<ClientView> ClientView { get; set; }
 
-        public virtual int NewId(string tableName)
-        {
-            SqlParameter table = new SqlParameter("@table_name", tableName);
-            int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
-            return result;
-        }
+        //public virtual int NewId(string tableName)
+        //{
+        //    SqlParameter table = new SqlParameter("@table_name", tableName);
+        //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+        //    return result;
+        //}
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Terminal>()

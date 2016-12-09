@@ -11,7 +11,7 @@ namespace GTIWebAPI.Models.Employees
     /// Education of employee
     /// </summary>
     [Table("EmployeeEducation")]
-    public partial class EmployeeEducation
+    public partial class EmployeeEducation : GTITable
     {
         /// <summary>
         /// Education Id
@@ -87,6 +87,14 @@ namespace GTIWebAPI.Models.Employees
                     result = "";
                 }
                 return result;
+            }
+        }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeEducation";
             }
         }
     }

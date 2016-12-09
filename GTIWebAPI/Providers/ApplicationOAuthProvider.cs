@@ -11,6 +11,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Novell;
+using GTIWebAPI.Models.Context;
 
 namespace GTIWebAPI.Providers
 {
@@ -33,22 +34,32 @@ namespace GTIWebAPI.Providers
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
             NovellManager novellManager = new NovellManager("192.168.0.1", userManager);
+
             ApplicationUser user = novellManager.Find(context.UserName, context.Password);
+
             if (user == null)
             {
                 user = await userManager.FindAsync(context.UserName, context.Password);
             }
+
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
             }
+
+
+            //user.UserRights = new DbService().UserRights.Where(r => r.AspNetUserId == user.Id).ToList();
+
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
-            AuthenticationProperties properties = CreateProperties(user.UserName);
+            //MyDbContext imgContext = new MyDbContext();
+            //MyUserImage image = imgContext.MyUserImage.Find(user.ImageId);
+
+            AuthenticationProperties properties = CreateProperties(user.UserName); //, image.ImageData);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
@@ -90,11 +101,12 @@ namespace GTIWebAPI.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(string userName ) //, byte[] userImage)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "userName", userName } //,
+               // { "userImage", userImage.ToString() }
             };
             return new AuthenticationProperties(data);
         }

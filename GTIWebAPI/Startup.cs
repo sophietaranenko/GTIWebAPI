@@ -12,6 +12,9 @@ namespace GTIWebAPI
     {
         public void Configuration(IAppBuilder app)
         {
+            //при добавлении новых контроллеров / методов разблокировать
+            //код заполнит БД контроллерами и соответствующими действиями
+            Security.Security.InitializeClass();
             ConfigureAuth(app);
         }
     }

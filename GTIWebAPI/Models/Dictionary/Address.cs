@@ -10,45 +10,88 @@
     using System.Web.Mvc;
 
     [Table("Address")]
-    public partial class Address
+    public partial class Address : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
+        /// <summary>
+        /// Страна
+        /// </summary>
         [StringLength(20)]
         public string Country { get; set; }
 
+        /// <summary>
+        /// Почтовый индекс
+        /// </summary>
         [StringLength(20)]
         public string PostIndex { get; set; }
 
+        /// <summary>
+        /// Имя области или региона
+        /// </summary>
         [StringLength(50)]
         public string RegionName { get; set; }
 
+        /// <summary>
+        /// Название поселения
+        /// </summary>
         [StringLength(50)]
         public string LocalityName { get; set; }
 
+        /// <summary>
+        /// Название района внутри поселения
+        /// </summary>
         [StringLength(50)]
         public string VillageName { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [StringLength(50)]
         public string PlaceName { get; set; }
 
+
+        /// <summary>
+        /// Номер дома
+        /// </summary>
         public short? BuildingNumber { get; set; }
 
+        /// <summary>
+        /// Номер кампуса (Адрес состоит из трех домов, поэтому будет 1А, 1Б, 1С)
+        /// </summary>
         [StringLength(5)]
         public string Housing { get; set; }
 
+        /// <summary>
+        /// Номер квартиры
+        /// </summary>
         [StringLength(5)]
         public string Apartment { get; set; }
 
+        /// <summary>
+        /// Регион, область, или республика
+        /// </summary>
         public byte? RegionType { get; set; }
 
+        /// <summary>
+        /// Город, село, ПГТ
+        /// </summary>
         public byte? LocalityType { get; set; }
 
+        /// <summary>
+        /// Микрорайон, поселок
+        /// </summary>
         public byte? VillageType { get; set; }
 
+        /// <summary>
+        /// Улица, переулок, площадь...
+        /// </summary>
         public byte? PlaceType { get; set; }
 
+        /// <summary>
+        /// в строковом формате вместо инт
+        /// </summary>
         public string RegionTypeString
         {
             get
@@ -60,6 +103,10 @@
                 return "";
             }
         }
+
+        /// <summary>
+        /// в строковом формате вместо инт
+        /// </summary>
         public string LocalityTypeString
         {
             get
@@ -71,6 +118,10 @@
                 return "";
             }
         }
+
+        /// <summary>
+        /// в строковом формате вместо инт
+        /// </summary>
         public string VillageTypeString
         {
             get
@@ -83,6 +134,10 @@
 
             }
         }
+
+        /// <summary>
+        /// в строковом формате вместо инт
+        /// </summary>
         public string PlaceTypeString
         {
             get
@@ -95,7 +150,9 @@
             }
         }
 
-
+        /// <summary>
+        /// в строковом формате вместо инт
+        /// </summary>
         public SelectList GetRegionType()
         {
             var regionList = Enum.GetValues(typeof(Region)).Cast<Region>().Select(v => new SelectListItem
@@ -106,34 +163,12 @@
             return new SelectList(regionList, "Value", "Text");
         }
 
-        public SelectList GetLocalityType()
+        protected override string TableName
         {
-            var localityList = Enum.GetValues(typeof(Locality)).Cast<Locality>().Select(v => new SelectListItem
+            get
             {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(localityList, "Value", "Text");
-        }
-
-        public SelectList GetVillageType()
-        {
-            var villageList = Enum.GetValues(typeof(Village)).Cast<Village>().Select(v => new SelectListItem
-            {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(villageList, "Value", "Text");
-        }
-
-        public SelectList GetPlaceType()
-        {
-            var placeList = Enum.GetValues(typeof(Place)).Cast<Place>().Select(v => new SelectListItem
-            {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(placeList, "Value", "Text");
+                return "Address";
+            }
         }
     }
 }

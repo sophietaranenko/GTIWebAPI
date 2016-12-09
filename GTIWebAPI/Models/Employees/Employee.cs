@@ -14,7 +14,7 @@
     /// Class for Employee table
     /// </summary>
     [Table("Employee")]
-    public partial class Employee : IUserable
+    public partial class Employee : GTITable
     {
         /// <summary>
         /// Id of Employee
@@ -70,10 +70,7 @@
             get { return new Age(DateOfBirth); }
         }
 
-        /// <summary>
-        /// TableName (for service, part of interface IUserable)
-        /// </summary>
-        public string TableName
+        protected override string TableName
         {
             get
             {

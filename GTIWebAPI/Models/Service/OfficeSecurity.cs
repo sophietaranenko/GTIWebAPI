@@ -6,11 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTIWebAPI.Models.Dictionary
+namespace GTIWebAPI.Models.Service
 {
     [Table("office")]
-    public class Office 
+    public class OfficeSecurity
     {
+
+        public OfficeSecurity()
+        {
+            UserRights = new List<UserRight>();
+        }
+
+        public virtual ICollection<UserRight> UserRights { get; set; }
 
         [Column("kod")]
         public int Id { get; set; }

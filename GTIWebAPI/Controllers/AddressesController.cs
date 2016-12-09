@@ -12,31 +12,29 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Service;
 using AutoMapper;
-using System.Threading;
-
+using GTIWebAPI.Filters;
 
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
     /// Controller for Addresses
     /// </summary>
-   // [Authorize]
+    
     [RoutePrefix("api/Addresses")]
     public class AddressesController : ApiController
     {
         private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// Get Address View
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetAddressView")]
         [ResponseType(typeof(AddressDTO))]
         public IHttpActionResult GetAddressView(int id)
         {
-            var princip = Thread.CurrentPrincipal;
             Address address = db.Address.Find(id);
             if (address == null)
             {
@@ -44,7 +42,7 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(cfg => cfg.CreateMap<Address, AddressDTO>());
             AddressDTO dto = Mapper.Map<AddressDTO>(address);
-            return Ok(dto);
+            return Ok(dto);           
         }
 
         /// <summary>
@@ -52,6 +50,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">Address Id</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetAddressEdit")]
         [ResponseType(typeof(AddressDTO))]
@@ -73,6 +72,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">Address Id</param>
         /// <param name="address">Address object</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpPut]
         [Route("PutAddress")]
         [ResponseType(typeof(void))]
@@ -82,19 +82,15 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             if (id != address.Id)
             {
                 return BadRequest();
             }
-
             if (!EnumCheck(address))
             {
                 return BadRequest();
             }
-
             db.Entry(address).State = EntityState.Modified;
-
             try
             {
                 db.SaveChanges();
@@ -116,8 +112,9 @@ namespace GTIWebAPI.Controllers
         /// <summary>
         /// Insert new address
         /// </summary>
-        /// <param name="address">Address JSON contains Id = null</param>
+        /// <param name="address">Address JSON contains Id = 0</param>
         /// <returns></returns>
+        [GTIFilter]
         [HttpPost]
         [Route("PostAddress")]
         [ResponseType(typeof(Address))]
@@ -127,9 +124,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            address.Id = db.NewId("Address");
-
+            address.Id = address.NewId(db);
             if (!ModelState.IsValid)  
             {
                 return BadRequest(ModelState);
@@ -138,9 +133,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             db.Address.Add(address);
-
             try
             {
                 db.SaveChanges();

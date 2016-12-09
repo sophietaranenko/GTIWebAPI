@@ -14,6 +14,7 @@ using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Personnel;
 using GTIWebAPI.Models.Service;
 using AutoMapper;
+using GTIWebAPI.Filters;
 
 namespace GTIWebAPI.Controllers
 {
@@ -33,6 +34,7 @@ namespace GTIWebAPI.Controllers
         /// "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
         /// </param>
         /// <returns>a collection on EmployeeViewDTO objects</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         public IEnumerable<EmployeeViewDTO> GetAll(string filter)
@@ -62,6 +64,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">id of Employee</param>
         /// <returns>EmployeeDTO</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEmployeeView")]
         [ResponseType(typeof(EmployeeDTO))]
@@ -328,6 +331,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">Employee Id</param>
         /// <returns>EmployeeDTO, contains info abount employee and its documents</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEmployeeMapperView")]
         [ResponseType(typeof(EmployeeDTO))]
@@ -455,6 +459,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">Employee Id</param>
         /// <returns>EmployeeEditDTO, contains only info about Employee</returns>
+        [GTIFilter]
         [HttpGet]
         [Route("GetEmployeeEdit")]
         [ResponseType(typeof(EmployeeEditDTO))]
@@ -476,6 +481,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">Employee Id</param>
         /// <param name="employee">Json employee object</param>
         /// <returns>204 (HttpStatusCode.NoContent)</returns>
+        [GTIFilter]
         [HttpPut]
         [Route("PutEmployee")]
         [ResponseType(typeof(void))]
@@ -511,14 +517,15 @@ namespace GTIWebAPI.Controllers
         /// <summary>
         /// Insert new Employee
         /// </summary>
-        /// <param name="employee">Employee data with Id = null</param>
+        /// <param name="employee">Employee data with Id = 0</param>
         /// <returns>route api/employees/{id}</returns>
+        [GTIFilter]
         [HttpPost]
         [Route("PostEmployee")]
         [ResponseType(typeof(EmployeeDTO))]
         public IHttpActionResult EmployeeInsert(Employee employee)
         {
-            employee.Id = db.NewId("Employee");
+            employee.Id = employee.NewId(db);
 
             if (!ModelState.IsValid)
             {
@@ -554,6 +561,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">Employee Id</param>
         /// <returns>200</returns>
+        [GTIFilter]
         [HttpDelete]
         [Route("DeleteEmployee")]
         [ResponseType(typeof(EmployeeDTO))]

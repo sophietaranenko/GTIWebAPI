@@ -1,6 +1,7 @@
 namespace GTIWebAPI.Models.Employees
 {
     using Dictionary;
+    using Service;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ namespace GTIWebAPI.Models.Employees
     /// Class for Employee Passport from table EmployeePassport
     /// </summary>
     [Table("EmployeePassport")]
-    public partial class EmployeePassport
+    public partial class EmployeePassport : GTITable
     {
         /// <summary>
         /// Passport Id
@@ -102,6 +103,14 @@ namespace GTIWebAPI.Models.Employees
                     res = "";
                 }
                 return res;   
+            }
+        }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeePassport";
             }
         }
     }

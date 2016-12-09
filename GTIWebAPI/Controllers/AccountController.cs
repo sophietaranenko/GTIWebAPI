@@ -16,6 +16,9 @@ using Microsoft.Owin.Security.OAuth;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Providers;
 using GTIWebAPI.Results;
+using GTIWebAPI.Models.Security;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace GTIWebAPI.Controllers
 {
@@ -51,7 +54,7 @@ namespace GTIWebAPI.Controllers
         /// <summary>
         /// property UserManager
         /// </summary>
-        public ApplicationUserManager UserManager
+        protected ApplicationUserManager UserManager
         {
             get
             {
@@ -67,6 +70,38 @@ namespace GTIWebAPI.Controllers
         /// AccessTokenFormat
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
+
+
+        /// <summary>
+        /// Get User rights 
+        /// </summary>
+        /// <returns></returns>
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        [Route("UserRights")]
+        public IEnumerable<UserRightDTO> GetUserRights()
+        {
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            return user.UserRightsDto;
+        }
+
+
+        /// <summary>
+        /// Returns application/octet-stream of profile picture of user
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        [Route("ProfilePicture")]
+        public HttpResponseMessage ReturnProfileImage()
+        {
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            result.Content = new ByteArrayContent(user.Image.ImageData);
+            result.Content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/octet-stream");
+            return result;
+        }
+
 
 
         /// <summary>
@@ -323,7 +358,7 @@ namespace GTIWebAPI.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName); //, image.ImageData);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else

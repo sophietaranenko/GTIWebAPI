@@ -1,6 +1,7 @@
 namespace GTIWebAPI.Models.Employees
 {
     using Dictionary;
+    using Service;
     using Personnel;
     using System;
     using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace GTIWebAPI.Models.Employees
     using System.Data.Entity.Spatial;
 
     [Table("EmployeeOffice")]
-    public partial class EmployeeOffice
+    public partial class EmployeeOffice : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -39,5 +40,12 @@ namespace GTIWebAPI.Models.Employees
         public int? EmployeeId { get; set; }
 
         public bool? Deleted { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeOffice";
+            }
+        }
     }
 }

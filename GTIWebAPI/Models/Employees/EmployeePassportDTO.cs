@@ -70,6 +70,6 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// AddressDTO from registration Address
         /// </summary>
-        public virtual AddressDTO Address { get; set; }
+        public AddressDTO Address { get; set; }
     }
 }

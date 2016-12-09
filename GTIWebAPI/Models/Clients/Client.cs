@@ -9,7 +9,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("Client")]
-    public partial class Client : IUserable
+    public partial class Client 
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Client()
@@ -76,12 +76,5 @@ namespace GTIWebAPI.Models.Clients
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientGTIClient> ClientGTIClient { get; set; }
 
-        public string TableName
-        {
-            get
-            {
-                return "Clients";
-            }
-        }
     }
 }
