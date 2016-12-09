@@ -12,9 +12,34 @@ using Microsoft.Owin.Security.OAuth;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Context;
+using Microsoft.Owin;
+using System.Net;
 
 namespace GTIWebAPI.Providers
 {
+
+    public class Constants
+    {
+        public const string OwinChallengeFlag = "X-Challenge";
+    }
+    public class AuthenticationMiddleware : OwinMiddleware
+    {
+        public AuthenticationMiddleware(OwinMiddleware next) : base(next) { }
+
+        public override async Task Invoke(IOwinContext context)
+        {
+            await Next.Invoke(context);
+
+            if (context.Response.StatusCode == 400 && context.Response.Headers.ContainsKey(Constants.OwinChallengeFlag))
+            {
+                var headerValues = context.Response.Headers.GetValues(Constants.OwinChallengeFlag);
+                context.Response.StatusCode = Convert.ToInt16(headerValues.FirstOrDefault());
+                context.Response.Headers.Remove(Constants.OwinChallengeFlag);
+            }
+
+        }
+    }
+
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
         private readonly string _publicClientId;
@@ -45,6 +70,10 @@ namespace GTIWebAPI.Providers
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
+                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+                //context.Response.Headers.Where(h => 
+                //context.OwinContext.Response.StatusCode = 401;
+                //context.Response.StatusCode = 401;
                 return;
             }
 
