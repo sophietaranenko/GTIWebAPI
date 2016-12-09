@@ -10,48 +10,137 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
+using GTIWebAPI.Filters;
+using AutoMapper;
+using GTIWebAPI.Models.Personnel;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Controller for contacts
+    /// </summary>
+    [RoutePrefix("api/EmployeeContacts")]
     public class EmployeeContactsController : ApiController
     {
         private DbPersonnel db = new DbPersonnel();
 
-        // GET: api/EmployeeContacts
-        public IQueryable<EmployeeContact> GetEmployeeContact()
+        /// <summary>
+        /// All contacts
+        /// </summary>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetAll")]
+        public IEnumerable<EmployeeContactDTO> GetAll()
         {
-            return db.EmployeeContact;
+            Mapper.Initialize(m =>
+            {
+            m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+            m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            IEnumerable<EmployeeContactDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeContact>, IEnumerable<EmployeeContactDTO>>
+                (db.EmployeeContact.Where(p => p.Deleted != true).ToList());
+            return dtos;
         }
 
-        // GET: api/EmployeeContacts/5
-        [ResponseType(typeof(EmployeeContact))]
-        public IHttpActionResult GetEmployeeContact(int id)
+        /// <summary>
+        /// Get employee contact by employee id for VIEW
+        /// </summary>
+        /// <param name="employeeId">Employee Id</param>
+        /// <returns>Collection of EmployeeContactDTO</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetContactsByEmployeeId")]
+        [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
+        public IEnumerable<EmployeeContactDTO> GetByEmployee(int employeeId)
         {
-            EmployeeContact employeeContact = db.EmployeeContact.Find(id);
-            if (employeeContact == null)
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            IEnumerable<EmployeeContactDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeContact>, IEnumerable<EmployeeContactDTO>>
+                (db.EmployeeContact.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+            return dtos;
+        }
+
+        /// <summary>
+        /// Get one contact for view by contact id
+        /// </summary>
+        /// <param name="id">EmployeeContact id</param>
+        /// <returns>EmployeeContactEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetContactView", Name = "GetContactView")]
+        [ResponseType(typeof(EmployeeContactDTO))]
+        public IHttpActionResult GetContactView(int id)
+        {
+            EmployeeContact contact = db.EmployeeContact.Find(id);
+            if (contact == null)
             {
                 return NotFound();
             }
-
-            return Ok(employeeContact);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            EmployeeContactDTO dto = Mapper.Map<EmployeeContactDTO>(contact);
+            return Ok(dto);
         }
 
-        // PUT: api/EmployeeContacts/5
+        /// <summary>
+        /// Get one contact for edit by contact id
+        /// </summary>
+        /// <param name="id">EmployeeContact id</param>
+        /// <returns>EmployeeContactEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetContactEdit")]
+        [ResponseType(typeof(EmployeeContactDTO))]
+        public IHttpActionResult GetContactEdit(int id)
+        {
+            EmployeeContact contact = db.EmployeeContact.Find(id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(contact);
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// Update employee contact
+        /// </summary>
+        /// <param name="id">Contact id</param>
+        /// <param name="employeeContact">EmployeeContact object</param>
+        /// <returns>204 - No content</returns>
+        [GTIFilter]
+        [HttpPut]
+        [Route("PutContact")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeContact(int id, EmployeeContact employeeContact)
         {
+            if (employeeContact == null)
+            {
+                return BadRequest(ModelState);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
             if (id != employeeContact.Id)
             {
                 return BadRequest();
             }
-
             db.Entry(employeeContact).State = EntityState.Modified;
-
             try
             {
                 db.SaveChanges();
@@ -67,19 +156,30 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/EmployeeContacts
-        [ResponseType(typeof(EmployeeContact))]
+        /// <summary>
+        /// Insert new employee contact
+        /// </summary>
+        /// <param name="employeeContact">EmployeeContact object</param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpPost]
+        [Route("PostContact")]
+        [ResponseType(typeof(EmployeeContactDTO))]
         public IHttpActionResult PostEmployeeContact(EmployeeContact employeeContact)
         {
+            if (employeeContact == null)
+            {
+                return BadRequest(ModelState);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            employeeContact.Id = employeeContact.NewId(db);
             db.EmployeeContact.Add(employeeContact);
 
             try
@@ -97,11 +197,23 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = employeeContact.Id }, employeeContact);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(employeeContact);
+            return CreatedAtRoute("GetContactView", new { id = dto.Id }, dto);
         }
 
-        // DELETE: api/EmployeeContacts/5
+        /// <summary>
+        /// Delete contact
+        /// </summary>
+        /// <param name="id">Contact Id</param>
+        /// <returns>200</returns>
+        [GTIFilter]
+        [HttpDelete]
+        [Route("DeleteContact")]
         [ResponseType(typeof(EmployeeContact))]
         public IHttpActionResult DeleteEmployeeContact(int id)
         {
@@ -110,13 +222,46 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-
-            db.EmployeeContact.Remove(employeeContact);
-            db.SaveChanges();
-
-            return Ok(employeeContact);
+            employeeContact.Deleted = true;
+            db.Entry(employeeContact).State = EntityState.Modified;
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EmployeeContactExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(employeeContact);
+            return Ok(dto);
         }
 
+        [Route("GetContactTypes")]
+        [HttpGet]
+        public IEnumerable<ContactTypeDTO> GetContactTypes()
+        {
+            List<ContactType> types = db.ContactType.Where(c => c.Deleted != true).ToList();
+            Mapper.Initialize(m => m.CreateMap<ContactType, ContactTypeDTO>());
+            IEnumerable<ContactTypeDTO> dtos = Mapper.Map<IEnumerable<ContactType>, IEnumerable<ContactTypeDTO>>(types);
+            return dtos;
+        }
+
+        /// <summary>
+        /// Dispose controller
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
