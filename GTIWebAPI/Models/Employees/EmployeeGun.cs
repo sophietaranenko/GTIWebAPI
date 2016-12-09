@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Employees
     using System.Data.Entity.Spatial;
 
     [Table("EmployeeGun")]
-    public partial class EmployeeGun
+    public partial class EmployeeGun : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -16,15 +17,17 @@ namespace GTIWebAPI.Models.Employees
 
         public bool? Deleted { get; set; }
 
-        [StringLength(5)]
+        [StringLength(10)]
         public string Seria { get; set; }
 
-        public int? Number { get; set; }
+        [Column("NumberChar")]
+        [StringLength(25)]
+        public string Number { get; set; }
 
-        [StringLength(200)]
+        [StringLength(250)]
         public string Description { get; set; }
 
-        [StringLength(200)]
+        [StringLength(250)]
         public string IssuedBy { get; set; }
 
         [Column(TypeName = "date")]
@@ -36,5 +39,13 @@ namespace GTIWebAPI.Models.Employees
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateEnd { get; set; }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeGun";
+            }
+        }
     }
 }

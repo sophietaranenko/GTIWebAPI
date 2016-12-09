@@ -10,48 +10,129 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
+using GTIWebAPI.Filters;
+using AutoMapper;
 
 namespace GTIWebAPI.Controllers
 {
+    [RoutePrefix("api/EmployeeGuns")]
     public class EmployeeGunsController : ApiController
     {
         private DbPersonnel db = new DbPersonnel();
 
-        // GET: api/EmployeeGuns
-        public IQueryable<EmployeeGun> GetEmployeeGun()
+        /// <summary>
+        /// All guns
+        /// </summary>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetAll")]
+        public IEnumerable<EmployeeGunDTO> GetAll()
         {
-            return db.EmployeeGun;
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            IEnumerable<EmployeeGunDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeGun>, IEnumerable<EmployeeGunDTO>>
+                (db.EmployeeGun.Where(p => p.Deleted != true).ToList());
+            return dtos;
         }
 
-        // GET: api/EmployeeGuns/5
-        [ResponseType(typeof(EmployeeGun))]
-        public IHttpActionResult GetEmployeeGun(int id)
+        /// <summary>
+        /// Get employee gun by employee id for VIEW
+        /// </summary>
+        /// <param name="employeeId">Employee Id</param>
+        /// <returns>Collection of EmployeeGunDTO</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetGunsByEmployeeId")]
+        [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
+        public IEnumerable<EmployeeGunDTO> GetByEmployee(int employeeId)
         {
-            EmployeeGun employeeGun = db.EmployeeGun.Find(id);
-            if (employeeGun == null)
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            IEnumerable<EmployeeGunDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeGun>, IEnumerable<EmployeeGunDTO>>
+                (db.EmployeeGun.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+            return dtos;
+        }
+
+        /// <summary>
+        /// Get one gun for view by gun id
+        /// </summary>
+        /// <param name="id">EmployeeGun id</param>
+        /// <returns>EmployeeGunEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetGunView", Name = "GetGunView")]
+        [ResponseType(typeof(EmployeeGunDTO))]
+        public IHttpActionResult GetGunView(int id)
+        {
+            EmployeeGun gun = db.EmployeeGun.Find(id);
+            if (gun == null)
             {
                 return NotFound();
             }
-
-            return Ok(employeeGun);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            EmployeeGunDTO dto = Mapper.Map<EmployeeGunDTO>(gun);
+            return Ok(dto);
         }
 
-        // PUT: api/EmployeeGuns/5
+        /// <summary>
+        /// Get one gun for edit by gun id
+        /// </summary>
+        /// <param name="id">EmployeeGun id</param>
+        /// <returns>EmployeeGunEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetGunEdit")]
+        [ResponseType(typeof(EmployeeGunDTO))]
+        public IHttpActionResult GetGunEdit(int id)
+        {
+            EmployeeGun gun = db.EmployeeGun.Find(id);
+            if (gun == null)
+            {
+                return NotFound();
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(gun);
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// Update employee gun
+        /// </summary>
+        /// <param name="id">Gun id</param>
+        /// <param name="employeeGun">EmployeeGun object</param>
+        /// <returns>204 - No content</returns>
+        [GTIFilter]
+        [HttpPut]
+        [Route("PutGun")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeGun(int id, EmployeeGun employeeGun)
         {
+            if (employeeGun == null)
+            {
+                return BadRequest(ModelState);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
             if (id != employeeGun.Id)
             {
                 return BadRequest();
             }
-
             db.Entry(employeeGun).State = EntityState.Modified;
-
             try
             {
                 db.SaveChanges();
@@ -67,19 +148,30 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/EmployeeGuns
-        [ResponseType(typeof(EmployeeGun))]
+        /// <summary>
+        /// Insert new employee gun
+        /// </summary>
+        /// <param name="employeeGun">EmployeeGun object</param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpPost]
+        [Route("PostGun")]
+        [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult PostEmployeeGun(EmployeeGun employeeGun)
         {
+            if (employeeGun == null)
+            {
+                return BadRequest(ModelState);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            employeeGun.Id = employeeGun.NewId(db);
             db.EmployeeGun.Add(employeeGun);
 
             try
@@ -97,11 +189,22 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = employeeGun.Id }, employeeGun);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(employeeGun);
+            return CreatedAtRoute("GetGunView", new { id = dto.Id }, dto);
         }
 
-        // DELETE: api/EmployeeGuns/5
+        /// <summary>
+        /// Delete gun
+        /// </summary>
+        /// <param name="id">Gun Id</param>
+        /// <returns>200</returns>
+        [GTIFilter]
+        [HttpDelete]
+        [Route("DeleteGun")]
         [ResponseType(typeof(EmployeeGun))]
         public IHttpActionResult DeleteEmployeeGun(int id)
         {
@@ -110,13 +213,35 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-
-            db.EmployeeGun.Remove(employeeGun);
-            db.SaveChanges();
-
-            return Ok(employeeGun);
+            employeeGun.Deleted = true;
+            db.Entry(employeeGun).State = EntityState.Modified;
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EmployeeGunExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
+            });
+            EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(employeeGun);
+            return Ok(dto);
         }
 
+        /// <summary>
+        /// Dispose controller
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
