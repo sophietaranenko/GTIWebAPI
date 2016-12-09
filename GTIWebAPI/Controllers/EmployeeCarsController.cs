@@ -10,48 +10,129 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
+using GTIWebAPI.Filters;
+using AutoMapper;
 
 namespace GTIWebAPI.Controllers
 {
+    [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
     {
         private DbPersonnel db = new DbPersonnel();
 
-        // GET: api/EmployeeCars
-        public IQueryable<EmployeeCar> GetEmployeeCar()
+        /// <summary>
+        /// Get all employee passports
+        /// </summary>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetAll")]
+        public IEnumerable<EmployeeCarDTO> GetAll()
         {
-            return db.EmployeeCar;
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+            });
+            IEnumerable<EmployeeCarDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
+                (db.EmployeeCar.Where(p => p.Deleted != true).ToList());
+            return dtos;
         }
 
-        // GET: api/EmployeeCars/5
-        [ResponseType(typeof(EmployeeCar))]
-        public IHttpActionResult GetEmployeeCar(int id)
+        /// <summary>
+        /// Get employee passports by employee id for VIEW
+        /// </summary>
+        /// <param name="employeeId">Employee Id</param>
+        /// <returns>Collection of EmployeeCarDTO</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetCarsByEmployeeId")]
+        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
+        public IEnumerable<EmployeeCarDTO> GetByEmployee(int employeeId)
         {
-            EmployeeCar employeeCar = db.EmployeeCar.Find(id);
-            if (employeeCar == null)
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+            });
+            IEnumerable<EmployeeCarDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
+                (db.EmployeeCar.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+            return dtos;
+        }
+
+        /// <summary>
+        /// Get one passport for view by passport id
+        /// </summary>
+        /// <param name="id">EmployeeCar id</param>
+        /// <returns>EmployeeCarEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetCarView", Name = "GetCarView")]
+        [ResponseType(typeof(EmployeeCarDTO))]
+        public IHttpActionResult GetCarView(int id)
+        {
+            EmployeeCar passport = db.EmployeeCar.Find(id);
+            if (passport == null)
             {
                 return NotFound();
             }
-
-            return Ok(employeeCar);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+            });
+            EmployeeCarDTO dto = Mapper.Map<EmployeeCarDTO>(passport);
+            return Ok(dto);
         }
 
-        // PUT: api/EmployeeCars/5
+        /// <summary>
+        /// Get one passport for edit by passport id
+        /// </summary>
+        /// <param name="id">EmployeeCar id</param>
+        /// <returns>EmployeeCarEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetCarEdit")]
+        [ResponseType(typeof(EmployeeCarDTO))]
+        public IHttpActionResult GetCarEdit(int id)
+        {
+            EmployeeCar passport = db.EmployeeCar.Find(id);
+            if (passport == null)
+            {
+                return NotFound();
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+            });
+            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(passport);
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// Update employee passport
+        /// </summary>
+        /// <param name="id">Car id</param>
+        /// <param name="employeeCar">EmployeeCar object</param>
+        /// <returns>204 - No content</returns>
+        [GTIFilter]
+        [HttpPut]
+        [Route("PutCar")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeCar(int id, EmployeeCar employeeCar)
         {
+            if (employeeCar == null)
+            {
+                return BadRequest(ModelState);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
             if (id != employeeCar.Id)
             {
                 return BadRequest();
             }
-
             db.Entry(employeeCar).State = EntityState.Modified;
-
             try
             {
                 db.SaveChanges();
@@ -67,21 +148,33 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/EmployeeCars
-        [ResponseType(typeof(EmployeeCar))]
+        /// <summary>
+        /// Insert new employee passport
+        /// </summary>
+        /// <param name="employeeCar">EmployeeCar object</param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpPost]
+        [Route("PostCar")]
+        [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult PostEmployeeCar(EmployeeCar employeeCar)
         {
+            if (employeeCar == null)
+            {
+                return BadRequest(ModelState);
+            }
+            employeeCar.Id = employeeCar.NewId(db);
+            employeeCar.Address.Id = employeeCar.Address.NewId(db);
+            employeeCar.AddressId = employeeCar.Address.Id;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            db.Address.Add(employeeCar.Address);
             db.EmployeeCar.Add(employeeCar);
-
             try
             {
                 db.SaveChanges();
@@ -97,11 +190,23 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = employeeCar.Id }, employeeCar);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
+            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
+            return CreatedAtRoute("GetCarView", new { id = dto.Id }, dto);
         }
 
-        // DELETE: api/EmployeeCars/5
+        /// <summary>
+        /// Delete passport
+        /// </summary>
+        /// <param name="id">Car Id</param>
+        /// <returns>200</returns>
+        [GTIFilter]
+        [HttpDelete]
+        [Route("DeleteCar")]
         [ResponseType(typeof(EmployeeCar))]
         public IHttpActionResult DeleteEmployeeCar(int id)
         {
@@ -110,13 +215,36 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-
-            db.EmployeeCar.Remove(employeeCar);
-            db.SaveChanges();
-
-            return Ok(employeeCar);
+            employeeCar.Deleted = true;
+            db.Entry(employeeCar).State = EntityState.Modified;
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EmployeeCarExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
+            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
+            return Ok(dto);
         }
 
+        /// <summary>
+        /// Dispose controller
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

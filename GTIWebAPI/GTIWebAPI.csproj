@@ -220,11 +220,21 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddressesController.cs" />
+    <Compile Include="Controllers\EmployeeCarsController.cs" />
+    <Compile Include="Controllers\EmployeeContactsController.cs" />
+    <Compile Include="Controllers\EmployeeDrivingLicensesController.cs" />
     <Compile Include="Controllers\EmployeeEducationsController.cs" />
+    <Compile Include="Controllers\EmployeeFoundationDocsController.cs" />
+    <Compile Include="Controllers\EmployeeGunsController.cs" />
+    <Compile Include="Controllers\EmployeeInternationalPassportsController.cs" />
+    <Compile Include="Controllers\EmployeeLanguagesController.cs" />
+    <Compile Include="Controllers\EmployeeMilitaryCardsController.cs" />
+    <Compile Include="Controllers\EmployeeOfficeController.cs" />
     <Compile Include="Controllers\EmployeePassportsController.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\UserRightsController.cs" />
+    <Compile Include="Filters\GTIFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -232,6 +242,13 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
+    <Compile Include="Models\Context\DbService.cs" />
+    <Compile Include="Models\Security\ActionDTO.cs" />
+    <Compile Include="Models\Security\ControllerDTO.cs" />
+    <Compile Include="Models\Security\UserRightDTO.cs" />
+    <Compile Include="Models\Security\UserRight.cs" />
+    <Compile Include="Models\Security\UserRightEditDTO.cs" />
+    <Compile Include="Models\Service\GTITable.cs" />
     <Compile Include="Models\Dictionary\Address.cs" />
     <Compile Include="Models\Dictionary\AddressDTO.cs" />
     <Compile Include="Models\Dictionary\OfficeDTO.cs" />
@@ -254,10 +271,11 @@
     <Compile Include="Models\Personnel\DepartmentDTO.cs" />
     <Compile Include="Models\Personnel\FoundationDocumentDTO.cs" />
     <Compile Include="Models\Personnel\ProfessionDTO.cs" />
+    <Compile Include="Models\Security\Action.cs" />
+    <Compile Include="Models\Security\Controller.cs" />
     <Compile Include="Models\Service\Age.cs" />
     <Compile Include="Models\Account\ApplicationRole.cs" />
     <Compile Include="Models\Account\ApplicationRoleManager.cs" />
-    <Compile Include="Models\Account\ApplicationUser.cs" />
     <Compile Include="Models\Clients\Client.cs" />
     <Compile Include="Models\Clients\ClientAccount.cs" />
     <Compile Include="Models\Clients\ClientAccountLine.cs" />
@@ -309,6 +327,7 @@
     <Compile Include="Models\Personnel\OrderType.cs" />
     <Compile Include="Models\Personnel\PaperType.cs" />
     <Compile Include="Models\Personnel\Profession.cs" />
+    <Compile Include="Models\Service\OfficeSecurity.cs" />
     <Compile Include="Models\Service\ResizedImage.cs" />
     <Compile Include="Models\Accounting\ShippingLine.cs" />
     <Compile Include="Models\Accounting\Terminal.cs" />
@@ -319,6 +338,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
+    <Compile Include="Security\Security.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
