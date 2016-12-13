@@ -19,6 +19,11 @@ using GTIWebAPI.Results;
 using GTIWebAPI.Models.Security;
 using System.Net;
 using System.Net.Http.Headers;
+using GTIWebAPI.Models;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Employees;
+using System.Linq;
+using GTIWebAPI.Models.Clients;
 
 namespace GTIWebAPI.Controllers
 {
@@ -72,11 +77,42 @@ namespace GTIWebAPI.Controllers
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
 
+        private GTIUser GetGTIUser(string userId)
+        {
+            DbService db = new DbService();
+            Employee employee = db.Employees.Where(e => e.UserId == userId).FirstOrDefault();
+            if (employee != null)
+            {
+                return new GTIUser() { Id = employee.Id, TableName = "Employee" };
+            }
+            Client client = db.Clients.Where(c => c.UserId == userId).FirstOrDefault();
+            if (client != null)
+            {
+                return new GTIUser() { Id = client.Id, TableName = "Client" };
+            }
+            return new GTIUser() { Id = 0, TableName = "" };
+        }
+
+        [Route("UserInfo")]
+        public UserInfoViewModel GetUserInfo()
+        {
+            string UserId = User.Identity.GetUserId();
+            ApplicationUser user = UserManager.FindById(UserId);
+            GTIUser gtiUser = GetGTIUser(UserId);
+            return new UserInfoViewModel
+            {
+                UserName = user.UserName,
+                TableId = gtiUser.Id,
+                TableName = gtiUser.TableName,
+                ProfilePicturePath = (user.Image.ImageName == "" || user.Image.ImageName == null) ? null : user.Image.ImageName,
+                UserRights = user.UserRightsDto
+            };
+        }
+
         /// <summary>
         /// Get User rights 
         /// </summary>
         /// <returns></returns>
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserRights")]
         public IEnumerable<UserRightDTO> GetUserRights()
         {
@@ -90,7 +126,6 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("ProfilePicture")]
         public HttpResponseMessage ReturnProfileImage()
         {
@@ -110,11 +145,10 @@ namespace GTIWebAPI.Controllers
         /// <returns>UserIfoViewModel</returns>
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        [Route("UserInfo")]
-        public UserInfoViewModel GetUserInfo()
+        [Route("UserInfoExternalLogin")]
+        public UserInfoViewModel GetUserExternalLoginInfo()
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-
             return new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),

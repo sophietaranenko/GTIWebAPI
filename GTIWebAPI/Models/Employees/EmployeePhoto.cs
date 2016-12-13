@@ -1,14 +1,14 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Service;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Web;
 
     /// <summary>
     /// Class for employee photo 
     /// </summary>
     [Table("EmployeePhoto")]
-    public partial class EmployeePhoto 
+    public partial class EmployeePhoto : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -18,13 +18,19 @@ namespace GTIWebAPI.Models.Employees
         [Column(TypeName = "image")]
         public byte[] Photo { get; set; }
 
-        [StringLength(50)]
+        [StringLength(500)]
         public string PhotoName { get; set; }
+
         public bool? Deleted { get; set; }
+
         public bool? ProfilePicture { get; set; }
 
-       // public virtual Employee Employee { get; set; }
-        [NotMapped]
-        public HttpPostedFileBase File { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeePhoto";
+            }
+        }
     }
 }

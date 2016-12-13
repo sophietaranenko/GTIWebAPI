@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models
 {
-    public interface IUserable
+    public class GTIUser
     {
-        int Id { get; }
-        string TableName { get; }
+        public int Id { get; set; }
+        public string TableName { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,7 @@ namespace GTIWebAPI.Models.Employees
     /// Table for scans of documents 
     /// </summary>
     [Table("EmployeeDocumentScan")]
-    public partial class EmployeeDocumentScan
+    public partial class EmployeeDocumentScan : GTITable 
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -18,7 +19,8 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Id in table named like stored in prop TableName
         /// </summary>
-        public int? TableId { get; set; }
+        [Column("TableId")]
+        public int? ScanTableId { get; set; }
 
         /// <summary>
         /// Byte array image, should be replaced 
@@ -30,17 +32,25 @@ namespace GTIWebAPI.Models.Employees
         /// Scan document table name
         /// </summary>
         [StringLength(50)]
-        public string TableName { get; set; }
+        [Column("TableName")]
+        public string ScanTableName { get; set; }
 
         /// <summary>
         /// Name of file
         /// </summary>
-        [StringLength(50)]
+        [StringLength(500)]
         public string ScanName { get; set; }
 
         /// <summary>
         /// Deleted mark
         /// </summary>
         public bool? Deleted { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "EmployeeDocumentScan";
+            }
+        }
     }
 }

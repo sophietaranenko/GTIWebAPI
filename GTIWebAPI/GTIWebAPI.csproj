@@ -222,6 +222,7 @@
     <Compile Include="Controllers\AddressesController.cs" />
     <Compile Include="Controllers\EmployeeCarsController.cs" />
     <Compile Include="Controllers\EmployeeContactsController.cs" />
+    <Compile Include="Controllers\EmployeeDocumentScansController.cs" />
     <Compile Include="Controllers\EmployeeDrivingLicensesController.cs" />
     <Compile Include="Controllers\EmployeeEducationsController.cs" />
     <Compile Include="Controllers\EmployeeFoundationDocsController.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Controllers\EmployeeMilitaryCardsController.cs" />
     <Compile Include="Controllers\EmployeeOfficeController.cs" />
     <Compile Include="Controllers\EmployeePassportsController.cs" />
+    <Compile Include="Controllers\EmployeePhotosController.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
@@ -320,7 +322,7 @@
     <Compile Include="Models\Service\GTIEnums.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\Accounting\Incoterms.cs" />
-    <Compile Include="Models\Service\IUserable.cs" />
+    <Compile Include="Models\Service\GTIUser.cs" />
     <Compile Include="Models\Employees\Language.cs" />
     <Compile Include="Models\Dictionary\Office.cs" />
     <Compile Include="Models\Personnel\OrderGroup.cs" />
@@ -399,7 +401,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="PostedFiles\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />

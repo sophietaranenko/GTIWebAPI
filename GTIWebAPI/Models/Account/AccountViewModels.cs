@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GTIWebAPI.Models.Security;
+using System.Collections.Generic;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -26,11 +27,18 @@ namespace GTIWebAPI.Models.Account
 
     public class UserInfoViewModel
     {
+        public int TableId { get; set; }
+        public string TableName { get; set; }
+        public string UserName { get; set; }
         public string Email { get; set; }
 
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }
+
+        public IEnumerable<UserRightDTO> UserRights { get; set; }
+
+        public string ProfilePicturePath { get; set; }
     }
 
     public class UserLoginInfoViewModel

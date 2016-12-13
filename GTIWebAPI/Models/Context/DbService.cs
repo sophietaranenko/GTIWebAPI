@@ -12,6 +12,8 @@ namespace GTIWebAPI.Models.Context
 
     public class DbService : DbContext
     {
+
+        
         public DbService()
             : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
         {
@@ -22,8 +24,12 @@ namespace GTIWebAPI.Models.Context
             return new DbService();
         }
 
-        public DbSet<Controller> Controllers { get; set; }
-        public DbSet<Security.Action> Actions { get; set; }
+       // public DbSet<Controller> Controllers { get; set; }
+       //  public DbSet<Security.Action> Actions { get; set; }
+
+        // for searching user
+        public DbSet<Employees.Employee> Employees { get; set; }
+        public DbSet<Clients.Client> Clients { get; set; }
         //public DbSet<UserRight> UserRights { get; set; }
 
         //public virtual int NewId(string tableName)

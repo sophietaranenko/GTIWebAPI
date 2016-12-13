@@ -49,12 +49,13 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<EmployeeView> EmployeeView { get; set; }
 
-        //public virtual int NewId(string tableName)
-        //{
-        //    SqlParameter table = new SqlParameter("@table_name", tableName);
-        //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
-        //    return result;
-        //}
+        public virtual int FileNameUnique()
+        {
+            string tableName = "FileNameUnique";
+            SqlParameter table = new SqlParameter("@table_name", tableName);
+            int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+            return result;
+        }
 
 
 
