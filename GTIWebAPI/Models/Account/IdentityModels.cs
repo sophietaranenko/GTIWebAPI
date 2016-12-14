@@ -57,7 +57,7 @@ namespace GTIWebAPI.Models.Account
                             dto.OfficeName = item.ShortName;
 
                             List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                            var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).ToList();
+                            var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
 
                             if (cList != null)
                             {
@@ -68,7 +68,7 @@ namespace GTIWebAPI.Models.Account
                                     cDto.Id = c.Id;
 
                                     List<ActionDTO> actionList = new List<ActionDTO>();
-                                    var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).ToList();
+                                    var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
                                     if (aList != null)
                                     {
                                         foreach (var a in aList)
