@@ -98,15 +98,30 @@ namespace GTIWebAPI.Controllers
         {
             string UserId = User.Identity.GetUserId();
             ApplicationUser user = UserManager.FindById(UserId);
-            GTIUser gtiUser = GetGTIUser(UserId);
-            return new UserInfoViewModel
+            UserInfoViewModel model = new UserInfoViewModel();
+            if (user != null)
             {
-                UserName = user.UserName,
-                TableId = gtiUser.Id,
-                TableName = gtiUser.TableName,
-                ProfilePicturePath = (user.Image.ImageName == "" || user.Image.ImageName == null) ? null : user.Image.ImageName,
-                UserRights = user.UserRightsDto
-            };
+                GTIUser gtiUser = GetGTIUser(UserId);
+                string profilePicturePath = null;
+                UserImage im = user.Image;
+
+                if (im != null)
+                {
+                    if (im.ImageName != null && im.ImageName != "")
+                    {
+                        profilePicturePath = im.ImageName;
+                    }  
+                }
+                return new UserInfoViewModel
+                {
+                    UserName = user.UserName,
+                    TableId = gtiUser.Id,
+                    TableName = gtiUser.TableName,
+                    ProfilePicturePath = profilePicturePath,
+                    UserRights = user.UserRightsDto
+                };
+            }
+            return model;
         }
 
         /// <summary>
@@ -121,21 +136,21 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Returns application/octet-stream of profile picture of user
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        [Route("ProfilePicture")]
-        public HttpResponseMessage ReturnProfileImage()
-        {
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-            result.Content = new ByteArrayContent(user.Image.ImageData);
-            result.Content.Headers.ContentType =
-                new MediaTypeHeaderValue("application/octet-stream");
-            return result;
-        }
+        ///// <summary>
+        ///// Returns application/octet-stream of profile picture of user
+        ///// </summary>
+        ///// <param name="bytes"></param>
+        ///// <returns></returns>
+        //[Route("ProfilePicture")]
+        //public HttpResponseMessage ReturnProfileImage()
+        //{
+        //    HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+        //    ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+        //    result.Content = new ByteArrayContent(user.Image.ImageData);
+        //    result.Content.Headers.ContentType =
+        //        new MediaTypeHeaderValue("application/octet-stream");
+        //    return result;
+        //}
 
 
 
