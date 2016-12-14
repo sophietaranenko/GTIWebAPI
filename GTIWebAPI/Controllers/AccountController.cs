@@ -112,14 +112,11 @@ namespace GTIWebAPI.Controllers
                         profilePicturePath = im.ImageName;
                     }  
                 }
-                return new UserInfoViewModel
-                {
-                    UserName = user.UserName,
-                    TableId = gtiUser.Id,
-                    TableName = gtiUser.TableName,
-                    ProfilePicturePath = profilePicturePath,
-                    UserRights = user.UserRightsDto
-                };
+                model.UserName = user.UserName;
+                model.TableId = gtiUser.Id;
+                model.TableName = gtiUser.TableName;
+                model.ProfilePicturePath = profilePicturePath;
+                model.UserRights = user.UserRightsDto;
             }
             return model;
         }
