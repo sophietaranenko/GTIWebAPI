@@ -32,6 +32,7 @@ namespace GTIWebAPI.Models.Account
             UserRights = new List<UserRight>();    
         }
 
+        [Column("TableName")]
         /// <summary>
         /// Is it Employee or Client 
         /// </summary>
