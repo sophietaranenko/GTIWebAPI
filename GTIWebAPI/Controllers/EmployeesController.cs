@@ -241,18 +241,12 @@ namespace GTIWebAPI.Controllers
 
 
             List<EmployeeFoundationDoc> docs = db.EmployeeFoundationDoc.Where(d => d.Deleted != true && d.EmployeeId == id).ToList();
-            employeeDTO.EmployeeFoundationDoc = docs.Select(d =>
-                new EmployeeFoundationDocDTO
-                {
-                    Description = d.Description,
-                    Seria = d.Seria,
-                    EmployeeId = d.EmployeeId,
-                    FoundationDocument = new FoundationDocumentDTO { Id = d.FoundationDocument.Id, Name = d.FoundationDocument.Name },
-                    Id = d.Id,
-                    IssuedBy = d.IssuedBy,
-                    IssuedWhen = d.IssuedWhen,
-                    Number = d.Number
-                });
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
+            });
+            employeeDTO.EmployeeFoundationDoc = Mapper.Map<IEnumerable<EmployeeFoundationDocDTO>>(docs);
 
             List<EmployeeEducation> edu = db.EmployeeEducation.Where(e => e.Deleted != true && e.EmployeeId == id).ToList();
             employeeDTO.EmployeeEducation = edu.Select(e =>
@@ -284,15 +278,12 @@ namespace GTIWebAPI.Controllers
                  });
 
             List<EmployeeContact> contacts = db.EmployeeContact.Where(c => c.Deleted != true && c.EmployeeId == id).ToList();
-            employeeDTO.EmployeeContact = contacts.Select(c =>
-                new EmployeeContactDTO
-                {
-                    Id = c.Id,
-                    ContactType = new ContactTypeDTO { Id = c.ContactType.Id, Name = c.ContactType.Name },
-                    EmployeeId = c.EmployeeId,
-                    ContactTypeId = c.ContactTypeId,
-                    Value = c.Value
-                });
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            employeeDTO.EmployeeContact = Mapper.Map<IEnumerable<EmployeeContactDTO>>(contacts);
 
             List<EmployeeCar> cars = db.EmployeeCar.Where(c => c.Deleted != true && c.EmployeeId == id).ToList();
             employeeDTO.EmployeeCar = cars.Select(c =>
@@ -461,7 +452,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeEditDTO, contains only info about Employee</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetEmployeeEdit")]
+        [Route("GetEmployeeEdit", Name = "GetEmployeeEdit")]
         [ResponseType(typeof(EmployeeEditDTO))]
         public IHttpActionResult GetEdit(int id)
         {
@@ -470,8 +461,16 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            AutoMapper.Mapper.Initialize(c => c.CreateMap<Employee, EmployeeEditDTO>());
-            EmployeeEditDTO dto = AutoMapper.Mapper.Map<EmployeeEditDTO>(employee);
+            if (employee.AddressId != null && employee.AddressId != 0)
+            {
+                employee.Address = db.Address.Find(employee.AddressId);
+            }
+            Mapper.Initialize(c =>
+            {
+                c.CreateMap<Employee, EmployeeEditDTO>();
+                c.CreateMap<Address, AddressDTO>();
+            });
+            EmployeeEditDTO dto = Mapper.Map<EmployeeEditDTO>(employee);
             return Ok(dto);
         }
 
@@ -495,6 +494,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
+            db.Entry(employee.Address).State = EntityState.Modified;
             db.Entry(employee).State = EntityState.Modified;
             try
             {
@@ -526,15 +526,18 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult EmployeeInsert(Employee employee)
         {
             employee.Id = employee.NewId(db);
+            employee.Address.Id = employee.Address.NewId(db);
+            employee.AddressId = employee.Address.Id;
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (!Enum.IsDefined(typeof(Sex), employee.Sex))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!Enum.IsDefined(typeof(Sex), employee.Sex))
+            //{
+            //    return BadRequest(ModelState);
+            //}
+            db.Address.Add(employee.Address);
             db.Employee.Add(employee);
             try
             {
@@ -551,9 +554,13 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<Employee, EmployeeEditDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Employee, EmployeeEditDTO>();
+                m.CreateMap<Address, AddressDTO>();
+                });
             EmployeeEditDTO dto = Mapper.Map<EmployeeEditDTO>(employee);
-            return CreatedAtRoute("DefaultApi", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeEdit", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -589,7 +596,11 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<Employee, EmployeeEditDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Employee, EmployeeEditDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
             EmployeeEditDTO dto = Mapper.Map<EmployeeEditDTO>(employee);
             return Ok(dto);
         }
