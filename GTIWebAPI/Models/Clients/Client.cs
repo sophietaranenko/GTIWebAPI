@@ -2,6 +2,7 @@ namespace GTIWebAPI.Models.Clients
 {
     using Dictionary;
     using Employees;
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("Client")]
-    public partial class Client 
+    public partial class Client : GTITable 
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Client()
@@ -62,8 +63,6 @@ namespace GTIWebAPI.Models.Clients
         [NotMapped]
         public string Email { get; set; }
 
-        public byte[] ProfilePicture { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientBank> ClientBank { get; set; }
 
@@ -75,6 +74,13 @@ namespace GTIWebAPI.Models.Clients
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientGTIClient> ClientGTIClient { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "Client";
+            }
+        }
 
     }
 }

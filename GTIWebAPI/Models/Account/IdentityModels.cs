@@ -11,6 +11,10 @@ using System.ComponentModel.DataAnnotations;
 using GTIWebAPI.Models.Dictionary;
 using System.Linq;
 using GTIWebAPI.Models.Service;
+using System.Net.Mail;
+using System;
+using System.Net.Mime;
+using System.Web;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -28,6 +32,15 @@ namespace GTIWebAPI.Models.Account
             UserRights = new List<UserRight>();    
         }
 
+        /// <summary>
+        /// Is it Employee or Client 
+        /// </summary>
+        public string TableName { get; set; }
+
+        /// <summary>
+        /// Id in table TableName
+        /// </summary>
+        public int TableId { get; set; }
         /// <summary>
         /// Profile picture
         /// </summary>
@@ -138,7 +151,7 @@ namespace GTIWebAPI.Models.Account
 
         public DbSet<Controller> Controllers { get; set; }
 
-        public DbSet<Action> Actions { get; set; }
+        public DbSet<GTIWebAPI.Models.Security.Action> Actions { get; set; }
 
         public DbSet<OfficeSecurity> OfficeSecurity { get; set; }
 
@@ -154,7 +167,7 @@ namespace GTIWebAPI.Models.Account
 
 
             modelBuilder.Entity<UserRight>()
-                .HasRequired<Action>(s => s.Action)
+                .HasRequired<GTIWebAPI.Models.Security.Action>(s => s.Action)
                 .WithMany(s => s.UserRights);
 
 
@@ -200,5 +213,113 @@ namespace GTIWebAPI.Models.Account
         public byte[] ImageData { get; set; }
 
         public virtual ApplicationUser ApplicationUser { get; set; }
+    }
+
+
+
+    //public class EmailService : IIdentityMessageService
+    //{
+    //    public Task SendAsync(IdentityMessage message)
+    //    {
+    //        const string apiKey = "key-ef7a2525b9a4141408b40cd4d4e438e0";
+    //        const string sandBox = "sandbox5c2ed57ac7b94f0ea5d372f3194b026c.mailgun.org";
+    //        byte[] apiKeyAuth = Encoding.ASCII.GetBytes($"api:{apiKey}");
+    //        var httpClient = new HttpClient { BaseAddress = new Uri("https://api.mailgun.net/v3/") };
+    //        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+    //            Convert.ToBase64String(apiKeyAuth));
+
+    //        var form = new Dictionary<string, string>
+    //        {
+    //            ["from"] = "postmaster@sandbox5c2ed57ac7b94f0ea5d372f3194b026c.mailgun.org",
+    //            ["to"] = message.Destination,
+    //            ["subject"] = message.Subject,
+    //            ["text"] = message.Body
+    //        };
+
+    //        HttpResponseMessage response =
+    //            httpClient.PostAsync(sandBox + "/messages", new FormUrlEncodedContent(form)).Result;
+    //        return Task.FromResult((int)response.StatusCode);
+    //    }
+    //}
+
+    //public class SmsService : IIdentityMessageService
+    //{
+    //    public Task SendAsync(IdentityMessage message)
+    //    {
+    //        // Twilio Begin
+    //        // var Twilio = new TwilioRestClient(
+    //        //   Keys.SMSAccountIdentification,
+    //        //   Keys.SMSAccountPassword);
+    //        // var result = Twilio.SendMessage(
+    //        //   Keys.SMSAccountFrom,
+    //        //   message.Destination, message.Body
+    //        // );
+    //        // Status is one of Queued, Sending, Sent, Failed or null if the number is not valid
+    //        // Trace.TraceInformation(result.Status);
+    //        // Twilio doesn't currently have an async API, so return success.
+    //        // return Task.FromResult(0);
+    //        // Twilio End
+
+    //        //ASPSMS Begin
+    //         var soapSms = new WebApplication1.ASPSMSX2.ASPSMSX2SoapClient("ASPSMSX2Soap");
+    //        soapSms.SendSimpleTextSMS(
+    //          Keys.SMSAccountIdentification,
+    //          Keys.SMSAccountPassword,
+    //          message.Destination,
+    //          Keys.SMSAccountFrom,
+    //          message.Body);
+    //        soapSms.Close();
+    //        return Task.FromResult(0);
+    //       // ASPSMS End
+    //    }
+    //}
+
+    public class EmailService : IIdentityMessageService
+    {
+        public async Task SendAsync(IdentityMessage message)
+        {
+            var email =
+               new MailMessage(new MailAddress("staranenko@verdeco.biz", "(do not reply)"),
+               new MailAddress(message.Destination))
+               {
+                   Subject = message.Subject,
+                   Body = message.Body,
+                   IsBodyHtml = true
+               };
+            try
+            {
+                using (var client = new SmtpClient("192.168.0.9", 25)) // SmtpClient configuration comes from config file
+                {
+                    await client.SendMailAsync(email);
+                }
+            }
+            catch (Exception e)
+            {
+                string m = e.Message;
+            }
+        }
+
+        void sendMail(string to, string subject, string body)
+        {
+            #region formatter
+            string text = string.Format("Please click on this link to {0}: {1}", subject, body);
+            string html = "Please confirm your account by clicking this link: <a href=\"" + body + "\">link</a><br/>";
+
+            html += HttpUtility.HtmlEncode(@"Or click on the copy the following link on the browser:" + body);
+            #endregion
+
+            MailMessage msg = new MailMessage();
+            msg.From = new MailAddress("joe@contoso.com");
+            msg.To.Add(new MailAddress(to));
+            msg.Subject = subject;
+            msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
+            msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
+
+            SmtpClient smtpClient = new SmtpClient("192.168.0.9", Convert.ToInt32(25));
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("joe@contoso.com", "XXXXXX");
+            smtpClient.Credentials = credentials;
+            smtpClient.EnableSsl = true;
+            smtpClient.Send(msg);
+        }
     }
 }

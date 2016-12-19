@@ -60,33 +60,32 @@ namespace GTIWebAPI.Novell
                 user = userManager.Find(UserName, Password);
                 if (user == null)
                 {
-                    ApplicationUser newUser = new ApplicationUser { UserName = UserName, Email = Email };
+                    int employeeId = CreateUserEmployee();
+                    ApplicationUser newUser = new ApplicationUser { UserName = UserName, Email = Email, TableName = "Employee", TableId = employeeId };
                     userManager.Create(user, Password);
                     userManager.AddToRole(user.Id, "User");
-                    CreateUserEmployee(newUser.Id);
-
                     user = newUser;
                 }
             }
             return user;
         }
 
-        private void CreateUserEmployee(string userId)
+        private int CreateUserEmployee()
         {
+            int employeeId = 0;
             using (Models.Context.DbPersonnel db = new Models.Context.DbPersonnel())
             {
                 Models.Dictionary.Address address = new Models.Dictionary.Address();
                 address.Id = address.NewId(db);
                 //db.Address.Add(address);
-
                 Models.Employees.Employee employee = new Models.Employees.Employee();
                 employee.Id = employee.NewId(db);
-                employee.UserId = userId;
                 employee.AddressId = address.Id;
                 db.Employee.Add(employee);
                 db.SaveChanges();
+                employeeId = employee.Id;
             }
-
+            return employeeId;
         }
 
         //private ApplicationUser CreateNovellUser(ApplicationUserManager userManager, ApplicationUser user, string Password)
@@ -95,9 +94,6 @@ namespace GTIWebAPI.Novell
         //    userManager.AddToRole(user.Id, "User");
         //    return user;
         //}
-
-
-
 
 
     }

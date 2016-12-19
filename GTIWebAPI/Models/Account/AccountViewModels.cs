@@ -47,4 +47,9 @@ namespace GTIWebAPI.Models.Account
 
         public string ProviderKey { get; set; }
     }
+
+    public class ForgotPasswordViewModel
+    {
+        public string Email { get; set; }
+    }
 }

@@ -46,6 +46,9 @@ namespace GTIWebAPI
                 RequireLowercase = false,
                 RequireUppercase = false,
             };
+
+            manager.EmailService = new EmailService();
+
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {

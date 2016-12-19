@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Service;
+﻿using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Models.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,15 +38,12 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         public int? AddressId { get; set; }
 
+        public AddressDTO Address { get; set; }
+
         /// <summary>
         /// Employee UserId
         /// </summary>
         public string UserId { get; set; }
-
-        /// <summary>
-        /// Employee cropped profile picture
-        /// </summary>
-        public byte[] ProfilePicture { get; set; }
 
     }
 }

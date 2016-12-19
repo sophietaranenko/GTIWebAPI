@@ -3,6 +3,13 @@ using Newtonsoft.Json;
 
 namespace GTIWebAPI.Models.Account
 {
+
+    public class ConfirmEmailModel
+    {
+        public string UserId { get; set; }
+        public string ConfirmEmailToken { get; set; }
+    }
+
     // Models used as parameters to AccountController actions.
 
     public class AddExternalLoginBindingModel
@@ -11,6 +18,7 @@ namespace GTIWebAPI.Models.Account
         [Display(Name = "External access token")]
         public string ExternalAccessToken { get; set; }
     }
+
 
     public class ChangePasswordBindingModel
     {

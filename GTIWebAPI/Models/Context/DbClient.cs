@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Clients;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Dictionary;
+using System.Data;
 
 namespace GTIWebAPI.Models.Context 
 {
@@ -54,6 +55,50 @@ namespace GTIWebAPI.Models.Context
         //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
         //    return result;
         //}
+
+
+        public IEnumerable<ClientViewDTO> ClientFilter(string myFilter)
+        {
+            if (myFilter == null)
+                myFilter = "";
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@filter",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Size = 1000,
+                Value = myFilter
+            };
+            List<ClientViewDTO> clientList = new List<ClientViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<ClientViewDTO>("exec ClientFilter @filter", parameter).ToList();
+                clientList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return clientList;
+        }
+
+        public string ClientUserNameGenerator()
+        {
+            string result = "";
+            try
+            {
+                var sqlResult = Database.SqlQuery<int>("exec ClientUserNameGenerator").FirstOrDefault();
+                result = "customer_" + sqlResult;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return result;
+        }
+
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Terminal>()

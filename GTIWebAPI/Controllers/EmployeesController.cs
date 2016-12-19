@@ -86,7 +86,7 @@ namespace GTIWebAPI.Controllers
                     DateOfBirth = employee.DateOfBirth,
                     Age = employee.Age.ToString(),
                     ProfilePicture = employee.ProfilePicture,
-                    UserId = employee.UserId,
+                    //UserId = employee.UserId,
                     AddressId = employee.AddressId
                 };
             Address address = db.Address.Find(employee.AddressId);
@@ -348,7 +348,7 @@ namespace GTIWebAPI.Controllers
                     DateOfBirth = employee.DateOfBirth,
                     Age = employee.Age.ToString(),
                     ProfilePicture = employee.ProfilePicture,
-                    UserId = employee.UserId
+                    //UserId = employee.UserId
                 };
 
             Address address = db.Address.Find(employee.AddressId);

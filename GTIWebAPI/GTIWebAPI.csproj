@@ -220,6 +220,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddressesController.cs" />
+    <Compile Include="Controllers\ClientsController.cs" />
     <Compile Include="Controllers\EmployeeCarsController.cs" />
     <Compile Include="Controllers\EmployeeContactsController.cs" />
     <Compile Include="Controllers\EmployeeDocumentScansController.cs" />
@@ -244,6 +245,10 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
+    <Compile Include="Models\Clients\ClientContactDTO.cs" />
+    <Compile Include="Models\Clients\ClientDTO.cs" />
+    <Compile Include="Models\Clients\ClientRegisterBindingModel.cs" />
+    <Compile Include="Models\Clients\ClientViewDTO.cs" />
     <Compile Include="Models\Context\DbService.cs" />
     <Compile Include="Models\Security\ActionDTO.cs" />
     <Compile Include="Models\Security\ControllerDTO.cs" />

@@ -24,20 +24,10 @@ namespace GTIWebAPI.Models.Context
             return new DbService();
         }
 
-       // public DbSet<Controller> Controllers { get; set; }
-       //  public DbSet<Security.Action> Actions { get; set; }
-
-        // for searching user
+        // for searching user... может просто процедуру написать, чем тащить все? 
         public DbSet<Employees.Employee> Employees { get; set; }
-        public DbSet<Clients.Client> Clients { get; set; }
-        //public DbSet<UserRight> UserRights { get; set; }
 
-        //public virtual int NewId(string tableName)
-        //{
-        //    SqlParameter table = new SqlParameter("@table_name", tableName);
-        //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
-        //    return result;
-        //}
+        public DbSet<Clients.Client> Clients { get; set; }
 
     }
 }

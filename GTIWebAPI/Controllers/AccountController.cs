@@ -24,6 +24,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using System.Linq;
 using GTIWebAPI.Models.Clients;
+using System.Web.Http.Routing;
 
 namespace GTIWebAPI.Controllers
 {
@@ -36,6 +37,7 @@ namespace GTIWebAPI.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
+        private int SMSCode { get; set; }
 
         /// <summary>
         /// ctor empty
@@ -77,21 +79,21 @@ namespace GTIWebAPI.Controllers
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
 
-        private GTIUser GetGTIUser(string userId)
-        {
-            DbService db = new DbService();
-            Employee employee = db.Employees.Where(e => e.UserId == userId).FirstOrDefault();
-            if (employee != null)
-            {
-                return new GTIUser() { Id = employee.Id, TableName = "Employee" };
-            }
-            Client client = db.Clients.Where(c => c.UserId == userId).FirstOrDefault();
-            if (client != null)
-            {
-                return new GTIUser() { Id = client.Id, TableName = "Client" };
-            }
-            return new GTIUser() { Id = 0, TableName = "" };
-        }
+        //private GTIUser GetGTIUser(string userId)
+        //{
+        //    DbService db = new DbService();
+        //    Employee employee = db.Employees.Where(e => e.UserId == userId).FirstOrDefault();
+        //    if (employee != null)
+        //    {
+        //        return new GTIUser() { Id = employee.Id, TableName = "Employee" };
+        //    }
+        //    Client client = db.Clients.Where(c => c.UserId == userId).FirstOrDefault();
+        //    if (client != null)
+        //    {
+        //        return new GTIUser() { Id = client.Id, TableName = "Client" };
+        //    }
+        //    return new GTIUser() { Id = 0, TableName = "" };
+        //}
 
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
@@ -101,7 +103,7 @@ namespace GTIWebAPI.Controllers
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
             {
-                GTIUser gtiUser = GetGTIUser(UserId);
+                //GTIUser gtiUser = GetGTIUser(UserId);
                 string profilePicturePath = null;
                 UserImage im = user.Image;
 
@@ -110,11 +112,11 @@ namespace GTIWebAPI.Controllers
                     if (im.ImageName != null && im.ImageName != "")
                     {
                         profilePicturePath = im.ImageName;
-                    }  
+                    }
                 }
                 model.UserName = user.UserName;
-                model.TableId = gtiUser.Id;
-                model.TableName = gtiUser.TableName;
+                model.TableId = user.TableId;
+                model.TableName = user.TableName;
                 model.ProfilePicturePath = profilePicturePath;
                 model.UserRights = user.UserRightsDto;
             }
@@ -131,24 +133,6 @@ namespace GTIWebAPI.Controllers
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
             return user.UserRightsDto;
         }
-
-
-        ///// <summary>
-        ///// Returns application/octet-stream of profile picture of user
-        ///// </summary>
-        ///// <param name="bytes"></param>
-        ///// <returns></returns>
-        //[Route("ProfilePicture")]
-        //public HttpResponseMessage ReturnProfileImage()
-        //{
-        //    HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-        //    ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-        //    result.Content = new ByteArrayContent(user.Image.ImageData);
-        //    result.Content.Headers.ContentType =
-        //        new MediaTypeHeaderValue("application/octet-stream");
-        //    return result;
-        //}
-
 
 
         /// <summary>
@@ -178,6 +162,10 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult Logout()
         {
             Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
+
+            var authentication = HttpContext.Current.GetOwinContext().Authentication;
+            authentication.SignOut(DefaultAuthenticationTypes.ExternalBearer);
+
             return Ok();
         }
 
@@ -227,30 +215,11 @@ namespace GTIWebAPI.Controllers
             };
         }
 
-        /// <summary>
-        /// Change passpord
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns>200</returns>
-        // POST api/Account/ChangePassword
-        [Route("ChangePassword")]
-        public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
-                model.NewPassword);
-            
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
 
-            return Ok();
-        }
+
+
+
 
         /// <summary>
         /// Set passport
@@ -277,40 +246,68 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Add external login (not useful for GTI)
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns>200</returns>
-        // POST api/Account/AddExternalLogin
-        [Route("AddExternalLogin")]
-        public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IHttpActionResult> ClientPassword(string userName)
         {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByNameAsync(userName);
+                if (user == null)
+                {
+                    return Ok();
+                }
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+
+                string url = Url.Link(
+                    "DefaultApi",
+                    new
+                    {
+                        controller = "Account/ResetPassword/",
+                        UserId = user.Id,
+                        PasswordResetToken = code
+                    }
+                );
+                await UserManager.
+                    SendEmailAsync(user.Id, "Set Password", "Please set your password by clicking here: <a href=\"" + url + "\">link</a>");
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ResetPassword", Name = "ResetPassword")]
+        public IHttpActionResult ResetPassword(string UserId, string PasswordResetToken)
+        {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-            AuthenticationTicket ticket = AccessTokenFormat.Unprotect(model.ExternalAccessToken);
-
-            if (ticket == null || ticket.Identity == null || (ticket.Properties != null
-                && ticket.Properties.ExpiresUtc.HasValue
-                && ticket.Properties.ExpiresUtc.Value < DateTimeOffset.UtcNow))
+            ChangePasswordBindingModel model = new ChangePasswordBindingModel
             {
-                return BadRequest("External login failure.");
-            }
+                ConfirmPassword = null,
+                OldPassword = PasswordResetToken
+            };
+            return Ok(model);
+        }
 
-            ExternalLoginData externalData = ExternalLoginData.FromIdentity(ticket.Identity);
 
-            if (externalData == null)
+        [AllowAnonymous]
+        [Route("PostResetPassword", Name = "PostResetPassword")]
+        public async Task<IHttpActionResult> PostResetPassword(ChangePasswordBindingModel model)
+        {
+
+            if (!ModelState.IsValid)
             {
-                return BadRequest("The external login is already associated with an account.");
+                return BadRequest(ModelState);
             }
-
-            IdentityResult result = await UserManager.AddLoginAsync(User.Identity.GetUserId(),
-                new UserLoginInfo(externalData.LoginProvider, externalData.ProviderKey));
+            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
+                model.NewPassword);
 
             if (!result.Succeeded)
             {
@@ -320,39 +317,144 @@ namespace GTIWebAPI.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// Method deleting login from AspNetUsers
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns>200</returns>
-        // POST api/Account/RemoveLogin
-        [Route("RemoveLogin")]
-        public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
+
+        private string GenerateClientUsername()
         {
-            if (!ModelState.IsValid)
+            string name = "";
+            using (DbClient db = new DbClient())
             {
-                return BadRequest(ModelState);
+                name = db.ClientUserNameGenerator();
             }
-
-            IdentityResult result;
-
-            if (model.LoginProvider == LocalLoginProvider)
-            {
-                result = await UserManager.RemovePasswordAsync(User.Identity.GetUserId());
-            }
-            else
-            {
-                result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(),
-                    new UserLoginInfo(model.LoginProvider, model.ProviderKey));
-            }
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            return Ok();
+            return name;
         }
+        private string GenerateClientPassword()
+        {
+            return System.Web.Security.Membership.GeneratePassword(8, 0);
+        }
+
+        private bool CheckLoginExists(string login)
+        {
+            bool result = true;
+            if (login != null && login != "")
+            {
+                ApplicationUser user = UserManager.FindByName(login);
+                if (user == null)
+                {
+                    result = false;
+                }  
+            }
+            return result;
+        }
+
+        private bool CheckEmailExists(string email)
+        {
+            bool result = true;
+            if (email != null && email != "")
+            {
+                ApplicationUser user = UserManager.FindByEmail(email);
+                if (user == null)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("RegisterClient")]
+        public async Task<IHttpActionResult> RegisterClient(ClientRegisterBindingModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (CheckEmailExists(model.Email))
+                {
+                    return BadRequest("Email already exists");
+                }
+
+                string username = GenerateClientUsername();
+                string password = GenerateClientPassword();
+
+                ApplicationUser user = new ApplicationUser()
+                {
+                    UserName = username,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber
+                };
+
+                IdentityResult result = await UserManager.CreateAsync(user, password);
+
+                if (!result.Succeeded)
+                {
+                    return GetErrorResult(result);
+                }
+
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+
+                var callbackUrl = Url.Link("DefaultApi", new
+                {
+                    Controller = "Account/ConfirmEmail/",
+                    ConfirmEmailToken = code,
+                    UserId = user.Id
+                });
+
+                //ADD
+                //отсылка sms с кодом
+                //ADD
+
+
+
+                await UserManager.
+                    SendEmailAsync(user.Id, "Confirm e-mail", "Please confirm your e-mail by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        //private int SendSMS(string phoneNumber)
+        //{
+        //    int code = GenerateSMSCode();
+
+
+        //}
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ConfirmEmail", Name = "ConfirmEmail")]
+        public IHttpActionResult ConfirmEmail(string ConfirmEmailToken, string UserId)
+        {
+            //окошко для ввода кода из смс
+            if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("PostConfirmEmail", Name = "PostConfirmEmail")]
+        public async Task<IHttpActionResult> PostConfirmEmail(ConfirmEmailModel model)
+        {
+            //тут проверка кода из смс
+            //если все хорошо, отправляем на смену пароля
+            if (model.UserId == null || model.ConfirmEmailToken == null)
+            {
+                return BadRequest();
+            }
+            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
 
         /// <summary>
         /// GetExtenal login (not useful for GTI)
@@ -360,7 +462,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="provider"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        // GET api/Account/ExternalLogin
+            // GET api/Account/ExternalLogin
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
@@ -398,9 +500,9 @@ namespace GTIWebAPI.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -524,10 +626,11 @@ namespace GTIWebAPI.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }
+
 
         /// <summary>
         /// Dispose AccountConrtoller (to destroy connections)
