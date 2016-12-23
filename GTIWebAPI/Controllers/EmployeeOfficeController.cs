@@ -192,6 +192,9 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
+            employeeOffice.Department = db.Department.Find(employeeOffice.DepartmentId);
+            employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
+            employeeOffice.Profession = db.Profession.Find(employeeOffice.ProfessionId);
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();

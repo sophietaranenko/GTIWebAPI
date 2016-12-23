@@ -24,45 +24,41 @@ namespace GTIWebAPI.Models.Clients
         public int Id { get; set; }
 
         [StringLength(500)]
-        public string FullName { get; set; }
+        public string EnglishName { get; set; }
 
-        [StringLength(100)]
-        public string ShortName { get; set; }
+        [StringLength(500)]
+        public string NativeName { get; set; }
+
+        [StringLength(500)]
+        public string RussianName { get; set; }
 
         public int? TypeOrganization { get; set; }
 
         [StringLength(30)]
         public string IdentityCode { get; set; }
 
-        public int? AddressPhysicalId { get; set; }
-        public Address AddressPhysical { get; set; }
+        public int? AddressId { get; set; }
 
-        public int? AddressLegalId { get; set; }
-        public Address AddressLegal { get; set; }
+        public Address Address { get; set; }
 
         public bool? Deleted { get; set; }
 
-        [StringLength(128)]
-        [Column("AspNetUserId")]
-        public string UserId { get; set; }
-
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
-        [NotMapped]
-        public ICollection<ClientGTI> ClientGTI { get; set; }
-        [NotMapped]
-        public int ClientGTIId { get; set; }
-        [NotMapped]
-        public string ClientList { get; set; }
-        [NotMapped]
-        public string Creator { get; set; }
-        [NotMapped]
-        public string Password { get; set; }
-        [NotMapped]
-        public string Login { get; set; }
-        [NotMapped]
-        public string Email { get; set; }
 
+        public Employee Employee { get; set; }
+
+        [StringLength(30)]
+        public string PhoneNumber { get; set; }
+
+        [StringLength(30)]
+        public string FaxNumber { get; set; }
+
+        [StringLength(50)]
+        public string Website { get; set; }
+
+        [StringLength(50)]
+        public string Email { get; set; }
+       
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientBank> ClientBank { get; set; }
 
@@ -74,6 +70,7 @@ namespace GTIWebAPI.Models.Clients
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientGTIClient> ClientGTIClient { get; set; }
+
         protected override string TableName
         {
             get

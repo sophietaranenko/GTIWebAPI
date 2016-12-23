@@ -194,6 +194,7 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
+            employeeFoundationDoc.FoundationDocument = db.FoundationDocument.Find(employeeFoundationDoc.FoundationDocumentId);
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();

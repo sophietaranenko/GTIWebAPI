@@ -36,6 +36,7 @@ namespace GTIWebAPI.Models.Clients
         [StringLength(30)]
         public string Skype { get; set; }
 
+        //сюда будут слаться ссылки
         [StringLength(30)]
         public string Email { get; set; }
 
@@ -45,6 +46,8 @@ namespace GTIWebAPI.Models.Clients
         public int? ClientId { get; set; }
 
         public bool? Deleted { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
 
         public virtual Client Client { get; set; }
         protected override string TableName

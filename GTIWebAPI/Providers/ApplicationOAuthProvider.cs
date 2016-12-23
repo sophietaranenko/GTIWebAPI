@@ -29,7 +29,6 @@ namespace GTIWebAPI.Providers
         public override async Task Invoke(IOwinContext context)
         {
             await Next.Invoke(context);
-
             if (context.Response.StatusCode == 400 && context.Response.Headers.ContainsKey(Constants.OwinChallengeFlag))
             {
                 var headerValues = context.Response.Headers.GetValues(Constants.OwinChallengeFlag);
@@ -44,18 +43,21 @@ namespace GTIWebAPI.Providers
     {
         private readonly string _publicClientId;
 
+        /// <summary>
+        /// Ctor of oAuth provider
+        /// </summary>
+        /// <param name="publicClientId"></param>
         public ApplicationOAuthProvider(string publicClientId)
         {
             if (publicClientId == null)
             {
                 throw new ArgumentNullException("publicClientId");
             }
-
             _publicClientId = publicClientId;
         }
 
         /// <summary>
-        /// api/Token
+        /// First - NovellProvider, then OAuth Provider
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -74,51 +76,55 @@ namespace GTIWebAPI.Providers
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
+                //была проблема с возвращением 400
+                //а надо было возвращать 401 
+                //пришлось решить
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
-                //context.Response.Headers.Where(h => 
-                //context.OwinContext.Response.StatusCode = 401;
-                //context.Response.StatusCode = 401;
                 return;
             }
-
-
-            //user.UserRights = new DbService().UserRights.Where(r => r.AspNetUserId == user.Id).ToList();
-
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
-
-            //MyDbContext imgContext = new MyDbContext();
-            //MyUserImage image = imgContext.MyUserImage.Find(user.ImageId);
-
-            AuthenticationProperties properties = CreateProperties(user.UserName); //, image.ImageData);
+            AuthenticationProperties properties = CreateProperties(user.UserName);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
         }
 
+        /// <summary>
+        /// Where dp we get the token 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)
         {
             foreach (KeyValuePair<string, string> property in context.Properties.Dictionary)
             {
                 context.AdditionalResponseParameters.Add(property.Key, property.Value);
             }
-
             return Task.FromResult<object>(null);
         }
 
+        /// <summary>
+        /// If everything is OK, we mark context as validated 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
-            // Resource owner password credentials does not provide a client ID.
             if (context.ClientId == null)
             {
                 context.Validated();
             }
-
             return Task.FromResult<object>(null);
         }
 
+        /// <summary>
+        /// Where do we need to return 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context)
         {
             if (context.ClientId == _publicClientId)
@@ -130,16 +136,19 @@ namespace GTIWebAPI.Providers
                     context.Validated();
                 }
             }
-
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName ) //, byte[] userImage)
+        /// <summary>
+        /// Creating application properties (adding username to context)
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public static AuthenticationProperties CreateProperties(string userName ) 
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName } //,
-               // { "userImage", userImage.ToString() }
+                { "userName", userName }
             };
             return new AuthenticationProperties(data);
         }

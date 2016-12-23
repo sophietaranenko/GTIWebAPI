@@ -29,6 +29,7 @@ namespace GTIWebAPI.Models.Clients
         public string EmailAdd { get; set; }
 
         public int? ClientId { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
     }
 }

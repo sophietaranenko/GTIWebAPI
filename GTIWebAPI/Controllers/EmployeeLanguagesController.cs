@@ -193,6 +193,7 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
+            employeeLanguage.Language = db.Language.Find(employeeLanguage.LanguageId);
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();

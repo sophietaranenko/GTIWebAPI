@@ -55,7 +55,7 @@ namespace GTIWebAPI.Controllers
         {
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientDTO, Client>();
+                m.CreateMap<Client, ClientDTO>();
                 m.CreateMap<Address, AddressDTO>();
                 m.CreateMap<ClientContact, ClientContactDTO>();
             });
@@ -83,8 +83,8 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(client.AddressLegal).State = EntityState.Modified;
-            db.Entry(client.AddressPhysical).State = EntityState.Modified;
+            db.Entry(client.Address).State = EntityState.Modified;
+          //  db.Entry(client.AddressPhysical).State = EntityState.Modified;
             db.Entry(client).State = EntityState.Modified;
             try
             {
@@ -112,17 +112,16 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult PostClient(Client client)
         {
             client.Id = client.NewId(db);
-            client.AddressLegal.Id = client.AddressLegal.NewId(db);
-            client.AddressLegalId = client.AddressLegal.Id;
-            client.AddressPhysical.Id = client.AddressPhysical.NewId(db);
-            client.AddressPhysicalId = client.AddressPhysical.Id;
+            client.Address.Id = client.Address.NewId(db);
+           
+
+            client.AddressId = client.Address.Id;
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            db.Address.Add(client.AddressLegal);
-            db.Address.Add(client.AddressPhysical);
+            db.Address.Add(client.Address);
             db.Client.Add(client);
             try
             {

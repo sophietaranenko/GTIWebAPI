@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Net.Http;
+
 using System.Security.Claims;
 using System.Security.Cryptography;
+
 using System.Threading.Tasks;
+
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
+
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using GTIWebAPI.Models.Account;
+
 using GTIWebAPI.Providers;
 using GTIWebAPI.Results;
+
+using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
-using System.Net;
-using System.Net.Http.Headers;
-using GTIWebAPI.Models;
 using GTIWebAPI.Models.Context;
-using GTIWebAPI.Models.Employees;
-using System.Linq;
 using GTIWebAPI.Models.Clients;
-using System.Web.Http.Routing;
 
 namespace GTIWebAPI.Controllers
 {
@@ -77,23 +78,6 @@ namespace GTIWebAPI.Controllers
         /// AccessTokenFormat
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
-
-
-        //private GTIUser GetGTIUser(string userId)
-        //{
-        //    DbService db = new DbService();
-        //    Employee employee = db.Employees.Where(e => e.UserId == userId).FirstOrDefault();
-        //    if (employee != null)
-        //    {
-        //        return new GTIUser() { Id = employee.Id, TableName = "Employee" };
-        //    }
-        //    Client client = db.Clients.Where(c => c.UserId == userId).FirstOrDefault();
-        //    if (client != null)
-        //    {
-        //        return new GTIUser() { Id = client.Id, TableName = "Client" };
-        //    }
-        //    return new GTIUser() { Id = 0, TableName = "" };
-        //}
 
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
@@ -371,44 +355,33 @@ namespace GTIWebAPI.Controllers
                 {
                     return BadRequest("Email already exists");
                 }
-
                 string username = GenerateClientUsername();
                 string password = GenerateClientPassword();
-
                 ApplicationUser user = new ApplicationUser()
                 {
                     UserName = username,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber
                 };
-
                 IdentityResult result = await UserManager.CreateAsync(user, password);
-
                 if (!result.Succeeded)
                 {
                     return GetErrorResult(result);
                 }
-
                 if (user == null)
                 {
                     return BadRequest();
                 }
-
                 string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-
                 var callbackUrl = Url.Link("DefaultApi", new
                 {
                     Controller = "Account/ConfirmEmail/",
                     ConfirmEmailToken = code,
                     UserId = user.Id
                 });
-
                 //ADD
                 //отсылка sms с кодом
                 //ADD
-
-
-
                 await UserManager.
                     SendEmailAsync(user.Id, "Confirm e-mail", "Please confirm your e-mail by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
                 return Ok();
@@ -416,12 +389,55 @@ namespace GTIWebAPI.Controllers
             return BadRequest();
         }
 
-        //private int SendSMS(string phoneNumber)
-        //{
-        //    int code = GenerateSMSCode();
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetClientRegister", Name = "GetClientRegister")]
+        public async Task<IHttpActionResult> GetClientRegister(string ConfirmEmailToken, string UserId)
+        {        
+            if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
+            {
+
+                string code = await UserManager.GeneratePasswordResetTokenAsync(UserId);
+                ClientRegisterModel model = new ClientRegisterModel()
+                {
+                    ConfirmEmailToken = ConfirmEmailToken,
+                    ResetPasswordToken = code,
+                    UserId = UserId
+                };
+                return Ok(model);
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("PostClientRegister", Name = "PostClientRegister")]
+        public async Task<IHttpActionResult> PostClientRegister(ClientRegisterModel model)
+        {
+            //тут проверка кода из смс
+            //если все хорошо, отправляем на смену пароля
+            if (model.UserId == null || model.ConfirmEmailToken == null || model.ResetPasswordToken == null)
+            {
+                return BadRequest("Empty parameters");
+            }
+            if (model.NewPassword == null)
+            {
+                return BadRequest("Empty password");
+            }
+            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
+            if (result.Succeeded)
+            {
+                result = await UserManager.ResetPasswordAsync(model.UserId, model.ResetPasswordToken, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+            }
+            return BadRequest();
+        }
 
 
-        //}
 
         [AllowAnonymous]
         [HttpGet]

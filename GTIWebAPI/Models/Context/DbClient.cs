@@ -49,14 +49,6 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<ClientView> ClientView { get; set; }
 
-        //public virtual int NewId(string tableName)
-        //{
-        //    SqlParameter table = new SqlParameter("@table_name", tableName);
-        //    int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
-        //    return result;
-        //}
-
-
         public IEnumerable<ClientViewDTO> ClientFilter(string myFilter)
         {
             if (myFilter == null)
@@ -74,6 +66,32 @@ namespace GTIWebAPI.Models.Context
             try
             {
                 var result = Database.SqlQuery<ClientViewDTO>("exec ClientFilter @filter", parameter).ToList();
+                clientList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return clientList;
+        }
+
+
+        public IEnumerable<ClientGTIClientView> ClientGTIClientList(int clientId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@ClientId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = clientId
+            };
+
+            IEnumerable<ClientGTIClientView> clientList = new List<ClientGTIClientView>();
+            try
+            {
+                var result = Database.SqlQuery<ClientGTIClientView>("exec ClientGTIClientList @ClientId", parameter).ToList();
                 clientList = result;
             }
             catch (Exception e)

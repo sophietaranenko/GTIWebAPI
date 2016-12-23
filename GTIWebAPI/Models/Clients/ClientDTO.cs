@@ -31,6 +31,14 @@ namespace GTIWebAPI.Models.Clients
 
         public int EmployeeId { get; set; }
 
+        public string PhoneNumber { get; set; }
+
+        public string FaxNumber { get; set; }
+
+        public string Website { get; set; }
+
+        public string Email { get; set; }
+
         public List<ClientContactDTO> ClientContact { get; set; }
     }
 }
