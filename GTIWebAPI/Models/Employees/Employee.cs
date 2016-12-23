@@ -43,6 +43,7 @@
         public DateTime? DateOfBirth { get; set; }
 
         public Address Address { get; set; }
+
         /// <summary>
         /// Id of Employee's Address of permanent residence in Address table 
         /// </summary>

@@ -81,7 +81,7 @@ namespace GTIWebAPI.Controllers
                 {
                     Id = employee.Id,
                     IdentityCode = employee.IdentityCode,
-                    Sex = employee.SexString,
+                    Sex = employee.Sex,
                     DateOfBirth = employee.DateOfBirth,
                     Age = employee.Age.ToString(),
                     ProfilePicture = employee.ProfilePicture,
@@ -306,7 +306,7 @@ namespace GTIWebAPI.Controllers
                 {
                     Id = employee.Id,
                     IdentityCode = employee.IdentityCode,
-                    Sex = employee.SexString,
+                    Sex = employee.Sex,
                     DateOfBirth = employee.DateOfBirth,
                     Age = employee.Age.ToString(),
                     ProfilePicture = employee.ProfilePicture,

@@ -16,9 +16,9 @@ namespace GTIWebAPI.Models.Employees
         public int Id { get; set; }
         
         /// <summary>
-        /// Employee Sex in string "Мужской" or "Женский"
+        /// Employee Sex in int
         /// </summary>
-        public string Sex { get; set; }
+        public short? Sex { get; set; }
 
         /// <summary>
         /// Employee identity code
