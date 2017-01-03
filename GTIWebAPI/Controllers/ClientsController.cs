@@ -23,7 +23,6 @@ namespace GTIWebAPI.Controllers
     {
         private DbClient db = new DbClient();
 
-
         [GTIFilter]
         [HttpGet]
         [Route("GetClientsByFilter")]
@@ -84,7 +83,6 @@ namespace GTIWebAPI.Controllers
                 return BadRequest();
             }
             db.Entry(client.Address).State = EntityState.Modified;
-          //  db.Entry(client.AddressPhysical).State = EntityState.Modified;
             db.Entry(client).State = EntityState.Modified;
             try
             {
@@ -166,6 +164,15 @@ namespace GTIWebAPI.Controllers
                 db.SaveChanges();
             }
             return Ok(client);
+        }
+
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetOrganizationTypes")]
+        public IEnumerable<OrganizationType> GetOrganizationTypes()
+        {
+            List<OrganizationType> types = db.OrganizationType.OrderBy(o => o.Name).ToList();
+            return types;
         }
 
         /// <summary>

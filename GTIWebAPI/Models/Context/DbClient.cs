@@ -46,6 +46,10 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Office> Office { get; set; }
         public virtual DbSet<Terminal> Terminal { get; set; }
         public virtual DbSet<ClientPhoto> ClientPhoto { get; set; }
+        public virtual DbSet<OrganizationType> OrganizationType { get; set; }
+        public virtual DbSet<ClientSigner> ClientSigner { get; set; }
+        public virtual DbSet<ClientTaxInfo> ClientTaxInfo { get; set; }
+        public virtual DbSet<SignerPosition> SignerPosition { get; set; }
 
         public virtual DbSet<ClientView> ClientView { get; set; }
 

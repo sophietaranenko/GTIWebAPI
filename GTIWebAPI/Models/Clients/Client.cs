@@ -1,8 +1,5 @@
 namespace GTIWebAPI.Models.Clients
 {
-    using Dictionary;
-    using Employees;
-    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -10,7 +7,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("Client")]
-    public partial class Client : GTITable 
+    public partial class Client
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Client()
@@ -19,9 +16,14 @@ namespace GTIWebAPI.Models.Clients
             ClientAgreement = new HashSet<ClientAgreement>();
             ClientContact = new HashSet<ClientContact>();
             ClientGTIClient = new HashSet<ClientGTIClient>();
+            ClientSigner = new HashSet<ClientSigner>();
+            ClientTaxInfo = new HashSet<ClientTaxInfo>();
         }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
 
         [StringLength(500)]
         public string EnglishName { get; set; }
@@ -32,20 +34,14 @@ namespace GTIWebAPI.Models.Clients
         [StringLength(500)]
         public string RussianName { get; set; }
 
-        public int? TypeOrganization { get; set; }
+        public int? OrganizationTypeId { get; set; }
 
         [StringLength(30)]
         public string IdentityCode { get; set; }
 
         public int? AddressId { get; set; }
 
-        public Address Address { get; set; }
-
         public bool? Deleted { get; set; }
-
-        public int EmployeeId { get; set; }
-
-        public Employee Employee { get; set; }
 
         [StringLength(30)]
         public string PhoneNumber { get; set; }
@@ -58,7 +54,9 @@ namespace GTIWebAPI.Models.Clients
 
         [StringLength(50)]
         public string Email { get; set; }
-       
+
+        public virtual OrganizationType OrganizationType { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientBank> ClientBank { get; set; }
 
@@ -71,13 +69,10 @@ namespace GTIWebAPI.Models.Clients
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientGTIClient> ClientGTIClient { get; set; }
 
-        protected override string TableName
-        {
-            get
-            {
-                return "Client";
-            }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ClientSigner> ClientSigner { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ClientTaxInfo> ClientTaxInfo { get; set; }
     }
 }

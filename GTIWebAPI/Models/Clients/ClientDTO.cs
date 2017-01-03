@@ -17,13 +17,13 @@ namespace GTIWebAPI.Models.Clients
 
         public string IdentityCode { get; set; }
 
-        public int? AddressPhysicalId { get; set; }
+        public int? AddressId { get; set; }
 
-        public AddressDTO AddressPhysical { get; set; }
+        public AddressDTO Address { get; set; }
 
-        public int? AddressLegalId { get; set; }
+        public int? OrganizationTypeId { get; set; }
 
-        public AddressDTO AddressLegal { get; set; }
+        public OrganizationType OrganizationType { get; set; }
 
         public bool? Deleted { get; set; }
 
@@ -40,5 +40,7 @@ namespace GTIWebAPI.Models.Clients
         public string Email { get; set; }
 
         public List<ClientContactDTO> ClientContact { get; set; }
+        public List<ClientGTIClientDTO> ClientGTIClient { get; set; }
+
     }
 }
