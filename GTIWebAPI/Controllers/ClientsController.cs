@@ -49,30 +49,81 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
+        [Route("GetClientEdit", Name = "GetClientEdit")]
+        [ResponseType(typeof(ClientEditDTO))]
+        public IHttpActionResult GetClientEdit(int id)
+        {
+            Client client = db.Client.Find(id);
+            ClientEditDTO dto = client.MapToEdit();
+            return Ok(dto);
+        }
+        /// <summary>
+        /// Get one client by client Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpGet]
         [Route("GetClient", Name = "GetClient")]
+        [ResponseType(typeof(ClientDTO))]
         public IHttpActionResult GetClient(int id)
         {
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Client, ClientDTO>();
-                m.CreateMap<Address, AddressDTO>();
-                m.CreateMap<ClientContact, ClientContactDTO>();
-            });
             //клиент со всеми прибамбасами 
+            Mapper.Initialize(m => m.CreateMap<Address, AddressDTO>());
             Client client = db.Client.Find(id);
-            ClientDTO dto = new ClientDTO();
-            if (client != null)
+            ClientDTO dto = new ClientDTO()
             {
-                dto = Mapper.Map<ClientDTO>(client);
-            }
-            return Ok(dto);            
+                Address = Mapper.Map<AddressDTO>(client.Address),
+                AddressId = client.AddressId,
+                Email = client.Email,
+                EmployeeId = client.EmployeeId,
+                EnglishName = client.EnglishName,
+                FaxNumber = client.FaxNumber,
+                Id = client.Id,
+                IdentityCode = client.IdentityCode,
+                NativeName = client.NativeName,
+                OrganizationTypeId = client.OrganizationTypeId,
+                PhoneNumber = client.PhoneNumber,
+                RussianName = client.RussianName,
+                Website = client.Website
+            };
+            Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
+            dto.OrganizationType = Mapper.Map<OrganizationTypeDTO>(client.OrganizationType);
+
+            List<ClientContact> contacts = db.ClientContact.Where(c => c.Deleted != true && c.ClientId == id).ToList();
+            Mapper.Initialize
+            (m =>
+                {
+                    m.CreateMap<ClientContact, ClientContactDTO>();
+                });
+            dto.ClientContacts = Mapper.Map<IEnumerable<ClientContact>, IEnumerable<ClientContactDTO>>(contacts);
+
+
+            dto.ClientGTIClients = db.ClientGTIClientList(id);
+
+            List<ClientSigner> signers = db.ClientSigner.Where(s => s.Deleted != true && s.ClientId == id).ToList();
+            Mapper.Initialize
+                (
+                m =>
+                {
+                    m.CreateMap<ClientSigner, ClientSignerDTO>();
+                    m.CreateMap<SignerPosition, SignerPositionDTO>();
+                }
+                );
+            dto.ClientSigners = Mapper.Map<IEnumerable<ClientSigner>, IEnumerable<ClientSignerDTO>>(signers);
+
+            List<ClientTaxInfo> taxes = db.ClientTaxInfo.Where(c => c.ClientId == id).ToList();
+            Mapper.Initialize(m => m.CreateMap<ClientGTIClient, ClientGTIClientDTO>());
+            dto.ClientTaxInfos = Mapper.Map<IEnumerable<ClientTaxInfo>, IEnumerable<ClientTaxInfoDTO>>(taxes);
+
+            return Ok(dto);
         }
 
 
         [GTIFilter]
         [HttpPut]
         [Route("PutClient")]
-        public IHttpActionResult PutClient(int id, Client client)
+        public IHttpActionResult PutClient(int id, ClientEditDTO client)
         {
             if (!ModelState.IsValid)
             {
@@ -82,8 +133,19 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(client.Address).State = EntityState.Modified;
-            db.Entry(client).State = EntityState.Modified;
+
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<ClientEditDTO, Client>();
+                m.CreateMap<OrganizationTypeDTO, OrganizationType>();
+                m.CreateMap<AddressDTO, Address>();
+            });
+
+            Client cl = Mapper.Map<Client>(client);
+
+            db.Entry(cl.Address).State = EntityState.Modified;
+            db.Entry(cl).State = EntityState.Modified;
+
             try
             {
                 db.SaveChanges();
@@ -106,21 +168,31 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("PostClient")]
-        [ResponseType(typeof(ClientDTO))]
-        public IHttpActionResult PostClient(Client client)
+        [ResponseType(typeof(ClientEditDTO))]
+        public IHttpActionResult PostClient(ClientEditDTO postDto)
         {
-            client.Id = client.NewId(db);
-            client.Address.Id = client.Address.NewId(db);
-           
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<ClientEditDTO, Client>();
+                m.CreateMap<OrganizationTypeDTO, OrganizationType>();
+                m.CreateMap<AddressDTO, Address>();
+            });
 
+            Client client = Mapper.Map<Client>(postDto);
+
+            client.Id = client.NewId(db);
+
+            client.Address.Id = client.Address.NewId(db);
             client.AddressId = client.Address.Id;
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             db.Address.Add(client.Address);
             db.Client.Add(client);
+
             try
             {
                 db.SaveChanges();
@@ -136,14 +208,8 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<ClientDTO, Client>();
-                m.CreateMap<Address, AddressDTO>();
-                m.CreateMap<ClientContact, ClientContactDTO>();
-            });
-            ClientDTO dto = Mapper.Map<ClientDTO>(client);
-            return CreatedAtRoute("GetClient", new { id = dto.Id }, dto);
+            ClientEditDTO dto = client.MapToEdit();
+            return CreatedAtRoute("GetClientEdit", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -160,19 +226,22 @@ namespace GTIWebAPI.Controllers
             if (client != null)
             {
                 client.Deleted = true;
-                db.Entry(client).State = System.Data.Entity.EntityState.Modified;
+                db.Entry(client).State = EntityState.Modified;
                 db.SaveChanges();
             }
-            return Ok(client);
+            ClientEditDTO dto = client.MapToEdit();
+            return Ok(dto);
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetOrganizationTypes")]
-        public IEnumerable<OrganizationType> GetOrganizationTypes()
+        public IEnumerable<OrganizationTypeDTO> GetOrganizationTypes()
         {
             List<OrganizationType> types = db.OrganizationType.OrderBy(o => o.Name).ToList();
-            return types;
+            Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
+            IEnumerable<OrganizationTypeDTO> dtos = Mapper.Map<IEnumerable<OrganizationType>, IEnumerable<OrganizationTypeDTO>>(types);
+            return dtos;
         }
 
         /// <summary>

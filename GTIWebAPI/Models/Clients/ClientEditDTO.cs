@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Clients
 {
-    public class ClientDTO
+    public class ClientEditDTO
     {
-       public int Id { get; set; }
+        public int Id { get; set; }
 
         public int? EmployeeId { get; set; }
 
@@ -25,7 +25,7 @@ namespace GTIWebAPI.Models.Clients
 
         public int? AddressId { get; set; }
 
-        public virtual AddressDTO Address { get; set; }
+        public AddressDTO Address { get; set; }
 
         public string PhoneNumber { get; set; }
 
@@ -36,14 +36,5 @@ namespace GTIWebAPI.Models.Clients
         public string Email { get; set; }
 
         public OrganizationTypeDTO OrganizationType { get; set; }
-
-        public virtual IEnumerable<ClientContactDTO> ClientContacts { get; set; }
-
-        public virtual IEnumerable<ClientGTIClientView> ClientGTIClients { get; set; }
-
-        public virtual IEnumerable<ClientSignerDTO> ClientSigners { get; set; }
-
-        public virtual IEnumerable<ClientTaxInfoDTO> ClientTaxInfos { get; set; }
-
     }
 }

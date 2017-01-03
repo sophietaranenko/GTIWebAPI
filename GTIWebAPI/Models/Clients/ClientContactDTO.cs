@@ -16,10 +16,12 @@ namespace GTIWebAPI.Models.Clients
 
         public string LastName { get; set; }
 
+        public string Position { get; set; }
+
         public string Phone { get; set; }
 
         public string PhoneAdd { get; set; }
-
+       
         public string PhoneHome { get; set; }
 
         public string Skype { get; set; }
@@ -29,6 +31,9 @@ namespace GTIWebAPI.Models.Clients
         public string EmailAdd { get; set; }
 
         public int? ClientId { get; set; }
+
+        public bool? Deleted { get; set; }
+
         public DateTime? DateOfBirth { get; set; }
 
     }

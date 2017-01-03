@@ -27,28 +27,51 @@ namespace GTIWebAPI.Models.Context
         }
 
         public virtual DbSet<Employee> Employee { get; set; }
+
         public virtual DbSet<Address> Address { get; set; }
+
         public virtual DbSet<ClientGTI> ClientGTI { get; set; }
+
         public virtual DbSet<ClientAccount> ClientAccount { get; set; }
+
         public virtual DbSet<Client> Client { get; set; }
+
         public virtual DbSet<ClientBank> ClientBank { get; set; }
+
         public virtual DbSet<ClientAgreement> ClientAgreement { get; set; }
+
         public virtual DbSet<ClientContact> ClientContact { get; set; }
+
         public virtual DbSet<ClientFile> ClientFile { get; set; }
+
         public virtual DbSet<ClientGTIClient> ClientGTIClient { get; set; }
+
         public virtual DbSet<ClientContainer> ClientContainer { get; set; }
+
         public virtual DbSet<ShippingLine> ShippingLine { get; set; }
+
         public virtual DbSet<EmployeeGTI> EmployeeGTI { get; set; }
+
         public virtual DbSet<Vessel> Vessel { get; set; }
+
         public virtual DbSet<Incoterms> Incoterms { get; set; }
+
         public virtual DbSet<Deal> Deal { get; set; }
+
         public virtual DbSet<DealType> DealType { get; set; }
+
         public virtual DbSet<Office> Office { get; set; }
+
         public virtual DbSet<Terminal> Terminal { get; set; }
+
         public virtual DbSet<ClientPhoto> ClientPhoto { get; set; }
+
         public virtual DbSet<OrganizationType> OrganizationType { get; set; }
+
         public virtual DbSet<ClientSigner> ClientSigner { get; set; }
+
         public virtual DbSet<ClientTaxInfo> ClientTaxInfo { get; set; }
+
         public virtual DbSet<SignerPosition> SignerPosition { get; set; }
 
         public virtual DbSet<ClientView> ClientView { get; set; }

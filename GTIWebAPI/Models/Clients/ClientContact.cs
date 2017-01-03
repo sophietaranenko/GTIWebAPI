@@ -22,7 +22,8 @@ namespace GTIWebAPI.Models.Clients
         [StringLength(50)]
         public string LastName { get; set; }
 
-        public int? ProfessionId { get; set; }
+        [StringLength(250)]
+        public string Position { get; set; }
 
         [StringLength(20)]
         public string Phone { get; set; }

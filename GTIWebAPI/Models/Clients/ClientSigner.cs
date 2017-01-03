@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Clients
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("ClientSigner")]
-    public partial class ClientSigner
+    public partial class ClientSigner : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -45,5 +46,13 @@ namespace GTIWebAPI.Models.Clients
         public virtual Client Client { get; set; }
 
         public virtual SignerPosition SignerPosition { get; set; }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "ClientSigner";
+            }
+        }
     }
 }

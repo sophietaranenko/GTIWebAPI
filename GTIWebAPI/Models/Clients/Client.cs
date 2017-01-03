@@ -19,7 +19,7 @@ namespace GTIWebAPI.Models.Clients
             ClientContact = new HashSet<ClientContact>();
             ClientGTIClient = new HashSet<ClientGTIClient>();
             ClientSigner = new HashSet<ClientSigner>();
-            ClientTaxInfo = new HashSet<ClientTaxInfo>();
+            ClientTaxInfo = new HashSet<ClientTaxInfoDTO>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -59,7 +59,7 @@ namespace GTIWebAPI.Models.Clients
         [StringLength(50)]
         public string Email { get; set; }
 
-        public virtual OrganizationType OrganizationType { get; set; }
+        public virtual OrganizationTypeDTO OrganizationType { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientBank> ClientBank { get; set; }
@@ -77,7 +77,7 @@ namespace GTIWebAPI.Models.Clients
         public virtual ICollection<ClientSigner> ClientSigner { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ClientTaxInfo> ClientTaxInfo { get; set; }
+        public virtual ICollection<ClientTaxInfoDTO> ClientTaxInfo { get; set; }
 
         protected override string TableName
         {
@@ -85,6 +85,59 @@ namespace GTIWebAPI.Models.Clients
             {
                 return "Client";
             }
+        }
+
+        public ClientEditDTO MapToEdit()
+        {
+            ClientEditDTO dto = new ClientEditDTO
+            {
+                Address =
+                new AddressDTO
+                {
+                    Apartment = Address.Apartment,
+                    BuildingNumber = Address.BuildingNumber,
+                    Country = Address.Country,
+                    Housing = Address.Housing,
+                    Id = Address.Id,
+                    LocalityName = Address.LocalityName,
+                    LocalityType = Address.LocalityType,
+                    LocalityTypeString = Address.LocalityTypeString,
+                    PlaceName = Address.PlaceName,
+                    PlaceType = Address.PlaceType,
+                    PlaceTypeString = Address.PlaceTypeString,
+                    PostIndex = Address.PostIndex,
+                    RegionName = Address.RegionName,
+                    RegionType = Address.RegionType,
+                    RegionTypeString = Address.RegionTypeString,
+                    VillageName = Address.VillageName,
+                    VillageType = Address.VillageType,
+                    VillageTypeString = Address.VillageTypeString
+                },
+                AddressId = AddressId,
+                Email = Email,
+                EmployeeId = EmployeeId,
+                EnglishName = EnglishName,
+                FaxNumber = FaxNumber,
+                Id = Id,
+                IdentityCode = IdentityCode,
+                NativeName = NativeName,
+                OrganizationType = OrganizationType == null ? null : new OrganizationTypeDTO
+                {
+                    EnglishExplanation = OrganizationType.EnglishExplanation,
+                    RussianExplanation = OrganizationType.RussianExplanation,
+                    RussianName = OrganizationType.RussianName,
+                    EnglishName = OrganizationType.EnglishName,
+                    Id = OrganizationType.Id,
+                    Name = OrganizationType.Name,
+                    UkrainianExplanation = OrganizationType.UkrainianExplanation,
+                    UkrainianName = OrganizationType.UkrainianName
+                },
+                RussianName = RussianName,
+                OrganizationTypeId = OrganizationTypeId,
+                PhoneNumber = PhoneNumber,
+                Website = Website
+            };
+            return dto;
         }
     }
 }

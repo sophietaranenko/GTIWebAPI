@@ -98,6 +98,5 @@ namespace GTIWebAPI.Models.Context
                 .HasForeignKey(e => e.ContactTypeId);
         }
 
-        public System.Data.Entity.DbSet<GTIWebAPI.Models.Clients.Client> Clients { get; set; }
     }
 }

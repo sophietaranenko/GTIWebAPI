@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Clients
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("ClientBank")]
-    public partial class ClientBank
+    public partial class ClientBank : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -19,5 +20,12 @@ namespace GTIWebAPI.Models.Clients
         public bool? Deleted { get; set; }
 
         public virtual Client Client { get; set; }
+        protected override string TableName
+        {
+            get
+            {
+                return "ClientBank";
+            }
+        }
     }
 }
