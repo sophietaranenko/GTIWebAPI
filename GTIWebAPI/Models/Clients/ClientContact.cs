@@ -1,6 +1,5 @@
 namespace GTIWebAPI.Models.Clients
 {
-    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,7 +7,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("ClientContact")]
-    public partial class ClientContact : GTITable 
+    public partial class ClientContact
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -36,7 +35,6 @@ namespace GTIWebAPI.Models.Clients
         [StringLength(30)]
         public string Skype { get; set; }
 
-        //сюда будут слаться ссылки
         [StringLength(30)]
         public string Email { get; set; }
 
@@ -47,15 +45,9 @@ namespace GTIWebAPI.Models.Clients
 
         public bool? Deleted { get; set; }
 
+        [Column(TypeName = "date")]
         public DateTime? DateOfBirth { get; set; }
 
         public virtual Client Client { get; set; }
-        protected override string TableName
-        {
-            get
-            {
-                return "ClientContact";
-            }
-        }
     }
 }
