@@ -157,4 +157,3 @@ C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.pdb
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\AutoMapper.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\AutoMapper.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\XmlDocument.xml
-C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csprojResolveAssemblyReference.cache

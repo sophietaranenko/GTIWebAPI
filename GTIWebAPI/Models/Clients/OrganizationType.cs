@@ -38,5 +38,20 @@ namespace GTIWebAPI.Models.Clients
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Client> Client { get; set; }
+
+        [NotMapped]
+        public string Name {
+            get
+            {
+                string name = "";
+
+                name = UkrainianName == null ? "" : UkrainianName + " / ";
+                name += RussianName == null ? "" : RussianName + " / ";
+                name += EnglishName == null ? "" : EnglishName + " / ";
+                name = name.Substring(0, name.Length - 3);
+                name = name.Trim();
+                return name;
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Clients
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Clients
     using System.Data.Entity.Spatial;
 
     [Table("ClientContact")]
-    public partial class ClientContact
+    public partial class ClientContact : GTITable 
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -49,5 +50,13 @@ namespace GTIWebAPI.Models.Clients
         public DateTime? DateOfBirth { get; set; }
 
         public virtual Client Client { get; set; }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "ClientContact";
+            }
+        }
     }
 }

@@ -115,7 +115,7 @@ namespace GTIWebAPI.Controllers
                 new EmployeeOfficeDTO
                 {
                     Id = o.Id,
-                    Office = new OfficeDTO { Id = o.Office.Id, Name = o.Office.NativeName },
+                    Office = new OfficeDTO { Id = o.Office.Id, ShortName = o.Office.NativeName },
                     DateBegin = o.DateBegin,
                     DateEnd = o.DateEnd,
                     Department = new DepartmentDTO { Id = o.Department.Id, Name = o.Department.Name },
@@ -520,7 +520,7 @@ namespace GTIWebAPI.Controllers
             {
                 m.CreateMap<Employee, EmployeeEditDTO>();
                 m.CreateMap<Address, AddressDTO>();
-                });
+            });
             EmployeeEditDTO dto = Mapper.Map<EmployeeEditDTO>(employee);
             return CreatedAtRoute("GetEmployeeEdit", new { id = dto.Id }, dto);
         }
@@ -581,6 +581,43 @@ namespace GTIWebAPI.Controllers
                 Value = (Int32)v
             }).ToList();
             return sexList;
+        }
+
+        [HttpGet]
+        [Route("GetLists")]
+        [ResponseType(typeof(EmployeeList))]
+        public IHttpActionResult GetList()
+        {
+            EmployeeList list = new EmployeeList();
+
+            List<Office> offices = db.Offices.ToList();
+            Mapper.Initialize(m => m.CreateMap<Office, OfficeDTO>());
+            list.Offices = Mapper.Map<IEnumerable<Office>, IEnumerable<OfficeDTO>>(offices);
+
+            List<Profession> professions = db.Profession.Where(p => p.Deleted != true).ToList();
+            Mapper.Initialize(m => m.CreateMap<Profession, ProfessionDTO>());
+            list.Professions = Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(professions);
+
+            List<Department> departments = db.Department.Where(d => d.Deleted != true).ToList();
+            Mapper.Initialize(m => m.CreateMap<Department, DepartmentDTO>());
+            list.Departments = Mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentDTO>>(departments);
+
+            List<FoundationDocument> docs = db.FoundationDocument.Where(d => d.Deleted != true).ToList();
+            Mapper.Initialize(m => m.CreateMap<FoundationDocument, FoundationDocumentDTO>());
+            list.DocumentTypes = Mapper.Map<IEnumerable<FoundationDocument>, IEnumerable<FoundationDocumentDTO>>(docs);
+
+            List<ContactType> types = db.ContactType.Where(c => c.Deleted != true).ToList();
+            Mapper.Initialize(m => m.CreateMap<ContactType, ContactTypeDTO>());
+            list.ContactTypes = Mapper.Map<IEnumerable<ContactType>, IEnumerable<ContactTypeDTO>>(types);
+
+            List<Language> languages = db.Language.ToList();
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Language, LanguageDTO>();
+            });
+            list.Languages = Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(languages);
+
+            return Ok(list);
         }
 
         /// <summary>
