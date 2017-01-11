@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Clients
         public int? GTIClientId { get; set; }
 
         public int? ClientId { get; set; }
-        public ClientDTO Client { get; set; }
+
         public ClientGTIDTO ClientGTI { get; set; }
 
 

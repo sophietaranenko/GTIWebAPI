@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Clients
 {
+    using Dictionary;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -13,15 +14,16 @@ namespace GTIWebAPI.Models.Clients
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? ClientId { get; set; }
-
         [StringLength(50)]
         public string TaxNo { get; set; }
 
         [StringLength(50)]
         public string SertificatesNo { get; set; }
 
-        public int? TaxAddressId { get; set; }
+        [Column("TaxAddressId")]
+        public int? AddressId { get; set; }
+
+        public virtual Address Address { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? DateBeg { get; set; }
@@ -32,6 +34,8 @@ namespace GTIWebAPI.Models.Clients
         public bool? Deleted { get; set; }
 
         public virtual Client Client { get; set; }
+
+        public int? ClientId { get; set; }
 
         protected override string TableName
         {

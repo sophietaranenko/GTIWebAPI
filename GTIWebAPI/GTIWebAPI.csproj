@@ -225,6 +225,7 @@
     <Compile Include="Controllers\ClientsController.cs" />
     <Compile Include="Controllers\ClientSignersController.cs" />
     <Compile Include="Controllers\ClientTaxInfosController.cs" />
+    <Compile Include="Controllers\DealsController.cs" />
     <Compile Include="Controllers\EmployeeCarsController.cs" />
     <Compile Include="Controllers\EmployeeContactsController.cs" />
     <Compile Include="Controllers\EmployeeDocumentScansController.cs" />
@@ -245,6 +246,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Accounting\DealContainerViewDTO.cs" />
+    <Compile Include="Models\Accounting\DealFullViewDTO.cs" />
+    <Compile Include="Models\Accounting\DealViewDTO.cs" />
+    <Compile Include="Models\Accounting\InvoiceViewDTO.cs" />
     <Compile Include="Models\Account\AccountBindingModels.cs" />
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
@@ -255,6 +260,7 @@
     <Compile Include="Models\Clients\ClientBankDTO.cs" />
     <Compile Include="Models\Clients\ClientContact.cs" />
     <Compile Include="Models\Clients\ClientContactDTO.cs" />
+    <Compile Include="Models\Clients\ClientContactUserDTO.cs" />
     <Compile Include="Models\Clients\ClientDTO.cs" />
     <Compile Include="Models\Clients\ClientEditDTO.cs" />
     <Compile Include="Models\Clients\ClientGTIClient.cs" />
@@ -273,7 +279,6 @@
     <Compile Include="Models\Clients\OrganizationTypeDTO.cs" />
     <Compile Include="Models\Clients\SignerPosition.cs" />
     <Compile Include="Models\Clients\SignerPositionDTO.cs" />
-    <Compile Include="Models\Context\DbService.cs" />
     <Compile Include="Models\Employees\EmployeeList.cs" />
     <Compile Include="Models\Security\ActionDTO.cs" />
     <Compile Include="Models\Security\ControllerDTO.cs" />
@@ -317,7 +322,6 @@
     <Compile Include="Models\Clients\ClientView.cs" />
     <Compile Include="Models\Personnel\ContactType.cs" />
     <Compile Include="Models\Context\DbClient.cs" />
-    <Compile Include="Models\Context\DbEnter.cs" />
     <Compile Include="Models\Context\DbPersonnel.cs" />
     <Compile Include="Models\Accounting\Deal.cs" />
     <Compile Include="Models\Accounting\DealType.cs" />

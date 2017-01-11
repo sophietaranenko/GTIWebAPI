@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using GTIWebAPI.Filters;
+using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Clients;
 using GTIWebAPI.Models.Context;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,6 +11,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -84,6 +87,61 @@ namespace GTIWebAPI.Controllers
             ClientContactDTO dto = Mapper.Map<ClientContactDTO>(contact);
             return Ok(dto);
         }
+
+        /// <summary>
+        /// Get one contact for view by contact id as USER with client info 
+        /// </summary>
+        /// <param name="id">ClientContact id</param>
+        /// <returns>ClientContactEditDTO object</returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetClientContactAsUser", Name = "GetClientContactAsUser")]
+        [ResponseType(typeof(ClientContactUserDTO))]
+        public IHttpActionResult GetContactAsUser(int id)
+        {
+            ClientContact contact = db.ClientContact.Find(id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<ClientContact, ClientContactDTO>();
+            });
+
+            ClientContactDTO contactDto = Mapper.Map<ClientContactDTO>(contact);
+
+            ClientContactUserDTO userDto = new ClientContactUserDTO()
+            {
+                ClientContact = contactDto
+            };
+
+            userDto.ProfilePicture = "";
+
+            Client client = db.Client.Find(contactDto.ClientId);
+            if (client != null)
+            {
+                userDto.Client = client.MapToEdit();
+            }
+
+            ApplicationDbContext appDb = new ApplicationDbContext();
+           ApplicationUser user = appDb.Users.Where(u => u.TableName == "ClientContact" && u.TableId == id).FirstOrDefault();
+
+            string Photo = "";
+            if (user != null)
+            {
+                var Image = appDb.UserImage.Where(i => i.UserId == user.Id).FirstOrDefault();
+                if (Image != null)
+                {
+                    Photo = Image.ImageName;
+                }
+            }
+            userDto.ProfilePicture = Photo;
+
+            return Ok(userDto);
+        }
+
 
         /// <summary>
         /// Get one contact for edit by contact id

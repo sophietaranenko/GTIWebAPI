@@ -15,6 +15,7 @@ using System.Net.Mail;
 using System;
 using System.Net.Mime;
 using System.Web;
+using System.Data.SqlClient;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -185,6 +186,14 @@ namespace GTIWebAPI.Models.Account
             modelBuilder.Entity<ApplicationUser>()
                             .HasOptional(s => s.Image) 
                             .WithRequired(ad => ad.ApplicationUser);
+        }
+
+        public virtual int FileNameUnique()
+        {
+            string tableName = "FileNameUnique";
+            SqlParameter table = new SqlParameter("@table_name", tableName);
+            int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+            return result;
         }
     }
 

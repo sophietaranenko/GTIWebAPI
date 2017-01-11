@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.Models.Dictionary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,9 @@ namespace GTIWebAPI.Models.Clients
 
         public string SertificatesNo { get; set; }
 
-        public int? TaxAddressId { get; set; }
+        public int? AddressId { get; set; }
+
+        public AddressDTO Address { get; set; }
 
         public DateTime? DateBeg { get; set; }
 

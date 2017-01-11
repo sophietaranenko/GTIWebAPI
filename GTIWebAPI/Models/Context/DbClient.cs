@@ -12,9 +12,9 @@ using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Dictionary;
 using System.Data;
 
-namespace GTIWebAPI.Models.Context 
+namespace GTIWebAPI.Models.Context
 {
-    public class DbClient: DbContext
+    public class DbClient : DbContext
     {
         public DbClient()
             : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
@@ -128,6 +128,49 @@ namespace GTIWebAPI.Models.Context
             return clientList;
         }
 
+        public IEnumerable<DealShortViewDTO> DealList(int clientId, DateTime dateBegin, DateTime dateEnd)
+        {
+            SqlParameter parClient = new SqlParameter
+            {
+                ParameterName = "@ClientId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = clientId
+            };
+
+            SqlParameter parBegin = new SqlParameter
+            {
+                ParameterName = "@DateBegin",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateBegin
+            };
+
+            SqlParameter parEnd = new SqlParameter
+            {
+                ParameterName = "@DateEnd",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateEnd
+            };
+
+            IEnumerable<DealShortViewDTO> dealList = new List<DealShortViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<DealShortViewDTO>("exec ClientGTIClientList @ClientId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
+                dealList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dealList;
+        }
+
+
         public string ClientUserNameGenerator()
         {
             string result = "";
@@ -142,6 +185,170 @@ namespace GTIWebAPI.Models.Context
             }
             return result;
         }
+
+        public DealFullViewDTO DealCardInfo(Guid dealId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@DealId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = dealId
+            };
+
+            DealFullViewDTO dto = new DealFullViewDTO();
+            try
+            {
+                var result = Database.SqlQuery<DealFullViewDTO>(
+                @"SELECT FullNumber,
+                        Number,
+                        CreateDate,
+                        Direction,
+                        DirectionId,
+                        Cargo,
+                        ShippingLineId,
+                        ShippingLine,
+                        POO,
+                        POL,
+                        POD,
+                        FD,
+                        Office,
+                        OfficeId,
+                        ClientGTIId,
+                        ClientId,
+                        ForwarderGTIId,
+                        ForwarderId,
+                        ManagerGTIId,
+                        ManagerId,
+                        MaganerPicture,
+                        AssistantGTIId,
+                        AssistantId,
+                        AssistantPicture,
+                        StatusChar,
+                        StatusId,
+                        DealType,
+                        DealTypeId,
+                        Incoterms,
+                        IncotermsId,
+                        FeederVessel,
+                        FeederVesselId,
+                         OceanVessel,
+                        OceanVesselId,
+                        POT,
+                        Id from dbo.DealView where Id = @DealId", parameter).FirstOrDefault();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+
+        public IEnumerable<DealContainerViewDTO> ContainersByDeal(Guid dealId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@DealId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = dealId
+            };
+
+            IEnumerable<DealContainerViewDTO> dto = new List<DealContainerViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<DealContainerViewDTO>(
+                @"SELECT Container, 
+                    Type, 
+                    ReadinessDate, 
+                    ETSPOL, 
+                    ETAPOT, 
+                    Terminal, 
+                    ETAPOD, 
+                    DocumentNo, 
+                    RegistrationDate, 
+                    TerminalHandlingDate, 
+                    ClearanceDate, 
+                    GateOutFullDate, 
+                    PlatformTruck, 
+                    PolicyNo, 
+                    PolicyDate, 
+                    DeliveryDate, 
+                    GateInEmptyDate, 
+                    Seal,
+                    MRN,
+                    Weight,
+                    Id,
+                    DealId
+                from ContainerView where DealId = @DealId", parameter).ToList();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+
+
+        public IEnumerable<InvoiceViewDTO> InvoicesByDeal(Guid dealId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@DealId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = dealId
+            };
+
+            IEnumerable<InvoiceViewDTO> dto = new List<InvoiceViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<InvoiceViewDTO>(
+                @"SELECT DealId,
+                        CurrencyName, 
+                        CurrencyId, 
+                        PaymentMode, 
+                        PaymentModeId, 
+                        Number,
+                        OfficialNumber,
+                        InvoiceDate,
+                        PayerName, 
+                        ClientGTIId, 
+                        ClientId, 
+                        RE,
+                        Voyage, 
+                        USD,
+                        CurrencySum,
+                        Status,
+                        DebtUSD,
+                        DebtCurrency,
+                        DebtVat,
+                        TotalUsdIncome, 
+                        DebtVatUsd, 
+                        InvoiceId, 
+                        Id,
+                        Cancelled,
+                        Paid,
+                        PaidDate
+               from Invoices where DealId = @DealId", parameter).ToList();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

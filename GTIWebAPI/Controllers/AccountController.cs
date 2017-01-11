@@ -26,6 +26,10 @@ using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Clients;
+using GTIWebAPI.Filters;
+using System.Net;
+using GTIWebAPI.Models;
+using System.Linq;
 
 namespace GTIWebAPI.Controllers
 {
@@ -105,6 +109,64 @@ namespace GTIWebAPI.Controllers
                 model.UserRights = user.UserRightsDto;
             }
             return model;
+        }
+
+        /// <summary>
+        /// Method for profile picture upload
+        /// </summary>
+        /// <param name="tableName">Image of which document we're uploading</param>
+        /// <param name="tableId">Id of document which image we're uploading</param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpPost]
+        [Route("UploadProfilePicture")]
+        public HttpResponseMessage UploadProfilePicture(string tableName, int tableId)
+        {
+
+            HttpResponseMessage result = null;
+            var httpRequest = HttpContext.Current.Request;
+            if (httpRequest.Files.Count > 0)
+            {
+                ApplicationDbContext db = new ApplicationDbContext();
+                string userId = User.Identity.GetUserId();
+                foreach (string file in httpRequest.Files)
+                {
+
+
+                    var postedFile = httpRequest.Files[file];
+                    var filePath = HttpContext.Current.Server.MapPath(
+                        "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
+                    postedFile.SaveAs(filePath);
+
+                    UserImage image = db.UserImage.Where(i => i.UserId == userId).FirstOrDefault();
+                    if (image == null)
+                    {
+                        image = new UserImage();
+                        image.UserId = User.Identity.GetUserId();
+                        image.ImageName = filePath;
+                        db.UserImage.Add(image);
+                    }
+                    else
+                    {
+                        image.ImageName = filePath;
+                        db.Entry(image).State = System.Data.Entity.EntityState.Modified;
+                    }
+
+                    db.SaveChanges();
+                }
+
+                UserImage newImage = db.UserImage.Where(i => i.UserId == userId).FirstOrDefault();
+                if (newImage != null)
+                {
+                    result = Request.CreateResponse(HttpStatusCode.Created, newImage);
+                }
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            else
+            {
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            return result;
         }
 
         /// <summary>
@@ -230,87 +292,87 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("ForgotPassword")]
-        public async Task<IHttpActionResult> ClientPassword(string userName)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await UserManager.FindByNameAsync(userName);
-                if (user == null)
-                {
-                    return Ok();
-                }
-                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("ForgotPassword")]
+        //public async Task<IHttpActionResult> ClientPassword(string userName)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = await UserManager.FindByNameAsync(userName);
+        //        if (user == null)
+        //        {
+        //            return Ok();
+        //        }
+        //        string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
 
-                string url = Url.Link(
-                    "DefaultApi",
-                    new
-                    {
-                        controller = "Account/ResetPassword/",
-                        UserId = user.Id,
-                        PasswordResetToken = code
-                    }
-                );
-                await UserManager.
-                    SendEmailAsync(user.Id, "Set Password", "Please set your password by clicking here: <a href=\"" + url + "\">link</a>");
-                return Ok();
-            }
-            return BadRequest();
-        }
-
-
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("ResetPassword", Name = "ResetPassword")]
-        public IHttpActionResult ResetPassword(string UserId, string PasswordResetToken)
-        {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            ChangePasswordBindingModel model = new ChangePasswordBindingModel
-            {
-                ConfirmPassword = null,
-                OldPassword = PasswordResetToken
-            };
-            return Ok(model);
-        }
+        //        string url = Url.Link(
+        //            "DefaultApi",
+        //            new
+        //            {
+        //                controller = "Account/ResetPassword/",
+        //                UserId = user.Id,
+        //                PasswordResetToken = code
+        //            }
+        //        );
+        //        await UserManager.
+        //            SendEmailAsync(user.Id, "Set Password", "Please set your password by clicking here: <a href=\"" + url + "\">link</a>");
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
 
 
-        [AllowAnonymous]
-        [Route("PostResetPassword", Name = "PostResetPassword")]
-        public async Task<IHttpActionResult> PostResetPassword(ChangePasswordBindingModel model)
-        {
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
-                model.NewPassword);
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("ResetPassword", Name = "ResetPassword")]
+        //public IHttpActionResult ResetPassword(string UserId, string PasswordResetToken)
+        //{
 
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    ChangePasswordBindingModel model = new ChangePasswordBindingModel
+        //    {
+        //        ConfirmPassword = null,
+        //        OldPassword = PasswordResetToken
+        //    };
+        //    return Ok(model);
+        //}
 
-            return Ok();
-        }
+
+        //[AllowAnonymous]
+        //[Route("PostResetPassword", Name = "PostResetPassword")]
+        //public async Task<IHttpActionResult> PostResetPassword(ChangePasswordBindingModel model)
+        //{
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
+        //        model.NewPassword);
+
+        //    if (!result.Succeeded)
+        //    {
+        //        return GetErrorResult(result);
+        //    }
+
+        //    return Ok();
+        //}
 
 
-        private string GenerateClientUsername()
-        {
-            string name = "";
-            using (DbClient db = new DbClient())
-            {
-                name = db.ClientUserNameGenerator();
-            }
-            return name;
-        }
+        //private string GenerateClientUsername()
+        //{
+        //    string name = "";
+        //    using (DbClient db = new DbClient())
+        //    {
+        //        name = db.ClientUserNameGenerator();
+        //    }
+        //    return name;
+        //}
         private string GenerateClientPassword()
         {
             return System.Web.Security.Membership.GeneratePassword(8, 0);
@@ -325,7 +387,7 @@ namespace GTIWebAPI.Controllers
                 if (user == null)
                 {
                     result = false;
-                }  
+                }
             }
             return result;
         }
@@ -344,47 +406,59 @@ namespace GTIWebAPI.Controllers
             return result;
         }
 
+
+
         [AllowAnonymous]
-        [HttpPost]
-        [Route("RegisterClient")]
-        public async Task<IHttpActionResult> RegisterClient(ClientRegisterBindingModel model)
+        [HttpGet]
+        [Route("SimpleRegisterClientContact")]
+        public async Task<IHttpActionResult> SimpleRegisterClientContact(int clientContactId, string email)
         {
-            if (ModelState.IsValid)
+            if (clientContactId != 0)
             {
-                if (CheckEmailExists(model.Email))
-                {
-                    return BadRequest("Email already exists");
-                }
-                string username = GenerateClientUsername();
+                //РАЗКОММЕНТИРОВАТЬ ОБЯЗАТЕЛЬНО
+                //if (CheckEmailExists(email))
+                //{
+                //    return BadRequest("Email already exists");
+                //}
+
+                string username = email;
                 string password = GenerateClientPassword();
+
                 ApplicationUser user = new ApplicationUser()
                 {
                     UserName = username,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber
+                    Email = email,
+                    TableName = "ClientContact",
+                    TableId = clientContactId
                 };
+
                 IdentityResult result = await UserManager.CreateAsync(user, password);
+
                 if (!result.Succeeded)
                 {
                     return GetErrorResult(result);
                 }
+
                 if (user == null)
                 {
                     return BadRequest();
                 }
-                string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                   // GenerateEmailConfirmationTokenAsync(user.Id);
                 var callbackUrl = Url.Link("DefaultApi", new
                 {
-                    Controller = "Account/ConfirmEmail/",
-                    ConfirmEmailToken = code,
+                    Controller = "Account/SimplePasswordReset/",
+                    PasswordResetToken = code,
                     UserId = user.Id
                 });
                 //ADD
                 //отсылка sms с кодом
                 //ADD
                 await UserManager.
-                    SendEmailAsync(user.Id, "Confirm e-mail", "Please confirm your e-mail by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                    SendEmailAsync(user.Id, "Register user", "Please register your login and set new password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
                 return Ok();
+
             }
             return BadRequest();
         }
@@ -392,84 +466,168 @@ namespace GTIWebAPI.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetClientRegister", Name = "GetClientRegister")]
-        public async Task<IHttpActionResult> GetClientRegister(string ConfirmEmailToken, string UserId)
-        {        
-            if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
+        [Route("SimplePasswordReset")]
+        public IHttpActionResult SimplePasswordReset(string PasswordResetToken, string UserId)
+        {
+            if (!ModelState.IsValid)
             {
-
-                string code = await UserManager.GeneratePasswordResetTokenAsync(UserId);
-                ClientRegisterModel model = new ClientRegisterModel()
-                {
-                    ConfirmEmailToken = ConfirmEmailToken,
-                    ResetPasswordToken = code,
-                    UserId = UserId
-                };
-                return Ok(model);
+                return BadRequest(ModelState);
             }
-            return BadRequest();
+            ChangePasswordBindingModel model = new ChangePasswordBindingModel
+            {
+                ConfirmPassword = null,
+                OldPassword = PasswordResetToken
+            };
+            return Ok(model);
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        [Route("PostClientRegister", Name = "PostClientRegister")]
-        public async Task<IHttpActionResult> PostClientRegister(ClientRegisterModel model)
+        [Route("PostSimplePasswordReset", Name = "PostSimplePasswordReset")]
+        public async Task<IHttpActionResult> PostSimplePasswordReset(ChangePasswordBindingModel model)
         {
-            //тут проверка кода из смс
-            //если все хорошо, отправляем на смену пароля
-            if (model.UserId == null || model.ConfirmEmailToken == null || model.ResetPasswordToken == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Empty parameters");
+                return BadRequest(ModelState);
             }
-            if (model.NewPassword == null)
+            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
+                model.NewPassword);
+
+            if (!result.Succeeded)
             {
-                return BadRequest("Empty password");
+                return GetErrorResult(result);
             }
-            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
-            if (result.Succeeded)
-            {
-                result = await UserManager.ResetPasswordAsync(model.UserId, model.ResetPasswordToken, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    return Ok();
-                }
-            }
-            return BadRequest();
+            return Ok();
         }
 
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("ConfirmEmail", Name = "ConfirmEmail")]
-        public IHttpActionResult ConfirmEmail(string ConfirmEmailToken, string UserId)
-        {
-            //окошко для ввода кода из смс
-            if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
 
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("PostConfirmEmail", Name = "PostConfirmEmail")]
-        public async Task<IHttpActionResult> PostConfirmEmail(ConfirmEmailModel model)
-        {
-            //тут проверка кода из смс
-            //если все хорошо, отправляем на смену пароля
-            if (model.UserId == null || model.ConfirmEmailToken == null)
-            {
-                return BadRequest();
-            }
-            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("RegisterClient")]
+        //public async Task<IHttpActionResult> RegisterClient(ClientRegisterBindingModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (CheckEmailExists(model.Email))
+        //        {
+        //            return BadRequest("Email already exists");
+        //        }
+        //        string username = GenerateClientUsername();
+        //        string password = GenerateClientPassword();
+        //        ApplicationUser user = new ApplicationUser()
+        //        {
+        //            UserName = username,
+        //            Email = model.Email,
+        //            PhoneNumber = model.PhoneNumber
+        //        };
+        //        IdentityResult result = await UserManager.CreateAsync(user, password);
+        //        if (!result.Succeeded)
+        //        {
+        //            return GetErrorResult(result);
+        //        }
+        //        if (user == null)
+        //        {
+        //            return BadRequest();
+        //        }
+        //        string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+        //        var callbackUrl = Url.Link("DefaultApi", new
+        //        {
+        //            Controller = "Account/ConfirmEmail/",
+        //            ConfirmEmailToken = code,
+        //            UserId = user.Id
+        //        });
+        //        //ADD
+        //        //отсылка sms с кодом
+        //        //ADD
+        //        await UserManager.
+        //            SendEmailAsync(user.Id, "Confirm e-mail", "Please confirm your e-mail by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
+
+
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("GetClientRegister", Name = "GetClientRegister")]
+        //public async Task<IHttpActionResult> GetClientRegister(string ConfirmEmailToken, string UserId)
+        //{
+        //    if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
+        //    {
+
+        //        string code = await UserManager.GeneratePasswordResetTokenAsync(UserId);
+        //        ClientRegisterModel model = new ClientRegisterModel()
+        //        {
+        //            ConfirmEmailToken = ConfirmEmailToken,
+        //            ResetPasswordToken = code,
+        //            UserId = UserId
+        //        };
+        //        return Ok(model);
+        //    }
+        //    return BadRequest();
+        //}
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("PostClientRegister", Name = "PostClientRegister")]
+        //public async Task<IHttpActionResult> PostClientRegister(ClientRegisterModel model)
+        //{
+        //    //тут проверка кода из смс
+        //    //если все хорошо, отправляем на смену пароля
+        //    if (model.UserId == null || model.ConfirmEmailToken == null || model.ResetPasswordToken == null)
+        //    {
+        //        return BadRequest("Empty parameters");
+        //    }
+        //    if (model.NewPassword == null)
+        //    {
+        //        return BadRequest("Empty password");
+        //    }
+        //    var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
+        //    if (result.Succeeded)
+        //    {
+        //        result = await UserManager.ResetPasswordAsync(model.UserId, model.ResetPasswordToken, model.NewPassword);
+        //        if (result.Succeeded)
+        //        {
+        //            return Ok();
+        //        }
+        //    }
+        //    return BadRequest();
+        //}
+
+
+
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("ConfirmEmail", Name = "ConfirmEmail")]
+        //public IHttpActionResult ConfirmEmail(string ConfirmEmailToken, string UserId)
+        //{
+        //    //окошко для ввода кода из смс
+        //    if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
+        //    {
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("PostConfirmEmail", Name = "PostConfirmEmail")]
+        //public async Task<IHttpActionResult> PostConfirmEmail(ConfirmEmailModel model)
+        //{
+        //    //тут проверка кода из смс
+        //    //если все хорошо, отправляем на смену пароля
+        //    if (model.UserId == null || model.ConfirmEmailToken == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
+        //    if (result.Succeeded)
+        //    {
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
 
 
         /// <summary>

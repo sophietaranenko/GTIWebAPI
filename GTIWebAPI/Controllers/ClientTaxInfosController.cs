@@ -13,6 +13,7 @@ using GTIWebAPI.Models.Clients;
 using GTIWebAPI.Models.Context;
 using AutoMapper;
 using GTIWebAPI.Filters;
+using GTIWebAPI.Models.Dictionary;
 
 namespace GTIWebAPI.Controllers
 {
@@ -29,7 +30,8 @@ namespace GTIWebAPI.Controllers
             IEnumerable<ClientTaxInfo> taxInfos = db.ClientTaxInfo.Where(s => s.Deleted != true).ToList();
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<Address, AddressDTO>();
             });
             IEnumerable<ClientTaxInfoDTO> dtos = Mapper.
                 Map<IEnumerable<ClientTaxInfo>, IEnumerable<ClientTaxInfoDTO>>(taxInfos);
@@ -45,7 +47,8 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<Address, AddressDTO>();
             });
 
             IEnumerable<ClientTaxInfoDTO> dtos = Mapper.
@@ -66,7 +69,8 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<Address, AddressDTO>();
             });
 
             ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
@@ -95,6 +99,7 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<AddressDTO, Address>();
             });
             ClientTaxInfo clientTaxInfo = Mapper.Map<ClientTaxInfo>(inDto);
             db.Entry(clientTaxInfo).State = EntityState.Modified;
@@ -129,11 +134,21 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<AddressDTO, Address>();
             });
 
             ClientTaxInfo clientTaxInfo = Mapper.Map<ClientTaxInfo>(inDto);
 
             clientTaxInfo.Id = clientTaxInfo.NewId(db);
+            clientTaxInfo.Address.Id = clientTaxInfo.Address.NewId(db);
+            clientTaxInfo.AddressId = clientTaxInfo.Address.Id;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.Address.Add(clientTaxInfo.Address);
             db.ClientTaxInfo.Add(clientTaxInfo);
 
             try
@@ -155,7 +170,9 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<Address, AddressDTO>();
             });
+
             ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
 
             return CreatedAtRoute("GetClientTaxInfo", new { id = dto.Id }, dto);
@@ -178,6 +195,7 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<Address, AddressDTO>();
             });
             ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
             return Ok(dto);

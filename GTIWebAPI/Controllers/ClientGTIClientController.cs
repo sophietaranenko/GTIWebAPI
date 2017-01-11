@@ -2,6 +2,7 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Clients;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Dictionary;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -19,26 +20,6 @@ namespace GTIWebAPI.Controllers
     {
         private DbClient db = new DbClient();
 
-        /// <summary>
-        /// All gtiClients
-        /// </summary>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetAll")]
-        public IEnumerable<ClientGTIClientDTO> GetAll()
-        {
-            // тут процедурка 
-            //надо вообще оно или нет? вряд ли
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<ClientGTIClient, ClientGTIClientDTO>();
-            });
-            IEnumerable<ClientGTIClientDTO> dtos = Mapper
-                .Map<IEnumerable<ClientGTIClient>, IEnumerable<ClientGTIClientDTO>>
-                (db.ClientGTIClient.Where(p => p.Deleted != true).ToList());
-            return dtos;
-        }
 
         /// <summary>
         /// Get client gtiClient by client id for VIEW
@@ -72,11 +53,36 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
+
+            ClientGTIClientDTO dto = new ClientGTIClientDTO
             {
-                m.CreateMap<ClientGTIClient, ClientGTIClientDTO>();
-            });
-            ClientGTIClientDTO dto = Mapper.Map<ClientGTIClientDTO>(gtiClient);
+              ClientId = gtiClient.ClientId,
+              GTIClientId = gtiClient.GTIClientId,
+              Id = gtiClient.Id
+            };
+
+            ClientGTI clGTI = db.ClientGTI.Find(gtiClient.GTIClientId);
+            clGTI.Office = db.Office.Find(clGTI.OfficeId);
+
+            ClientGTIDTO clientGtiDto = new ClientGTIDTO
+            {
+                Address = clGTI.Address,
+                FullName = clGTI.FullName,
+                Email = clGTI.Email,
+                Id = clGTI.Id,
+                OfficeId = clGTI.OfficeId,
+                Phone = clGTI.Phone,
+                ShortName = clGTI.ShortName,
+                Office = new OfficeDTO
+                {
+                    DealIndex = clGTI.Office.DealIndex,
+                    Id = clGTI.Office.Id,
+                    ShortName = clGTI.Office.ShortName
+                }                
+            };
+
+            dto.ClientGTI = clientGtiDto;
+
             return Ok(dto);
         }
 
@@ -96,11 +102,36 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
+
+            ClientGTIClientDTO dto = new ClientGTIClientDTO
             {
-                m.CreateMap<ClientGTIClient, ClientGTIClientDTO>();
-            });
-            ClientGTIClientDTO dto = Mapper.Map<ClientGTIClient, ClientGTIClientDTO>(gtiClient);
+                ClientId = gtiClient.ClientId,
+                GTIClientId = gtiClient.GTIClientId,
+                Id = gtiClient.Id
+            };
+
+            ClientGTI clGTI = db.ClientGTI.Find(gtiClient.GTIClientId);
+            clGTI.Office = db.Office.Find(clGTI.OfficeId);
+
+            ClientGTIDTO clientGtiDto = new ClientGTIDTO
+            {
+                Address = clGTI.Address,
+                FullName = clGTI.FullName,
+                Email = clGTI.Email,
+                Id = clGTI.Id,
+                OfficeId = clGTI.OfficeId,
+                Phone = clGTI.Phone,
+                ShortName = clGTI.ShortName,
+                Office = new OfficeDTO
+                {
+                    DealIndex = clGTI.Office.DealIndex,
+                    Id = clGTI.Office.Id,
+                    ShortName = clGTI.Office.ShortName
+                }
+            };
+
+            dto.ClientGTI = clientGtiDto;
+
             return Ok(dto);
         }
 
