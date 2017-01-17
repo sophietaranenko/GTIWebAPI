@@ -77,7 +77,7 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Address object
         /// </summary>
-        public Address Address { get; set; }
+        public virtual Address Address { get; set; }
 
         /// <summary>
         /// Delete mark
