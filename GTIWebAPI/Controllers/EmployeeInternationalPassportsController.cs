@@ -148,7 +148,12 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
+            });
+            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
+            return CreatedAtRoute("GetInternationalPassportView", new { id = dto.Id }, dto);
         }
 
         /// <summary>

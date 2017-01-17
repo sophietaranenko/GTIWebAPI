@@ -153,7 +153,14 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employeeFoundationDoc.FoundationDocument = db.FoundationDocument.Find(employeeFoundationDoc.FoundationDocumentId);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
+            });
+            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDoc, EmployeeFoundationDocDTO>(employeeFoundationDoc);
+            return CreatedAtRoute("GetFoundationDocView", new { id = dto.Id }, dto);
         }
 
         /// <summary>

@@ -136,7 +136,9 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
+            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
+            return CreatedAtRoute("GetEducationView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -173,7 +175,6 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
             EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-            //return Ok();
             return CreatedAtRoute("GetEducationView", new { id = dto.Id }, dto);
         }
 

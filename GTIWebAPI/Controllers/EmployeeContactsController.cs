@@ -156,7 +156,15 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employeeContact = db.EmployeeContact.Find(employeeContact.Id);
+            employeeContact.ContactType = db.ContactType.Find(employeeContact.ContactTypeId);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
+                m.CreateMap<ContactType, ContactTypeDTO>();
+            });
+            EmployeeContactDTO dto = Mapper.Map<EmployeeContactDTO>(employeeContact);
+            return CreatedAtRoute("GetContactView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -197,12 +205,6 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-
-            //EmployeeContact contact = db.EmployeeContact.Find(employeeContact.Id);
-            //if (contact == null)
-            //{
-            //    return NotFound();
-            //}
             employeeContact.ContactType = db.ContactType.Find(employeeContact.ContactTypeId);
             Mapper.Initialize(m =>
             {
@@ -210,14 +212,6 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<ContactType, ContactTypeDTO>();
             });
             EmployeeContactDTO dto = Mapper.Map<EmployeeContactDTO>(employeeContact);
-            //return Ok(dto);
-
-            //Mapper.Initialize(m =>
-            //{
-            //    m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-            //    m.CreateMap<ContactType, ContactTypeDTO>();
-            //});
-            //EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(employeeContact);
             return CreatedAtRoute("GetContactView", new { id = dto.Id }, dto);
         }
 

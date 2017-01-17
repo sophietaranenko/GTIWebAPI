@@ -148,7 +148,12 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
+            });
+            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
+            return CreatedAtRoute("GetMilitaryCardView", new { id = dto.Id }, dto);
         }
 
         /// <summary>

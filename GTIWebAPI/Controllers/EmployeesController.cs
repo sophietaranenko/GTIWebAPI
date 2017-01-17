@@ -353,6 +353,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<Address, AddressDTO>();
             });
             employeeDTO.EmployeePassport = Mapper.Map<IEnumerable<EmployeePassportDTO>>(passports);
+           
 
             List<EmployeeMilitaryCard> cards = db.EmployeeMilitaryCard.Where(m => m.Deleted != true && m.EmployeeId == id).ToList();
             Mapper.Initialize(m => m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>());
@@ -473,7 +474,15 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employee = db.Employee.Find(employee.Id);
+            employee.Address = db.Address.Find(employee.AddressId);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Employee, EmployeeEditDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
+            EmployeeEditDTO dto = Mapper.Map<EmployeeEditDTO>(employee);
+            return CreatedAtRoute("GetEmployeeEdit", new { id = dto.Id }, dto);
         }
 
         /// <summary>

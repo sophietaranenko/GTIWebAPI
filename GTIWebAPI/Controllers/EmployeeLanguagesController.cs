@@ -152,7 +152,14 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employeeLanguage.Language = db.Language.Find(employeeLanguage.LanguageId);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
+                m.CreateMap<Language, LanguageDTO>();
+            });
+            EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguage, EmployeeLanguageDTO>(employeeLanguage);
+            return CreatedAtRoute("GetLanguageView", new { id = dto.Id }, dto);
         }
 
         /// <summary>

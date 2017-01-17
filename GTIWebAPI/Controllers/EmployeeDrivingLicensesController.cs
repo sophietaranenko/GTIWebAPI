@@ -148,7 +148,12 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
+            });
+            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
+            return CreatedAtRoute("GetDrivingLicenseView", new { id = dto.Id }, dto);
         }
 
         /// <summary>

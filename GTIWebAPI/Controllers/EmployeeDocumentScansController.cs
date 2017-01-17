@@ -120,6 +120,21 @@ namespace GTIWebAPI.Controllers
         }
 
         /// <summary>
+        /// Get all scans by employee
+        /// </summary>
+        /// <param name="tableName">Image of which document we're uploading</param>
+        /// <param name="tableId">Id of document which image we're uploading</param>
+        /// <returns></returns>
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetAllScansByEmployeeId")]
+        public IEnumerable<EmployeeDocumentScan> GetAllScansByEmployeeId(int employeeId)
+        {
+            List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
+            return scanList;
+        }
+
+        /// <summary>
         /// Get scan by its id
         /// </summary>
         /// <param name="id">scan id</param>

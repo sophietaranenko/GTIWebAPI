@@ -157,7 +157,18 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employeeOffice.Department = db.Department.Find(employeeOffice.DepartmentId);
+            employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
+            employeeOffice.Profession = db.Profession.Find(employeeOffice.ProfessionId);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
+                m.CreateMap<Department, DepartmentDTO>();
+                m.CreateMap<Profession, ProfessionDTO>();
+                m.CreateMap<Office, OfficeDTO>();
+            });
+            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
+            return CreatedAtRoute("GetOfficeView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -203,7 +214,6 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<Office, OfficeDTO>();
             });
             EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
-            //return Ok();
             return CreatedAtRoute("GetOfficeView", new { id = dto.Id }, dto);
         }
 

@@ -158,7 +158,14 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            employeePassport = db.EmployeePassport.Find(employeePassport.Id);
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
+                m.CreateMap<Address, AddressDTO>();
+            });
+            EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
+            return CreatedAtRoute("GetPassportView", new { id = dto.Id }, dto);
         }
 
         /// <summary>
