@@ -21,38 +21,38 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/ClientTaxInfo")]
     public class ClientTaxInfosController : ApiController
     {
-        private DbClient db = new DbClient();
+        private DbOrganization db = new DbOrganization();
 
         [GTIFilter]
         [Route("GetClientTaxInfos")]
-        public IEnumerable<ClientTaxInfoDTO> GetClientTaxInfos()
+        public IEnumerable<OrganizationTaxInfoDTO> GetClientTaxInfos()
         {
-            IEnumerable<ClientTaxInfo> taxInfos = db.ClientTaxInfo.Where(s => s.Deleted != true).ToList();
+            IEnumerable<OrganizationTaxInfo> taxInfos = db.OrganizationTaxInfos.Where(s => s.Deleted != true).ToList();
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<OrganizationTaxInfo, OrganizationTaxInfoDTO>();
                 m.CreateMap<Address, AddressDTO>();
             });
-            IEnumerable<ClientTaxInfoDTO> dtos = Mapper.
-                Map<IEnumerable<ClientTaxInfo>, IEnumerable<ClientTaxInfoDTO>>(taxInfos);
+            IEnumerable<OrganizationTaxInfoDTO> dtos = Mapper.
+                Map<IEnumerable<OrganizationTaxInfo>, IEnumerable<OrganizationTaxInfoDTO>>(taxInfos);
             return dtos;
         }
 
         [GTIFilter]
         [Route("GetClientTaxInfosByClientId")]
-        public IEnumerable<ClientTaxInfoDTO> GetClientTaxInfosByClientId(int clientId)
+        public IEnumerable<OrganizationTaxInfoDTO> GetClientTaxInfosByClientId(int organizationId)
         {
-            IEnumerable<ClientTaxInfo> taxInfos = db.ClientTaxInfo.Where(s => s.Deleted != true
-            && s.ClientId == clientId).ToList();
+            IEnumerable<OrganizationTaxInfo> taxInfos = db.OrganizationTaxInfos.Where(s => s.Deleted != true
+            && s.ClientId == organizationId).ToList();
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<OrganizationTaxInfo, OrganizationTaxInfoDTO>();
                 m.CreateMap<Address, AddressDTO>();
             });
 
-            IEnumerable<ClientTaxInfoDTO> dtos = Mapper.
-                Map<IEnumerable<ClientTaxInfo>, IEnumerable<ClientTaxInfoDTO>>(taxInfos);
+            IEnumerable<OrganizationTaxInfoDTO> dtos = Mapper.
+                Map<IEnumerable<OrganizationTaxInfo>, IEnumerable<OrganizationTaxInfoDTO>>(taxInfos);
 
             return dtos;
         }
@@ -62,20 +62,20 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [Route("GetClientTaxInfo", Name = "GetClientTaxInfo")]
         // GET: api/ClientTaxInfos/5
-        [ResponseType(typeof(ClientTaxInfo))]
+        [ResponseType(typeof(OrganizationTaxInfo))]
         public IHttpActionResult GetClientTaxInfo(int id)
         {
-            ClientTaxInfo clientTaxInfo = db.ClientTaxInfo.Find(id);
+            OrganizationTaxInfo organizationTaxInfo = db.OrganizationTaxInfos.Find(id);
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<OrganizationTaxInfo, OrganizationTaxInfoDTO>();
                 m.CreateMap<Address, AddressDTO>();
             });
 
-            ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
+            OrganizationTaxInfoDTO dto = Mapper.Map<OrganizationTaxInfoDTO>(organizationTaxInfo);
 
-            if (clientTaxInfo == null)
+            if (organizationTaxInfo == null)
             {
                 return NotFound();
             }
@@ -86,7 +86,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [Route("PutClientTaxInfo")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutClientTaxInfo(int id, ClientTaxInfoDTO inDto)
+        public IHttpActionResult PutClientTaxInfo(int id, OrganizationTaxInfoDTO inDto)
         {
             if (!ModelState.IsValid)
             {
@@ -98,11 +98,11 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<OrganizationTaxInfoDTO, OrganizationTaxInfo>();
                 m.CreateMap<AddressDTO, Address>();
             });
-            ClientTaxInfo clientTaxInfo = Mapper.Map<ClientTaxInfo>(inDto);
-            db.Entry(clientTaxInfo).State = EntityState.Modified;
+            OrganizationTaxInfo organizationTaxInfo = Mapper.Map<OrganizationTaxInfo>(inDto);
+            db.Entry(organizationTaxInfo).State = EntityState.Modified;
             try
             {
                 db.SaveChanges();
@@ -123,8 +123,8 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [Route("PostClientTaxInfo")]
-        [ResponseType(typeof(ClientTaxInfo))]
-        public IHttpActionResult PostClientTaxInfo(ClientTaxInfoDTO inDto)
+        [ResponseType(typeof(OrganizationTaxInfo))]
+        public IHttpActionResult PostClientTaxInfo(OrganizationTaxInfoDTO inDto)
         {
             if (!ModelState.IsValid)
             {
@@ -133,23 +133,23 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfoDTO, ClientTaxInfo>();
+                m.CreateMap<OrganizationTaxInfoDTO, OrganizationTaxInfo>();
                 m.CreateMap<AddressDTO, Address>();
             });
 
-            ClientTaxInfo clientTaxInfo = Mapper.Map<ClientTaxInfo>(inDto);
+            OrganizationTaxInfo organizationTaxInfo = Mapper.Map<OrganizationTaxInfo>(inDto);
 
-            clientTaxInfo.Id = clientTaxInfo.NewId(db);
-            clientTaxInfo.Address.Id = clientTaxInfo.Address.NewId(db);
-            clientTaxInfo.AddressId = clientTaxInfo.Address.Id;
+            organizationTaxInfo.Id = organizationTaxInfo.NewId(db);
+            organizationTaxInfo.Address.Id = organizationTaxInfo.Address.NewId(db);
+            organizationTaxInfo.AddressId = organizationTaxInfo.Address.Id;
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Address.Add(clientTaxInfo.Address);
-            db.ClientTaxInfo.Add(clientTaxInfo);
+            db.Addresses.Add(organizationTaxInfo.Address);
+            db.OrganizationTaxInfos.Add(organizationTaxInfo);
 
             try
             {
@@ -157,7 +157,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ClientTaxInfoExists(clientTaxInfo.Id))
+                if (ClientTaxInfoExists(organizationTaxInfo.Id))
                 {
                     return Conflict();
                 }
@@ -169,35 +169,35 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<OrganizationTaxInfo, OrganizationTaxInfoDTO>();
                 m.CreateMap<Address, AddressDTO>();
             });
 
-            ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
+            OrganizationTaxInfoDTO dto = Mapper.Map<OrganizationTaxInfoDTO>(organizationTaxInfo);
 
             return CreatedAtRoute("GetClientTaxInfo", new { id = dto.Id }, dto);
         }
 
         [GTIFilter]
         [Route("DeleteClientTaxInfo")]
-        [ResponseType(typeof(ClientTaxInfo))]
+        [ResponseType(typeof(OrganizationTaxInfoDTO))]
         public IHttpActionResult DeleteClientTaxInfo(int id)
         {
-            ClientTaxInfo clientTaxInfo = db.ClientTaxInfo.Find(id);
-            if (clientTaxInfo == null)
+            OrganizationTaxInfo organizationTaxInfo = db.OrganizationTaxInfos.Find(id);
+            if (organizationTaxInfo == null)
             {
                 return NotFound();
             }
 
-            clientTaxInfo.Deleted = true;
-            db.Entry(clientTaxInfo).State = EntityState.Modified;
+            organizationTaxInfo.Deleted = true;
+            db.Entry(organizationTaxInfo).State = EntityState.Modified;
             db.SaveChanges();
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientTaxInfo, ClientTaxInfoDTO>();
+                m.CreateMap<OrganizationTaxInfo, OrganizationTaxInfoDTO>();
                 m.CreateMap<Address, AddressDTO>();
             });
-            ClientTaxInfoDTO dto = Mapper.Map<ClientTaxInfoDTO>(clientTaxInfo);
+            OrganizationTaxInfoDTO dto = Mapper.Map<OrganizationTaxInfoDTO>(organizationTaxInfo);
             return Ok(dto);
         }
 
@@ -212,7 +212,7 @@ namespace GTIWebAPI.Controllers
 
         private bool ClientTaxInfoExists(int id)
         {
-            return db.ClientTaxInfo.Count(e => e.Id == id) > 0;
+            return db.OrganizationTaxInfos.Count(e => e.Id == id) > 0;
         }
     }
 }

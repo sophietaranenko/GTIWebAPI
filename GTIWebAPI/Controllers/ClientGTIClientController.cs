@@ -15,56 +15,56 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
-    [RoutePrefix("api/ClientGTIClients")]
-    public class ClientGTIClientsController : ApiController
+    [RoutePrefix("api/OrganizationGTILinks")]
+    public class OrganizationGTILinksController : ApiController
     {
-        private DbClient db = new DbClient();
+        private DbOrganization db = new DbOrganization();
 
 
         /// <summary>
-        /// Get client gtiClient by client id for VIEW
+        /// Get organization gtiClient by organization id for VIEW
         /// </summary>
-        /// <param name="clientId">Client Id</param>
-        /// <returns>Collection of ClientGTIClientDTO</returns>
+        /// <param name="organizationId">Client Id</param>
+        /// <returns>Collection of OrganizationGTILinkDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetGTIClientsByClientId")]
-        [ResponseType(typeof(IEnumerable<ClientGTIClientView>))]
-        public IEnumerable<ClientGTIClientView> GetByClient(int clientId)
+        [ResponseType(typeof(IEnumerable<OrganizationGTILinkView>))]
+        public IEnumerable<OrganizationGTILinkView> GetByClient(int organizationId)
         {
-            IEnumerable<ClientGTIClientView> clientList = new List<ClientGTIClientView>();
-            clientList = db.ClientGTIClientList(clientId);
-            return clientList;       
+            IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
+            organizationList = db.OrganizationGTILinkList(organizationId);
+            return organizationList;       
         }
 
         /// <summary>
         /// Get one gtiClient for view by gtiClient id
         /// </summary>
-        /// <param name="id">ClientGTIClient id</param>
-        /// <returns>ClientGTIClientEditDTO object</returns>
+        /// <param name="id">OrganizationGTILink id</param>
+        /// <returns>OrganizationGTILinkEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetGTIClientView", Name = "GetGTIClientView")]
-        [ResponseType(typeof(ClientGTIClientDTO))]
+        [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult GetGTIClientView(int id)
         {
-            ClientGTIClient gtiClient = db.ClientGTIClient.Find(id);
+            OrganizationGTILink gtiClient = db.OrganizationGTILinks.Find(id);
             if (gtiClient == null)
             {
                 return NotFound();
             }
 
-            ClientGTIClientDTO dto = new ClientGTIClientDTO
+            OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO
             {
-              ClientId = gtiClient.ClientId,
-              GTIClientId = gtiClient.GTIClientId,
+              OrganizationId = gtiClient.OrganizationId,
+              OrganizationGTIId = gtiClient.OrganizationGTIId,
               Id = gtiClient.Id
             };
 
-            ClientGTI clGTI = db.ClientGTI.Find(gtiClient.GTIClientId);
-            clGTI.Office = db.Office.Find(clGTI.OfficeId);
+            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.OrganizationGTIId);
+            clGTI.Office = db.Offices.Find(clGTI.OfficeId);
 
-            ClientGTIDTO clientGtiDto = new ClientGTIDTO
+            OrganizationGTIDTO organizationGtiDto = new OrganizationGTIDTO
             {
                 Address = clGTI.Address,
                 FullName = clGTI.FullName,
@@ -81,7 +81,7 @@ namespace GTIWebAPI.Controllers
                 }                
             };
 
-            dto.ClientGTI = clientGtiDto;
+            dto.OrganizationGTI = organizationGtiDto;
 
             return Ok(dto);
         }
@@ -89,31 +89,31 @@ namespace GTIWebAPI.Controllers
         /// <summary>
         /// Get one gtiClient for edit by gtiClient id
         /// </summary>
-        /// <param name="id">ClientGTIClient id</param>
-        /// <returns>ClientGTIClientEditDTO object</returns>
+        /// <param name="id">OrganizationGTILink id</param>
+        /// <returns>OrganizationGTILinkEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetGTIClientEdit")]
-        [ResponseType(typeof(ClientGTIClientDTO))]
+        [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult GetGTIClientEdit(int id)
         {
-            ClientGTIClient gtiClient = db.ClientGTIClient.Find(id);
+            OrganizationGTILink gtiClient = db.OrganizationGTILinks.Find(id);
             if (gtiClient == null)
             {
                 return NotFound();
             }
 
-            ClientGTIClientDTO dto = new ClientGTIClientDTO
+            OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO
             {
-                ClientId = gtiClient.ClientId,
-                GTIClientId = gtiClient.GTIClientId,
+                OrganizationId = gtiClient.OrganizationId,
+                OrganizationGTIId = gtiClient.OrganizationGTIId,
                 Id = gtiClient.Id
             };
 
-            ClientGTI clGTI = db.ClientGTI.Find(gtiClient.GTIClientId);
-            clGTI.Office = db.Office.Find(clGTI.OfficeId);
+            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.OrganizationGTIId);
+            clGTI.Office = db.Offices.Find(clGTI.OfficeId);
 
-            ClientGTIDTO clientGtiDto = new ClientGTIDTO
+            OrganizationGTIDTO organizationGtiDto = new OrganizationGTIDTO
             {
                 Address = clGTI.Address,
                 FullName = clGTI.FullName,
@@ -130,24 +130,24 @@ namespace GTIWebAPI.Controllers
                 }
             };
 
-            dto.ClientGTI = clientGtiDto;
+            dto.OrganizationGTI = organizationGtiDto;
 
             return Ok(dto);
         }
 
         /// <summary>
-        /// Update client gtiClient
+        /// Update organization gtiClient
         /// </summary>
         /// <param name="id">GTIClient id</param>
-        /// <param name="clientGTIClient">ClientGTIClient object</param>
+        /// <param name="clientGTIClient">OrganizationGTILink object</param>
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("PutGTIClient")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutClientGTIClient(int id, ClientGTIClient clientGTIClient)
+        public IHttpActionResult PutOrganizationGTILink(int id, OrganizationGTILink link)
         {
-            if (clientGTIClient == null)
+            if (link == null)
             {
                 return BadRequest(ModelState);
             }
@@ -155,18 +155,18 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (id != clientGTIClient.Id)
+            if (id != link.Id)
             {
                 return BadRequest();
             }
-            db.Entry(clientGTIClient).State = EntityState.Modified;
+            db.Entry(link).State = EntityState.Modified;
             try
             {
                 db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClientGTIClientExists(id))
+                if (!OrganizationGTILinkExists(id))
                 {
                     return NotFound();
                 }
@@ -179,17 +179,17 @@ namespace GTIWebAPI.Controllers
         }
 
         /// <summary>
-        /// Insert new client gtiClient
+        /// Insert new organization gtiClient
         /// </summary>
-        /// <param name="clientGTIClient">ClientGTIClient object</param>
+        /// <param name="link">OrganizationGTILink object</param>
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostGTIClient")]
-        [ResponseType(typeof(ClientGTIClientDTO))]
-        public IHttpActionResult PostClientGTIClient(ClientGTIClient clientGTIClient)
+        [Route("PostOrganizationGTILink")]
+        [ResponseType(typeof(OrganizationGTILinkDTO))]
+        public IHttpActionResult PostLink(OrganizationGTILink link)
         {
-            if (clientGTIClient == null)
+            if (link == null)
             {
                 return BadRequest(ModelState);
             }
@@ -198,8 +198,8 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            clientGTIClient.Id = clientGTIClient.NewId(db);
-            db.ClientGTIClient.Add(clientGTIClient);
+            link.Id = link.NewId(db);
+            db.OrganizationGTILinks.Add(link);
 
             try
             {
@@ -207,7 +207,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ClientGTIClientExists(clientGTIClient.Id))
+                if (OrganizationGTILinkExists(link.Id))
                 {
                     return Conflict();
                 }
@@ -218,10 +218,10 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientGTIClient, ClientGTIClientDTO>();
+                m.CreateMap<OrganizationGTILink, OrganizationGTILinkDTO>();
             });
-            ClientGTIClientDTO dto = Mapper.Map<ClientGTIClient, ClientGTIClientDTO>(clientGTIClient);
-            return CreatedAtRoute("GetGTIClientView", new { id = dto.Id }, dto);
+            OrganizationGTILinkDTO dto = Mapper.Map<OrganizationGTILink, OrganizationGTILinkDTO>(link);
+            return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -232,23 +232,23 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("DeleteGTIClient")]
-        [ResponseType(typeof(ClientGTIClient))]
-        public IHttpActionResult DeleteClientGTIClient(int id)
+        [ResponseType(typeof(OrganizationGTILink))]
+        public IHttpActionResult DeleteOrganizationGTILink(int id)
         {
-            ClientGTIClient clientGTIClient = db.ClientGTIClient.Find(id);
-            if (clientGTIClient == null)
+            OrganizationGTILink organizationGTI = db.OrganizationGTILinks.Find(id);
+            if (organizationGTI == null)
             {
                 return NotFound();
             }
-            clientGTIClient.Deleted = true;
-            db.Entry(clientGTIClient).State = EntityState.Modified;
+            organizationGTI.Deleted = true;
+            db.Entry(organizationGTI).State = EntityState.Modified;
             try
             {
                 db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClientGTIClientExists(id))
+                if (!OrganizationGTILinkExists(id))
                 {
                     return NotFound();
                 }
@@ -259,9 +259,9 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientGTIClient, ClientGTIClientDTO>();
+                m.CreateMap<OrganizationGTILink, OrganizationGTILinkDTO>();
             });
-            ClientGTIClientDTO dto = Mapper.Map<ClientGTIClient, ClientGTIClientDTO>(clientGTIClient);
+            OrganizationGTILinkDTO dto = Mapper.Map<OrganizationGTILink, OrganizationGTILinkDTO>(organizationGTI);
             return Ok(dto);
         }
 
@@ -278,9 +278,9 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool ClientGTIClientExists(int id)
+        private bool OrganizationGTILinkExists(int id)
         {
-            return db.ClientGTIClient.Count(e => e.Id == id) > 0;
+            return db.OrganizationGTILinks.Count(e => e.Id == id) > 0;
         }
 
     }

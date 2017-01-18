@@ -19,38 +19,38 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/ClientSigners")]
     public class ClientSignersController : ApiController
     {
-        private DbClient db = new DbClient();
+        private DbOrganization db = new DbOrganization();
 
         [GTIFilter]
         [Route("GetClientSigners")]
-        public IEnumerable<ClientSignerDTO> GetClientSigners()
+        public IEnumerable<OrganizationSignerDTO> GetClientSigners()
         {
-            IEnumerable<ClientSigner> signers = db.ClientSigner.Where(s => s.Deleted != true).ToList();
+            IEnumerable<OrganizationSigner> signers = db.OrganizationSigners.Where(s => s.Deleted != true).ToList();
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSignerDTO, ClientSigner>();
+                m.CreateMap<OrganizationSignerDTO, OrganizationSigner>();
                 m.CreateMap<SignerPositionDTO, SignerPosition>();
             });
-            IEnumerable<ClientSignerDTO> dtos = Mapper.
-                Map<IEnumerable<ClientSigner>, IEnumerable<ClientSignerDTO>>(signers);
+            IEnumerable<OrganizationSignerDTO> dtos = Mapper.
+                Map<IEnumerable<OrganizationSigner>, IEnumerable<OrganizationSignerDTO>>(signers);
             return dtos;
         }
 
         [GTIFilter]
         [Route("GetClientSignersByClientId")]
-        public IEnumerable<ClientSignerDTO> GetClientSignersByClientId(int clientId)
+        public IEnumerable<OrganizationSignerDTO> GetClientSignersByClientId(int clientId)
         {
-            IEnumerable<ClientSigner> signers = db.ClientSigner.Where(s => s.Deleted != true
+            IEnumerable<OrganizationSigner> signers = db.OrganizationSigners.Where(s => s.Deleted != true
             && s.ClientId == clientId).ToList();
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSignerDTO, ClientSigner>();
+                m.CreateMap<OrganizationSignerDTO, OrganizationSigner>();
                 m.CreateMap<SignerPositionDTO, SignerPosition>();
             });
 
-            IEnumerable<ClientSignerDTO> dtos = Mapper.
-                Map<IEnumerable<ClientSigner>, IEnumerable<ClientSignerDTO>>(signers);
+            IEnumerable<OrganizationSignerDTO> dtos = Mapper.
+                Map<IEnumerable<OrganizationSigner>, IEnumerable<OrganizationSignerDTO>>(signers);
 
             return dtos;
         }
@@ -60,18 +60,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [Route("GetClientSigner", Name = "GetClientSigner")]
         // GET: api/ClientSigners/5
-        [ResponseType(typeof(ClientSigner))]
+        [ResponseType(typeof(OrganizationSigner))]
         public IHttpActionResult GetClientSigner(int id)
         {
-            ClientSigner clientSigner = db.ClientSigner.Find(id);
+            OrganizationSigner clientSigner = db.OrganizationSigners.Find(id);
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSignerDTO, ClientSigner>();
+                m.CreateMap<OrganizationSignerDTO, OrganizationSigner>();
                 m.CreateMap<SignerPositionDTO, SignerPosition>();
             });
 
-            ClientSignerDTO dto = Mapper.Map<ClientSignerDTO>(clientSigner);
+            OrganizationSignerDTO dto = Mapper.Map<OrganizationSignerDTO>(clientSigner);
 
             if (clientSigner == null)
             {
@@ -84,7 +84,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [Route("PutClientSigner")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutClientSigner(int id, ClientSignerDTO inDto)
+        public IHttpActionResult PutClientSigner(int id, OrganizationSignerDTO inDto)
         {
 
             if (!ModelState.IsValid)
@@ -99,10 +99,10 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSignerDTO, ClientSigner>();
+                m.CreateMap<OrganizationSignerDTO, OrganizationSigner>();
                 m.CreateMap<SignerPositionDTO, SignerPosition>();
             });
-            ClientSigner clientSigner = Mapper.Map<ClientSigner>(inDto);
+            OrganizationSigner clientSigner = Mapper.Map<OrganizationSigner>(inDto);
             db.Entry(clientSigner).State = EntityState.Modified;
             try
             {
@@ -124,8 +124,8 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [Route("PostClientSigner")]
-        [ResponseType(typeof(ClientSigner))]
-        public IHttpActionResult PostClientSigner(ClientSignerDTO inDto)
+        [ResponseType(typeof(OrganizationSigner))]
+        public IHttpActionResult PostClientSigner(OrganizationSignerDTO inDto)
         {
             if (!ModelState.IsValid)
             {
@@ -134,14 +134,14 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSignerDTO, ClientSigner>();
+                m.CreateMap<OrganizationSignerDTO, OrganizationSigner>();
                 m.CreateMap<SignerPositionDTO, SignerPosition>();
             });
 
-            ClientSigner clientSigner = Mapper.Map<ClientSigner>(inDto);
+            OrganizationSigner clientSigner = Mapper.Map<OrganizationSigner>(inDto);
 
             clientSigner.Id = clientSigner.NewId(db);
-            db.ClientSigner.Add(clientSigner);
+            db.OrganizationSigners.Add(clientSigner);
 
             try
             {
@@ -161,20 +161,20 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSigner, ClientSignerDTO>();
+                m.CreateMap<OrganizationSigner, OrganizationSignerDTO>();
                 m.CreateMap<SignerPosition, SignerPositionDTO>();
             });
-            ClientSignerDTO dto = Mapper.Map<ClientSignerDTO>(clientSigner);
+            OrganizationSignerDTO dto = Mapper.Map<OrganizationSignerDTO>(clientSigner);
 
             return CreatedAtRoute("GetClientSigner", new { id = dto.Id }, dto);
         }
 
         [GTIFilter]
         [Route("DeleteClientSigner")]
-        [ResponseType(typeof(ClientSigner))]
+        [ResponseType(typeof(OrganizationSigner))]
         public IHttpActionResult DeleteClientSigner(int id)
         {
-            ClientSigner clientSigner = db.ClientSigner.Find(id);
+            OrganizationSigner clientSigner = db.OrganizationSigners.Find(id);
             if (clientSigner == null)
             {
                 return NotFound();
@@ -185,10 +185,10 @@ namespace GTIWebAPI.Controllers
             db.SaveChanges();
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientSigner, ClientSignerDTO>();
+                m.CreateMap<OrganizationSigner, OrganizationSignerDTO>();
                 m.CreateMap<SignerPosition, SignerPositionDTO>();
             });
-            ClientSignerDTO dto = Mapper.Map<ClientSignerDTO>(clientSigner);
+            OrganizationSignerDTO dto = Mapper.Map<OrganizationSignerDTO>(clientSigner);
             return Ok(dto);
         }
 
@@ -196,7 +196,7 @@ namespace GTIWebAPI.Controllers
         [Route("GetSignerPositions")]
         public IEnumerable<SignerPositionDTO> GetSignerPositions()
         {
-            IEnumerable<SignerPosition> pos = db.SignerPosition.ToList();
+            IEnumerable<SignerPosition> pos = db.SignerPositions.ToList();
             Mapper.Initialize(m =>
             {
                 m.CreateMap<SignerPosition, SignerPositionDTO>();
@@ -216,7 +216,7 @@ namespace GTIWebAPI.Controllers
 
         private bool ClientSignerExists(int id)
         {
-            return db.ClientSigner.Count(e => e.Id == id) > 0;
+            return db.OrganizationSigners.Count(e => e.Id == id) > 0;
         }
     }
 }

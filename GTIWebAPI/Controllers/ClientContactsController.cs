@@ -17,11 +17,10 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
-    /// </summary>
     [RoutePrefix("api/ClientContacts")]
     public class ClientContactsController : ApiController
     {
-        private DbClient db = new DbClient();
+        private DbOrganization db = new DbOrganization();
 
         /// <summary>
         /// All contacts
@@ -30,37 +29,37 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<ClientContactDTO> GetAll()
+        public IEnumerable<OrganizationContactDTO> GetAll()
         {
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
 
-            IEnumerable<ClientContactDTO> dtos = Mapper
-                .Map<IEnumerable<ClientContact>, IEnumerable<ClientContactDTO>>
-                (db.ClientContact.Where(p => p.Deleted != true).ToList());
+            IEnumerable<OrganizationContactDTO> dtos = Mapper
+                .Map<IEnumerable<OrganizationContact>, IEnumerable<OrganizationContactDTO>>
+                (db.OrganizationContacts.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
         /// <summary>
-        /// Get client contact by client id for VIEW
+        /// Get organization contact by organization id for VIEW
         /// </summary>
-        /// <param name="clientId">Client Id</param>
+        /// <param name="organizationId">Client Id</param>
         /// <returns>Collection of ClientContactDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetContactsByClientId")]
-        [ResponseType(typeof(IEnumerable<ClientContactDTO>))]
-        public IEnumerable<ClientContactDTO> GetByClient(int clientId)
+        [ResponseType(typeof(IEnumerable<OrganizationContactDTO>))]
+        public IEnumerable<OrganizationContactDTO> GetByClient(int organizationId)
         {
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
-            IEnumerable<ClientContactDTO> dtos = Mapper
-                .Map<IEnumerable<ClientContact>, IEnumerable<ClientContactDTO>>
-                (db.ClientContact.Where(p => p.Deleted != true && p.ClientId == clientId).ToList());
+            IEnumerable<OrganizationContactDTO> dtos = Mapper
+                .Map<IEnumerable<OrganizationContact>, IEnumerable<OrganizationContactDTO>>
+                (db.OrganizationContacts.Where(p => p.Deleted != true && p.ClientId == organizationId).ToList());
             return dtos;
         }
 
@@ -72,34 +71,34 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetClientContactView", Name = "GetClientContactView")]
-        [ResponseType(typeof(ClientContactDTO))]
+        [ResponseType(typeof(OrganizationContactDTO))]
         public IHttpActionResult GetContactView(int id)
         {
-            ClientContact contact = db.ClientContact.Find(id);
+            OrganizationContact contact = db.OrganizationContacts.Find(id);
             if (contact == null)
             {
                 return NotFound();
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
-            ClientContactDTO dto = Mapper.Map<ClientContactDTO>(contact);
+            OrganizationContactDTO dto = Mapper.Map<OrganizationContactDTO>(contact);
             return Ok(dto);
         }
 
         /// <summary>
-        /// Get one contact for view by contact id as USER with client info 
+        /// Get one contact for view by contact id as USER with organization info 
         /// </summary>
         /// <param name="id">ClientContact id</param>
         /// <returns>ClientContactEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetClientContactAsUser", Name = "GetClientContactAsUser")]
-        [ResponseType(typeof(ClientContactUserDTO))]
+        [ResponseType(typeof(OrganizationContactUserDTO))]
         public IHttpActionResult GetContactAsUser(int id)
         {
-            ClientContact contact = db.ClientContact.Find(id);
+            OrganizationContact contact = db.OrganizationContacts.Find(id);
             if (contact == null)
             {
                 return NotFound();
@@ -107,26 +106,26 @@ namespace GTIWebAPI.Controllers
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
 
-            ClientContactDTO contactDto = Mapper.Map<ClientContactDTO>(contact);
+            OrganizationContactDTO contactDto = Mapper.Map<OrganizationContactDTO>(contact);
 
-            ClientContactUserDTO userDto = new ClientContactUserDTO()
+            OrganizationContactUserDTO userDto = new OrganizationContactUserDTO()
             {
-                ClientContact = contactDto
+                OrganizationContact = contactDto
             };
 
             userDto.ProfilePicture = "";
 
-            Client client = db.Client.Find(contactDto.ClientId);
-            if (client != null)
+            Organization organization = db.Organizations.Find(contactDto.ClientId);
+            if (organization != null)
             {
-                userDto.Client = client.MapToEdit();
+                userDto.Organization = organization.MapToEdit();
             }
 
             ApplicationDbContext appDb = new ApplicationDbContext();
-           ApplicationUser user = appDb.Users.Where(u => u.TableName == "ClientContact" && u.TableId == id).FirstOrDefault();
+            ApplicationUser user = appDb.Users.Where(u => u.TableName == "ClientContact" && u.TableId == id).FirstOrDefault();
 
             string Photo = "";
             if (user != null)
@@ -151,35 +150,35 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetContactEdit")]
-        [ResponseType(typeof(ClientContactDTO))]
+        [ResponseType(typeof(OrganizationContactDTO))]
         public IHttpActionResult GetContactEdit(int id)
         {
-            ClientContact contact = db.ClientContact.Find(id);
+            OrganizationContact contact = db.OrganizationContacts.Find(id);
             if (contact == null)
             {
                 return NotFound();
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
-            ClientContactDTO dto = Mapper.Map<ClientContact, ClientContactDTO>(contact);
+            OrganizationContactDTO dto = Mapper.Map<OrganizationContact, OrganizationContactDTO>(contact);
             return Ok(dto);
         }
 
         /// <summary>
-        /// Update client contact
+        /// Update organization contact
         /// </summary>
         /// <param name="id">Contact id</param>
-        /// <param name="clientContact">ClientContact object</param>
+        /// <param name="organizationContact">ClientContact object</param>
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("PutContact")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutClientContact(int id, ClientContact clientContact)
+        public IHttpActionResult PutClientContact(int id, OrganizationContact organizationContact)
         {
-            if (clientContact == null)
+            if (organizationContact == null)
             {
                 return BadRequest(ModelState);
             }
@@ -187,11 +186,11 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (id != clientContact.Id)
+            if (id != organizationContact.Id)
             {
                 return BadRequest();
             }
-            db.Entry(clientContact).State = EntityState.Modified;
+            db.Entry(organizationContact).State = EntityState.Modified;
             try
             {
                 db.SaveChanges();
@@ -207,21 +206,32 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+
+            OrganizationContact contact = db.OrganizationContacts.Find(organizationContact.Id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
+            });
+            OrganizationContactDTO dto = Mapper.Map<OrganizationContactDTO>(contact);
+            return Ok(dto);
         }
 
         /// <summary>
-        /// Insert new client contact
+        /// Insert new organization contact
         /// </summary>
-        /// <param name="clientContact">ClientContact object</param>
+        /// <param name="organizationContact">ClientContact object</param>
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("PostContact")]
-        [ResponseType(typeof(ClientContactDTO))]
-        public IHttpActionResult PostClientContact(ClientContact clientContact)
+        [ResponseType(typeof(OrganizationContactDTO))]
+        public IHttpActionResult PostClientContact(OrganizationContact organizationContact)
         {
-            if (clientContact == null)
+            if (organizationContact == null)
             {
                 return BadRequest(ModelState);
             }
@@ -230,8 +240,8 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            clientContact.Id = clientContact.NewId(db);
-            db.ClientContact.Add(clientContact);
+            organizationContact.Id = organizationContact.NewId(db);
+            db.OrganizationContacts.Add(organizationContact);
 
             try
             {
@@ -239,7 +249,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ClientContactExists(clientContact.Id))
+                if (ClientContactExists(organizationContact.Id))
                 {
                     return Conflict();
                 }
@@ -249,16 +259,16 @@ namespace GTIWebAPI.Controllers
                 }
             }
 
-            ClientContact contact = db.ClientContact.Find(clientContact.Id);
+            OrganizationContact contact = db.OrganizationContacts.Find(organizationContact.Id);
             if (contact == null)
             {
                 return NotFound();
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
-            ClientContactDTO dto = Mapper.Map<ClientContactDTO>(contact);
+            OrganizationContactDTO dto = Mapper.Map<OrganizationContactDTO>(contact);
             return CreatedAtRoute("GetContactView", new { id = dto.Id }, dto);
         }
 
@@ -270,16 +280,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("DeleteContact")]
-        [ResponseType(typeof(ClientContact))]
+        [ResponseType(typeof(OrganizationContact))]
         public IHttpActionResult DeleteClientContact(int id)
         {
-            ClientContact clientContact = db.ClientContact.Find(id);
-            if (clientContact == null)
+            OrganizationContact organizationContact = db.OrganizationContacts.Find(id);
+            if (organizationContact == null)
             {
                 return NotFound();
             }
-            clientContact.Deleted = true;
-            db.Entry(clientContact).State = EntityState.Modified;
+            organizationContact.Deleted = true;
+            db.Entry(organizationContact).State = EntityState.Modified;
             try
             {
                 db.SaveChanges();
@@ -297,9 +307,9 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<ClientContact, ClientContactDTO>();
+                m.CreateMap<OrganizationContact, OrganizationContactDTO>();
             });
-            ClientContactDTO dto = Mapper.Map<ClientContact, ClientContactDTO>(clientContact);
+            OrganizationContactDTO dto = Mapper.Map<OrganizationContact, OrganizationContactDTO>(organizationContact);
             return Ok(dto);
         }
 
@@ -318,7 +328,7 @@ namespace GTIWebAPI.Controllers
 
         private bool ClientContactExists(int id)
         {
-            return db.ClientContact.Count(e => e.Id == id) > 0;
+            return db.OrganizationContacts.Count(e => e.Id == id) > 0;
         }
 
     }

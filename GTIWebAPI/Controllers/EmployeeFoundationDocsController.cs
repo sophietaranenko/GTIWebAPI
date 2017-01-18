@@ -16,8 +16,8 @@ using GTIWebAPI.Models.Personnel;
 
 namespace GTIWebAPI.Controllers
 {
-    [RoutePrefix("api/EmployeeFoundationDocs")]
-    public class EmployeeFoundationDocsController : ApiController
+    [RoutePrefix("api/EmployeeFoundationDocuments")]
+    public class EmployeeFoundationDocumentsController : ApiController
     {
         private DbPersonnel db = new DbPersonnel();
 
@@ -28,16 +28,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeFoundationDocDTO> GetAll()
+        public IEnumerable<EmployeeFoundationDocumentDTO> GetAll()
         {
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            IEnumerable<EmployeeFoundationDocDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeFoundationDoc>, IEnumerable<EmployeeFoundationDocDTO>>
-                (db.EmployeeFoundationDoc.Where(p => p.Deleted != true).ToList());
+            IEnumerable<EmployeeFoundationDocumentDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeFoundationDocument>, IEnumerable<EmployeeFoundationDocumentDTO>>
+                (db.EmployeeFoundationDocuments.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -49,17 +49,17 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetFoundationDocsByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocDTO>))]
-        public IEnumerable<EmployeeFoundationDocDTO> GetByEmployee(int employeeId)
+        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
+        public IEnumerable<EmployeeFoundationDocumentDTO> GetByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            IEnumerable<EmployeeFoundationDocDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeFoundationDoc>, IEnumerable<EmployeeFoundationDocDTO>>
-                (db.EmployeeFoundationDoc.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+            IEnumerable<EmployeeFoundationDocumentDTO> dtos = Mapper
+                .Map<IEnumerable<EmployeeFoundationDocument>, IEnumerable<EmployeeFoundationDocumentDTO>>
+                (db.EmployeeFoundationDocuments.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -71,20 +71,20 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetFoundationDocView", Name = "GetFoundationDocView")]
-        [ResponseType(typeof(EmployeeFoundationDocDTO))]
+        [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
         public IHttpActionResult GetFoundationDocView(int id)
         {
-            EmployeeFoundationDoc foundationDoc = db.EmployeeFoundationDoc.Find(id);
+            EmployeeFoundationDocument foundationDoc = db.EmployeeFoundationDocuments.Find(id);
             if (foundationDoc == null)
             {
                 return NotFound();
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDocDTO>(foundationDoc);
+            EmployeeFoundationDocumentDTO dto = Mapper.Map<EmployeeFoundationDocumentDTO>(foundationDoc);
             return Ok(dto);
         }
 
@@ -96,20 +96,20 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetFoundationDocEdit")]
-        [ResponseType(typeof(EmployeeFoundationDocDTO))]
+        [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
         public IHttpActionResult GetFoundationDocEdit(int id)
         {
-            EmployeeFoundationDoc foundationDoc = db.EmployeeFoundationDoc.Find(id);
+            EmployeeFoundationDocument foundationDoc = db.EmployeeFoundationDocuments.Find(id);
             if (foundationDoc == null)
             {
                 return NotFound();
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDoc, EmployeeFoundationDocDTO>(foundationDoc);
+            EmployeeFoundationDocumentDTO dto = Mapper.Map<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>(foundationDoc);
             return Ok(dto);
         }
 
@@ -123,7 +123,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("PutFoundationDoc")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeFoundationDoc(int id, EmployeeFoundationDoc employeeFoundationDoc)
+        public IHttpActionResult PutEmployeeFoundationDoc(int id, EmployeeFoundationDocument employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null)
             {
@@ -156,10 +156,10 @@ namespace GTIWebAPI.Controllers
             employeeFoundationDoc.FoundationDocument = db.FoundationDocument.Find(employeeFoundationDoc.FoundationDocumentId);
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDoc, EmployeeFoundationDocDTO>(employeeFoundationDoc);
+            EmployeeFoundationDocumentDTO dto = Mapper.Map<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>(employeeFoundationDoc);
             return CreatedAtRoute("GetFoundationDocView", new { id = dto.Id }, dto);
         }
 
@@ -171,8 +171,8 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("PostFoundationDoc")]
-        [ResponseType(typeof(EmployeeFoundationDocDTO))]
-        public IHttpActionResult PostEmployeeFoundationDoc(EmployeeFoundationDoc employeeFoundationDoc)
+        [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
+        public IHttpActionResult PostEmployeeFoundationDoc(EmployeeFoundationDocument employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null)
             {
@@ -184,7 +184,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeFoundationDoc.Id = employeeFoundationDoc.NewId(db);
-            db.EmployeeFoundationDoc.Add(employeeFoundationDoc);
+            db.EmployeeFoundationDocuments.Add(employeeFoundationDoc);
 
             try
             {
@@ -204,10 +204,10 @@ namespace GTIWebAPI.Controllers
             employeeFoundationDoc.FoundationDocument = db.FoundationDocument.Find(employeeFoundationDoc.FoundationDocumentId);
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDoc, EmployeeFoundationDocDTO>(employeeFoundationDoc);
+            EmployeeFoundationDocumentDTO dto = Mapper.Map<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>(employeeFoundationDoc);
             return CreatedAtRoute("GetFoundationDocView", new { id = dto.Id }, dto);
         }
 
@@ -218,11 +218,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteFoundationDoc")]
-        [ResponseType(typeof(EmployeeFoundationDoc))]
+        [Route("DeleteFoundationDocument")]
+        [ResponseType(typeof(EmployeeFoundationDocument))]
         public IHttpActionResult DeleteEmployeeFoundationDoc(int id)
         {
-            EmployeeFoundationDoc employeeFoundationDoc = db.EmployeeFoundationDoc.Find(id);
+            EmployeeFoundationDocument employeeFoundationDoc = db.EmployeeFoundationDocuments.Find(id);
             if (employeeFoundationDoc == null)
             {
                 return NotFound();
@@ -246,10 +246,10 @@ namespace GTIWebAPI.Controllers
             }
             Mapper.Initialize(m =>
             {
-                m.CreateMap<EmployeeFoundationDoc, EmployeeFoundationDocDTO>();
+                m.CreateMap<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>();
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
-            EmployeeFoundationDocDTO dto = Mapper.Map<EmployeeFoundationDoc, EmployeeFoundationDocDTO>(employeeFoundationDoc);
+            EmployeeFoundationDocumentDTO dto = Mapper.Map<EmployeeFoundationDocument, EmployeeFoundationDocumentDTO>(employeeFoundationDoc);
             return Ok(dto);
         }
 
@@ -285,7 +285,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeFoundationDocExists(int id)
         {
-            return db.EmployeeFoundationDoc.Count(e => e.Id == id) > 0;
+            return db.EmployeeFoundationDocuments.Count(e => e.Id == id) > 0;
         }
     }
 }

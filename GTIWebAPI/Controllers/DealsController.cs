@@ -14,11 +14,11 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Deals")]
     public class DealsController : ApiController
     {
-        DbClient db = new DbClient();
+        DbOrganization db = new DbOrganization();
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetDeals")]
+        [Route("GetAll")]
         public IEnumerable<DealShortViewDTO> GetDeals(int clientId, DateTime dateBegin, DateTime dateEnd)
         {
             if (clientId == 0)
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetDeal")]
+        [Route("Get")]
         [ResponseType(typeof(DealFullViewDTO))]
         public IHttpActionResult GetDealView(string Id)
         {
