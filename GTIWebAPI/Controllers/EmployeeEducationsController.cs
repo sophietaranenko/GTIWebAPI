@@ -34,10 +34,14 @@ namespace GTIWebAPI.Controllers
         [Route("GetAll")]
         public IEnumerable<EmployeeEducationDTO> GetEmployeeEducation()
         {
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
+                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
+            });
             IEnumerable<EmployeeEducationDTO> dtos =
                 Mapper.Map<IEnumerable<EmployeeEducation>, IEnumerable<EmployeeEducationDTO>>
-                (db.EmployeeEducation.Where(e => e.Deleted != true).ToList());
+                (db.EmployeeEducations.Where(e => e.Deleted != true).ToList());
             return dtos;
         }
 
@@ -48,13 +52,17 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetEducationsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         public IEnumerable<EmployeeEducationDTO> GetEmployeeEducationByEmployeeId(int employeeId)
         {
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
+                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
+            });
             IEnumerable<EmployeeEducationDTO> dtos =
                 Mapper.Map<IEnumerable<EmployeeEducation>, IEnumerable<EmployeeEducationDTO>>
-                (db.EmployeeEducation.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
+                (db.EmployeeEducations.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -65,40 +73,19 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetEducationView", Name = "GetEducationView")]
+        [Route("Get", Name = "GetEmployeeEducation")]
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult GetEmployeeEducationView(int id)
         {
-            EmployeeEducation employeeEducation = db.EmployeeEducation.Find(id);
+            EmployeeEducation employeeEducation = db.EmployeeEducations.Find(id);
             if (employeeEducation == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
-            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
+            EmployeeEducationDTO dto = employeeEducation.ToDTO();
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Get education document Edit
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetEducationEdit")]
-        [ResponseType(typeof(EmployeeEducationDTO))]
-        public IHttpActionResult GetEmployeeEducationEdit(int id)
-        {
-            EmployeeEducation employeeEducation = db.EmployeeEducation.Find(id);
-            if (employeeEducation == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
-            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-            return Ok(dto);
-        }
 
         /// <summary>
         /// Update EmployeeEducation
@@ -108,7 +95,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutEducation")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeEducation(int id, EmployeeEducation employeeEducation)
         {
@@ -136,9 +123,14 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
-            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-            return CreatedAtRoute("GetEducationView", new { id = dto.Id }, dto);
+            int Id = employeeEducation.Id;
+            EmployeeEducation education = db.EmployeeEducations.Find(Id);
+            if (education.StudyFormId != null)
+            {
+                education.EducationStudyForm = db.EducationStudyForms.Find(education.StudyFormId);
+            }
+            EmployeeEducationDTO dto = education.ToDTO();
+            return Ok(dto);
         }
 
         /// <summary>
@@ -148,7 +140,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostEducation")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult PostEmployeeEducation(EmployeeEducation employeeEducation)
         {
@@ -157,7 +149,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            db.EmployeeEducation.Add(employeeEducation);
+            db.EmployeeEducations.Add(employeeEducation);
             try
             {
                 db.SaveChanges();
@@ -173,9 +165,14 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
-            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
-            return CreatedAtRoute("GetEducationView", new { id = dto.Id }, dto);
+            int Id = employeeEducation.Id;
+            EmployeeEducation education = db.EmployeeEducations.Find(Id);
+            if (education.StudyFormId != null)
+            {
+                education.EducationStudyForm = db.EducationStudyForms.Find(education.StudyFormId);
+            }
+            EmployeeEducationDTO dto = education.ToDTO();
+            return CreatedAtRoute("GetEmployeeEducation", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -185,11 +182,11 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteEducation")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult DeleteEmployeeEducation(int id)
         {
-            EmployeeEducation employeeEducation = db.EmployeeEducation.Find(id);
+            EmployeeEducation employeeEducation = db.EmployeeEducations.Find(id);
             if (employeeEducation == null)
             {
                 return NotFound();
@@ -212,25 +209,13 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m => m.CreateMap<EmployeeEducation, EmployeeEducationDTO>());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
+                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
+            });
             EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
             return Ok(dto);
-        }
-
-        /// <summary>
-        /// Get study form types
-        /// </summary>
-        /// <returns>Collection of EnumItem objects</returns>
-        [HttpGet]
-        [Route("GetStudyForms")]
-        public IEnumerable<EnumItem> GetStudyForms()
-        {
-            var studyList = Enum.GetValues(typeof(FormStudy)).Cast<FormStudy>().Select(v => new EnumItem
-            {
-                Text = v.ToString(),
-                Value = (Int32)v
-            }).ToList();
-            return studyList;
         }
 
         protected override void Dispose(bool disposing)
@@ -244,7 +229,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeEducationExists(int id)
         {
-            return db.EmployeeEducation.Count(e => e.Id == id) > 0;
+            return db.EmployeeEducations.Count(e => e.Id == id) > 0;
         }
     }
 }

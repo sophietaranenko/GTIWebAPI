@@ -40,7 +40,7 @@ namespace GTIWebAPI.Controllers
 
             IEnumerable<EmployeeOfficeDTO> dtos =
                 Mapper.Map<IEnumerable<EmployeeOffice>, IEnumerable<EmployeeOfficeDTO>>
-                (db.EmployeeOffice.Where(e => e.Deleted != true).ToList());
+                (db.EmployeeOffices.Where(e => e.Deleted != true).ToList());
             return dtos;
         }
 
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetOfficesByEmployeeId")]
+        [Route("GetByEmployeeId")]
         public IEnumerable<EmployeeOfficeDTO> GetEmployeeOfficeByEmployeeId(int employeeId)
         {
             Mapper.Initialize(m =>
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeOfficeDTO> dtos =
                 Mapper.Map<IEnumerable<EmployeeOffice>, IEnumerable<EmployeeOfficeDTO>>
-                (db.EmployeeOffice.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
+                (db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -74,38 +74,11 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetOfficeView", Name = "GetOfficeView")]
+        [Route("Get", Name = "GetEmployeeOffice")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult GetEmployeeOfficeView(int id)
         {
-            EmployeeOffice employeeOffice = db.EmployeeOffice.Find(id);
-            if (employeeOffice == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
-            return Ok(dto);
-        }
-
-        /// <summary>
-        /// Get position Edit
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetOfficeEdit")]
-        [ResponseType(typeof(EmployeeOfficeDTO))]
-        public IHttpActionResult GetEmployeeOfficeEdit(int id)
-        {
-            EmployeeOffice employeeOffice = db.EmployeeOffice.Find(id);
+            EmployeeOffice employeeOffice = db.EmployeeOffices.Find(id);
             if (employeeOffice == null)
             {
                 return NotFound();
@@ -129,7 +102,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutOffice")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeOffice(int id, EmployeeOffice employeeOffice)
         {
@@ -157,9 +130,9 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            employeeOffice.Department = db.Department.Find(employeeOffice.DepartmentId);
+            employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
             employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-            employeeOffice.Profession = db.Profession.Find(employeeOffice.ProfessionId);
+            employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
@@ -168,7 +141,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<Office, OfficeDTO>();
             });
             EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
-            return CreatedAtRoute("GetOfficeView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -178,7 +151,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostOffice")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult PostEmployeeOffice(EmployeeOffice employeeOffice)
         {
@@ -187,7 +160,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            db.EmployeeOffice.Add(employeeOffice);
+            db.EmployeeOffices.Add(employeeOffice);
             try
             {
                 db.SaveChanges();
@@ -203,9 +176,9 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            employeeOffice.Department = db.Department.Find(employeeOffice.DepartmentId);
+            employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
             employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-            employeeOffice.Profession = db.Profession.Find(employeeOffice.ProfessionId);
+            employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
@@ -214,7 +187,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<Office, OfficeDTO>();
             });
             EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
-            return CreatedAtRoute("GetOfficeView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -224,11 +197,11 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteOffice")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult DeleteEmployeeOffice(int id)
         {
-            EmployeeOffice employeeOffice = db.EmployeeOffice.Find(id);
+            EmployeeOffice employeeOffice = db.EmployeeOffices.Find(id);
             if (employeeOffice == null)
             {
                 return NotFound();
@@ -285,7 +258,7 @@ namespace GTIWebAPI.Controllers
         [Route("GetProfessions")]
         public IEnumerable<ProfessionDTO> GetProfessions()
         {
-            List<Profession> professions = db.Profession.ToList();
+            List<Profession> professions = db.Professions.ToList();
             Mapper.Initialize(m => m.CreateMap<Profession, ProfessionDTO>());
             IEnumerable<ProfessionDTO> dtos = Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(professions);
             return dtos;
@@ -299,7 +272,7 @@ namespace GTIWebAPI.Controllers
         [Route("GetDepartments")]
         public IEnumerable<DepartmentDTO> GetDepartments()
         {
-            List<Department> departments = db.Department.ToList();
+            List<Department> departments = db.Departments.ToList();
             Mapper.Initialize(m => m.CreateMap<Department, DepartmentDTO>());
             IEnumerable<DepartmentDTO> dtos = Mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentDTO>>(departments);
             return dtos;
@@ -316,7 +289,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeOfficeExists(int id)
         {
-            return db.EmployeeOffice.Count(e => e.Id == id) > 0;
+            return db.EmployeeOffices.Count(e => e.Id == id) > 0;
         }
     }
 }

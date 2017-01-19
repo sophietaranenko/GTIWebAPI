@@ -13,20 +13,18 @@ namespace GTIWebAPI.Models.Employees
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? EmployeeId { get; set; }
+        [Required]
+        public int EmployeeId { get; set; }
 
-        [Column("NumberChar")]
+        public virtual Employee Employee { get; set; }
+
         [StringLength(25)]
         public string Number { get; set; }
 
         [Column(TypeName = "date")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? IssuedWhen { get; set; }
 
         [Column(TypeName = "date")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? ExpiryDate { get; set; }
 
         [StringLength(10)]
@@ -35,8 +33,12 @@ namespace GTIWebAPI.Models.Employees
         [StringLength(250)]
         public string IssuedBy { get; set; }
 
+        /// <summary>
+        /// Category of license recieved 
+        /// </summary>
         [StringLength(10)]
         public string Category { get; set; }
+
         public bool? Deleted { get; set; }
 
         protected override string TableName
@@ -46,7 +48,5 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeDrivingLicense";
             }
         }
-
-        // public virtual Employee Employee { get; set; }
     }
 }

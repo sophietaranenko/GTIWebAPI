@@ -16,7 +16,7 @@ using AutoMapper;
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
-    /// Контроллер для автомобилей 
+    /// Manipulating Employee cars 
     /// </summary>
     [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
@@ -24,7 +24,7 @@ namespace GTIWebAPI.Controllers
         private DbPersonnel db = new DbPersonnel();
 
         /// <summary>
-        /// Абсолютно все автомобили
+        /// All the cars
         /// </summary>
         /// <returns></returns>
         [GTIFilter]
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeCarDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
-                (db.EmployeeCar.Where(p => p.Deleted != true).ToList());
+                (db.EmployeeCars.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -49,7 +49,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeCarDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetCarsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
         public IEnumerable<EmployeeCarDTO> GetByEmployee(int employeeId)
         {
@@ -59,7 +59,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeCarDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
-                (db.EmployeeCar.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+                (db.EmployeeCars.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -70,11 +70,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeCarEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetCarView", Name = "GetCarView")]
+        [Route("Get", Name = "GetEmployeeCar")]
         [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult GetCarView(int id)
         {
-            EmployeeCar car = db.EmployeeCar.Find(id);
+            EmployeeCar car = db.EmployeeCars.Find(id);
             if (car == null)
             {
                 return NotFound();
@@ -88,30 +88,6 @@ namespace GTIWebAPI.Controllers
         }
 
         /// <summary>
-        /// Get one car for edit by car id
-        /// </summary>
-        /// <param name="id">EmployeeCar id</param>
-        /// <returns>EmployeeCarEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetCarEdit")]
-        [ResponseType(typeof(EmployeeCarDTO))]
-        public IHttpActionResult GetCarEdit(int id)
-        {
-            EmployeeCar car = db.EmployeeCar.Find(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(car);
-            return Ok(dto);
-        }
-
-        /// <summary>
         /// Update employee car
         /// </summary>
         /// <param name="id">Car id</param>
@@ -119,7 +95,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutCar")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeCar(int id, EmployeeCar employeeCar)
         {
@@ -156,7 +132,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeCar, EmployeeCarDTO>();
             });
             EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
-            return CreatedAtRoute("GetCarView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -166,7 +142,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostCar")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult PostEmployeeCar(EmployeeCar employeeCar)
         {
@@ -180,7 +156,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeCar.Id = employeeCar.NewId(db);
-            db.EmployeeCar.Add(employeeCar);
+            db.EmployeeCars.Add(employeeCar);
 
             try
             {
@@ -202,7 +178,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeCar, EmployeeCarDTO>();
             });
             EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
-            return CreatedAtRoute("GetCarView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -212,11 +188,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteCar")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeCar))]
         public IHttpActionResult DeleteEmployeeCar(int id)
         {
-            EmployeeCar employeeCar = db.EmployeeCar.Find(id);
+            EmployeeCar employeeCar = db.EmployeeCars.Find(id);
             if (employeeCar == null)
             {
                 return NotFound();
@@ -261,7 +237,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeCarExists(int id)
         {
-            return db.EmployeeCar.Count(e => e.Id == id) > 0;
+            return db.EmployeeCars.Count(e => e.Id == id) > 0;
         }
     }
 }

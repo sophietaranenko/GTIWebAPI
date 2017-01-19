@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeInternationalPassportDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeInternationalPassport>, IEnumerable<EmployeeInternationalPassportDTO>>
-                (db.EmployeeInternationalPassport.Where(p => p.Deleted != true).ToList());
+                (db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeInternationalPassportDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetInternationalPassportsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
         public IEnumerable<EmployeeInternationalPassportDTO> GetByEmployee(int employeeId)
         {
@@ -56,33 +56,10 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeInternationalPassportDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeInternationalPassport>, IEnumerable<EmployeeInternationalPassportDTO>>
-                (db.EmployeeInternationalPassport.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+                (db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
-        /// <summary>
-        /// Get one internationalPassport for view by internationalPassport id
-        /// </summary>
-        /// <param name="id">EmployeeInternationalPassport id</param>
-        /// <returns>EmployeeInternationalPassportEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetInternationalPassportView", Name = "GetInternationalPassportView")]
-        [ResponseType(typeof(EmployeeInternationalPassportDTO))]
-        public IHttpActionResult GetInternationalPassportView(int id)
-        {
-            EmployeeInternationalPassport internationalPassport = db.EmployeeInternationalPassport.Find(id);
-            if (internationalPassport == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassportDTO>(internationalPassport);
-            return Ok(dto);
-        }
 
         /// <summary>
         /// Get one internationalPassport for edit by internationalPassport id
@@ -91,11 +68,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeInternationalPassportEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetInternationalPassportEdit")]
+        [Route("Get", Name = "GetEmployeeInternationalPassport")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
         public IHttpActionResult GetInternationalPassportEdit(int id)
         {
-            EmployeeInternationalPassport internationalPassport = db.EmployeeInternationalPassport.Find(id);
+            EmployeeInternationalPassport internationalPassport = db.EmployeeInternationalPassports.Find(id);
             if (internationalPassport == null)
             {
                 return NotFound();
@@ -116,7 +93,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutInternationalPassport")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeInternationalPassport(int id, EmployeeInternationalPassport employeeInternationalPassport)
         {
@@ -153,7 +130,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
             });
             EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
-            return CreatedAtRoute("GetInternationalPassportView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -163,7 +140,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostInternationalPassport")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
         public IHttpActionResult PostEmployeeInternationalPassport(EmployeeInternationalPassport employeeInternationalPassport)
         {
@@ -177,7 +154,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeInternationalPassport.Id = employeeInternationalPassport.NewId(db);
-            db.EmployeeInternationalPassport.Add(employeeInternationalPassport);
+            db.EmployeeInternationalPassports.Add(employeeInternationalPassport);
 
             try
             {
@@ -199,7 +176,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
             });
             EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
-            return CreatedAtRoute("GetInternationalPassportView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -209,11 +186,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteInternationalPassport")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeInternationalPassport))]
         public IHttpActionResult DeleteEmployeeInternationalPassport(int id)
         {
-            EmployeeInternationalPassport employeeInternationalPassport = db.EmployeeInternationalPassport.Find(id);
+            EmployeeInternationalPassport employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
             if (employeeInternationalPassport == null)
             {
                 return NotFound();
@@ -258,7 +235,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeInternationalPassportExists(int id)
         {
-            return db.EmployeeInternationalPassport.Count(e => e.Id == id) > 0;
+            return db.EmployeeInternationalPassports.Count(e => e.Id == id) > 0;
         }
     }
 }

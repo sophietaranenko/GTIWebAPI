@@ -40,6 +40,26 @@ namespace GTIWebAPI.Models.Employees
         public int? EmployeeId { get; set; }
 
         public bool? Deleted { get; set; }
+
+        public EmployeeOfficeDTO ToDTO()
+        {
+            EmployeeOfficeDTO dto = new EmployeeOfficeDTO
+            {
+                Id = this.Id,
+                Office = this.Office == null ? null : this.Office.ToDTO(),
+                OfficeId = this.OfficeId,
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Department = this.Department == null ? null : this.Department.ToDTO(),
+                DepartmentId = this.DepartmentId,
+                EmployeeId = this.EmployeeId,
+                Profession = this.Profession == null ? null : this.Profession.ToDTO(),
+                ProfessionId = this.ProfessionId,
+                Remark = this.Remark
+             };
+            return dto;
+        }
+       
         protected override string TableName
         {
             get

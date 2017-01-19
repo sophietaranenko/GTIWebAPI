@@ -56,6 +56,25 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeMilitaryCard";
             }
         }
-        //public virtual Employee Employee { get; set; }
+
+        public EmployeeMilitaryCardDTO ToDTO()
+        {
+            EmployeeMilitaryCardDTO dto = new EmployeeMilitaryCardDTO
+            {
+                Category = this.Category,
+                Corps = this.Corps,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Number = this.Number,
+                Office = this.Office,
+                OfficeDate = this.OfficeDate,
+                Rank = this.Rank,
+                Seria = this.Seria,
+                Specialty = this.Specialty,
+                SpecialtyNumber = this.SpecialtyNumber,
+                TypeGroup = this.TypeGroup,
+            };
+            return dto;
+        }
     }
 }

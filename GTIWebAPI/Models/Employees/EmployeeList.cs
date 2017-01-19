@@ -16,10 +16,23 @@ namespace GTIWebAPI.Models.Employees
 
         public IEnumerable<DepartmentDTO> Departments { get; set; }
 
-        public IEnumerable<FoundationDocumentDTO> DocumentTypes { get; set; }
+        public IEnumerable<FoundationDocumentDTO> FoundationDocuments { get; set; }
 
         public IEnumerable<LanguageDTO> Languages { get; set; }
 
         public IEnumerable<ContactTypeDTO> ContactTypes { get; set; }
+
+        public IEnumerable<EducationStudyFormDTO> EducationStudyForms { get; set; }
+
+        public IEnumerable<EmployeeLanguageTypeDTO> EmployeeLanguageTypes { get; set; }
+
+        public IEnumerable<AddressLocalityDTO> AddressLocalities { get; set; }
+
+        public IEnumerable<AddressRegionDTO> AddressRegions { get; set; }
+
+        public IEnumerable<AddressPlaceDTO> AddressPlaces { get; set; }
+
+        public IEnumerable<AddressVillageDTO> AddressVillages { get; set; }
+
     }
 }

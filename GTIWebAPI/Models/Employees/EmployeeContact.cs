@@ -14,17 +14,20 @@
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        [Column("Type")]
+        [Required]
+        public int EmployeeId { get; set; }
+
+        public virtual Employee Employee { get; set; }
+
         public int? ContactTypeId { get; set; }
+
+        public virtual ContactType ContactType { get; set; }
 
         [StringLength(250)]
         public string Value { get; set; }
 
-        public int? EmployeeId { get; set; }
-
         public bool? Deleted { get; set; }
 
-        public virtual ContactType ContactType { get; set; }
         protected override string TableName
         {
             get

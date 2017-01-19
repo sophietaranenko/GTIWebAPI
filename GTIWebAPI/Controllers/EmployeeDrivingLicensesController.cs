@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeDrivingLicenseDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeDrivingLicense>, IEnumerable<EmployeeDrivingLicenseDTO>>
-                (db.EmployeeDrivingLicense.Where(p => p.Deleted != true).ToList());
+                (db.EmployeeDrivingLicenses.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeDrivingLicenseDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetDrivingLicensesByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
         public IEnumerable<EmployeeDrivingLicenseDTO> GetByEmployee(int employeeId)
         {
@@ -56,7 +56,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeDrivingLicenseDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeDrivingLicense>, IEnumerable<EmployeeDrivingLicenseDTO>>
-                (db.EmployeeDrivingLicense.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+                (db.EmployeeDrivingLicenses.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -67,11 +67,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeDrivingLicenseEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetDrivingLicenseView", Name = "GetDrivingLicenseView")]
+        [Route("Get", Name = "GetDrivingLicense")]
         [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
         public IHttpActionResult GetDrivingLicenseView(int id)
         {
-            EmployeeDrivingLicense drivingLicense = db.EmployeeDrivingLicense.Find(id);
+            EmployeeDrivingLicense drivingLicense = db.EmployeeDrivingLicenses.Find(id);
             if (drivingLicense == null)
             {
                 return NotFound();
@@ -84,30 +84,7 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Get one drivingLicense for edit by drivingLicense id
-        /// </summary>
-        /// <param name="id">EmployeeDrivingLicense id</param>
-        /// <returns>EmployeeDrivingLicenseEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetDrivingLicenseEdit")]
-        [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
-        public IHttpActionResult GetDrivingLicenseEdit(int id)
-        {
-            EmployeeDrivingLicense drivingLicense = db.EmployeeDrivingLicense.Find(id);
-            if (drivingLicense == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(drivingLicense);
-            return Ok(dto);
-        }
-
+        
         /// <summary>
         /// Update employee drivingLicense
         /// </summary>
@@ -116,7 +93,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutDrivingLicense")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeDrivingLicense(int id, EmployeeDrivingLicense employeeDrivingLicense)
         {
@@ -153,7 +130,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
             });
             EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
-            return CreatedAtRoute("GetDrivingLicenseView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -163,7 +140,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostDrivingLicense")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
         public IHttpActionResult PostEmployeeDrivingLicense(EmployeeDrivingLicense employeeDrivingLicense)
         {
@@ -177,7 +154,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeDrivingLicense.Id = employeeDrivingLicense.NewId(db);
-            db.EmployeeDrivingLicense.Add(employeeDrivingLicense);
+            db.EmployeeDrivingLicenses.Add(employeeDrivingLicense);
 
             try
             {
@@ -199,7 +176,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
             });
             EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
-            return CreatedAtRoute("GetDrivingLicenseView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetDrivingLicense", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -209,11 +186,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteDrivingLicense")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeDrivingLicense))]
         public IHttpActionResult DeleteEmployeeDrivingLicense(int id)
         {
-            EmployeeDrivingLicense employeeDrivingLicense = db.EmployeeDrivingLicense.Find(id);
+            EmployeeDrivingLicense employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
             if (employeeDrivingLicense == null)
             {
                 return NotFound();
@@ -258,7 +235,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeDrivingLicenseExists(int id)
         {
-            return db.EmployeeDrivingLicense.Count(e => e.Id == id) > 0;
+            return db.EmployeeDrivingLicenses.Count(e => e.Id == id) > 0;
         }
     }
 }

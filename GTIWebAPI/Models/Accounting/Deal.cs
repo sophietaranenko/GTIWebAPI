@@ -90,33 +90,15 @@ namespace GTIWebAPI.Models.Accounting
         public string POT {
             get
             {
-                string result = (Direction)DirectionId == Direction.Import
-                             || (Direction)DirectionId == Direction.Other
-                             || (Direction)DirectionId == Direction.ImportTransit ?
-                               PortOfLoading.Trim() + " / " + FinalDestination.Trim()
-                               : "";
+                string result = "";
+                //rewrite
+                //(Direction)DirectionId == Direction.Import
+                //             || (Direction)DirectionId == Direction.Other
+                //             || (Direction)DirectionId == Direction.ImportTransit ?
+                //               PortOfLoading.Trim() + " / " + FinalDestination.Trim()
+                //               : "";
                 return result;
             }
-        }
-
-        public SelectList GetStatus()
-        {
-            var statusList = Enum.GetValues(typeof(Status)).Cast<Status>().Select(v => new SelectListItem
-            {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(statusList, "Value", "Text");
-        }
-
-        public SelectList GetDirection()
-        {
-            var directionList = Enum.GetValues(typeof(Direction)).Cast<Direction>().Select(v => new SelectListItem
-            {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(directionList, "Value", "Text");
         }
     }
 }

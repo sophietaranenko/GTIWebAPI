@@ -9,7 +9,7 @@ namespace GTIWebAPI.Models.Employees
     using System.Data.Entity.Spatial;
 
     [Table("EmployeeFoundationDoc")]
-    public partial class EmployeeFoundationDoc : GTITable
+    public partial class EmployeeFoundationDocument : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }

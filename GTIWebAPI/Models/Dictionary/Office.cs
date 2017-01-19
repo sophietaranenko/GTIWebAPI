@@ -22,5 +22,15 @@ namespace GTIWebAPI.Models.Dictionary
         public string FullName { get; set; }
         [Column("naimen_small")]
         public string DealIndex { get; set; }
+
+        public OfficeDTO ToDTO()
+        {
+            OfficeDTO dto = new OfficeDTO
+            {
+                Id = this.Id,
+                ShortName = this.NativeName
+            };
+            return dto;
+        }
     }
 }

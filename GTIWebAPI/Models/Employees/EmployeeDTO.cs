@@ -36,19 +36,9 @@ namespace GTIWebAPI.Models.Employees
         public int? AddressId { get; set; }
         
         /// <summary>
-        /// string UserId foreign key to AspNetUsers  
-        /// </summary>
-        public string UserId { get; set; }
-
-        /// <summary>
         /// AddressDTO of employee address of permanent residense 
         /// </summary>
         public AddressDTO Address { get; set; }
-
-        /// <summary>
-        /// Cropped profile picture
-        /// </summary>
-        public byte[] ProfilePicture { get; set; }
 
         /// <summary>
         /// Employee age in string
@@ -83,7 +73,7 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Collection of employee foundation documents 
         /// </summary>
-        public IEnumerable<EmployeeFoundationDocDTO> EmployeeFoundationDoc { get; set; }
+        public IEnumerable<EmployeeFoundationDocumentDTO> EmployeeFoundationDoc { get; set; }
 
         /// <summary>
         /// Collection of employee international passports

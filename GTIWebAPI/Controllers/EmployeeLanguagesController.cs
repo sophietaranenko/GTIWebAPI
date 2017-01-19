@@ -33,10 +33,11 @@ namespace GTIWebAPI.Controllers
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             IEnumerable<EmployeeLanguageDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeLanguage>, IEnumerable<EmployeeLanguageDTO>>
-                (db.EmployeeLanguage.Where(p => p.Deleted != true).ToList());
+                (db.EmployeeLanguages.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -47,7 +48,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeLanguageDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetLanguagesByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
         public IEnumerable<EmployeeLanguageDTO> GetByEmployee(int employeeId)
         {
@@ -55,10 +56,11 @@ namespace GTIWebAPI.Controllers
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             IEnumerable<EmployeeLanguageDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeLanguage>, IEnumerable<EmployeeLanguageDTO>>
-                (db.EmployeeLanguage.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+                (db.EmployeeLanguages.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -69,11 +71,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeLanguageEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetLanguageView", Name = "GetLanguageView")]
+        [Route("Get", Name = "GetEmployeeLanguage")]
         [ResponseType(typeof(EmployeeLanguageDTO))]
         public IHttpActionResult GetLanguageView(int id)
         {
-            EmployeeLanguage language = db.EmployeeLanguage.Find(id);
+            EmployeeLanguage language = db.EmployeeLanguages.Find(id);
             if (language == null)
             {
                 return NotFound();
@@ -82,33 +84,9 @@ namespace GTIWebAPI.Controllers
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguageDTO>(language);
-            return Ok(dto);
-        }
-
-        /// <summary>
-        /// Get one language for edit by language id
-        /// </summary>
-        /// <param name="id">EmployeeLanguage id</param>
-        /// <returns>EmployeeLanguageEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetLanguageEdit")]
-        [ResponseType(typeof(EmployeeLanguageDTO))]
-        public IHttpActionResult GetLanguageEdit(int id)
-        {
-            EmployeeLanguage language = db.EmployeeLanguage.Find(id);
-            if (language == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
-                m.CreateMap<Language, LanguageDTO>();
-            });
-            EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguage, EmployeeLanguageDTO>(language);
             return Ok(dto);
         }
 
@@ -120,7 +98,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutLanguage")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeLanguage(int id, EmployeeLanguage employeeLanguage)
         {
@@ -152,14 +130,22 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            employeeLanguage.Language = db.Language.Find(employeeLanguage.LanguageId);
+            if (employeeLanguage.LanguageId != null)
+            {
+                employeeLanguage.Language = db.Languages.Find(employeeLanguage.LanguageId);
+            }
+            if (employeeLanguage.EmployeeLanguageTypeId != null)
+            {
+                employeeLanguage.EmployeeLanguageType = db.EmployeeLanguageTypes.Find(employeeLanguage.EmployeeLanguageTypeId);
+            }
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguage, EmployeeLanguageDTO>(employeeLanguage);
-            return CreatedAtRoute("GetLanguageView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -169,7 +155,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostLanguage")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeLanguageDTO))]
         public IHttpActionResult PostEmployeeLanguage(EmployeeLanguage employeeLanguage)
         {
@@ -183,7 +169,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeLanguage.Id = employeeLanguage.NewId(db);
-            db.EmployeeLanguage.Add(employeeLanguage);
+            db.EmployeeLanguages.Add(employeeLanguage);
 
             try
             {
@@ -200,14 +186,22 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            employeeLanguage.Language = db.Language.Find(employeeLanguage.LanguageId);
+            if (employeeLanguage.LanguageId != null)
+            {
+                employeeLanguage.Language = db.Languages.Find(employeeLanguage.LanguageId);
+            }
+            if (employeeLanguage.EmployeeLanguageTypeId != null)
+            {
+                employeeLanguage.EmployeeLanguageType = db.EmployeeLanguageTypes.Find(employeeLanguage.EmployeeLanguageTypeId);
+            }
             Mapper.Initialize(m =>
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguage, EmployeeLanguageDTO>(employeeLanguage);
-            return CreatedAtRoute("GetLanguageView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeLanguage", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -217,11 +211,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteLanguage")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeLanguage))]
         public IHttpActionResult DeleteEmployeeLanguage(int id)
         {
-            EmployeeLanguage employeeLanguage = db.EmployeeLanguage.Find(id);
+            EmployeeLanguage employeeLanguage = db.EmployeeLanguages.Find(id);
             if (employeeLanguage == null)
             {
                 return NotFound();
@@ -247,27 +241,28 @@ namespace GTIWebAPI.Controllers
             {
                 m.CreateMap<EmployeeLanguage, EmployeeLanguageDTO>();
                 m.CreateMap<Language, LanguageDTO>();
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
             });
             EmployeeLanguageDTO dto = Mapper.Map<EmployeeLanguage, EmployeeLanguageDTO>(employeeLanguage);
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Get all languages that employee can know
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetLanguages")]
-        public IEnumerable<LanguageDTO> GetLanguages()
-        {
-            List<Language> languages = db.Language.ToList();
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Language, LanguageDTO>();
-            });
-            IEnumerable<LanguageDTO> dtos = Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(languages);
-            return dtos;
-        }
+        ///// <summary>
+        ///// Get all languages that employee can know
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("GetLanguages")]
+        //public IEnumerable<LanguageDTO> GetLanguages()
+        //{
+        //    List<Language> languages = db.Language.ToList();
+        //    Mapper.Initialize(m =>
+        //    {
+        //        m.CreateMap<Language, LanguageDTO>();
+        //    });
+        //    IEnumerable<LanguageDTO> dtos = Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(languages);
+        //    return dtos;
+        //}
 
         /// <summary>
         /// Dispose controller
@@ -284,7 +279,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeLanguageExists(int id)
         {
-            return db.EmployeeLanguage.Count(e => e.Id == id) > 0;
+            return db.EmployeeLanguages.Count(e => e.Id == id) > 0;
         }
     }
 }

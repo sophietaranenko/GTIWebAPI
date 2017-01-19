@@ -30,7 +30,7 @@
         /// <summary>
         /// Employee identity code
         /// </summary>
-        [Column("IdentityCodeChar")]
+        [Column("IdentityCode")]
         [StringLength(20)]
         public string IdentityCode { get; set; }
 
@@ -38,8 +38,6 @@
         /// Employee's date of birth
         /// </summary>
         [Column(TypeName = "date")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }
 
         public Address Address { get; set; }
@@ -53,16 +51,6 @@
         /// Deleted mark
         /// </summary>
         public bool? Deleted { get; set; }
-        
-        /// <summary>
-        /// Connection to AspNetUsers
-        /// </summary>
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// Cropped profile picture of employee
-        /// </summary>
-        public byte[] ProfilePicture { get; set; }
 
         /// <summary>
         /// Age, counted from date of birth
@@ -78,6 +66,36 @@
             {
                 return "Employee";
             }
+        }
+
+        public EmployeeDTO ToDTOView()
+        {
+            EmployeeDTO dto = new EmployeeDTO
+            {
+                Sex = this.Sex,
+                AddressId = this.AddressId,
+                DateOfBirth = this.DateOfBirth,
+                Id = this.Id,
+                IdentityCode = this.IdentityCode,
+                Address = this.Address == null ? null : this.Address.ToDTO(),
+                Age = this.Age.ToString()
+            };
+            return dto;
+        }
+
+
+        public EmployeeEditDTO ToDTOEdit()
+        {
+            EmployeeEditDTO dto = new EmployeeEditDTO
+            {
+                Sex = this.Sex,
+                AddressId = this.AddressId,
+                DateOfBirth = this.DateOfBirth,
+                Id = this.Id,
+                IdentityCode = this.IdentityCode,
+                Address = this.Address == null ? null : this.Address.ToDTO()
+            };
+            return dto;
         }
 
         /// <summary>

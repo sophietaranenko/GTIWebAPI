@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeMilitaryCardDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeMilitaryCard>, IEnumerable<EmployeeMilitaryCardDTO>>
-                (db.EmployeeMilitaryCard.Where(p => p.Deleted != true).ToList());
+                (db.EmployeeMilitaryCards.Where(p => p.Deleted != true).ToList());
             return dtos;
         }
 
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeMilitaryCardDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetMilitaryCardsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
         public IEnumerable<EmployeeMilitaryCardDTO> GetByEmployee(int employeeId)
         {
@@ -56,7 +56,7 @@ namespace GTIWebAPI.Controllers
             });
             IEnumerable<EmployeeMilitaryCardDTO> dtos = Mapper
                 .Map<IEnumerable<EmployeeMilitaryCard>, IEnumerable<EmployeeMilitaryCardDTO>>
-                (db.EmployeeMilitaryCard.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+                (db.EmployeeMilitaryCards.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
             return dtos;
         }
 
@@ -67,11 +67,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeMilitaryCardEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetMilitaryCardView", Name = "GetMilitaryCardView")]
+        [Route("Get", Name = "GetEmployeeMilitaryCard")]
         [ResponseType(typeof(EmployeeMilitaryCardDTO))]
         public IHttpActionResult GetMilitaryCardView(int id)
         {
-            EmployeeMilitaryCard militaryCard = db.EmployeeMilitaryCard.Find(id);
+            EmployeeMilitaryCard militaryCard = db.EmployeeMilitaryCards.Find(id);
             if (militaryCard == null)
             {
                 return NotFound();
@@ -84,29 +84,6 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Get one militaryCard for edit by militaryCard id
-        /// </summary>
-        /// <param name="id">EmployeeMilitaryCard id</param>
-        /// <returns>EmployeeMilitaryCardEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetMilitaryCardEdit")]
-        [ResponseType(typeof(EmployeeMilitaryCardDTO))]
-        public IHttpActionResult GetMilitaryCardEdit(int id)
-        {
-            EmployeeMilitaryCard militaryCard = db.EmployeeMilitaryCard.Find(id);
-            if (militaryCard == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(militaryCard);
-            return Ok(dto);
-        }
 
         /// <summary>
         /// Update employee militaryCard
@@ -116,7 +93,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutMilitaryCard")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeMilitaryCard(int id, EmployeeMilitaryCard employeeMilitaryCard)
         {
@@ -153,7 +130,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
             });
             EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
-            return CreatedAtRoute("GetMilitaryCardView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -163,7 +140,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostMilitaryCard")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeMilitaryCardDTO))]
         public IHttpActionResult PostEmployeeMilitaryCard(EmployeeMilitaryCard employeeMilitaryCard)
         {
@@ -177,7 +154,7 @@ namespace GTIWebAPI.Controllers
             }
 
             employeeMilitaryCard.Id = employeeMilitaryCard.NewId(db);
-            db.EmployeeMilitaryCard.Add(employeeMilitaryCard);
+            db.EmployeeMilitaryCards.Add(employeeMilitaryCard);
 
             try
             {
@@ -199,7 +176,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
             });
             EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
-            return CreatedAtRoute("GetMilitaryCardView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeMilitaryCard", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -209,11 +186,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteMilitaryCard")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeMilitaryCard))]
         public IHttpActionResult DeleteEmployeeMilitaryCard(int id)
         {
-            EmployeeMilitaryCard employeeMilitaryCard = db.EmployeeMilitaryCard.Find(id);
+            EmployeeMilitaryCard employeeMilitaryCard = db.EmployeeMilitaryCards.Find(id);
             if (employeeMilitaryCard == null)
             {
                 return NotFound();
@@ -258,7 +235,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeMilitaryCardExists(int id)
         {
-            return db.EmployeeMilitaryCard.Count(e => e.Id == id) > 0;
+            return db.EmployeeMilitaryCards.Count(e => e.Id == id) > 0;
         }
     }
 }

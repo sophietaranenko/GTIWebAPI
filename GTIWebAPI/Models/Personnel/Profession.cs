@@ -30,5 +30,16 @@ namespace GTIWebAPI.Models.Personnel
         public int? code4 { get; set; }
 
         public bool? Deleted { get; set; }
+
+        public ProfessionDTO ToDTO()
+        {
+            ProfessionDTO dto = new ProfessionDTO
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
+
     }
 }

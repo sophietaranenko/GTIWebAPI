@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Employees
 {
-    public class EmployeeFoundationDocDTO
+    public class EmployeeFoundationDocumentDTO
     {
         public int Id { get; set; }
 

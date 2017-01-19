@@ -106,6 +106,27 @@ namespace GTIWebAPI.Models.Employees
             }
         }
 
+        public EmployeePassportDTO ToDTO()
+        {
+            EmployeePassportDTO dto =
+                new EmployeePassportDTO
+                {
+                    SecondName = this.SecondName,
+                    Seria = this.Seria,
+                    ShortName = this.ShortName,
+                    Surname = this.Surname,
+                    Address = this.Address == null ? null : this.Address.ToDTO(),
+                    AddressId = this.AddressId,
+                    EmployeeId = this.EmployeeId,
+                    FirstName = this.FirstName,
+                    Id = this.Id,
+                    IssuedBy = this.IssuedBy,
+                    IssuedWhen = this.IssuedWhen,
+                    Number = this.Number
+                };
+            return dto;
+        }
+
         protected override string TableName
         {
             get

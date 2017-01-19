@@ -1,5 +1,6 @@
 ﻿namespace GTIWebAPI.Models.Dictionary
 {
+    using Employees;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -9,6 +10,9 @@
     using System.Linq;
     using System.Web.Mvc;
 
+    /// <summary>
+    /// To get new Id from procedure (table_id) class must inherit abstract GTITable 
+    /// </summary>
     [Table("Address")]
     public partial class Address : GTITable
     {
@@ -51,7 +55,6 @@
         [StringLength(50)]
         public string PlaceName { get; set; }
 
-
         /// <summary>
         /// Номер дома
         /// </summary>
@@ -72,95 +75,75 @@
         /// <summary>
         /// Регион, область, или республика
         /// </summary>
-        public byte? RegionType { get; set; }
+        public byte? RegionId { get; set; }
 
         /// <summary>
         /// Город, село, ПГТ
         /// </summary>
-        public byte? LocalityType { get; set; }
+        public byte? LocalityId { get; set; }
 
         /// <summary>
         /// Микрорайон, поселок
         /// </summary>
-        public byte? VillageType { get; set; }
+        public byte? VillageId { get; set; }
 
+        
         /// <summary>
         /// Улица, переулок, площадь...
         /// </summary>
-        public byte? PlaceType { get; set; }
+        public byte? PlaceId { get; set; }
 
-        /// <summary>
-        /// в строковом формате вместо инт
-        /// </summary>
-        public string RegionTypeString
+        public virtual AddressRegion AddressRegion { get; set; }
+
+        public virtual AddressPlace AddressPlace { get; set; }
+
+        public virtual AddressLocality AddressLocality { get; set; }
+
+        public virtual AddressVillage AddressVillage { get; set; }
+
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Employee> Employee { get; set; }
+
+        public AddressDTO ToDTO()
         {
-            get
+            AddressDTO dto = new AddressDTO
             {
-                if (RegionType != null)
+                Id = this.Id,
+                Apartment = this.Apartment,
+                BuildingNumber = this.BuildingNumber,
+                Country = this.Country,
+                Housing = this.Housing,
+                LocalityName = this.LocalityName,
+                Locality = this.AddressLocality == null? null : new AddressLocalityDTO
+                    {
+                        Id = this.AddressLocality.Id,
+                        Name = this.AddressLocality.Name
+                    },
+                LocalityId = this.LocalityId,
+                PlaceName = this.PlaceName,
+                Place = this.AddressPlace == null ? null : new AddressPlaceDTO
                 {
-                    return Enum.GetName(typeof(Region), RegionType);
-                }
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// в строковом формате вместо инт
-        /// </summary>
-        public string LocalityTypeString
-        {
-            get
-            {
-                if (LocalityType != null )
-                { 
-                return Enum.GetName(typeof(Locality), LocalityType);
-                }
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// в строковом формате вместо инт
-        /// </summary>
-        public string VillageTypeString
-        {
-            get
-            {
-                if (VillageType != null)
+                    Id = this.AddressPlace.Id,
+                    Name = this.AddressPlace.Name
+                },
+                PlaceId = this.PlaceId,
+                PostIndex = this.PostIndex,
+                RegionName = this.RegionName,
+                Region = this.AddressRegion == null ? null : new AddressRegionDTO
                 {
-                    return Enum.GetName(typeof(Village), VillageType);
-                }
-                return "";
-
-            }
-        }
-
-        /// <summary>
-        /// в строковом формате вместо инт
-        /// </summary>
-        public string PlaceTypeString
-        {
-            get
-            {
-                if (PlaceType != null)
+                    Id = this.AddressRegion.Id,
+                    Name = this.AddressRegion.Name
+                },
+                RegionId = this.RegionId,
+                VillageName = this.VillageName,
+                Village = this.AddressVillage == null ? null : new AddressVillageDTO
                 {
-                    return Enum.GetName(typeof(Place), PlaceType);
+                    Id = this.AddressVillage.Id,
+                    Name = this.AddressVillage.Name
                 }
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// в строковом формате вместо инт
-        /// </summary>
-        public SelectList GetRegionType()
-        {
-            var regionList = Enum.GetValues(typeof(Region)).Cast<Region>().Select(v => new SelectListItem
-            {
-                Text = v.ToString(),
-                Value = ((int)v).ToString()
-            }).ToList();
-            return new SelectList(regionList, "Value", "Text");
+            };
+            return dto;
         }
 
         protected override string TableName

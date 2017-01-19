@@ -19,10 +19,8 @@ namespace GTIWebAPI.Models.Employees
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee id
-        /// </summary>
-        public int? EmployeeId { get; set; }
+        [Required]
+        public int EmployeeId { get; set; }
 
         /// <summary>
         /// Seria of diploma
@@ -33,7 +31,6 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Number of diploma
         /// </summary>
-        [Column("NumberChar")]
         [StringLength(25)]
         public string Number { get; set; }
 
@@ -45,7 +42,9 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Form of study
         /// </summary>
-        public int? StudyForm { get; set; }
+        public int? StudyFormId { get; set; }
+
+        public virtual EducationStudyForm EducationStudyForm { get; set; }
 
         /// <summary>
         /// Education institution name 
@@ -70,25 +69,28 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         public bool? Deleted { get; set; }
 
-        /// <summary>
-        /// String value for StudyForm
-        /// </summary>
-        public string StudyFormString
+        public EmployeeEducationDTO ToDTO()
         {
-            get
+            EmployeeEducationDTO dto = new EmployeeEducationDTO
             {
-                string result = "";
-                if (StudyForm != null)
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Institution = this.Institution,
+                Number = this.Number,
+                Qualification = this.Qualification,
+                Seria = this.Seria,
+                Specialty = this.Specialty,
+                EducationStudyForm = this.EducationStudyForm == null ? null : new EducationStudyFormDTO
                 {
-                    result = Enum.GetName(typeof(FormStudy), StudyForm);
-                }
-                else
-                {
-                    result = "";
-                }
-                return result;
-            }
+                    Id = this.EducationStudyForm.Id,
+                    Name = this.EducationStudyForm.Name
+                },
+                StudyFormId = this.StudyFormId,
+                Year = this.Year
+            };
+            return dto;
         }
+
 
         protected override string TableName
         {

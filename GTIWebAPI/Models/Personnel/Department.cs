@@ -13,5 +13,15 @@ namespace GTIWebAPI.Models.Personnel
         public string Name { get; set; }
 
         public bool? Deleted { get; set; }
+
+        public DepartmentDTO ToDTO()
+        {
+            DepartmentDTO dto = new DepartmentDTO
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

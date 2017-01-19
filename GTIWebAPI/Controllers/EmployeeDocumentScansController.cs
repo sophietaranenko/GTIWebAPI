@@ -37,26 +37,26 @@ namespace GTIWebAPI.Controllers
         {
             HttpResponseMessage result = null;
             var httpRequest = HttpContext.Current.Request;
-            if (httpRequest.Files.Count > 0)
+            if (httpRequest.Files.Count == 1)
             {
+                int uploadedScanId = 0;
                 foreach (string file in httpRequest.Files)
                 {
                     EmployeeDocumentScan scan = new EmployeeDocumentScan();
                     scan.Id = scan.NewId(db);
-                    scan.ScanTableId = tableId;
+                    scan.TableId = tableId;
                     scan.ScanTableName = tableName;
                     var postedFile = httpRequest.Files[file];
                     var filePath = HttpContext.Current.Server.MapPath(
                         "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
                     postedFile.SaveAs(filePath);
                     scan.ScanName = filePath;
-                    db.EmployeeDocumentScan.Add(scan);
+                    db.EmployeeDocumentScans.Add(scan);
                     db.SaveChanges();
+                    uploadedScanId = scan.Id;
                 }
-                List<EmployeeDocumentScan> scans = db.EmployeeDocumentScan
-                    .Where(s => s.Deleted != true && s.ScanTableId == tableId && s.ScanTableName == tableName)
-                    .ToList();
-                result = Request.CreateResponse(HttpStatusCode.Created, scans);
+                EmployeeDocumentScan uploadedScan = db.EmployeeDocumentScans.Find(uploadedScanId);
+                result = Request.CreateResponse(HttpStatusCode.Created, uploadedScan);
             }
             else
             {
@@ -74,11 +74,11 @@ namespace GTIWebAPI.Controllers
         [Route("PutDbFilesToFilesystem")]
         public HttpResponseMessage PutDbFilesToFilesystem()
         {
-            List<int> scans = db.EmployeeDocumentScan.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
+            List<int> scans = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
             List<EmployeeDocumentScan> newScans = new List<EmployeeDocumentScan>();
             foreach (var item in scans)
             {
-                EmployeeDocumentScan scan = db.EmployeeDocumentScan.Find(item);
+                EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
                 if (scan.Scan != null)
                 {
                     try
@@ -110,11 +110,11 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetAllScansByDocumentId")]
+        [Route("GetByDocumentId")]
         public IEnumerable<EmployeeDocumentScan> GetAllScansByDocumentId(string tableName, int tableId)
         {
-            List<EmployeeDocumentScan> scanList = db.EmployeeDocumentScan
-                .Where(e => e.ScanTableName == tableName && e.ScanTableId == tableId && e.Deleted != true)
+            List<EmployeeDocumentScan> scanList = db.EmployeeDocumentScans
+                .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
                 .ToList();
             return scanList;
         }
@@ -127,10 +127,11 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetAllScansByEmployeeId")]
-        public IEnumerable<EmployeeDocumentScan> GetAllScansByEmployeeId(int employeeId)
+        [Route("GetByEmployeeId")]
+        public IEnumerable<EmployeeDocumentScanDTO> GetAllScansByEmployeeId(int employeeId)
         {
-            List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
+            IEnumerable<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
+            scanList = db.EmployeeAllDocumentScans(employeeId);
             return scanList;
         }
 
@@ -141,10 +142,10 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetScan")]
+        [Route("Get")]
         public IHttpActionResult GetScan(int id)
         {
-            EmployeeDocumentScan scan = db.EmployeeDocumentScan.Find(id);
+            EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
             if (scan != null)
             { 
                 return Ok(scan);
@@ -162,10 +163,10 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteScan")]
+        [Route("Delete")]
         public IHttpActionResult DeleteScan(int id)
         {
-            EmployeeDocumentScan scan = db.EmployeeDocumentScan.Find(id);
+            EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
             if (scan != null)
             {
                 scan.Deleted = true;
@@ -190,7 +191,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeDocumentScanExists(int id)
         {
-            return db.EmployeeDocumentScan.Count(e => e.Id == id) > 0;
+            return db.EmployeeDocumentScans.Count(e => e.Id == id) > 0;
         }
     }
 

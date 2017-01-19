@@ -40,10 +40,5 @@ namespace GTIWebAPI.Models.Employees
 
         public AddressDTO Address { get; set; }
 
-        /// <summary>
-        /// Employee UserId
-        /// </summary>
-        public string UserId { get; set; }
-
     }
 }

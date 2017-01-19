@@ -34,86 +34,45 @@ namespace GTIWebAPI.Controllers
         [Route("GetAll")]
         public IEnumerable<EmployeePassportDTO> GetAll()
         {
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            IEnumerable<EmployeePassportDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeePassport>, IEnumerable<EmployeePassportDTO>>
-                (db.EmployeePassport.Where(p => p.Deleted != true).ToList());
+            List<EmployeePassport> passports = db.EmployeePassports.Where(p => p.Deleted != true).ToList();
+            List<EmployeePassportDTO> dtos = passports.Select(p => p.ToDTO()).ToList();
             return dtos;
         }
 
         /// <summary>
-        /// Get employee passports by employee id for VIEW
+        /// Get employee passports by employee id 
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
         /// <returns>Collection of EmployeePassportDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetPassportsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
         public IEnumerable<EmployeePassportDTO> GetByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            IEnumerable<EmployeePassportDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeePassport>, IEnumerable<EmployeePassportDTO>>
-                (db.EmployeePassport.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
+            List<EmployeePassport> passports = db.EmployeePassports
+                .Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList();
+            List<EmployeePassportDTO> dtos = passports.Select(p => p.ToDTO()).ToList();
             return dtos;
         }
 
         /// <summary>
-        /// Get one passport for view by passport id
+        /// Get one passport by passport id
         /// </summary>
         /// <param name="id">EmployeePassport id</param>
         /// <returns>EmployeePassportEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetPassportView", Name = "GetPassportView")]
+        [Route("Get", Name = "GetEmployeePassport")]
         [ResponseType(typeof(EmployeePassportDTO))]
         public IHttpActionResult GetPassportView(int id)
         {
-            EmployeePassport passport = db.EmployeePassport.Find(id);
+            EmployeePassport passport = db.EmployeePassports.Find(id);
             if (passport == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            EmployeePassportDTO dto = Mapper.Map<EmployeePassportDTO>(passport);
-            return Ok(dto);
-        }
-
-        /// <summary>
-        /// Get one passport for edit by passport id
-        /// </summary>
-        /// <param name="id">EmployeePassport id</param>
-        /// <returns>EmployeePassportEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetPassportEdit")]
-        [ResponseType(typeof(EmployeePassportDTO))]
-        public IHttpActionResult GetPassportEdit(int id)
-        {
-            EmployeePassport passport = db.EmployeePassport.Find(id);
-            if (passport == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(passport);
+            EmployeePassportDTO dto = passport.ToDTO();
             return Ok(dto);
         }
 
@@ -125,7 +84,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutPassport")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeePassport(int id, EmployeePassport employeePassport)
         {
@@ -158,14 +117,33 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            employeePassport = db.EmployeePassport.Find(employeePassport.Id);
-            Mapper.Initialize(m =>
+
+            //Reload method of db context doesn't work
+            //Visitor extension of dbContext doesn't wotk
+            //that's why we reload related entities manually
+
+            if (employeePassport.Address != null)
             {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
-            return CreatedAtRoute("GetPassportView", new { id = dto.Id }, dto);
+                if (employeePassport.Address.PlaceId != null)
+                {
+                    employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
+                }
+                if (employeePassport.Address.LocalityId != null)
+                {
+                    employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
+                }
+                if (employeePassport.Address.VillageId != null)
+                {
+                    employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
+                }
+                if (employeePassport.Address.RegionId != null)
+                {
+                    employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
+                }
+            }
+
+            EmployeePassportDTO dto = employeePassport.ToDTO();
+            return Ok(dto);
         }
 
         /// <summary>
@@ -175,7 +153,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostPassport")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeePassportDTO))]
         public IHttpActionResult PostEmployeePassport(EmployeePassport employeePassport)
         {
@@ -190,8 +168,8 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            db.Address.Add(employeePassport.Address);
-            db.EmployeePassport.Add(employeePassport);
+            db.Addresses.Add(employeePassport.Address);
+            db.EmployeePassports.Add(employeePassport);
             try
             {
                 db.SaveChanges();
@@ -207,13 +185,31 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m =>
+            //Reload method of db context doesn't work
+            //Visitor extension of dbContext doesn't wotk
+            //that's why we reload related entities manually
+
+            if (employeePassport.Address != null)
             {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
-            return CreatedAtRoute("GetPassportView", new { id = dto.Id }, dto);
+                if (employeePassport.Address.PlaceId != null)
+                {
+                    employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
+                }
+                if (employeePassport.Address.LocalityId != null)
+                {
+                    employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
+                }
+                if (employeePassport.Address.VillageId != null)
+                {
+                    employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
+                }
+                if (employeePassport.Address.RegionId != null)
+                {
+                    employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
+                }
+            }
+            EmployeePassportDTO dto = employeePassport.ToDTO();
+            return CreatedAtRoute("GetEmployeePassport", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -223,11 +219,11 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeletePassport")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeePassport))]
         public IHttpActionResult DeleteEmployeePassport(int id)
         {
-            EmployeePassport employeePassport = db.EmployeePassport.Find(id);
+            EmployeePassport employeePassport = db.EmployeePassports.Find(id);
             if (employeePassport == null)
             {
                 return NotFound();
@@ -249,12 +245,7 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeePassport, EmployeePassportDTO>();
-                m.CreateMap<Address, AddressDTO>();
-            });
-            EmployeePassportDTO dto = Mapper.Map<EmployeePassport, EmployeePassportDTO>(employeePassport);
+            EmployeePassportDTO dto = employeePassport.ToDTO();
             return Ok(dto);
         }
 
@@ -273,7 +264,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeePassportExists(int id)
         {
-            return db.EmployeePassport.Count(e => e.Id == id) > 0;
+            return db.EmployeePassports.Count(e => e.Id == id) > 0;
         }
     }
 }

@@ -77,12 +77,12 @@ namespace GTIWebAPI.Novell
             {
                 Models.Dictionary.Address address = new Models.Dictionary.Address();
                 address.Id = address.NewId(db);
-                db.Address.Add(address);
+                db.Addresses.Add(address);
                 db.SaveChanges();
                 Models.Employees.Employee employee = new Models.Employees.Employee();
                 employee.Id = employee.NewId(db);
                 employee.AddressId = address.Id;
-                db.Employee.Add(employee);
+                db.Employees.Add(employee);
                 db.SaveChanges();
                 employeeId = employee.Id;
             }

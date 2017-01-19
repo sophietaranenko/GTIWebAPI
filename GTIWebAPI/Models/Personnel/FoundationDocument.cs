@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Personnel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public FoundationDocument()
         {
-            EmployeeFoundationDoc = new HashSet<EmployeeFoundationDoc>();
+            EmployeeFoundationDoc = new HashSet<EmployeeFoundationDocument>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -27,6 +27,6 @@ namespace GTIWebAPI.Models.Personnel
         public bool? Deleted { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EmployeeFoundationDoc> EmployeeFoundationDoc { get; set; }
+        public virtual ICollection<EmployeeFoundationDocument> EmployeeFoundationDoc { get; set; }
     }
 }

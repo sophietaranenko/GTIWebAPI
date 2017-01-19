@@ -1,0 +1,2648 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GTIWebAPI</name>
+    </assembly>
+    <members>
+        <member name="T:GTIWebAPI.BundleConfig">
+            <summary>
+            Dundles configuration class 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.BundleConfig.RegisterBundles(System.Web.Optimization.BundleCollection)">
+            <summary>
+            All css and js in one bundle, for we can use one string of plug in instead of many 
+            </summary>
+            <param name="bundles"></param>
+        </member>
+        <member name="T:GTIWebAPI.FilterConfig">
+            <summary>
+            Filter config
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.FilterConfig.RegisterGlobalFilters(System.Web.Mvc.GlobalFilterCollection)">
+            <summary>
+            f.e. [Autorized] 
+            </summary>
+            <param name="filters"></param>
+        </member>
+        <member name="T:GTIWebAPI.ApplicationUserManager">
+            <summary>
+            Application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.ApplicationUserManager.#ctor(Microsoft.AspNet.Identity.IUserStore{GTIWebAPI.Models.Account.ApplicationUser})">
+            <summary>
+            ctor for Application user manager
+            </summary>
+            <param name="store"></param>
+        </member>
+        <member name="M:GTIWebAPI.ApplicationUserManager.Create(Microsoft.AspNet.Identity.Owin.IdentityFactoryOptions{GTIWebAPI.ApplicationUserManager},Microsoft.Owin.IOwinContext)">
+            <summary>
+            Factory method 
+            </summary>
+            <param name="options"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.RouteConfig">
+            <summary>
+            MVC routes ??? 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.RouteConfig.RegisterRoutes(System.Web.Routing.RouteCollection)">
+            <summary>
+            Register of MVC routes ??? 
+            </summary>
+            <param name="routes"></param>
+        </member>
+        <member name="T:GTIWebAPI.Startup">
+            <summary>
+            public partial class Startup
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Startup.OAuthOptions">
+            <summary>
+            OAuthAuthorizationServerOptions OAuthOptions
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Startup.PublicClientId">
+            <summary>
+            UserId
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Startup.ConfigureAuth(Owin.IAppBuilder)">
+            <summary>
+            For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.WebApiConfig">
+            <summary>
+            Class with WebAPI configuration 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.WebApiConfig.Register(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Register roures method
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ApiDescriptionExtensions">
+            <summary>
+            class ApiDescriptionExtensions
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.ApiDescriptionExtensions.GetFriendlyId(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Generates an URI-friendly ID for the <see cref="T:System.Web.Http.Description.ApiDescription"/>. E.g. "Get-Values-id_name" instead of "GetValues/{id}?name={name}"
+            </summary>
+            <param name="description">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The ID as a string.</returns>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.HelpPageConfig">
+            <summary>
+            Use this class to customize the Help Page.
+            For example you can set a custom <see cref="T:System.Web.Http.Description.IDocumentationProvider"/> to supply the documentation
+            or you can provide the samples for the requests/responses.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfig.Register(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Help Page registed
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.Controllers.HelpController">
+            <summary>
+            The controller that will handle requests for the help page.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetDocumentationProvider(System.Web.Http.HttpConfiguration,System.Web.Http.Description.IDocumentationProvider)">
+            <summary>
+            Sets the documentation provider for help page.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="documentationProvider">The documentation provider.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleObjects(System.Web.Http.HttpConfiguration,System.Collections.Generic.IDictionary{System.Type,System.Object})">
+            <summary>
+            Sets the objects that will be used by the formatters to produce sample requests/responses.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sampleObjects">The sample objects.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleRequest(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String)">
+            <summary>
+            Sets the sample request directly for the specified media type and action.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample request.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleRequest(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String,System.String[])">
+            <summary>
+            Sets the sample request directly for the specified media type and action with parameters.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample request.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleResponse(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String)">
+            <summary>
+            Sets the sample request directly for the specified media type of the action.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample response.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleResponse(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.String,System.String,System.String[])">
+            <summary>
+            Sets the sample response directly for the specified media type of the action with specific parameters.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample response.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForMediaType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Sets the sample directly for all actions with the specified media type.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample.</param>
+            <param name="mediaType">The media type.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
+            <summary>
+            Sets the sample directly for all actions with the specified type and media type.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="type">The parameter type or return type of an action.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate request samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate request samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate response samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
+            <summary>
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            The help page will use this information to produce more accurate response samples.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="type">The type.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.GetHelpPageSampleGenerator(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Gets the help page sample generator.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <returns>The help page sample generator.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.SetHelpPageSampleGenerator(System.Web.Http.HttpConfiguration,GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator)">
+            <summary>
+            Sets the help page sample generator.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sampleGenerator">The help page sample generator.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.GetModelDescriptionGenerator(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Gets the model description generator.
+            </summary>
+            <param name="config">The configuration.</param>
+            <returns>The <see cref="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator"/></returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageConfigurationExtensions.GetHelpPageApiModel(System.Web.Http.HttpConfiguration,System.String)">
+            <summary>
+            Gets the model that represents an API displayed on the help page. The model is initialized on the first call and cached for subsequent calls.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="apiDescriptionId">The <see cref="T:System.Web.Http.Description.ApiDescription"/> ID.</param>
+            <returns>
+            An <see cref="T:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel"/>
+            </returns>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescription">
+            <summary>
+            Describes a type model.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator">
+            <summary>
+            Generates model descriptions for given types.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelNameAttribute">
+            <summary>
+            Use this attribute to change the name of the <see cref="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescription"/> generated for a type.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel">
+            <summary>
+            The model that represents an API displayed on the help page.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel"/> class.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription">
+            <summary>
+            Gets or sets the <see cref="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription"/> that describes the API.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.UriParameters">
+            <summary>
+            Gets or sets the <see cref="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ParameterDescription"/> collection that describes the URI parameters for the API.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.RequestDocumentation">
+            <summary>
+            Gets or sets the documentation for the request.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.RequestModelDescription">
+            <summary>
+            Gets or sets the <see cref="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the request body.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.RequestBodyParameters">
+            <summary>
+            Gets the request body parameter descriptions.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.ResourceDescription">
+            <summary>
+            Gets or sets the <see cref="T:GTIWebAPI.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the resource.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.ResourceProperties">
+            <summary>
+            Gets the resource property descriptions.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.SampleRequests">
+            <summary>
+            Gets the sample requests associated with the API.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.SampleResponses">
+            <summary>
+            Gets the sample responses associated with the API.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.Models.HelpPageApiModel.ErrorMessages">
+            <summary>
+            Gets the error messages associated with this model.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator">
+            <summary>
+            This class will generate the samples for the help page.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator"/> class.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.ActualHttpMessageTypes">
+            <summary>
+            Gets CLR types that are used as the content of <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples">
+            <summary>
+            Gets the objects that are used directly as samples for certain actions.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects">
+            <summary>
+            Gets the objects that are serialized as samples by the supported formatters.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories">
+            <summary>
+            Gets factories for the objects that the supported formatters will serialize as samples. Processed in order,
+            stopping when the factory successfully returns a non-<see langref="null"/> object.
+            </summary>
+            <remarks>
+            Collection includes just <see cref="M:GTIWebAPI.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)"/> initially. Use
+            <code>SampleObjectFactories.Insert(0, func)</code> to provide an override and
+            <code>SampleObjectFactories.Add(func)</code> to provide a fallback.</remarks>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.GetSampleRequests(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Gets the request body samples for a given <see cref="T:System.Web.Http.Description.ApiDescription"/>.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.GetSampleResponses(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Gets the response body samples for a given <see cref="T:System.Web.Http.Description.ApiDescription"/>.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.GetSample(System.Web.Http.Description.ApiDescription,GTIWebAPI.Areas.HelpPage.SampleDirection)">
+            <summary>
+            Gets the request or response body samples.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or for a response.</param>
+            <returns>The samples keyed by media type.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.GetActionSample(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Type,System.Net.Http.Formatting.MediaTypeFormatter,System.Net.Http.Headers.MediaTypeHeaderValue,GTIWebAPI.Areas.HelpPage.SampleDirection)">
+            <summary>
+            Search for samples that are provided directly through <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples"/>.
+            </summary>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+            <param name="type">The CLR type.</param>
+            <param name="formatter">The formatter.</param>
+            <param name="mediaType">The media type.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or for a response.</param>
+            <returns>The sample that matches the parameters.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.GetSampleObject(System.Type)">
+            <summary>
+            Gets the sample object that will be serialized by the formatters. 
+            First, it will look at the <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects"/>. If no sample object is found, it will try to create
+            one using <see cref="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.DefaultSampleObjectFactory(GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator,System.Type)"/> (which wraps an <see cref="T:GTIWebAPI.Areas.HelpPage.ObjectGenerator"/>) and other
+            factories in <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories"/>.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>The sample object.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.ResolveHttpRequestMessageType(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Resolves the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The type.</returns>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.ResolveType(System.Web.Http.Description.ApiDescription,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},GTIWebAPI.Areas.HelpPage.SampleDirection,System.Collections.ObjectModel.Collection{System.Net.Http.Formatting.MediaTypeFormatter}@)">
+            <summary>
+            Resolves the type of the action parameter or return value when <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/> is used.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+            <param name="sampleDirection">The value indicating whether the sample is for a request or a response.</param>
+            <param name="formatters">The formatters.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleGenerator.WriteSampleObjectUsingFormatter(System.Net.Http.Formatting.MediaTypeFormatter,System.Object,System.Type,System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Writes the sample object using formatter.
+            </summary>
+            <param name="formatter">The formatter.</param>
+            <param name="value">The value.</param>
+            <param name="type">The type.</param>
+            <param name="mediaType">Type of the media.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey">
+            <summary>
+            This is used to identify the place where the sample should be applied.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Creates a new <see cref="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey"/> based on media type.
+            </summary>
+            <param name="mediaType">The media type.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
+            <summary>
+            Creates a new <see cref="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey"/> based on media type and CLR type.
+            </summary>
+            <param name="mediaType">The media type.</param>
+            <param name="type">The CLR type.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.#ctor(GTIWebAPI.Areas.HelpPage.SampleDirection,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new <see cref="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey"/> based on <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>, controller name, action name and parameter names.
+            </summary>
+            <param name="sampleDirection">The <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue,GTIWebAPI.Areas.HelpPage.SampleDirection,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new <see cref="T:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey"/> based on media type, <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>, controller name, action name and parameter names.
+            </summary>
+            <param name="mediaType">The media type.</param>
+            <param name="sampleDirection">The <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.</param>
+            <param name="controllerName">Name of the controller.</param>
+            <param name="actionName">Name of the action.</param>
+            <param name="parameterNames">The parameter names.</param>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.ControllerName">
+            <summary>
+            Gets the name of the controller.
+            </summary>
+            <value>
+            The name of the controller.
+            </value>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.ActionName">
+            <summary>
+            Gets the name of the action.
+            </summary>
+            <value>
+            The name of the action.
+            </value>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.MediaType">
+            <summary>
+            Gets the media type.
+            </summary>
+            <value>
+            The media type.
+            </value>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.ParameterNames">
+            <summary>
+            Gets the parameter names.
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection">
+            <summary>
+            Gets the <see cref="P:GTIWebAPI.Areas.HelpPage.HelpPageSampleKey.SampleDirection"/>.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ImageSample">
+            <summary>
+            This represents an image sample on the help page. There's a display template named ImageSample associated with this class.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.ImageSample.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GTIWebAPI.Areas.HelpPage.ImageSample"/> class.
+            </summary>
+            <param name="src">The URL of an image.</param>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.InvalidSample">
+            <summary>
+            This represents an invalid sample on the help page. There's a display template named InvalidSample associated with this class.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.ObjectGenerator">
+            <summary>
+            This class will create an object of a given type and populate it with sample data.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)">
+            <summary>
+            Generates an object for a given type. The type needs to be public, have a public default constructor and settable public properties/fields. Currently it supports the following types:
+            Simple types: <see cref="T:System.Int32"/>, <see cref="T:System.String"/>, <see cref="T:System.Enum"/>, <see cref="T:System.DateTime"/>, <see cref="T:System.Uri"/>, etc.
+            Complex types: POCO types.
+            Nullables: <see cref="T:System.Nullable`1"/>.
+            Arrays: arrays of simple types or complex types.
+            Key value pairs: <see cref="T:System.Collections.Generic.KeyValuePair`2"/>
+            Tuples: <see cref="T:System.Tuple`1"/>, <see cref="T:System.Tuple`2"/>, etc
+            Dictionaries: <see cref="T:System.Collections.Generic.IDictionary`2"/> or anything deriving from <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Collections: <see cref="T:System.Collections.Generic.IList`1"/>, <see cref="T:System.Collections.Generic.IEnumerable`1"/>, <see cref="T:System.Collections.Generic.ICollection`1"/>, <see cref="T:System.Collections.IList"/>, <see cref="T:System.Collections.IEnumerable"/>, <see cref="T:System.Collections.ICollection"/> or anything deriving from <see cref="T:System.Collections.Generic.ICollection`1"/> or <see cref="T:System.Collections.IList"/>.
+            Queryables: <see cref="T:System.Linq.IQueryable"/>, <see cref="T:System.Linq.IQueryable`1"/>.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>An object of the given type.</returns>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.SampleDirection">
+            <summary>
+            Indicates whether the sample is used for request or response
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.TextSample">
+            <summary>
+            This represents a preformatted text sample on the help page. There's a display template named TextSample associated with this class.
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Areas.HelpPage.XmlDocumentationProvider">
+            <summary>
+            A custom <see cref="T:System.Web.Http.Description.IDocumentationProvider"/> that reads the API documentation from an XML documentation file.
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Areas.HelpPage.XmlDocumentationProvider.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GTIWebAPI.Areas.HelpPage.XmlDocumentationProvider"/> class.
+            </summary>
+            <param name="documentPath">The physical path to XML document.</param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.AccountController">
+            <summary>
+            Controller for manipulating with user account
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.#ctor">
+            <summary>
+            ctor empty
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.#ctor(GTIWebAPI.ApplicationUserManager,Microsoft.Owin.Security.ISecureDataFormat{Microsoft.Owin.Security.AuthenticationTicket})">
+            <summary>
+            ctor
+            </summary>
+            <param name="userManager"></param>
+            <param name="accessTokenFormat"></param>
+        </member>
+        <member name="P:GTIWebAPI.Controllers.AccountController.UserManager">
+            <summary>
+            property UserManager
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Controllers.AccountController.AccessTokenFormat">
+            <summary>
+            AccessTokenFormat
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.UploadProfilePicture(System.String,System.Int32)">
+            <summary>
+            Method for profile picture upload
+            </summary>
+            <param name="tableName">Image of which document we're uploading</param>
+            <param name="tableId">Id of document which image we're uploading</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.GetUserRights">
+            <summary>
+            Get User rights 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.GetUserExternalLoginInfo">
+            <summary>
+            Get information about user
+            </summary>
+            <returns>UserIfoViewModel</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.Logout">
+            <summary>
+            Logout
+            </summary>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.GetManageInfo(System.String,System.Boolean)">
+            <summary>
+            Get Manage Info 
+            </summary>
+            <param name="returnUrl"></param>
+            <param name="generateState"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.SetPassword(GTIWebAPI.Models.Account.SetPasswordBindingModel)">
+            <summary>
+            Set passport
+            </summary>
+            <param name="model"></param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.GetExternalLogin(System.String,System.String)">
+            <summary>
+            GetExtenal login (not useful for GTI)
+            </summary>
+            <param name="provider"></param>
+            <param name="error"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.GetExternalLogins(System.String,System.Boolean)">
+            <summary>
+            Get external logins (not useful for GTI)
+            </summary>
+            <param name="returnUrl"></param>
+            <param name="generateState"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.Register(GTIWebAPI.Models.Account.RegisterBindingModel)">
+            <summary>
+            Register (not useful fro GTI)
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.RegisterExternal(GTIWebAPI.Models.Account.RegisterExternalBindingModel)">
+            <summary>
+            RegisterExternal (not useful for GTI)
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.Dispose(System.Boolean)">
+            <summary>
+            Dispose AccountConrtoller (to destroy connections)
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetAll">
+            <summary>
+            All contacts
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetByClient(System.Int32)">
+            <summary>
+            Get organization contact by organization id for VIEW
+            </summary>
+            <param name="organizationId">Client Id</param>
+            <returns>Collection of ClientContactDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetContactAsUser(System.Int32)">
+            <summary>
+            Get one contact for view by contact id as USER with organization info 
+            </summary>
+            <param name="id">ClientContact id</param>
+            <returns>ClientContactEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetContactEdit(System.Int32)">
+            <summary>
+            Get one contact for edit by contact id
+            </summary>
+            <param name="id">ClientContact id</param>
+            <returns>ClientContactEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.PutClientContact(System.Int32,GTIWebAPI.Models.Clients.OrganizationContact)">
+            <summary>
+            Update organization contact
+            </summary>
+            <param name="id">Contact id</param>
+            <param name="organizationContact">ClientContact object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.PostClientContact(GTIWebAPI.Models.Clients.OrganizationContact)">
+            <summary>
+            Insert new organization contact
+            </summary>
+            <param name="organizationContact">ClientContact object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.DeleteClientContact(System.Int32)">
+            <summary>
+            Delete contact
+            </summary>
+            <param name="id">Contact Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetByClient(System.Int32)">
+            <summary>
+            Get organization gtiClient by organization id for VIEW
+            </summary>
+            <param name="organizationId">Client Id</param>
+            <returns>Collection of OrganizationGTILinkDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetGTIClientView(System.Int32)">
+            <summary>
+            Get one gtiClient for view by gtiClient id
+            </summary>
+            <param name="id">OrganizationGTILink id</param>
+            <returns>OrganizationGTILinkEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetGTIClientEdit(System.Int32)">
+            <summary>
+            Get one gtiClient for edit by gtiClient id
+            </summary>
+            <param name="id">OrganizationGTILink id</param>
+            <returns>OrganizationGTILinkEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PutOrganizationGTILink(System.Int32,GTIWebAPI.Models.Clients.OrganizationGTILink)">
+            <summary>
+            Update organization gtiClient
+            </summary>
+            <param name="id">GTIClient id</param>
+            <param name="clientGTIClient">OrganizationGTILink object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostLink(GTIWebAPI.Models.Clients.OrganizationGTILink)">
+            <summary>
+            Insert new organization gtiClient
+            </summary>
+            <param name="link">OrganizationGTILink object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.DeleteOrganizationGTILink(System.Int32)">
+            <summary>
+            Delete gtiClient
+            </summary>
+            <param name="id">GTIClient Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.OrganizationsController">
+            <summary>
+            Controller for clients
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetClientEdit(System.Int32)">
+            <summary>
+            Get one client by client Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetClient(System.Int32)">
+            <summary>
+            Get one client by client Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.DeleteClient(System.Int32)">
+            <summary>
+            Delete client
+            </summary>
+            <param name="id">client id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeCarsController">
+            <summary>
+            Manipulating Employee cars 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.GetAll">
+            <summary>
+            All the cars
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee car by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeCarDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.GetCarView(System.Int32)">
+            <summary>
+            Get one car for view by car id
+            </summary>
+            <param name="id">EmployeeCar id</param>
+            <returns>EmployeeCarEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.PutEmployeeCar(System.Int32,GTIWebAPI.Models.Employees.EmployeeCar)">
+            <summary>
+            Update employee car
+            </summary>
+            <param name="id">Car id</param>
+            <param name="employeeCar">EmployeeCar object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.PostEmployeeCar(GTIWebAPI.Models.Employees.EmployeeCar)">
+            <summary>
+            Insert new employee car
+            </summary>
+            <param name="employeeCar">EmployeeCar object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.DeleteEmployeeCar(System.Int32)">
+            <summary>
+            Delete car
+            </summary>
+            <param name="id">Car Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeContactsController">
+            <summary>
+            Controller for contacts
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetAll">
+            <summary>
+            All contacts
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee contact by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeContactDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetContactEdit(System.Int32)">
+            <summary>
+            Get one contact for edit by contact id
+            </summary>
+            <param name="id">EmployeeContact id</param>
+            <returns>EmployeeContactEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.PutEmployeeContact(System.Int32,GTIWebAPI.Models.Employees.EmployeeContact)">
+            <summary>
+            Update employee contact
+            </summary>
+            <param name="id">Contact id</param>
+            <param name="employeeContact">EmployeeContact object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.PostEmployeeContact(GTIWebAPI.Models.Employees.EmployeeContact)">
+            <summary>
+            Insert new employee contact
+            </summary>
+            <param name="employeeContact">EmployeeContact object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.DeleteEmployeeContact(System.Int32)">
+            <summary>
+            Delete contact
+            </summary>
+            <param name="id">Contact Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeDocumentScansController">
+            <summary>
+            Controllers for storing and showing images of documents
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.UploadFile(System.String,System.Int32)">
+            <summary>
+            Method fo file upload
+            </summary>
+            <param name="tableName">Image of which document we're uploading</param>
+            <param name="tableId">Id of document which image we're uploading</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.PutDbFilesToFilesystem">
+            <summary>
+            Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с реальной базой данных)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.GetAllScansByDocumentId(System.String,System.Int32)">
+            <summary>
+            Get all scans by document Id 
+            </summary>
+            <param name="tableName">Image of which document we're uploading</param>
+            <param name="tableId">Id of document which image we're uploading</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.GetAllScansByEmployeeId(System.Int32)">
+            <summary>
+            Get all scans by employee
+            </summary>
+            <param name="tableName">Image of which document we're uploading</param>
+            <param name="tableId">Id of document which image we're uploading</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.GetScan(System.Int32)">
+            <summary>
+            Get scan by its id
+            </summary>
+            <param name="id">scan id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.DeleteScan(System.Int32)">
+            <summary>
+            Delete scan 
+            </summary>
+            <param name="id">scan id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetAll">
+            <summary>
+            All drivingLicenses
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee drivingLicense by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeDrivingLicenseDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetDrivingLicenseView(System.Int32)">
+            <summary>
+            Get one drivingLicense for view by drivingLicense id
+            </summary>
+            <param name="id">EmployeeDrivingLicense id</param>
+            <returns>EmployeeDrivingLicenseEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.PutEmployeeDrivingLicense(System.Int32,GTIWebAPI.Models.Employees.EmployeeDrivingLicense)">
+            <summary>
+            Update employee drivingLicense
+            </summary>
+            <param name="id">DrivingLicense id</param>
+            <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.PostEmployeeDrivingLicense(GTIWebAPI.Models.Employees.EmployeeDrivingLicense)">
+            <summary>
+            Insert new employee drivingLicense
+            </summary>
+            <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.DeleteEmployeeDrivingLicense(System.Int32)">
+            <summary>
+            Delete drivingLicense
+            </summary>
+            <param name="id">DrivingLicense Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeEducationsController">
+            <summary>
+            Controller for employee educations
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.GetEmployeeEducation">
+            <summary>
+            Get all education documents
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.GetEmployeeEducationByEmployeeId(System.Int32)">
+            <summary>
+            Get education documents of current employee
+            </summary>
+            <param name="employeeId">Employee id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.GetEmployeeEducationView(System.Int32)">
+            <summary>
+            Get education document View
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.PutEmployeeEducation(System.Int32,GTIWebAPI.Models.Employees.EmployeeEducation)">
+            <summary>
+            Update EmployeeEducation
+            </summary>
+            <param name="id">id of document</param>
+            <param name="employeeEducation">EmployeeEducation document</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.PostEmployeeEducation(GTIWebAPI.Models.Employees.EmployeeEducation)">
+            <summary>
+            Insert new employee education document
+            </summary>
+            <param name="employeeEducation">EmployeeEducation object contains id = 0</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.DeleteEmployeeEducation(System.Int32)">
+            <summary>
+            Dleete education document
+            </summary>
+            <param name="id">id of document</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetAll">
+            <summary>
+            All foundationDocs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee foundationDoc by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeFoundationDocDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetFoundationDocEdit(System.Int32)">
+            <summary>
+            Get one foundationDoc for edit by id
+            </summary>
+            <param name="id">EmployeeFoundationDoc id</param>
+            <returns>EmployeeFoundationDocEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.PutEmployeeFoundationDoc(System.Int32,GTIWebAPI.Models.Employees.EmployeeFoundationDocument)">
+            <summary>
+            Update employee foundationDoc
+            </summary>
+            <param name="id">FoundationDoc id</param>
+            <param name="employeeFoundationDoc">EmployeeFoundationDoc object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.PostEmployeeFoundationDoc(GTIWebAPI.Models.Employees.EmployeeFoundationDocument)">
+            <summary>
+            Insert new employee foundationDoc
+            </summary>
+            <param name="employeeFoundationDoc">EmployeeFoundationDoc object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.DeleteEmployeeFoundationDoc(System.Int32)">
+            <summary>
+            Delete foundationDoc
+            </summary>
+            <param name="id">FoundationDoc Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.GetAll">
+            <summary>
+            All guns
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee gun by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeGunDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.GetGunView(System.Int32)">
+            <summary>
+            Get one gun for view by gun id
+            </summary>
+            <param name="id">EmployeeGun id</param>
+            <returns>EmployeeGunEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.PutEmployeeGun(System.Int32,GTIWebAPI.Models.Employees.EmployeeGun)">
+            <summary>
+            Update employee gun
+            </summary>
+            <param name="id">Gun id</param>
+            <param name="employeeGun">EmployeeGun object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.PostEmployeeGun(GTIWebAPI.Models.Employees.EmployeeGun)">
+            <summary>
+            Insert new employee gun
+            </summary>
+            <param name="employeeGun">EmployeeGun object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.DeleteEmployeeGun(System.Int32)">
+            <summary>
+            Delete gun
+            </summary>
+            <param name="id">Gun Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.GetAll">
+            <summary>
+            All internationalPassports
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee internationalPassport by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeInternationalPassportDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.GetInternationalPassportEdit(System.Int32)">
+            <summary>
+            Get one internationalPassport for edit by internationalPassport id
+            </summary>
+            <param name="id">EmployeeInternationalPassport id</param>
+            <returns>EmployeeInternationalPassportEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.PutEmployeeInternationalPassport(System.Int32,GTIWebAPI.Models.Employees.EmployeeInternationalPassport)">
+            <summary>
+            Update employee internationalPassport
+            </summary>
+            <param name="id">InternationalPassport id</param>
+            <param name="employeeInternationalPassport">EmployeeInternationalPassport object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.PostEmployeeInternationalPassport(GTIWebAPI.Models.Employees.EmployeeInternationalPassport)">
+            <summary>
+            Insert new employee internationalPassport
+            </summary>
+            <param name="employeeInternationalPassport">EmployeeInternationalPassport object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.DeleteEmployeeInternationalPassport(System.Int32)">
+            <summary>
+            Delete internationalPassport
+            </summary>
+            <param name="id">InternationalPassport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeInternationalPassportsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetAll">
+            <summary>
+            All languages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee language by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeLanguageDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetLanguageView(System.Int32)">
+            <summary>
+            Get one language for view by language id
+            </summary>
+            <param name="id">EmployeeLanguage id</param>
+            <returns>EmployeeLanguageEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.PutEmployeeLanguage(System.Int32,GTIWebAPI.Models.Employees.EmployeeLanguage)">
+            <summary>
+            Update employee language
+            </summary>
+            <param name="id">Language id</param>
+            <param name="employeeLanguage">EmployeeLanguage object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.PostEmployeeLanguage(GTIWebAPI.Models.Employees.EmployeeLanguage)">
+            <summary>
+            Insert new employee language
+            </summary>
+            <param name="employeeLanguage">EmployeeLanguage object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.DeleteEmployeeLanguage(System.Int32)">
+            <summary>
+            Delete language
+            </summary>
+            <param name="id">Language Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetAll">
+            <summary>
+            All militaryCards
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee militaryCard by employee id for VIEW
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeeMilitaryCardDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetMilitaryCardView(System.Int32)">
+            <summary>
+            Get one militaryCard for view by militaryCard id
+            </summary>
+            <param name="id">EmployeeMilitaryCard id</param>
+            <returns>EmployeeMilitaryCardEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.PutEmployeeMilitaryCard(System.Int32,GTIWebAPI.Models.Employees.EmployeeMilitaryCard)">
+            <summary>
+            Update employee militaryCard
+            </summary>
+            <param name="id">MilitaryCard id</param>
+            <param name="employeeMilitaryCard">EmployeeMilitaryCard object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.PostEmployeeMilitaryCard(GTIWebAPI.Models.Employees.EmployeeMilitaryCard)">
+            <summary>
+            Insert new employee militaryCard
+            </summary>
+            <param name="employeeMilitaryCard">EmployeeMilitaryCard object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.DeleteEmployeeMilitaryCard(System.Int32)">
+            <summary>
+            Delete militaryCard
+            </summary>
+            <param name="id">MilitaryCard Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOffice">
+            <summary>
+            Get all positions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOfficeByEmployeeId(System.Int32)">
+            <summary>
+            Get positions of current employee
+            </summary>
+            <param name="employeeId">Employee id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOfficeView(System.Int32)">
+            <summary>
+            Get position View
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.PutEmployeeOffice(System.Int32,GTIWebAPI.Models.Employees.EmployeeOffice)">
+            <summary>
+            Update employee position
+            </summary>
+            <param name="id">id of position</param>
+            <param name="employeeOffice">EmployeeOffice</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.PostEmployeeOffice(GTIWebAPI.Models.Employees.EmployeeOffice)">
+            <summary>
+            Insert new employee education document
+            </summary>
+            <param name="employeeOffice">EmployeeOffice object contains id = 0</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.DeleteEmployeeOffice(System.Int32)">
+            <summary>
+            Dleete education document
+            </summary>
+            <param name="id">id of document</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetOffices">
+            <summary>
+            Get offices 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetProfessions">
+            <summary>
+            Get professions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetDepartments">
+            <summary>
+            Get departments 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeePassportsController">
+            <summary>
+            Controller for employee passports
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.GetAll">
+            <summary>
+            Get all employee passports
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.GetByEmployee(System.Int32)">
+            <summary>
+            Get employee passports by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of EmployeePassportDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.GetPassportView(System.Int32)">
+            <summary>
+            Get one passport by passport id
+            </summary>
+            <param name="id">EmployeePassport id</param>
+            <returns>EmployeePassportEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.PutEmployeePassport(System.Int32,GTIWebAPI.Models.Employees.EmployeePassport)">
+            <summary>
+            Update employee passport
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="employeePassport">EmployeePassport object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.PostEmployeePassport(GTIWebAPI.Models.Employees.EmployeePassport)">
+            <summary>
+            Insert new employee passport
+            </summary>
+            <param name="employeePassport">EmployeePassport object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.DeleteEmployeePassport(System.Int32)">
+            <summary>
+            Delete passport
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePassportsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeePhotosController">
+            <summary>
+            Controller for storing and showing Employee photos
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.UploadFile(System.Int32)">
+            <summary>
+            Method fo file upload
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.PutDbFilesToFilesystem">
+            <summary>
+            Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с новой базой данных)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.GetPhotosByEmployeeId(System.Int32)">
+            <summary>
+            Get all photos by employee Id 
+            </summary>
+            <param name="employeeId">Id of employee</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.GetPhoto(System.Int32)">
+            <summary>
+            Get photo by its id
+            </summary>
+            <param name="id">photo id</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.DeletePhoto(System.Int32)">
+            <summary>
+            Delete photo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeesController">
+            <summary>
+            Controller manipulating employees
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetAll(System.String)">
+            <summary>
+            </summary>
+            <param name="filter">
+            "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
+            </param>
+            <returns>a collection on EmployeeViewDTO objects</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeView(System.Int32)">
+            <summary>
+            Get employee for VIEW by id (without Mapper using, faster then with Mapper ~ 150 ms)
+            </summary>
+            <param name="id">id of Employee</param>
+            <returns>EmployeeDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEdit(System.Int32)">
+            <summary>
+            Get employee for EDIT
+            </summary>
+            <param name="id">Employee Id</param>
+            <returns>EmployeeEditDTO, contains only info about Employee</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.PutEmployee(System.Int32,GTIWebAPI.Models.Employees.Employee)">
+            <summary>
+            Update employee
+            </summary>
+            <param name="id">Employee Id</param>
+            <param name="employee">Json employee object</param>
+            <returns>204 (HttpStatusCode.NoContent)</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.EmployeeInsert(GTIWebAPI.Models.Employees.Employee)">
+            <summary>
+            Insert new Employee
+            </summary>
+            <param name="employee">Employee data with Id = 0</param>
+            <returns>route api/employees/{id}</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.DeleteEmployee(System.Int32)">
+            <summary>
+            Delete employee by id
+            </summary>
+            <param name="id">Employee Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetSexTypes">
+            <summary>
+            List of Text and Value of enum Sex
+            </summary>
+            <returns>Collection of Json objects</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeLists">
+            <summary>
+            List of Text and Value of enum Sex
+            </summary>
+            <returns>Collection of Json objects</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose Conroller (to destroy DbContect connection)
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.UserRightsController">
+            <summary>
+            Controller for user rights
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.UserRightsController.DeleteUserRights(System.String)">
+            <summary>
+            Delete all rights by user
+            </summary>
+            <param name="UserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.UserRightsController.GetControllers">
+            <summary>
+            Get all controllers
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.UserRightsController.GetActions(System.Int32)">
+            <summary>
+            Get all actions of controller
+            </summary>
+            <param name="controllerId"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Accounting.InvoiceContainerViewDTO">
+            <summary>
+            Class for containers that invoice contains 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Account.ApplicationUser">
+            <summary>
+            User of application
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Account.ApplicationUser.#ctor">
+            <summary>
+            Ctor
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.TableId">
+            <summary>
+            Id in table TableName
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.Image">
+            <summary>
+            Profile picture
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.UserRights">
+            <summary>
+            Collection of rights
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.UserRightsDto">
+            <summary>
+            Collection of rights in another form of representation
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Account.ApplicationUser.GenerateUserIdentityAsync(Microsoft.AspNet.Identity.UserManager{GTIWebAPI.Models.Account.ApplicationUser},System.String)">
+            <summary>
+            method that creates a new Claims Identity 
+            </summary>
+            <param name="manager"></param>
+            <param name="authenticationType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Account.ApplicationDbContext">
+            <summary>
+            Context for ApplicationUser
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Account.ApplicationDbContext.#ctor">
+            <summary>
+            Ctor
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Account.ApplicationDbContext.Create">
+            <summary>
+            Factory
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Account.UserImage">
+            <summary>
+            Class for user profile picture
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.UserImage.UserId">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.UserImage.ImageName">
+            <summary>
+            image name
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Account.UserImage.ImageData">
+            <summary>
+            image byte array 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Context.DbOrganization">
+            <summary>
+            Db set for organization users (contains info about organizations and what they need to read to show them) 
+            Rights to add and update deal document scans, show all other information 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.OrganizationsFilter(System.String)">
+            <summary>
+            Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
+            </summary>
+            <param name="myFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.OrganizationGTILinkList(System.Int32)">
+            <summary>
+            Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
+            </summary>
+            <param name="organizationId"></param>
+            <returns>List of linked GTI VFP Organization (klient table)</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.DealList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Deals linked to currency WEB API Organization, selected by their creation date 
+            </summary>
+            <param name="organizationId"></param>
+            <param name="dateBegin">Begin date, if not seleted - 01/01/1900</param>
+            <param name="dateEnd">End date, if not</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Stored procedure call to return invoice list selected by organization and dates 
+            </summary>
+            <param name="organizationId"></param>
+            <param name="dateBegin"></param>
+            <param name="dateEnd"></param>
+            <returns>List of invoices</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.DealCardInfo(System.Guid)">
+            <summary>
+            Stored procedure call to return current deal data
+            </summary>
+            <param name="dealId"></param>
+            <returns>Deal info</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.ContainersByDeal(System.Guid)">
+            <summary>
+            Selects containers by current deal 
+            </summary>
+            <param name="dealId"></param>
+            <returns>List of containers</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoicesByDeal(System.Guid)">
+            <summary>
+            Selects invoices by current deal using 
+            </summary>
+            <param name="dealId"></param>
+            <returns>list of invoices</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoiceLinesByInvoice(System.Int32)">
+            <summary>
+            Select view InvoiceLines by invoiceId
+            </summary>
+            <param name="invoiceId">Invoice Id</param>
+            <returns>List of invoice lines</returns>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Addresses">
+            <summary>
+            Addresses block
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Employees">
+            <summary>
+            Employees block
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Languages">
+            <summary>
+            Some staff
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.FileNameUnique">
+            <summary>
+            Procedure call that returns unique number to name photo with
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.EmployeeFilter(System.String)">
+            <summary>
+            Stored procedure call that filters employee list 
+            </summary>
+            <param name="myFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.EmployeeAllDocumentScans(System.Int32)">
+            <summary>
+            Stored procedure call that filters employee list 
+            </summary>
+            <param name="myFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Dictionary.Address">
+            <summary>
+            To get new Id from procedure (table_id) class must inherit abstract GTITable 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.Country">
+            <summary>
+            Страна
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.PostIndex">
+            <summary>
+            Почтовый индекс
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.RegionName">
+            <summary>
+            Имя области или региона
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.LocalityName">
+            <summary>
+            Название поселения
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.VillageName">
+            <summary>
+            Название района внутри поселения
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.PlaceName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.BuildingNumber">
+            <summary>
+            Номер дома
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.Housing">
+            <summary>
+            Номер кампуса (Адрес состоит из трех домов, поэтому будет 1А, 1Б, 1С)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.Apartment">
+            <summary>
+            Номер квартиры
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.RegionId">
+            <summary>
+            Регион, область, или республика
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.LocalityId">
+            <summary>
+            Город, село, ПГТ
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.VillageId">
+            <summary>
+            Микрорайон, поселок
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Dictionary.Address.PlaceId">
+            <summary>
+            Улица, переулок, площадь...
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeDocumentScanDTO">
+            <summary>
+            class for results of procedure EmployeeDocumentScanValid 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeCarDTO">
+            <summary>
+            DTO for EmployeeCar
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.VehicleCategory">
+            <summary>
+            A, B, C, D ...
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.FuelType">
+            <summary>
+            Бензин, D ... 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeDTO">
+            <summary>
+            Class for current Employee View 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Id">
+            <summary>
+            Employee Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Sex">
+            <summary>
+            Employee Sex in int
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.IdentityCode">
+            <summary>
+            Employee identity code
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.DateOfBirth">
+            <summary>
+            Employee date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.AddressId">
+            <summary>
+            Employee address of permanent residense Id from Address table 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Address">
+            <summary>
+            AddressDTO of employee address of permanent residense 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Age">
+            <summary>
+            Employee age in string
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeePassport">
+            <summary>
+            Collection of employee Passports
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeContact">
+            <summary>
+            Collection of employee contacts
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeOffice">
+            <summary>
+            Collection of employee positions
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeEducation">
+            <summary>
+            Collection of employee educations
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeLanguage">
+            <summary>
+            Collection of employee languages
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeFoundationDoc">
+            <summary>
+            Collection of employee foundation documents 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeInternationalPassport">
+            <summary>
+            Collection of employee international passports
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeCar">
+            <summary>
+            Collection of employee cars
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeDrivingLicense">
+            <summary>
+            Collection of employee driving licenses
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeGun">
+            <summary>
+            Collection of employee gun store permissions
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeMilitaryCard">
+            <summary>
+            Collection of employee military cards
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeEditDTO">
+            <summary>
+            DTO form Employee Edit
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.Id">
+            <summary>
+            Employee Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.Sex">
+            <summary>
+            Employee Sex in Int
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.IdentityCode">
+            <summary>
+            Employee identity code
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.DateOfBirth">
+            <summary>
+            Employee date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.AddressId">
+            <summary>
+            Employee Address Id
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeEducationDTO">
+            <summary>
+            DTO for EmployeeEducation
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Id">
+            <summary>
+            Education id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.EmployeeId">
+            <summary>
+            Employee id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Seria">
+            <summary>
+            Education document seria
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Number">
+            <summary>
+            Education document number
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Year">
+            <summary>
+            Year of education end
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.StudyFormId">
+            <summary>
+            Study form
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Institution">
+            <summary>
+            Institution name 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Specialty">
+            <summary>
+            Specialty name
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Qualification">
+            <summary>
+            Qualification
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeePassportDTO">
+            <summary>
+            DTO for EmployeePassport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Id">
+            <summary>
+            EmployeePassport Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.EmployeeId">
+            <summary>
+            Employee owner Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Seria">
+            <summary>
+            Passport seria
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Number">
+            <summary>
+            Passport number
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.FirstName">
+            <summary>
+            Employee First Name specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.SecondName">
+            <summary>
+            Employee second name specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Surname">
+            <summary>
+            Employee surname specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.ShortName">
+            <summary>
+            Short format of employee name "С.Э. Тараненко" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedWhen">
+            <summary>
+            Date when passport was issued to Employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedBy">
+            <summary>
+            Government organization that issued Passport to Employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.AddressId">
+            <summary>
+            Id of registration Id specified in Passport 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Address">
+            <summary>
+            AddressDTO from registration Address
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeViewDTO">
+            <summary>
+            DTO for results of stored procedure "EmployeeFilter"
+            DTO для результатов хранимой процедуры "EmployeeFilter" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Id">
+            <summary>
+            Employee Id
+            Id сотрудника
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.DateOfBirth">
+            <summary>
+            Employee date of birth
+            Дата рождения сотрудника
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.IdentityCode">
+            <summary>
+            Employee government identity code 
+            Идентификационный код сотрудника
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.FirstName">
+            <summary>
+            First name from last issued passport
+            Имя из последнего по дате выдачи паспорта
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.SecondName">
+            <summary>
+            Second name from last issued passport
+            Отчество из последнего по дате выдачи паспорта
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Surname">
+            <summary>
+            Surname from last issued passport
+            Фамилия из последнего по дате выдачи паспорта
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.ShortAddress">
+            <summary>
+            Short address of permanent residence in format of Country, City
+            Краткий адрес проживания в формате Страна, Город
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.AgeCount">
+            <summary>
+            Employee's age in int counted from date of birth
+            Возраст сотрудника, вычисленный по дате рожения
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.UserName">
+            <summary>
+            Username of AspNetUsers connected to Employee
+            Имя логина сотрудника по связи в AspNetUsers
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Position">
+            <summary>
+            Today positions of employee in format Position Department Office, separated by symbol '|'
+            Текущие должности сотрудника в формате Должность Отдел Офис, отделенные друг от друга символом '|'
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Age">
+            <summary>
+            Employee's age in string for features of Russian language
+            Возраст сотрудника в строковом формате, для указания "25 лет", "23 года" или "21 год" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.PositionLines">
+            <summary>
+            Collection of Positions of employee in format Position Department Office
+            Коллекция строк, каждая из которых содержит в себе только одну должность в формате Должность Отдел Офис из всех должностей сотрудника
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.LanguageDTO">
+            <summary>
+            DTO for language
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.Employee">
+            <summary>
+            Class for Employee table
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Id">
+            <summary>
+            Id of Employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Sex">
+            <summary>
+            short value of Employee Sex (can be 1 or 2) 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.IdentityCode">
+            <summary>
+            Employee identity code
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.DateOfBirth">
+            <summary>
+            Employee's date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.AddressId">
+            <summary>
+            Id of Employee's Address of permanent residence in Address table 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Deleted">
+            <summary>
+            Deleted mark
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Age">
+            <summary>
+            Age, counted from date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.SexString">
+            <summary>
+            String value of Employee Sex
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeCar">
+            <summary>
+            Data from car registration document
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeDocumentScan">
+            <summary>
+            Table for scans of documents 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.TableId">
+            <summary>
+            Id in table named like stored in prop TableName
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.Scan">
+            <summary>
+            Byte array image, should be replaced 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.ScanTableName">
+            <summary>
+            Scan document table name 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.ScanName">
+            <summary>
+            Name of file
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.Deleted">
+            <summary>
+            Deleted mark
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDrivingLicense.Category">
+            <summary>
+            Category of license recieved 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeEducation">
+            <summary>
+            Education of employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Id">
+            <summary>
+            Education Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Seria">
+            <summary>
+            Seria of diploma
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Number">
+            <summary>
+            Number of diploma
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Year">
+            <summary>
+            Year of education end
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.StudyFormId">
+            <summary>
+            Form of study
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Institution">
+            <summary>
+            Education institution name 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Specialty">
+            <summary>
+            Specialty name
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Qualification">
+            <summary>
+            Qualification name
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Deleted">
+            <summary>
+            Delete mark 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeFoundationDocument.FoundationDocumentId">
+            <summary>
+            Id to table FoundationDocument
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.Id">
+            <summary>
+            Id of  GTI employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.Name">
+            <summary>
+            naimen of gti employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.NativeName">
+            <summary>
+            fio in russian
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.OfficeId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.GTIId">
+            <summary>
+            integer code inside gti 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.rc">
+            <summary>
+            key column in sotrud gti
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.EmailEnd">
+            <summary>
+            email part after @ (@mail.ru)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeGTI.EmailBegin">
+            <summary>
+            email first part (before @)
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeePassport">
+            <summary>
+            Class for Employee Passport from table EmployeePassport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Id">
+            <summary>
+            Passport Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.EmployeeId">
+            <summary>
+            Employee owner Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Seria">
+            <summary>
+            Passport Seria
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Number">
+            <summary>
+            Number of passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.FirstName">
+            <summary>
+            Employee first name specified in passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.SecondName">
+            <summary>
+            Employee second name specified in passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Surname">
+            <summary>
+            Employee surname specified in passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.IssuedWhen">
+            <summary>
+            Date when passport was issued to employee 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.IssuedBy">
+            <summary>
+            Government place where passport was issued to employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.AddressId">
+            <summary>
+            Address of employee registration in passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Address">
+            <summary>
+            Address object
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.Deleted">
+            <summary>
+            Delete mark
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassport.ShortName">
+            <summary>
+            Short name construcred from passport (Ñ.Ý. Òàðàíåíêî) 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeePhoto">
+            <summary>
+            Class for employee photo 
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.EmployeeView">
+            <summary>
+            Class for results of EmployeeFilter procedure, employee data for view and searching
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Id">
+            <summary>
+            Employee Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.DateOfBirth">
+            <summary>
+            Employee date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.IdentityCode">
+            <summary>
+            Employee identity code
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.FirstName">
+            <summary>
+            First name from last issued passport (EmployeePassport table)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.SecondName">
+            <summary>
+            Second name from last issued passport (EmployeePassport table)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Surname">
+            <summary>
+            Surname from last issued passport  (EmployeePassport table)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.ShortAddress">
+            <summary>
+            Short Employee Address of permanent residense (from Address table, by AddressId) in format Country, City
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.AgeCount">
+            <summary>
+            Employee Age in int
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.UserName">
+            <summary>
+            UserName from AspNetUsers  
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Position">
+            <summary>
+            Employees positions separated by symbol '|'
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Age">
+            <summary>
+            Age object of employees ages (for Russian language) "23 ãîäà", "21 ãîä", "25 ëåò" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.PositionLines">
+            <summary>
+            Position in array of string
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Employees.Language">
+            <summary>
+            Languages that employee can have
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Clients.Organization">
+            <summary>
+            All the organizations company contacts to
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Clients.Organization.#ctor">
+            <summary>
+            Constructor fills all the lists inside class - tables connected by foreign key
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.EmployeeId">
+            <summary>
+            Employee - record creator 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationType">
+            <summary>
+            Type of organization owing (LLC, LTD, OOO etc.)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationBanks">
+            <summary>
+            Bank info about organization (its bank accounts)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationAgreements">
+            <summary>
+            Agreements with our company, registered in program
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationContacts">
+            <summary>
+            Paople managers contact to, they also can be Users of our program 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationGTILink">
+            <summary>
+            Link from WebAPI Organization to GTI VFP Organization (One WebAPI Organization can be linked to many GTI VFP Organizations)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationSigners">
+            <summary>
+            Signers registered with period of validity (person that signs organization's documents at currect period) 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationTaxInfos">
+            <summary>
+            Legal address with Tax Codes 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Clients.Organization.MapToEdit">
+            <summary>
+            Method for mapping (Automapper doesn't work:( ) 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Clients.OrganizationContactUserDTO">
+            <summary>
+            Profile of organization contact info
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.OrganizationContact">
+            <summary>
+            Info about contact (a person)
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.Organization">
+            <summary>
+            Info about organization person relates to
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.ProfilePicture">
+            <summary>
+            Profile picture of contact (from AspNetUserImages, related to AspNetUser)
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Security.UserRightEditDTO">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:GTIWebAPI.Models.Service.Age">
+            <summary>
+            Class for Age (for Russian language)
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Service.Age.#ctor(System.Nullable{System.Int32})">
+            <summary>
+            ctor
+            </summary>
+            <param name="ageCount">ages in int</param>
+        </member>
+        <member name="M:GTIWebAPI.Models.Service.Age.#ctor(System.Nullable{System.DateTime})">
+            <summary>
+            ctor
+            </summary>
+            <param name="dateOfBirth">DateTime date of birth to count ages</param>
+        </member>
+        <member name="P:GTIWebAPI.Models.Service.Age.AgeCount">
+            <summary>
+            field to store ages in int
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Service.Age.ToString">
+            <summary>
+            Ages in string "25 лет", "23 года", "21 год"
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Models.Service.EnumItem">
+            <summary>
+            Class representing enum item
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Service.EnumItem.Value">
+            <summary>
+            Integer value of enum item
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Service.EnumItem.Text">
+            <summary>
+            Text of appropriated enum item 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.#ctor(System.String)">
+            <summary>
+            Ctor of oAuth provider
+            </summary>
+            <param name="publicClientId"></param>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.GrantResourceOwnerCredentials(Microsoft.Owin.Security.OAuth.OAuthGrantResourceOwnerCredentialsContext)">
+            <summary>
+            First - NovellProvider, then OAuth Provider
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.TokenEndpoint(Microsoft.Owin.Security.OAuth.OAuthTokenEndpointContext)">
+            <summary>
+            Where dp we get the token 
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.ValidateClientAuthentication(Microsoft.Owin.Security.OAuth.OAuthValidateClientAuthenticationContext)">
+            <summary>
+            If everything is OK, we mark context as validated 
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.ValidateClientRedirectUri(Microsoft.Owin.Security.OAuth.OAuthValidateClientRedirectUriContext)">
+            <summary>
+            Where do we need to return 
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.CreateProperties(System.String)">
+            <summary>
+            Creating application properties (adding username to context)
+            </summary>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

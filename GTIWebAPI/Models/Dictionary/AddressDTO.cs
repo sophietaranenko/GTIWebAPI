@@ -9,70 +9,31 @@ namespace GTIWebAPI.Models.Dictionary
     {
         public int Id { get; set; }
 
-        /// <summary>
-        /// Страна
-        /// </summary>
         public string Country { get; set; }
 
-        /// <summary>
-        /// Почтовый индекс
-        /// </summary>
         public string PostIndex { get; set; }
 
-        /// <summary>
-        /// Область, республика в целочисленном
-        /// </summary>
-        public byte? RegionType { get; set; }
+        public byte? RegionId { get; set; }
 
-        /// <summary>
-        /// Область, республика в строковом формате
-        /// </summary>
-        public string RegionTypeString { get; set; }
+        public AddressRegionDTO Region { get; set; }
 
-        /// <summary>
-        /// Название области
-        /// </summary>
         public string RegionName { get; set; }
 
-        /// <summary>
-        /// Тип поселения (город, село...) в целочисленном
-        /// </summary>
-        public byte? LocalityType { get; set; }
+        public byte? LocalityId { get; set; }
 
-        /// <summary>
-        /// Тип поселения (город, село...) в строковом
-        /// </summary>
-        public string LocalityTypeString { get; set; }
+        public AddressLocalityDTO Locality { get; set; }
 
-        /// <summary>
-        /// Название поселения
-        /// </summary>
         public string LocalityName { get; set; }
 
-        /// <summary>
-        /// Тип части поселения (поселок, микрорайон) в целочисленном
-        /// </summary>
-        public byte? VillageType { get; set; }
+        public byte? VillageId { get; set; }
 
-        /// <summary>
-        /// Тип части поселения (поселок, микрорайон) в строковом
-        /// </summary>
-        public string VillageTypeString { get; set; }
+        public AddressVillageDTO Village { get; set; }
 
-        /// <summary>
-        /// Название части поселения
-        /// </summary>
         public string VillageName { get; set; }
 
-        /// <summary>
-        /// Тип дороги (улица, переулок, площадь) в целочисленном 
-        /// </summary>
-        public byte? PlaceType { get; set; }
+        public byte? PlaceId { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string PlaceTypeString { get; set; }
+        public AddressPlaceDTO Place { get; set; }
 
         public string PlaceName { get; set; }
 

@@ -46,7 +46,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>Collection of EmployeeGunDTO</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetGunsByEmployeeId")]
+        [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
         public IEnumerable<EmployeeGunDTO> GetByEmployee(int employeeId)
         {
@@ -67,7 +67,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>EmployeeGunEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetGunView", Name = "GetGunView")]
+        [Route("Get", Name = "GetEmployeeGun")]
         [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult GetGunView(int id)
         {
@@ -84,29 +84,6 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Get one gun for edit by gun id
-        /// </summary>
-        /// <param name="id">EmployeeGun id</param>
-        /// <returns>EmployeeGunEditDTO object</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetGunEdit")]
-        [ResponseType(typeof(EmployeeGunDTO))]
-        public IHttpActionResult GetGunEdit(int id)
-        {
-            EmployeeGun gun = db.EmployeeGun.Find(id);
-            if (gun == null)
-            {
-                return NotFound();
-            }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeGun, EmployeeGunDTO>();
-            });
-            EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(gun);
-            return Ok(dto);
-        }
 
         /// <summary>
         /// Update employee gun
@@ -116,7 +93,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
-        [Route("PutGun")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeGun(int id, EmployeeGun employeeGun)
         {
@@ -153,7 +130,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeGun, EmployeeGunDTO>();
             });
             EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(employeeGun);
-            return CreatedAtRoute("GetGunView", new { id = dto.Id }, dto);
+            return Ok(dto);
         }
 
         /// <summary>
@@ -163,7 +140,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("PostGun")]
+        [Route("Post")]
         [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult PostEmployeeGun(EmployeeGun employeeGun)
         {
@@ -199,7 +176,7 @@ namespace GTIWebAPI.Controllers
                 m.CreateMap<EmployeeGun, EmployeeGunDTO>();
             });
             EmployeeGunDTO dto = Mapper.Map<EmployeeGun, EmployeeGunDTO>(employeeGun);
-            return CreatedAtRoute("GetGunView", new { id = dto.Id }, dto);
+            return CreatedAtRoute("GetEmployeeGun", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -209,7 +186,7 @@ namespace GTIWebAPI.Controllers
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteGun")]
+        [Route("Delete")]
         [ResponseType(typeof(EmployeeGun))]
         public IHttpActionResult DeleteEmployeeGun(int id)
         {

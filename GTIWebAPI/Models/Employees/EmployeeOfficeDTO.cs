@@ -26,5 +26,11 @@ namespace GTIWebAPI.Models.Employees
 
         public int? EmployeeId { get; set; }
 
+        public int? OfficeId { get; set; }
+
+        public int? DepartmentId { get; set; }
+
+        public int? ProfessionId { get; set; }
+
     }
 }

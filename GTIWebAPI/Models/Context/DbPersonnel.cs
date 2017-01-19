@@ -17,38 +17,90 @@ namespace GTIWebAPI.Models.Context
         {
         }
 
-        public virtual DbSet<Address> Address { get; set; }
-        public virtual DbSet<Employee> Employee { get; set; }
+        /// <summary>
+        /// Addresses block
+        /// </summary>
+        public virtual DbSet<Address> Addresses { get; set; }
 
-        public virtual DbSet<EmployeeCar> EmployeeCar { get; set; }
-        public virtual DbSet<EmployeeDocumentScan> EmployeeDocumentScan { get; set; }
-        public virtual DbSet<EmployeeDrivingLicense> EmployeeDrivingLicense { get; set; }
-        public virtual DbSet<EmployeeEducation> EmployeeEducation { get; set; }
-        public virtual DbSet<EmployeeInternationalPassport> EmployeeInternationalPassport { get; set; }
-        public virtual DbSet<EmployeeLanguage> EmployeeLanguage { get; set; }
-        public virtual DbSet<EmployeeMilitaryCard> EmployeeMilitaryCard { get; set; }
-        public virtual DbSet<EmployeePassport> EmployeePassport { get; set; }
-        public virtual DbSet<EmployeePhoto> EmployeePhoto { get; set; }
-        public virtual DbSet<Language> Language { get; set; }
-        public virtual DbSet<Profession> Profession { get; set; }
-        public virtual DbSet<Department> Department { get; set; }
-        public virtual DbSet<ContactType> ContactType { get; set; }
-        public virtual DbSet<EmployeeContact> EmployeeContact { get; set; }
-        public virtual DbSet<EmployeeSicklist> EmployeeSicklist { get; set; }
-        public virtual DbSet<EmployeeOffice> EmployeeOffice { get; set; }
-        public virtual DbSet<OrderGroup> OrderGroup { get; set; }
-        public virtual DbSet<OrderType> OrderType { get; set; }
-        public virtual DbSet<EmployeeOrder> EmployeeOrder { get; set; }
-        public virtual DbSet<EmployeeOrderContent> EmployeeOrderContent { get; set; }
-        public virtual DbSet<EmployeeFoundationDoc> EmployeeFoundationDoc { get; set; }
-        public virtual DbSet<FoundationDocument> FoundationDocument { get; set; }
+        public virtual DbSet<AddressLocality> Localities { get; set; }
+
+        public virtual DbSet<AddressPlace> Places { get; set; }
+
+        public virtual DbSet<AddressRegion> Regions { get; set; }
+
+        public virtual DbSet<AddressVillage> Villages { get; set; }
+
+
+        /// <summary>
+        /// Employees block
+        /// </summary>
+        public virtual DbSet<Employee> Employees { get; set; }
+
+        public virtual DbSet<EmployeeCar> EmployeeCars { get; set; }
+
+        public virtual DbSet<EmployeeDocumentScan> EmployeeDocumentScans { get; set; }
+
+        public virtual DbSet<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
+
+        public virtual DbSet<EmployeeEducation> EmployeeEducations { get; set; }
+
+        public virtual DbSet<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
+
+        public virtual DbSet<EmployeeLanguage> EmployeeLanguages { get; set; }
+
+        public virtual DbSet<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
+
+        public virtual DbSet<EmployeePassport> EmployeePassports { get; set; }
+
+        public virtual DbSet<EmployeePhoto> EmployeePhotos { get; set; }
+
+        public virtual DbSet<EmployeeContact> EmployeeContacts { get; set; }
+
+        public virtual DbSet<EmployeeOffice> EmployeeOffices { get; set; }
+
+        public virtual DbSet<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
+
         public virtual DbSet<EmployeeGun> EmployeeGun { get; set; }
-        public virtual DbSet<EmployeePaper> EmployeePaper { get; set; }
-        public virtual DbSet<PaperType> PaperType { get; set; }
+
+        //later
+
+        //public virtual DbSet<EmployeeSicklist> EmployeeSicklists { get; set; }
+
+        //public virtual DbSet<EmployeeOrder> EmployeeOrders { get; set; }
+
+        //public virtual DbSet<EmployeeOrderContent> EmployeeOrderContent { get; set; }
+
+        //public virtual DbSet<EmployeePaper> EmployeePaper { get; set; }
+
+        /// <summary>
+        /// Some staff
+        /// </summary>
+
+        public virtual DbSet<Language> Languages { get; set; }
+
+        public virtual DbSet<Profession> Professions { get; set; }
+
+        public virtual DbSet<Department> Departments { get; set; }
+
+        public virtual DbSet<ContactType> ContactTypes { get; set; }
+        
+        public virtual DbSet<FoundationDocument> FoundationDocuments { get; set; }
+
+        public virtual DbSet<EducationStudyForm> EducationStudyForms { get; set; }
+        
+        public virtual DbSet<EmployeeLanguageType> EmployeeLanguageTypes { get; set; }
+
+
         public virtual DbSet<Office> Offices { get; set; }
 
-        public virtual DbSet<EmployeeView> EmployeeView { get; set; }
+        //public virtual DbSet<OrderGroup> OrderGroup { get; set; }
+        //public virtual DbSet<OrderType> OrderType { get; set; }
+        //public virtual DbSet<PaperType> PaperType { get; set; }
 
+        /// <summary>
+        /// Procedure call that returns unique number to name photo with
+        /// </summary>
+        /// <returns></returns>
         public virtual int FileNameUnique()
         {
             string tableName = "FileNameUnique";
@@ -60,7 +112,11 @@ namespace GTIWebAPI.Models.Context
 
 
 
-
+        /// <summary>
+        /// Stored procedure call that filters employee list 
+        /// </summary>
+        /// <param name="myFilter"></param>
+        /// <returns></returns>
         public IEnumerable<EmployeeView> EmployeeFilter(string myFilter)
         {
             if (myFilter == null)
@@ -90,12 +146,68 @@ namespace GTIWebAPI.Models.Context
             return employeeList;
         }
 
+        /// <summary>
+        /// Stored procedure call that filters employee list 
+        /// </summary>
+        /// <param name="myFilter"></param>
+        /// <returns></returns>
+        public IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@Employeeid",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = employeeId 
+            };
+
+            List<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
+            try
+            {
+                var result = Database.SqlQuery<EmployeeDocumentScanDTO>("exec EmployeeDocumentScanValid @EmployeeId", parameter).ToList();
+                scanList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return scanList;
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContactType>()
                 .HasMany(e => e.EmployeeContact)
                 .WithOptional(e => e.ContactType)
                 .HasForeignKey(e => e.ContactTypeId);
+
+            modelBuilder.Entity<EducationStudyForm>()
+                .HasMany(r => r.EmployeeEducations)
+                .WithOptional(r => r.EducationStudyForm)
+                .HasForeignKey(r => r.StudyFormId);
+
+            modelBuilder.Entity<AddressRegion>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressRegion)
+                .HasForeignKey(r => r.RegionId);
+
+            modelBuilder.Entity<AddressPlace>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressPlace)
+                .HasForeignKey(r => r.PlaceId);
+
+            modelBuilder.Entity<AddressVillage>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressVillage)
+                .HasForeignKey(r => r.VillageId);
+
+            modelBuilder.Entity<AddressLocality>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressLocality)
+                .HasForeignKey(r => r.LocalityId);
         }
 
     }

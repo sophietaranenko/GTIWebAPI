@@ -61,7 +61,7 @@ namespace GTIWebAPI
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
+            //    organizationId: "",
             //    clientSecret: "");
 
             //app.UseTwitterAuthentication(

@@ -27,18 +27,22 @@ namespace GTIWebAPI.Models.Employees
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateEnd { get; set; }
 
-        public int? Type { get; set; }
+        public int? EmployeeLanguageTypeId { get; set; }
 
         [StringLength(250)]
         public string Definition { get; set; }
 
         [StringLength(250)]
         public string Remark { get; set; }
+
         public bool? Deleted { get; set; }
 
         public virtual Employee Employee { get; set; }
 
         public virtual Language Language { get; set; }
+
+        public virtual EmployeeLanguageType EmployeeLanguageType { get; set; }
+
         protected override string TableName
         {
             get

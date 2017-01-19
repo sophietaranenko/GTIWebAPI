@@ -34,6 +34,7 @@ namespace GTIWebAPI.Controllers
             var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count > 0)
             {
+                int photoId = 0;
                 foreach (string file in httpRequest.Files)
                 {
                     EmployeePhoto photo = new EmployeePhoto();
@@ -44,13 +45,12 @@ namespace GTIWebAPI.Controllers
                         "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
                     postedFile.SaveAs(filePath);
                     photo.PhotoName = filePath;
-                    db.EmployeePhoto.Add(photo);
+                    db.EmployeePhotos.Add(photo);
                     db.SaveChanges();
+                    photoId = photo.Id;
                 }
-                List<EmployeePhoto> photos = db.EmployeePhoto
-                    .Where(s => s.Deleted != true && s.EmployeeId == employeeId)
-                    .ToList();
-                result = Request.CreateResponse(HttpStatusCode.Created, photos);
+                EmployeePhoto uploadedPhoto = db.EmployeePhotos.Find(photoId);
+                result = Request.CreateResponse(HttpStatusCode.Created, uploadedPhoto);
             }
             else
             {
@@ -68,11 +68,11 @@ namespace GTIWebAPI.Controllers
         [Route("PutDbFilesToFilesystem")]
         public HttpResponseMessage PutDbFilesToFilesystem()
         {
-            List<int> photos = db.EmployeePhoto.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
+            List<int> photos = db.EmployeePhotos.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
             List<EmployeePhoto> newPhotos = new List<EmployeePhoto>();
             foreach (var item in photos)
             {
-                EmployeePhoto photo = db.EmployeePhoto.Find(item);
+                EmployeePhoto photo = db.EmployeePhotos.Find(item);
                 if (photo.Photo != null)
                 {
                     try
@@ -103,10 +103,10 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetPhotosByEmployeeId")]
+        [Route("GetByEmployeeId")]
         public IEnumerable<EmployeePhoto> GetPhotosByEmployeeId(int employeeId)
         {
-            List<EmployeePhoto> photoList = db.EmployeePhoto
+            List<EmployeePhoto> photoList = db.EmployeePhotos
                 .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
                 .ToList();
             return photoList;
@@ -119,10 +119,10 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetPhoto")]
+        [Route("Get")]
         public IHttpActionResult GetPhoto(int id)
         {
-            EmployeePhoto photo = db.EmployeePhoto.Find(id);
+            EmployeePhoto photo = db.EmployeePhotos.Find(id);
             if (photo != null)
             {
                 return Ok(photo);
@@ -140,10 +140,10 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeletePhoto")]
+        [Route("Delete")]
         public IHttpActionResult DeletePhoto(int id)
         {
-            EmployeePhoto photo = db.EmployeePhoto.Find(id);
+            EmployeePhoto photo = db.EmployeePhotos.Find(id);
             if (photo != null)
             {
                 photo.Deleted = true;
@@ -168,7 +168,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeePhotoExists(int id)
         {
-            return db.EmployeePhoto.Count(e => e.Id == id) > 0;
+            return db.EmployeePhotos.Count(e => e.Id == id) > 0;
         }
     }
 }

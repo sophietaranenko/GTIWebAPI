@@ -38,6 +38,10 @@ namespace GTIWebAPI.Models.Accounting
         
         public decimal? CurrencySum { get; set; }
 
+        public decimal? USDVAT { get; set; }
+
+        public decimal? CurrencyVAT { get; set; }
+
         public string Status { get; set; }
 
         public decimal? DebtUSD { get; set; }

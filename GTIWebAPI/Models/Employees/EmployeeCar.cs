@@ -15,7 +15,10 @@ namespace GTIWebAPI.Models.Employees
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? EmployeeId { get; set; }
+        [Required]
+        public int EmployeeId { get; set; }
+
+        public virtual Employee Employee { get; set; }
 
         public short? MassMax { get; set; }
 
@@ -32,14 +35,11 @@ namespace GTIWebAPI.Models.Employees
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? RegistrationDate { get; set; }
 
-        //public int? AddressId { get; set; }
-
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? PeriodOfValidity { get; set; }
 
-        [Column("NumberChar")]
         [StringLength(25)]
         public string Number { get; set; }
 
@@ -78,10 +78,42 @@ namespace GTIWebAPI.Models.Employees
 
         [StringLength(50)]
         public string GivenName { get; set; }
+
         [StringLength(250)]
         public string IssuedBy { get; set; }
+
         public bool? Deleted { get; set; }
 
+        public EmployeeCarDTO ToDTO()
+        {
+            EmployeeCarDTO dto = new EmployeeCarDTO
+            {
+                Capacity = this.Capacity,
+                Colour = this.Colour,
+                Description = this.Description,
+                VehicleCategory = this.VehicleCategory,
+                EmployeeId = this.EmployeeId,
+                FuelType = this.FuelType,
+                GivenName = this.GivenName,
+                Id = this.Id,
+                IdentificationNumber = this.IdentificationNumber,
+                IssuedBy = this.IssuedBy,
+                Make = this.Make,
+                MassInService = this.MassInService,
+                MassMax = this.MassMax,
+                Number = this.Number,
+                NumberOfSeats = this.NumberOfSeats,
+                Owner = this.Owner,
+                Ownership = this.Ownership,
+                PeriodOfValidity = this.PeriodOfValidity,
+                RegistrationDate = this.RegistrationDate,
+                RegistrationNumber = this.RegistrationNumber,
+                RegistrationYear = this.RegistrationYear,
+                Seria = this.Seria,
+                Type = this.Type
+            };
+            return dto;
+        }
         protected override string TableName
         {
             get

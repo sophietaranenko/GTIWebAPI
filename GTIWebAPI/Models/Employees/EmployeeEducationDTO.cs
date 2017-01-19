@@ -39,9 +39,10 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Study form
         /// </summary>
-        public int? StudyForm { get; set; }
+        public int? StudyFormId { get; set; }
 
-        
+        public virtual EducationStudyFormDTO EducationStudyForm { get; set; }
+            
         /// <summary>
         /// Institution name 
         /// </summary>
@@ -57,9 +58,6 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         public string Qualification { get; set; }
 
-        /// <summary>
-        /// String form of StudyForm
-        /// </summary>
-        public string StudyFormString { get; set; }
+        
     }
 }

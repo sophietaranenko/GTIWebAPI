@@ -28,7 +28,6 @@ namespace GTIWebAPI.Models.Employees
         /// Employee identity code
         /// </summary>
         [StringLength(20)]
-        [Column("IdentityCodeChar")]
         public string IdentityCode { get; set; }
 
         /// <summary>
