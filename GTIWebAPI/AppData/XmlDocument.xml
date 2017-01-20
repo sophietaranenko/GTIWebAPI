@@ -815,6 +815,12 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationSignersController.GetClientSigners">
+            <summary>
+            swgrqew
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeCarsController">
             <summary>
             Manipulating Employee cars 

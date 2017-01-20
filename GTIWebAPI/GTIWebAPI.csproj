@@ -258,6 +258,7 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Context\DbContextExtensions.cs" />
+    <Compile Include="Models\Dictionary\AddressList.cs" />
     <Compile Include="Models\Dictionary\AddressLocality.cs" />
     <Compile Include="Models\Dictionary\AddressLocalityDTO.cs" />
     <Compile Include="Models\Dictionary\AddressPlace.cs" />
@@ -273,8 +274,10 @@
     <Compile Include="Models\Employees\EducationStudyForm.cs" />
     <Compile Include="Models\Employees\EducationStudyFormDTO.cs" />
     <Compile Include="Models\Employees\EmployeeDocumentScanDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeLanguageList.cs" />
     <Compile Include="Models\Employees\EmployeeLanguageType.cs" />
     <Compile Include="Models\Employees\EmployeeLanguageTypeDTO.cs" />
+    <Compile Include="Models\Employees\EmployeeOfficeList.cs" />
     <Compile Include="Models\Organizations\Organization.cs" />
     <Compile Include="Models\Organizations\OrganizationAgreement.cs" />
     <Compile Include="Models\Organizations\OrganizationBank.cs" />

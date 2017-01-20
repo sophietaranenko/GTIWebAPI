@@ -21,6 +21,10 @@ namespace GTIWebAPI.Controllers
     {
         private DbOrganization db = new DbOrganization();
 
+        /// <summary>
+        /// swgrqew
+        /// </summary>
+        /// <returns></returns>
         [GTIFilter]
         [Route("GetClientSigners")]
         public IEnumerable<OrganizationSignerDTO> GetClientSigners()

@@ -416,33 +416,80 @@ namespace GTIWebAPI.Controllers
         {
             EmployeeList list = new EmployeeList();
 
+            list.AddressList = new AddressList();
+            //Address data
             Mapper.Initialize(m =>
             {
                 m.CreateMap<AddressLocality, AddressLocalityDTO>();
             });
-            list.AddressLocalities =
+            list.AddressList.AddressLocalities =
                 Mapper.Map<IEnumerable<AddressLocality>, IEnumerable<AddressLocalityDTO>>(db.Localities.ToList());
 
             Mapper.Initialize(m =>
             {
                 m.CreateMap<AddressPlace, AddressPlaceDTO>();
             });
-            list.AddressPlaces =
+            list.AddressList.AddressPlaces =
                 Mapper.Map<IEnumerable<AddressPlace>, IEnumerable<AddressPlaceDTO>>(db.Places.ToList());
 
             Mapper.Initialize(m =>
             {
                 m.CreateMap<AddressRegion, AddressRegionDTO>();
             });
-            list.AddressRegions =
+            list.AddressList.AddressRegions =
                 Mapper.Map<IEnumerable<AddressRegion>, IEnumerable<AddressRegionDTO>>(db.Regions.ToList());
 
             Mapper.Initialize(m =>
             {
                 m.CreateMap<AddressVillage, AddressVillageDTO>();
             });
-            list.AddressVillages =
+            list.AddressList.AddressVillages =
                 Mapper.Map<IEnumerable<AddressVillage>, IEnumerable<AddressVillageDTO>>(db.Villages.ToList());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Country, CountryDTO>();
+            });
+            list.AddressList.Countries =
+                Mapper.Map<IEnumerable<Country>, IEnumerable<CountryDTO>>(db.Countries.ToList());
+
+
+            list.EmployeeLanguageList = new EmployeeLanguageList();
+            //EmployeeLanguages data
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
+            });
+            list.EmployeeLanguageList.EmployeeLanguageTypes =
+                Mapper.Map<IEnumerable<EmployeeLanguageType>, IEnumerable<EmployeeLanguageTypeDTO>>(db.EmployeeLanguageTypes.ToList());
+
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Language, LanguageDTO>();
+            });
+            list.EmployeeLanguageList.Languages =
+                Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(db.Languages.ToList());
+
+            list.EmployeeOfficeList = new EmployeeOfficeList();
+            //Employee Office data
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Office, OfficeDTO>();
+            });
+            list.EmployeeOfficeList.Offices =
+                Mapper.Map<IEnumerable<Office>, IEnumerable<OfficeDTO>>(db.Offices.ToList());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Profession, ProfessionDTO>();
+            });
+            list.EmployeeOfficeList.Professions =
+                Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(db.Professions.ToList());
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Department, DepartmentDTO>();
+            });
+            list.EmployeeOfficeList.Departments =
+                Mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentDTO>>(db.Departments.ToList());
+
 
             Mapper.Initialize(m =>
             {
@@ -451,19 +498,15 @@ namespace GTIWebAPI.Controllers
             list.ContactTypes =
                 Mapper.Map<IEnumerable<ContactType>, IEnumerable<ContactTypeDTO>>(db.ContactTypes.ToList());
 
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Department, DepartmentDTO>();
-            });
-            list.Departments =
-                Mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentDTO>>(db.Departments.ToList());
 
             Mapper.Initialize(m =>
             {
                 m.CreateMap<FoundationDocument, FoundationDocumentDTO>();
             });
+
             list.FoundationDocuments =
                 Mapper.Map<IEnumerable<FoundationDocument>, IEnumerable<FoundationDocumentDTO>>(db.FoundationDocuments.ToList());
+
 
             Mapper.Initialize(m =>
             {
@@ -471,42 +514,6 @@ namespace GTIWebAPI.Controllers
             });
             list.EducationStudyForms =
                 Mapper.Map<IEnumerable<EducationStudyForm>, IEnumerable<EducationStudyFormDTO>>(db.EducationStudyForms.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
-            });
-            list.EmployeeLanguageTypes =
-                Mapper.Map<IEnumerable<EmployeeLanguageType>, IEnumerable<EmployeeLanguageTypeDTO>>(db.EmployeeLanguageTypes.ToList());
-
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Language, LanguageDTO>();
-            });
-            list.Languages =
-                Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(db.Languages.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            list.Offices =
-                Mapper.Map<IEnumerable<Office>, IEnumerable<OfficeDTO>>(db.Offices.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Profession, ProfessionDTO>();
-            });
-            list.Professions =
-                Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(db.Professions.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Country, CountryDTO>();
-            });
-            list.Countries =
-                Mapper.Map<IEnumerable<Country>, IEnumerable<CountryDTO>>(db.Countries.ToList());
 
             return Ok(list);
         }
