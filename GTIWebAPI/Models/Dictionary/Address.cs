@@ -19,11 +19,8 @@
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        /// <summary>
-        /// Страна
-        /// </summary>
-        [StringLength(20)]
-        public string Country { get; set; }
+
+        public int? CountryId { get; set; }
 
         /// <summary>
         /// Почтовый индекс
@@ -101,6 +98,8 @@
 
         public virtual AddressVillage AddressVillage { get; set; }
 
+        public virtual Country Country { get; set; }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Employee> Employee { get; set; }
@@ -112,7 +111,14 @@
                 Id = this.Id,
                 Apartment = this.Apartment,
                 BuildingNumber = this.BuildingNumber,
-                Country = this.Country,
+                CountryId = this.CountryId,
+                Country = this.Country == null ? null : new CountryDTO
+                {
+                    Id = this.Country.Id,
+                    FullName = this.Country.FullName,
+                    InternationalName = this.Country.InternationalName,
+                    Name = this.Country.Name
+                },
                 Housing = this.Housing,
                 LocalityName = this.LocalityName,
                 Locality = this.AddressLocality == null? null : new AddressLocalityDTO

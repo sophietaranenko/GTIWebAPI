@@ -140,6 +140,10 @@ namespace GTIWebAPI.Controllers
                 {
                     employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
                 }
+                if (employeePassport.Address.CountryId != null)
+                {
+                    employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
+                }
             }
 
             EmployeePassportDTO dto = employeePassport.ToDTO();
@@ -206,6 +210,10 @@ namespace GTIWebAPI.Controllers
                 if (employeePassport.Address.RegionId != null)
                 {
                     employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
+                }
+                if (employeePassport.Address.CountryId != null)
+                {
+                    employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
                 }
             }
             EmployeePassportDTO dto = employeePassport.ToDTO();

@@ -271,6 +271,10 @@ namespace GTIWebAPI.Controllers
                 {
                     employee.Address.AddressRegion = db.Regions.Find(employee.Address.RegionId);
                 }
+                if (employee.Address.CountryId != null)
+                {
+                    employee.Address.Country = db.Countries.Find(employee.Address.CountryId);
+                }
             }
             EmployeeEditDTO dto = employee.ToDTOEdit();
             return Ok(dto);
@@ -333,6 +337,10 @@ namespace GTIWebAPI.Controllers
                 if (employee.Address.RegionId != null)
                 {
                     employee.Address.AddressRegion = db.Regions.Find(employee.Address.RegionId);
+                }
+                if (employee.Address.CountryId != null)
+                {
+                    employee.Address.Country = db.Countries.Find(employee.Address.CountryId);
                 }
             }
             EmployeeEditDTO dto = employee.ToDTOEdit();
@@ -492,6 +500,13 @@ namespace GTIWebAPI.Controllers
             });
             list.Professions =
                 Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(db.Professions.ToList());
+
+            Mapper.Initialize(m =>
+            {
+                m.CreateMap<Country, CountryDTO>();
+            });
+            list.Countries =
+                Mapper.Map<IEnumerable<Country>, IEnumerable<CountryDTO>>(db.Countries.ToList());
 
             return Ok(list);
         }

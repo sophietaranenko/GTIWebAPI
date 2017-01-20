@@ -9,7 +9,9 @@ namespace GTIWebAPI.Models.Dictionary
     {
         public int Id { get; set; }
 
-        public string Country { get; set; }
+        public CountryDTO Country { get; set; }
+
+        public int? CountryId { get; set; }
 
         public string PostIndex { get; set; }
 

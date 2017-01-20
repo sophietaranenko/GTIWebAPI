@@ -34,5 +34,7 @@ namespace GTIWebAPI.Models.Employees
 
         public IEnumerable<AddressVillageDTO> AddressVillages { get; set; }
 
+        public IEnumerable<CountryDTO> Countries { get; set; }
+
     }
 }

@@ -1746,11 +1746,6 @@
             To get new Id from procedure (table_id) class must inherit abstract GTITable 
             </summary>
         </member>
-        <member name="P:GTIWebAPI.Models.Dictionary.Address.Country">
-            <summary>
-            Страна
-            </summary>
-        </member>
         <member name="P:GTIWebAPI.Models.Dictionary.Address.PostIndex">
             <summary>
             Почтовый индекс

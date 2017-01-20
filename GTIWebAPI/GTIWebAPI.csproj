@@ -266,6 +266,10 @@
     <Compile Include="Models\Dictionary\AddressRegionDTO.cs" />
     <Compile Include="Models\Dictionary\AddressVillage.cs" />
     <Compile Include="Models\Dictionary\AddressVillageDTO.cs" />
+    <Compile Include="Models\Dictionary\Continent.cs" />
+    <Compile Include="Models\Dictionary\ContinentDTO.cs" />
+    <Compile Include="Models\Dictionary\Country.cs" />
+    <Compile Include="Models\Dictionary\CountryDTO.cs" />
     <Compile Include="Models\Employees\EducationStudyForm.cs" />
     <Compile Include="Models\Employees\EducationStudyFormDTO.cs" />
     <Compile Include="Models\Employees\EmployeeDocumentScanDTO.cs" />

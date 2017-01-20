@@ -30,6 +30,10 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<AddressVillage> Villages { get; set; }
 
+        public virtual DbSet<Country> Countries { get; set; }
+
+        public virtual DbSet<Continent> Continents { get; set; }
+
 
         /// <summary>
         /// Employees block
