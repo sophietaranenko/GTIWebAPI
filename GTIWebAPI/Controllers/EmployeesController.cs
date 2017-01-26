@@ -39,22 +39,7 @@ namespace GTIWebAPI.Controllers
         public IEnumerable<EmployeeViewDTO> GetAll(string filter)
         {
             IEnumerable<EmployeeView> employeeList = db.EmployeeFilter(filter);
-            IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(e =>
-            new EmployeeViewDTO
-            {
-                Id = e.Id,
-                Age = e.Age.ToString(),
-                DateOfBirth = e.DateOfBirth,
-                AgeCount = e.AgeCount,
-                FirstName = e.FirstName,
-                IdentityCode = e.IdentityCode,
-                Position = e.Position,
-                PositionLines = e.PositionLines,
-                SecondName = e.SecondName,
-                ShortAddress = e.ShortAddress,
-                Surname = e.Surname,
-                UserName = e.UserName
-            });
+            IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(e => e.ToDTO());
             return dtos;
         }
 

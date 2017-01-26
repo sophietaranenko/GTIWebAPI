@@ -679,61 +679,6 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetAll">
-            <summary>
-            All contacts
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetByClient(System.Int32)">
-            <summary>
-            Get organization contact by organization id for VIEW
-            </summary>
-            <param name="organizationId">Client Id</param>
-            <returns>Collection of ClientContactDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetContactAsUser(System.Int32)">
-            <summary>
-            Get one contact for view by contact id as USER with organization info 
-            </summary>
-            <param name="id">ClientContact id</param>
-            <returns>ClientContactEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.GetContactEdit(System.Int32)">
-            <summary>
-            Get one contact for edit by contact id
-            </summary>
-            <param name="id">ClientContact id</param>
-            <returns>ClientContactEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.PutClientContact(System.Int32,GTIWebAPI.Models.Clients.OrganizationContact)">
-            <summary>
-            Update organization contact
-            </summary>
-            <param name="id">Contact id</param>
-            <param name="organizationContact">ClientContact object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.PostClientContact(GTIWebAPI.Models.Clients.OrganizationContact)">
-            <summary>
-            Insert new organization contact
-            </summary>
-            <param name="organizationContact">ClientContact object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.DeleteClientContact(System.Int32)">
-            <summary>
-            Delete contact
-            </summary>
-            <param name="id">Contact Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactsController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetByClient(System.Int32)">
             <summary>
             Get organization gtiClient by organization id for VIEW
@@ -755,7 +700,7 @@
             <param name="id">OrganizationGTILink id</param>
             <returns>OrganizationGTILinkEditDTO object</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PutOrganizationGTILink(System.Int32,GTIWebAPI.Models.Clients.OrganizationGTILink)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PutOrganizationGTILink(System.Int32,GTIWebAPI.Models.Organizations.OrganizationGTILink)">
             <summary>
             Update organization gtiClient
             </summary>
@@ -763,7 +708,7 @@
             <param name="clientGTIClient">OrganizationGTILink object</param>
             <returns>204 - No content</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostLink(GTIWebAPI.Models.Clients.OrganizationGTILink)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostLink(GTIWebAPI.Models.Organizations.OrganizationGTILink)">
             <summary>
             Insert new organization gtiClient
             </summary>
@@ -785,28 +730,28 @@
         </member>
         <member name="T:GTIWebAPI.Controllers.OrganizationsController">
             <summary>
-            Controller for clients
+            Controller for organizations
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetClientEdit(System.Int32)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetOrganizationEdit(System.Int32)">
             <summary>
-            Get one client by client Id
+            Get one organization by organization Id
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetClient(System.Int32)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetOrganization(System.Int32)">
             <summary>
-            Get one client by client Id
+            Get one organization by organization Id
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.DeleteClient(System.Int32)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.DeleteOrganization(System.Int32)">
             <summary>
-            Delete client
+            Delete organization
             </summary>
-            <param name="id">client id</param>
+            <param name="id">organization id</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationsController.Dispose(System.Boolean)">
@@ -814,12 +759,6 @@
             Dispose controller
             </summary>
             <param name="disposing"></param>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationSignersController.GetClientSigners">
-            <summary>
-            swgrqew
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeCarsController">
             <summary>
@@ -1747,6 +1686,17 @@
             <param name="myFilter"></param>
             <returns></returns>
         </member>
+        <member name="T:GTIWebAPI.Models.Organizations.Organization">
+            <summary>
+            All the organizations company contacts to
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Models.Organizations.Organization.MapToEdit">
+            <summary>
+            Method for mapping (Automapper doesn't work:( ) 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:GTIWebAPI.Models.Dictionary.Address">
             <summary>
             To get new Id from procedure (table_id) class must inherit abstract GTITable 
@@ -2478,82 +2428,6 @@
         <member name="T:GTIWebAPI.Models.Employees.Language">
             <summary>
             Languages that employee can have
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Clients.Organization">
-            <summary>
-            All the organizations company contacts to
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Models.Clients.Organization.#ctor">
-            <summary>
-            Constructor fills all the lists inside class - tables connected by foreign key
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.EmployeeId">
-            <summary>
-            Employee - record creator 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationType">
-            <summary>
-            Type of organization owing (LLC, LTD, OOO etc.)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationBanks">
-            <summary>
-            Bank info about organization (its bank accounts)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationAgreements">
-            <summary>
-            Agreements with our company, registered in program
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationContacts">
-            <summary>
-            Paople managers contact to, they also can be Users of our program 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationGTILink">
-            <summary>
-            Link from WebAPI Organization to GTI VFP Organization (One WebAPI Organization can be linked to many GTI VFP Organizations)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationSigners">
-            <summary>
-            Signers registered with period of validity (person that signs organization's documents at currect period) 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.Organization.OrganizationTaxInfos">
-            <summary>
-            Legal address with Tax Codes 
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Models.Clients.Organization.MapToEdit">
-            <summary>
-            Method for mapping (Automapper doesn't work:( ) 
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:GTIWebAPI.Models.Clients.OrganizationContactUserDTO">
-            <summary>
-            Profile of organization contact info
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.OrganizationContact">
-            <summary>
-            Info about contact (a person)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.Organization">
-            <summary>
-            Info about organization person relates to
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Clients.OrganizationContactUserDTO.ProfilePicture">
-            <summary>
-            Profile picture of contact (from AspNetUserImages, related to AspNetUser)
             </summary>
         </member>
         <member name="T:GTIWebAPI.Models.Security.UserRightEditDTO">

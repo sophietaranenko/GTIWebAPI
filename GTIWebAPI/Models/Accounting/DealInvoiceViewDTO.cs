@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Accounting
 {
-    public class InvoiceViewDTO
+    public class DealInvoiceViewDTO
     {
         public Guid? DealId { get; set; }
 

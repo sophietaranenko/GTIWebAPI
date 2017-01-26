@@ -7,10 +7,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using GTIWebAPI.Models.Service;
 using GTIWebAPI.Models.Employees;
-using GTIWebAPI.Models.Clients;
+using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Dictionary;
 using System.Data;
+using GTIWebAPI.Models.Organizations;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -22,7 +23,7 @@ namespace GTIWebAPI.Models.Context
     {
 
         public DbOrganization()
-            : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
+            : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345")
         {
         }
 
@@ -35,17 +36,20 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
 
+
+
+
         public virtual DbSet<Organization> Organizations { get; set; }
-
-        public virtual DbSet<OrganizationBank> OrganizationBanks { get; set; }
-
-        public virtual DbSet<OrganizationAgreement> OrganizationAgreements { get; set; }
-
-        public virtual DbSet<OrganizationContact> OrganizationContacts { get; set; }
-
-        public virtual DbSet<OrganizationFile> OrganizationFiles { get; set; }
-
+        public virtual DbSet<OrganizationAddress> OrganizationAddresses { get; set; }
+        public virtual DbSet<OrganizationAddressType> OrganizationAddressTypes { get; set; }
+        public virtual DbSet<OrganizationContactPerson> OrganizationContactPersons { get; set; }
+        public virtual DbSet<OrganizationContactPersonContact> OrganizationContactPersonContacts { get; set; }
         public virtual DbSet<OrganizationGTILink> OrganizationGTILinks { get; set; }
+        public virtual DbSet<OrganizationProperty> OrganizationProperties { get; set; }
+        public virtual DbSet<OrganizationPropertyType> OrganizationPropertyTypes { get; set; }
+        public virtual DbSet<OwnershipForm> OwnershipForms { get; set; }
+
+
 
         public virtual DbSet<ShippingLine> ShippingLines { get; set; }
 
@@ -63,17 +67,9 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<Terminal> Terminals { get; set; }
 
-        public virtual DbSet<OrganizationPhoto> OrganizationPhotos { get; set; }
 
-        public virtual DbSet<OrganizationType> OrganizationTypes { get; set; }
 
-        public virtual DbSet<OrganizationSigner> OrganizationSigners { get; set; }
 
-        public virtual DbSet<OrganizationTaxInfo> OrganizationTaxInfos { get; set; }
-
-        public virtual DbSet<SignerPosition> SignerPositions { get; set; }
-
-        public virtual DbSet<OrganizationStatistic> OrganizationStatistics { get; set; }
 
         /// <summary>
         /// Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
@@ -105,6 +101,9 @@ namespace GTIWebAPI.Models.Context
             }
             return organizationList;
         }
+
+
+
 
         /// <summary>
         /// Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
@@ -203,7 +202,7 @@ namespace GTIWebAPI.Models.Context
         /// <param name="dateBegin"></param>
         /// <param name="dateEnd"></param>
         /// <returns>List of invoices</returns>
-        public IEnumerable<InvoiceViewDTO> InvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public IEnumerable<DealInvoiceViewDTO> InvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -218,7 +217,7 @@ namespace GTIWebAPI.Models.Context
 
             SqlParameter parClient = new SqlParameter
             {
-                ParameterName = "@ClientId",
+                ParameterName = "@OrganizationId",
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.Int32,
@@ -243,17 +242,17 @@ namespace GTIWebAPI.Models.Context
                 Value = dateEndParameter
             };
 
-            IEnumerable<InvoiceViewDTO> dealList = new List<InvoiceViewDTO>();
+            IEnumerable<DealInvoiceViewDTO> invoiceList = new List<DealInvoiceViewDTO>();
             try
             {
-                var result = Database.SqlQuery<InvoiceViewDTO>("exec InvoicesList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
-                dealList = result;
+                var result = Database.SqlQuery<DealInvoiceViewDTO>("exec InvoicesList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
+                invoiceList = result;
             }
             catch (Exception e)
             {
                 string error = e.ToString();
             }
-            return dealList;
+            return invoiceList;
         }
 
 
@@ -322,7 +321,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>list of invoices</returns>
-        public IEnumerable<InvoiceViewDTO> InvoicesByDeal(Guid dealId)
+        public IEnumerable<DealInvoiceViewDTO> InvoicesByDeal(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -334,11 +333,36 @@ namespace GTIWebAPI.Models.Context
                 Value = dealId
             };
 
-            IEnumerable<InvoiceViewDTO> dto = new List<InvoiceViewDTO>();
+            IEnumerable<DealInvoiceViewDTO> dto = new List<DealInvoiceViewDTO>();
             try
             {
-                var result = Database.SqlQuery<InvoiceViewDTO>(
+                var result = Database.SqlQuery<DealInvoiceViewDTO>(
                 @"exec DealInvoicesList @DealId", parameter).OrderBy(d => d.InvoiceDate).ToList();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+
+        public InvoiceFullViewDTO InvoiceCardInfo(int invoiceId)
+        {
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@InvoiceId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = invoiceId
+            };
+
+            InvoiceFullViewDTO dto = new InvoiceFullViewDTO();
+            try
+            {
+                var result = Database.SqlQuery<InvoiceFullViewDTO>("exec InvoiceInfo @InvoiceId", parameter).FirstOrDefault();
                 dto = result;
             }
             catch (Exception e)
@@ -367,19 +391,7 @@ namespace GTIWebAPI.Models.Context
             try
             {
                 var result = Database.SqlQuery<InvoiceLineViewDTO>(
-                @"SELECT ServiceType, 
-                ServiceName, 
-                ServiceSum, 
-                UsdSum, 
-                CurrencySum, 
-                VatId, 
-                VatInPersent,  
-                VatSum, 
-                ServiceTypeId, 
-                Id,
-                LinePosition,  
-                InvoiceId,  
-               from InvoiceLines where InvoiceId = @InvoiceId", parameter).OrderBy(l => l.LinePosition).ToList();
+                @"Exec InvoiceLineList @InvoiceId", parameter).OrderBy(l => l.LinePosition).ToList();
                 dto = result;
             }
             catch (Exception e)
@@ -389,7 +401,7 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
-        public IEnumerable<InvoiceContainerViewDTO> ContainersByInvoice(int invoiceId)
+        public IEnumerable<InvoiceContainerViewDTO> ContainersByInvoiceId(int invoiceId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -403,42 +415,7 @@ namespace GTIWebAPI.Models.Context
             try
             {
                 var result = Database.SqlQuery<InvoiceContainerViewDTO>(
-                @"select c.container as Name, c.type as Type, 
-                    m.bl as BL, c.ves_brutto as BruttoWeight,
-                    c.bl as BLId, c.rc as Id, c.account as InvoiceId 
-                    from cntr c
-                    left join manifest m 
-                    on m.kod = c.bl
-                    where c.pr_delete = 0 and c.act='INV ' and c.account = @InvoiceId
-                    order by c.container", parameter).OrderBy(l => l.Name).ToList();
-                dto = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return dto;
-        }
-
-        public IEnumerable<InvoiceContainerViewDTO> ContainersByInvoiceIdView(int invoiceId)
-        {
-            SqlParameter parameter = new SqlParameter
-            {
-                ParameterName = "@InvoiceId",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.Int32,
-                Value = invoiceId
-            };
-            IEnumerable<InvoiceContainerViewDTO> dto = new List<InvoiceContainerViewDTO>();
-            try
-            {
-                var result = Database.SqlQuery<InvoiceContainerViewDTO>(
-                @"select Name,Type, 
-                    BL, BruttoWeight,
-                    BLId, Id, InvoiceId 
-                    from InvoiceContainers 
-                    where InvoiceId = @InvoiceId", parameter).OrderBy(l => l.Name).ToList();
+                @"Exec InvoiceContainerList @InvoiceId", parameter).OrderBy(l => l.Name).ToList();
                 dto = result;
             }
             catch (Exception e)

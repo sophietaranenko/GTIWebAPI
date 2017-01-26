@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Organizations
 {
-    public class OrganizationGTILinkDTO
+    public class OrganizationAddressDTO
     {
         public int Id { get; set; }
 
-        public int? OrganizationGTIId { get; set; }
-
         public int? OrganizationId { get; set; }
 
-        public OrganizationGTIDTO OrganizationGTI { get; set; }
+        public int? OrganizationAddressTypeId { get; set; }
+
+        public int? AddressId { get; set; }
 
 
+
+        public virtual OrganizationAddressType OrganizationAddressType { get; set; }
     }
 }

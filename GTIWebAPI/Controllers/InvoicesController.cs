@@ -18,14 +18,31 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetInvoices")]
-        public IEnumerable<InvoiceViewDTO> GetInvoices(int clientId, DateTime? dateBegin, DateTime? dateEnd)
+        [Route("GetAll")]
+        public IEnumerable<DealInvoiceViewDTO> GetInvoices(int clientId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (clientId == 0)
             {
-                return new List<InvoiceViewDTO>();
+                return new List<DealInvoiceViewDTO>();
             }
             return db.InvoicesList(clientId, dateBegin, dateEnd);
+        }
+
+
+        [GTIFilter]
+        [HttpGet]
+        [Route("Get")]
+        [ResponseType(typeof(InvoiceFullViewDTO))]
+        public IHttpActionResult GetInvoice(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            InvoiceFullViewDTO dto = db.InvoiceCardInfo(id);
+            dto.Containers = db.ContainersByInvoiceId(id);
+            dto.Lines = db.InvoiceLinesByInvoice(id);
+            return Ok(dto);
         }
     }
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Organizations
 {
-    public class OrganizationViewDTO
+    public class OwnershipFormDTO
     {
-        public int EmployeeId { get; set; }
+
     }
 }

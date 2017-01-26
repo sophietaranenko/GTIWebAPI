@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTIWebAPI.Models.Clients
+namespace GTIWebAPI.Models.Organizations
 {
     public class OrganizationDTO
     {
-       public int Id { get; set; }
+        public int Id { get; set; }
 
         public int? EmployeeId { get; set; }
 
@@ -19,13 +19,7 @@ namespace GTIWebAPI.Models.Clients
 
         public string RussianName { get; set; }
 
-        public int? OrganizationTypeId { get; set; }
-
-        public string IdentityCode { get; set; }
-
-        public int? AddressId { get; set; }
-
-        public virtual AddressDTO Address { get; set; }
+        public string ShortName { get; set; }
 
         public string PhoneNumber { get; set; }
 
@@ -35,15 +29,19 @@ namespace GTIWebAPI.Models.Clients
 
         public string Email { get; set; }
 
-        public OrganizationTypeDTO OrganizationType { get; set; }
+        public string Skype { get; set; }
 
-        public virtual IEnumerable<OrganizationContactDTO> OrganizationContacts { get; set; }
+        public int? OwnershipFormId { get; set; }
 
-        public virtual IEnumerable<OrganizationGTILinkView> OrganizationGTILinks { get; set; }
+        public OwnershipFormDTO OwnershipForm { get; set; }
 
-        public virtual IEnumerable<OrganizationSignerDTO> ClientSigners { get; set; }
+        public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
 
-        public virtual IEnumerable<OrganizationTaxInfoDTO> ClientTaxInfos { get; set; }
+        public IEnumerable<OrganizationContactPersonDTO> OrganizationContactPersons { get; set; }
+
+        public IEnumerable<OrganizationGTILinkDTO> OrganizationGTILinks { get; set; }
+
+        public IEnumerable<OrganizationPropertyDTO> OrganizationProperties { get; set; }
 
     }
 }

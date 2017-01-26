@@ -80,7 +80,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public Guid Id { get; set; }
 
-        public IEnumerable<InvoiceViewDTO> Invoices { get; set; }
+        public IEnumerable<DealInvoiceViewDTO> Invoices { get; set; }
 
         public IEnumerable<DealContainerViewDTO> Containers { get; set; }
 

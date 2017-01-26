@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Context
     public class DbPersonnel : DbContext
     {
         public DbPersonnel()
-            : base("Data Source=192.168.0.229;Initial Catalog=Crew;User ID=sa;Password=12345")
+            : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345")
         {
         }
 

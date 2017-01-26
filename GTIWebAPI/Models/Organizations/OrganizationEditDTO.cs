@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTIWebAPI.Models.Clients
+namespace GTIWebAPI.Models.Organizations
 {
     public class OrganizationEditDTO
     {
@@ -19,14 +19,6 @@ namespace GTIWebAPI.Models.Clients
 
         public string RussianName { get; set; }
 
-        public int? OrganizationTypeId { get; set; }
-
-        public string IdentityCode { get; set; }
-
-        public int? AddressId { get; set; }
-
-        public AddressDTO Address { get; set; }
-
         public string PhoneNumber { get; set; }
 
         public string FaxNumber { get; set; }
@@ -34,7 +26,5 @@ namespace GTIWebAPI.Models.Clients
         public string Website { get; set; }
 
         public string Email { get; set; }
-
-        public OrganizationTypeDTO OrganizationType { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public string BL { get; set; }
 
-        public int? BruttoWeight { get; set; }
+        public double BruttoWeight { get; set; }
 
         public int? BLId { get; set; }
 

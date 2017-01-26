@@ -1,5 +1,5 @@
 ﻿using GTIWebAPI.Filters;
-using GTIWebAPI.Models.Clients;
+using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Context;
 using System;
 using System.Collections.Generic;
@@ -13,108 +13,69 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Web.Http.Description;
 
+
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
-    /// Controller for clients
+    /// Controller for organizations
     /// </summary>
-    [RoutePrefix("api/Clients")]
+    [RoutePrefix("api/Organizations")]
     public class OrganizationsController : ApiController
     {
         private DbOrganization db = new DbOrganization();
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetClientsByFilter")]
-        public IEnumerable<OrganizationViewDTO> GetClientsByFilter(string filter)
+        [Route("GetByFilter")]
+        public IEnumerable<OrganizationViewDTO> GetOrganizationsByFilter(string filter)
         {
-            IEnumerable<OrganizationViewDTO> clientList = db.OrganizationsFilter(filter);
-            return clientList;
+            IEnumerable<OrganizationViewDTO> organizationList = db.OrganizationsFilter(filter);
+            return organizationList;
         }
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetClientByEmployeeId")]
-        public IEnumerable<OrganizationViewDTO> GetClientsByEmployeeId(int employeeId)
+        [Route("GetByEmployeeId")]
+        public IEnumerable<OrganizationViewDTO> GetOrganizationsByEmployeeId(int employeeId)
         {
-            IEnumerable<OrganizationViewDTO> clientList = db.OrganizationsFilter("")
-                .Where(c => c.CreatorId == employeeId).ToList();
-            return clientList;
+            IEnumerable<OrganizationViewDTO> organizationList = db.OrganizationsFilter("")
+                .Where(c => c.EmployeeId == employeeId).ToList();
+            return organizationList;
         }
 
         /// <summary>
-        /// Get one client by client Id
+        /// Get one organization by organization Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetClientEdit", Name = "GetClientEdit")]
+        [Route("GetView", Name = "GetOrganizationView")]
         [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult GetClientEdit(int id)
+        public IHttpActionResult GetOrganizationEdit(int id)
         {
-            Organization client = db.Organizations.Find(id);
-            OrganizationEditDTO dto = client.MapToEdit();
+            Organization organization = db.Organizations.Find(id);
+            OrganizationEditDTO dto = organization.MapToEdit();
             return Ok(dto);
         }
         /// <summary>
-        /// Get one client by client Id
+        /// Get one organization by organization Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetClient", Name = "GetClient")]
+        [Route("GetEdit", Name = "GetOrganizationEdit")]
         [ResponseType(typeof(OrganizationDTO))]
-        public IHttpActionResult GetClient(int id)
+        public IHttpActionResult GetOrganization(int id)
         {
-            //клиент со всеми прибамбасами 
             Mapper.Initialize(m => m.CreateMap<Address, AddressDTO>());
-            Organization client = db.Organizations.Find(id);
-            OrganizationDTO dto = new OrganizationDTO()
-            {
-                Address = Mapper.Map<AddressDTO>(client.Address),
-                AddressId = client.AddressId,
-                Email = client.Email,
-                EmployeeId = client.EmployeeId,
-                EnglishName = client.EnglishName,
-                FaxNumber = client.FaxNumber,
-                Id = client.Id,
-                IdentityCode = client.IdentityCode,
-                NativeName = client.NativeName,
-                OrganizationTypeId = client.OrganizationTypeId,
-                PhoneNumber = client.PhoneNumber,
-                RussianName = client.RussianName,
-                Website = client.Website
-            };
-            Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
-            dto.OrganizationType = Mapper.Map<OrganizationTypeDTO>(client.OrganizationType);
 
-            List<OrganizationContact> contacts = db.OrganizationContacts.Where(c => c.Deleted != true && c.ClientId == id).ToList();
-            Mapper.Initialize
-            (m =>
-                {
-                    m.CreateMap<OrganizationContact, OrganizationContactDTO>();
-                });
-            dto.OrganizationContacts = Mapper.Map<IEnumerable<OrganizationContact>, IEnumerable<OrganizationContactDTO>>(contacts);
+            Organization organization = db.Organizations.Find(id);
 
+            OrganizationDTO dto = organization.MapToDTO();
 
-            dto.OrganizationGTILinks = db.OrganizationGTILinkList(id);
-
-            List<OrganizationSigner> signers = db.OrganizationSigners.Where(s => s.Deleted != true && s.ClientId == id).ToList();
-            Mapper.Initialize
-                (
-                m =>
-                {
-                    m.CreateMap<OrganizationSigner, OrganizationSignerDTO>();
-                    m.CreateMap<SignerPosition, SignerPositionDTO>();
-                }
-                );
-            dto.ClientSigners = Mapper.Map<IEnumerable<OrganizationSigner>, IEnumerable<OrganizationSignerDTO>>(signers);
-
-            List<OrganizationTaxInfo> taxes = db.OrganizationTaxInfos.Where(c => c.ClientId == id).ToList();
-            Mapper.Initialize(m => m.CreateMap<OrganizationGTILink, OrganizationGTILinkDTO>());
-            dto.ClientTaxInfos = Mapper.Map<IEnumerable<OrganizationTaxInfo>, IEnumerable<OrganizationTaxInfoDTO>>(taxes);
+            Mapper.Initialize(m => m.CreateMap<OwnershipForm, OwnershipFormDTO>());
 
             return Ok(dto);
         }
@@ -122,14 +83,14 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpPut]
-        [Route("PutClient")]
-        public IHttpActionResult PutClient(int id, OrganizationEditDTO client)
-        {
+        [Route("Put")]
+        public IHttpActionResult PutOrganization(int id, OrganizationEditDTO organization)
+        { 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (id != client.Id)
+            if (id != organization.Id)
             {
                 return BadRequest();
             }
@@ -137,14 +98,11 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OrganizationTypeDTO, OrganizationType>();
-                m.CreateMap<AddressDTO, Address>();
+                m.CreateMap<OwnershipFormDTO, OwnershipForm>();
             });
 
-            Organization cl = Mapper.Map<Organization>(client);
-
-            db.Entry(cl.Address).State = EntityState.Modified;
-            db.Entry(cl).State = EntityState.Modified;
+            Organization newOrganization = Mapper.Map<Organization>(organization);
+            db.Entry(newOrganization).State = EntityState.Modified;
 
             try
             {
@@ -152,7 +110,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException e)
             {
-                if (!ClientExists(id))
+                if (!OrganizationExists(id))
                 {
                     return NotFound();
                 }
@@ -167,31 +125,27 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpPost]
-        [Route("PostClient")]
+        [Route("PostOrganization")]
         [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult PostClient(OrganizationEditDTO postDto)
+        public IHttpActionResult PostOrganization(OrganizationEditDTO postDto)
         {
             Mapper.Initialize(m =>
             {
                 m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OrganizationTypeDTO, OrganizationType>();
+                m.CreateMap<OwnershipFormDTO, OwnershipForm>();
                 m.CreateMap<AddressDTO, Address>();
             });
 
-            Organization client = Mapper.Map<Organization>(postDto);
+            Organization organization = Mapper.Map<Organization>(postDto);
 
-            client.Id = client.NewId(db);
-
-            client.Address.Id = client.Address.NewId(db);
-            client.AddressId = client.Address.Id;
+            organization.Id = organization.NewId(db);
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Addresses.Add(client.Address);
-            db.Organizations.Add(client);
+            db.Organizations.Add(organization);
 
             try
             {
@@ -199,7 +153,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ClientExists(client.Id))
+                if (OrganizationExists(organization.Id))
                 {
                     return Conflict();
                 }
@@ -208,41 +162,43 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            OrganizationEditDTO dto = client.MapToEdit();
-            return CreatedAtRoute("GetClientEdit", new { id = dto.Id }, dto);
+            OrganizationEditDTO dto = organization.MapToEdit();
+            return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
         }
 
         /// <summary>
-        /// Delete client
+        /// Delete organization
         /// </summary>
-        /// <param name="id">client id</param>
+        /// <param name="id">organization id</param>
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteClient")]
-        public IHttpActionResult DeleteClient(int id)
+        [Route("DeleteOrganization")]
+        public IHttpActionResult DeleteOrganization(int id)
         {
-            Organization client = db.Organizations.Find(id);
-            if (client != null)
+            Organization organization = db.Organizations.Find(id);
+            if (organization != null)
             {
-                client.Deleted = true;
-                db.Entry(client).State = EntityState.Modified;
+                organization.Deleted = true;
+                db.Entry(organization).State = EntityState.Modified;
                 db.SaveChanges();
             }
-            OrganizationEditDTO dto = client.MapToEdit();
+            OrganizationEditDTO dto = organization.MapToEdit();
             return Ok(dto);
         }
 
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetOrganizationTypes")]
-        public IEnumerable<OrganizationTypeDTO> GetOrganizationTypes()
-        {
-            List<OrganizationType> types = db.OrganizationTypes.OrderBy(o => o.Name).ToList();
-            Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
-            IEnumerable<OrganizationTypeDTO> dtos = Mapper.Map<IEnumerable<OrganizationType>, IEnumerable<OrganizationTypeDTO>>(types);
-            return dtos;
-        }
+
+        //instead of OrganizationType - OwnershipForm && method GetLists for all help lists in Organizations namespace
+        //[GTIFilter]
+        //[HttpGet]
+        //[Route("GetOrganizationTypes")]
+        //public IEnumerable<OrganizationTypeDTO> GetOrganizationTypes()
+        //{
+        //    List<OrganizationType> types = db.OrganizationTypes.OrderBy(o => o.Name).ToList();
+        //    Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
+        //    IEnumerable<OrganizationTypeDTO> dtos = Mapper.Map<IEnumerable<OrganizationType>, IEnumerable<OrganizationTypeDTO>>(types);
+        //    return dtos;
+        //}
 
         /// <summary>
         /// Dispose controller
@@ -257,7 +213,7 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool ClientExists(int id)
+        private bool OrganizationExists(int id)
         {
             return db.Organizations.Count(e => e.Id == id) > 0;
         }

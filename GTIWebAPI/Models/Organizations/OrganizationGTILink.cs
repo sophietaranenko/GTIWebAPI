@@ -1,4 +1,4 @@
-namespace GTIWebAPI.Models.Clients
+namespace GTIWebAPI.Models.Organizations
 {
     using Service;
     using System;
@@ -13,13 +13,14 @@ namespace GTIWebAPI.Models.Clients
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? OrganizationGTIId { get; set; }
+        public int? GTIId { get; set; }
 
         public int? OrganizationId { get; set; }
 
         public bool? Deleted { get; set; }
 
         public virtual Organization Organization { get; set; }
+
 
         protected override string TableName
         {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTIWebAPI.Models.Clients
+namespace GTIWebAPI.Models.Organizations
 {
     public class OrganizationGTIDTO
     {

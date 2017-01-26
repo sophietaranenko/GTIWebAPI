@@ -1,6 +1,7 @@
 ﻿namespace GTIWebAPI.Models.Dictionary
 {
     using Employees;
+    using Organizations;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -16,6 +17,13 @@
     [Table("Address")]
     public partial class Address : GTITable
     {
+        public Address()
+        {
+            OrganizationAddresses = new HashSet<OrganizationAddress>();
+            EmployeePassports = new HashSet<EmployeePassport>();
+            Employees = new HashSet<Employee>();
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
@@ -100,9 +108,14 @@
 
         public virtual Country Country { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationAddress> OrganizationAddresses { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Employee> Employee { get; set; }
+        public virtual ICollection<EmployeePassport> EmployeePassports { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Employee> Employees { get; set; }
 
         public AddressDTO ToDTO()
         {

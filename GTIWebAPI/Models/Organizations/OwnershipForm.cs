@@ -1,4 +1,4 @@
-namespace GTIWebAPI.Models.Clients
+namespace GTIWebAPI.Models.Organizations
 {
     using System;
     using System.Collections.Generic;
@@ -6,13 +6,13 @@ namespace GTIWebAPI.Models.Clients
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("OrganizationType")]
-    public partial class OrganizationType
+    [Table("OwnershipForm")]
+    public partial class OwnershipForm
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public OrganizationType()
+        public OwnershipForm()
         {
-            Client = new HashSet<Organization>();
+            Organization = new HashSet<Organization>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -37,21 +37,14 @@ namespace GTIWebAPI.Models.Clients
         public string EnglishExplanation { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Organization> Client { get; set; }
+        public virtual ICollection<Organization> Organization { get; set; }
 
-        [NotMapped]
-        public string Name {
-            get
-            {
-                string name = "";
-
-                name = UkrainianName == null ? "" : UkrainianName + " / ";
-                name += RussianName == null ? "" : RussianName + " / ";
-                name += EnglishName == null ? "" : EnglishName + " / ";
-                name = name.Substring(0, name.Length - 3);
-                name = name.Trim();
-                return name;
-            }
+        public OwnershipFormDTO ToDTO()
+        {
+            OwnershipFormDTO dto = new OwnershipFormDTO();
+            return dto;
         }
+
+        
     }
 }

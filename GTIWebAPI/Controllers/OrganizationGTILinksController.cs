@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using GTIWebAPI.Filters;
-using GTIWebAPI.Models.Clients;
+using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
 using System;
@@ -57,11 +57,11 @@ namespace GTIWebAPI.Controllers
             OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO
             {
               OrganizationId = gtiClient.OrganizationId,
-              OrganizationGTIId = gtiClient.OrganizationGTIId,
+              OrganizationGTIId = gtiClient.GTIId,
               Id = gtiClient.Id
             };
 
-            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.OrganizationGTIId);
+            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.GTIId);
             clGTI.Office = db.Offices.Find(clGTI.OfficeId);
 
             OrganizationGTIDTO organizationGtiDto = new OrganizationGTIDTO
@@ -106,11 +106,11 @@ namespace GTIWebAPI.Controllers
             OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO
             {
                 OrganizationId = gtiClient.OrganizationId,
-                OrganizationGTIId = gtiClient.OrganizationGTIId,
+                OrganizationGTIId = gtiClient.GTIId,
                 Id = gtiClient.Id
             };
 
-            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.OrganizationGTIId);
+            OrganizationGTI clGTI = db.GTIOrganizations.Find(gtiClient.GTIId);
             clGTI.Office = db.Offices.Find(clGTI.OfficeId);
 
             OrganizationGTIDTO organizationGtiDto = new OrganizationGTIDTO

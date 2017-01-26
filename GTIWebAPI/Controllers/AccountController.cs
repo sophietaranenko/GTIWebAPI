@@ -24,8 +24,7 @@ using GTIWebAPI.Results;
 
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
-using GTIWebAPI.Models.Context;
-using GTIWebAPI.Models.Clients;
+using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
 using System.Net;
 using GTIWebAPI.Models;

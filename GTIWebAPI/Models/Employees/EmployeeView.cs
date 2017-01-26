@@ -102,5 +102,25 @@ namespace GTIWebAPI.Models.Employees
                 return mas;
             }
         }
+
+        public EmployeeViewDTO ToDTO()
+        {
+            EmployeeViewDTO dto = new EmployeeViewDTO
+            {
+                Id = this.Id,
+                Age = this.Age.ToString(),
+                DateOfBirth = this.DateOfBirth,
+                AgeCount = this.AgeCount,
+                FirstName = this.FirstName,
+                IdentityCode = this.IdentityCode,
+                Position = this.Position,
+                PositionLines = this.PositionLines,
+                SecondName = this.SecondName,
+                ShortAddress = this.ShortAddress,
+                Surname = this.Surname,
+                UserName = this.UserName
+            };
+            return dto;
+        }
     }
 }
