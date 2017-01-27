@@ -33,5 +33,22 @@ namespace GTIWebAPI.Models.Organizations
         public int OfficeId { get; set; }
 
         public Office Office { get; set; }
+
+        public OrganizationGTIDTO ToDTO()
+        {
+            OrganizationGTIDTO dto = new OrganizationGTIDTO()
+            {
+                Address = this.Address,
+                Email = this.Email,
+                FullName = this.FullName,
+                Id = this.Id,
+                Office = this.Office == null ? null : this.Office.ToDTO(),
+                OfficeId = this.OfficeId,
+                Phone = this.Phone,
+                ShortName = this.ShortName
+            };
+            return dto;
+        }
+
     }
 }

@@ -400,6 +400,8 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
+    <Compile Include="Filters\GTIOfficeFilter.cs" />
+    <Compile Include="Filters\QueryParser.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

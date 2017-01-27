@@ -66,9 +66,26 @@ namespace GTIWebAPI.Controllers
             dto.OrganizationContactPersons = contactPersons.Select(c => c.ToDTO());
 
 
-            dto.OrganizationGTILinks = new List<OrganizationGTILinkDTO>();
+            List<OrganizationGTILink> links = db.OrganizationGTILinks.Where(d => d.Deleted != true).ToList();
+            //поскольку в таблице OrganizationGTILink не может быть внешних ключей на старые базы 
+            //можем доставать объекты только по такому сценарию
+            foreach (var link in links)
+            {
+                if (link.GTIId != null)
+                {
+                    link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
+                    if (link.OrganizationGTI != null)
+                    {
+                        link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
+                    }
+                }
+            }
+            dto.OrganizationGTILinks = links.Select(c => c.ToDTO());
+
+
+
             dto.OrganizationProperties = new List<OrganizationPropertyDTO>();
-             
+
             return Ok(dto);
         }
 
@@ -94,7 +111,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         public IHttpActionResult PutOrganization(int id, OrganizationEditDTO organization)
-        { 
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

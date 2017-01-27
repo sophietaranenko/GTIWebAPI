@@ -1426,7 +1426,7 @@
             Controller manipulating employees
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetAll(System.String)">
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetAll(System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             </summary>
             <param name="filter">
@@ -1511,6 +1511,15 @@
             Get all actions of controller
             </summary>
             <param name="controllerId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Filters.QueryParser.Parse(System.String,System.String,System.Char)">
+            <summary>
+            method that parse uri query to list of int parameters
+            </summary>
+            <param name="parameterName">parameter name</param>
+            <param name="query">all query text</param>
+            <param name="symbol">by what symbol integers are separated</param>
             <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Models.Accounting.InvoiceContainerViewDTO">

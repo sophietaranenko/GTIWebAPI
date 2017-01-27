@@ -85,6 +85,9 @@ namespace GTIWebAPI.Controllers
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
+          
+            // (Perform new row creation including the userid we just looked up
+
             string UserId = User.Identity.GetUserId();
             ApplicationUser user = UserManager.FindById(UserId);
             UserInfoViewModel model = new UserInfoViewModel();

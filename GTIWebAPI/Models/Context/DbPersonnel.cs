@@ -7,6 +7,7 @@ using System.Data;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Personnel;
+using System.Data.Common;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -140,6 +141,41 @@ namespace GTIWebAPI.Models.Context
             try
             {
                 var result = Database.SqlQuery<EmployeeView>("exec EmployeeFilter @filter", parameter).ToList();
+                employeeList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return employeeList;
+        }
+
+        public IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Clear();
+            dataTable.Columns.Add("Value");
+
+            foreach (var id in officeIds)
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = id;
+                dataTable.Rows.Add(row);
+            }
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@OfficeIds",
+                TypeName = "ut_IntList",
+                Value = dataTable,
+                SqlDbType = SqlDbType.Structured
+            };
+
+            List<EmployeeView> employeeList = new List<EmployeeView>();
+            try
+            {
+                var result = Database.SqlQuery<EmployeeView>("exec EmployeeByOfficeIds @OfficeIds", parameter).ToList();
                 employeeList = result;
             }
             catch (Exception e)

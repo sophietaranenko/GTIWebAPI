@@ -15,6 +15,9 @@ using GTIWebAPI.Models.Personnel;
 using GTIWebAPI.Models.Service;
 using AutoMapper;
 using GTIWebAPI.Filters;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity;
+using GTIWebAPI.Models.Account;
 
 namespace GTIWebAPI.Controllers
 {
@@ -27,18 +30,48 @@ namespace GTIWebAPI.Controllers
     {
         private DbPersonnel db = new DbPersonnel();
 
+        ///// <summary>
+        ///// </summary>
+        ///// <param name="filter">
+        ///// "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
+        ///// </param>
+        ///// <returns>a collection on EmployeeViewDTO objects</returns>
+        //[GTIFilter]
+        //[HttpGet]
+        //[Route("GetAll")]
+        //public IEnumerable<EmployeeViewDTO> GetAll(string filter)
+        //{
+        //    IEnumerable<EmployeeView> employeeList = db.EmployeeFilter(filter);
+        //    IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(c => new EmployeeViewDTO
+        //    {
+        //        Id = c.Id,
+        //        Age = c.Age == null ? null : c.Age.ToString(),
+        //        DateOfBirth = c.DateOfBirth,
+        //        AgeCount = c.AgeCount,
+        //        FirstName = c.FirstName,
+        //        IdentityCode = c.IdentityCode,
+        //        Position = c.Position,
+        //        PositionLines = c.PositionLines == null ? null : c.PositionLines,
+        //        SecondName = c.SecondName,
+        //        ShortAddress = c.ShortAddress,
+        //        Surname = c.Surname,
+        //        UserName = c.UserName
+        //    });
+        //    return dtos;
+        //}
+
         /// <summary>
         /// </summary>
         /// <param name="filter">
         /// "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
         /// </param>
         /// <returns>a collection on EmployeeViewDTO objects</returns>
-        [GTIFilter]
+        [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeViewDTO> GetAll(string filter)
-        {
-            IEnumerable<EmployeeView> employeeList = db.EmployeeFilter(filter);
+        public IEnumerable<EmployeeViewDTO> GetAll([FromUri]IEnumerable<int> officeIds)
+        {          
+            IEnumerable<EmployeeView> employeeList = db.EmployeeByOffices(officeIds);
             IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(c => new EmployeeViewDTO
             {
                 Id = c.Id,
