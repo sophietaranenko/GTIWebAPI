@@ -16,6 +16,5 @@ namespace GTIWebAPI.Models.Organizations
 
         public OrganizationGTIDTO OrganizationGTI { get; set; }
 
-
     }
 }

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Organizations
 {
-    public class OrganizationGTILinkViewModel
+    public class OrganizationAddressTypeDTO
     {
         public int Id { get; set; }
-        
-        public Organization Client { get; set; }
-        public OrganizationGTI ClientGTI { get; set; }
+
+        public string Name { get; set; }
     }
 }

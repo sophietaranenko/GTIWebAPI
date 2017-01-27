@@ -1,16 +1,18 @@
 namespace GTIWebAPI.Models.Organizations
 {
+    using Dictionary;
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("OwnershipForm")]
-    public partial class OwnershipForm
+    [Table("OrganizationLegalForm")]
+    public partial class OrganizationLegalForm : GTITable 
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public OwnershipForm()
+        public OrganizationLegalForm()
         {
             Organization = new HashSet<Organization>();
         }
@@ -19,32 +21,34 @@ namespace GTIWebAPI.Models.Organizations
         public int Id { get; set; }
 
         [StringLength(50)]
-        public string RussianName { get; set; }
+        public string Name { get; set; }
 
-        [StringLength(50)]
-        public string UkrainianName { get; set; }
-
-        [StringLength(50)]
-        public string EnglishName { get; set; }
 
         [StringLength(250)]
-        public string RussianExplanation { get; set; }
+        public string Explanation { get; set; }
 
-        [StringLength(250)]
-        public string UkrainianExplanation { get; set; }
+        public int CountryId { get; set; }
 
-        [StringLength(250)]
-        public string EnglishExplanation { get; set; }
+        public virtual Country Country { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Organization> Organization { get; set; }
 
-        public OwnershipFormDTO ToDTO()
+        public OrganizationLegalFormDTO ToDTO()
         {
-            OwnershipFormDTO dto = new OwnershipFormDTO();
+            OrganizationLegalFormDTO dto = new OrganizationLegalFormDTO();
             return dto;
         }
 
-        
+
+        protected override string TableName
+        {
+            get
+            {
+                return "OrganizationLegalForm";
+            }
+        }
+
+
     }
 }

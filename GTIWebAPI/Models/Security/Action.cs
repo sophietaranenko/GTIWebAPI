@@ -18,10 +18,15 @@ namespace GTIWebAPI.Models.Security
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Int32 Id { get; set; }
+
         public Int32 ControllerId { get; set; }
+
         public string Name { get; set; }
+
         public string LongName { get; set; }
+
         protected override string TableName { get { return "RightControllerAction"; } }
+
         public virtual ICollection<UserRight> UserRights { get; set; }
     }
 }

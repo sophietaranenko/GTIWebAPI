@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.Models.Dictionary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? AddressId { get; set; }
 
+        public AddressDTO Address { get; set; } 
 
-
-        public virtual OrganizationAddressType OrganizationAddressType { get; set; }
+        public OrganizationAddressTypeDTO OrganizationAddressType { get; set; }
     }
 }

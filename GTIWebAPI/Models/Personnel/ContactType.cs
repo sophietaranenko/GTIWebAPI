@@ -25,5 +25,15 @@ namespace GTIWebAPI.Models.Personnel
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeContact> EmployeeContact { get; set; }
+
+        public ContactTypeDTO ToDTO()
+        {
+            ContactTypeDTO dto = new ContactTypeDTO()
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

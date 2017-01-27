@@ -27,18 +27,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByFilter")]
-        public IEnumerable<OrganizationViewDTO> GetOrganizationsByFilter(string filter)
+        public IEnumerable<OrganizationView> GetOrganizationsByFilter(string filter)
         {
-            IEnumerable<OrganizationViewDTO> organizationList = db.OrganizationsFilter(filter);
+            IEnumerable<OrganizationView> organizationList = db.OrganizationsFilter(filter);
             return organizationList;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<OrganizationViewDTO> GetOrganizationsByEmployeeId(int employeeId)
+        public IEnumerable<OrganizationView> GetOrganizationsByEmployeeId(int employeeId)
         {
-            IEnumerable<OrganizationViewDTO> organizationList = db.OrganizationsFilter("")
+            IEnumerable<OrganizationView> organizationList = db.OrganizationsFilter("")
                 .Where(c => c.EmployeeId == employeeId).ToList();
             return organizationList;
         }
@@ -51,13 +51,27 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetView", Name = "GetOrganizationView")]
-        [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult GetOrganizationEdit(int id)
+        [ResponseType(typeof(OrganizationDTO))]
+        public IHttpActionResult GetOrganizationView(int id)
         {
             Organization organization = db.Organizations.Find(id);
-            OrganizationEditDTO dto = organization.MapToEdit();
+            OrganizationDTO dto = organization.MapToDTO();
+
+
+            List<OrganizationAddress> addresses = db.OrganizationAddresses.Where(a => a.Deleted != true).ToList();
+            dto.OrganizationAddresses = addresses.Select(a => a.ToDTO());
+
+
+            List<OrganizationContactPerson> contactPersons = db.OrganizationContactPersons.Where(p => p.Deleted != true).ToList();
+            dto.OrganizationContactPersons = contactPersons.Select(c => c.ToDTO());
+
+
+            dto.OrganizationGTILinks = new List<OrganizationGTILinkDTO>();
+            dto.OrganizationProperties = new List<OrganizationPropertyDTO>();
+             
             return Ok(dto);
         }
+
         /// <summary>
         /// Get one organization by organization Id
         /// </summary>
@@ -66,17 +80,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetEdit", Name = "GetOrganizationEdit")]
-        [ResponseType(typeof(OrganizationDTO))]
+        [ResponseType(typeof(OrganizationEditDTO))]
         public IHttpActionResult GetOrganization(int id)
         {
             Mapper.Initialize(m => m.CreateMap<Address, AddressDTO>());
-
             Organization organization = db.Organizations.Find(id);
-
-            OrganizationDTO dto = organization.MapToDTO();
-
-            Mapper.Initialize(m => m.CreateMap<OwnershipForm, OwnershipFormDTO>());
-
+            OrganizationEditDTO dto = organization.MapToEdit();
             return Ok(dto);
         }
 
@@ -98,7 +107,7 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OwnershipFormDTO, OwnershipForm>();
+                m.CreateMap<OrganizationLegalFormDTO, OrganizationLegalForm>();
             });
 
             Organization newOrganization = Mapper.Map<Organization>(organization);
@@ -132,7 +141,7 @@ namespace GTIWebAPI.Controllers
             Mapper.Initialize(m =>
             {
                 m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OwnershipFormDTO, OwnershipForm>();
+                m.CreateMap<OrganizationLegalFormDTO, OrganizationLegalForm>();
                 m.CreateMap<AddressDTO, Address>();
             });
 

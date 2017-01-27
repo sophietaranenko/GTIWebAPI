@@ -7,72 +7,77 @@ namespace GTIWebAPI.Models.Organizations
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+
     /// <summary>
-    /// All the organizations company contacts to
+    /// All the organizations 
     /// </summary>
     [Table("Organization")]
     public partial class Organization : GTITable
     {
-      
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-            public Organization()
-            {
-                OrganizationAddress = new HashSet<OrganizationAddress>();
-                OrganizationContactPerson = new HashSet<OrganizationContactPerson>();
-                OrganizationGTILink = new HashSet<OrganizationGTILink>();
-                OrganizationProperty = new HashSet<OrganizationProperty>();
-            }
 
-            [DatabaseGenerated(DatabaseGeneratedOption.None)]
-            public int Id { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Organization()
+        {
+            OrganizationAddresses = new HashSet<OrganizationAddress>();
+            OrganizationContactPersons = new HashSet<OrganizationContactPerson>();
+            OrganizationGTILinks = new HashSet<OrganizationGTILink>();
+            OrganizationProperties = new HashSet<OrganizationProperty>();
+        }
 
-            public int? EmployeeId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
 
-            [StringLength(500)]
-            public string EnglishName { get; set; }
+        public int? EmployeeId { get; set; }
 
-            [StringLength(500)]
-            public string NativeName { get; set; }
+        [StringLength(500)]
+        public string EnglishName { get; set; }
 
-            [StringLength(500)]
-            public string RussianName { get; set; }
+        [StringLength(500)]
+        public string NativeName { get; set; }
 
-            [StringLength(50)]
-            public string ShortName { get; set; }
+        [StringLength(500)]
+        public string RussianName { get; set; }
 
-            [StringLength(30)]
-            public string PhoneNumber { get; set; }
+        [StringLength(50)]
+        public string ShortName { get; set; }
 
-            [StringLength(30)]
-            public string FaxNumber { get; set; }
+        [StringLength(30)]
+        public string PhoneNumber { get; set; }
 
-            [StringLength(50)]
-            public string Website { get; set; }
+        [StringLength(30)]
+        public string FaxNumber { get; set; }
 
-            [StringLength(50)]
-            public string Email { get; set; }
+        [StringLength(50)]
+        public string Website { get; set; }
 
-            [StringLength(50)]
-            public string Skype { get; set; }
+        [StringLength(50)]
+        public string Email { get; set; }
 
-            public bool? Deleted { get; set; }
+        [StringLength(50)]
+        public string Skype { get; set; }
 
-            public int? OwnershipFormId { get; set; }
+        public bool? Deleted { get; set; }
 
-            public virtual OwnershipForm OwnershipForm { get; set; }
+        public int? OrganizationLegalFormId { get; set; }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-            public virtual ICollection<OrganizationAddress> OrganizationAddress { get; set; }
+        public int? CountryId { get; set; }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-            public virtual ICollection<OrganizationContactPerson> OrganizationContactPerson { get; set; }
+        public virtual Country Country { get; set; }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-            public virtual ICollection<OrganizationGTILink> OrganizationGTILink { get; set; }
+        public virtual OrganizationLegalForm OrganizationLegalForms { get; set; }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-            public virtual ICollection<OrganizationProperty> OrganizationProperty { get; set; }
-        
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationAddress> OrganizationAddresses { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationContactPerson> OrganizationContactPersons { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationGTILink> OrganizationGTILinks { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationProperty> OrganizationProperties { get; set; }
+
 
         protected override string TableName
         {
@@ -113,7 +118,7 @@ namespace GTIWebAPI.Models.Organizations
                 EmployeeId = this.EmployeeId,
                 EnglishName = this.EnglishName,
                 FaxNumber = this.FaxNumber,
-                OwnershipFormId = this.OwnershipFormId,
+                OrganizationLegalFormId = this.OrganizationLegalFormId,
                 Id = this.Id,
                 NativeName = this.NativeName,
                 PhoneNumber = this.PhoneNumber,

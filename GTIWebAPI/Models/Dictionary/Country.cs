@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.Models.Organizations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,6 +16,7 @@ namespace GTIWebAPI.Models.Dictionary
         public Country()
         {
             Addresses = new HashSet<Address>();
+            OrganizationLEgalForms = new HashSet<OrganizationLegalForm>();
         }
 
         public int Id { get; set; }
@@ -49,5 +51,8 @@ namespace GTIWebAPI.Models.Dictionary
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Address> Addresses { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationLegalForm> OrganizationLEgalForms { get; set; }
     }
 }

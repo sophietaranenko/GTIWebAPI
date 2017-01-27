@@ -23,5 +23,15 @@ namespace GTIWebAPI.Models.Organizations
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationAddress> OrganizationAddress { get; set; }
+
+        public OrganizationAddressTypeDTO ToDTO()
+        {
+            OrganizationAddressTypeDTO dto = new OrganizationAddressTypeDTO
+            {
+                Name = this.Name,
+                Id = this.Id
+            };
+            return dto;
+        }
     }
 }

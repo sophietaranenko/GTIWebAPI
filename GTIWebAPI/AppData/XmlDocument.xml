@@ -679,13 +679,6 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetByClient(System.Int32)">
-            <summary>
-            Get organization gtiClient by organization id for VIEW
-            </summary>
-            <param name="organizationId">Client Id</param>
-            <returns>Collection of OrganizationGTILinkDTO</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetGTIClientView(System.Int32)">
             <summary>
             Get one gtiClient for view by gtiClient id
@@ -728,12 +721,26 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormController.GetContactEdit(System.Int32)">
+            <summary>
+            Get one contact for edit by contact id
+            </summary>
+            <param name="id">EmployeeContact id</param>
+            <returns>EmployeeContactEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormController.Post(GTIWebAPI.Models.Organizations.OrganizationLegalForm)">
+            <summary>
+            Insert new employee contact
+            </summary>
+            <param name="form">EmployeeContact object</param>
+            <returns></returns>
+        </member>
         <member name="T:GTIWebAPI.Controllers.OrganizationsController">
             <summary>
             Controller for organizations
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetOrganizationEdit(System.Int32)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetOrganizationView(System.Int32)">
             <summary>
             Get one organization by organization Id
             </summary>
@@ -1598,22 +1605,6 @@
             <param name="myFilter"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.OrganizationGTILinkList(System.Int32)">
-            <summary>
-            Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
-            </summary>
-            <param name="organizationId"></param>
-            <returns>List of linked GTI VFP Organization (klient table)</returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.DealList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            Deals linked to currency WEB API Organization, selected by their creation date 
-            </summary>
-            <param name="organizationId"></param>
-            <param name="dateBegin">Begin date, if not seleted - 01/01/1900</param>
-            <param name="dateEnd">End date, if not</param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Stored procedure call to return invoice list selected by organization and dates 
@@ -1688,7 +1679,7 @@
         </member>
         <member name="T:GTIWebAPI.Models.Organizations.Organization">
             <summary>
-            All the organizations company contacts to
+            All the organizations 
             </summary>
         </member>
         <member name="M:GTIWebAPI.Models.Organizations.Organization.MapToEdit">

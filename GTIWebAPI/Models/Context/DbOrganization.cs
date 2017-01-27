@@ -34,22 +34,39 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<Address> Addresses { get; set; }
 
+        public virtual DbSet<AddressLocality> Localities { get; set; }
+
+        public virtual DbSet<AddressPlace> Places { get; set; }
+
+        public virtual DbSet<AddressRegion> Regions { get; set; }
+
+        public virtual DbSet<AddressVillage> Villages { get; set; }
+
+        public virtual DbSet<Country> Countries { get; set; }
+
+        public virtual DbSet<Continent> Continents { get; set; }
+
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
 
 
 
-
         public virtual DbSet<Organization> Organizations { get; set; }
+
         public virtual DbSet<OrganizationAddress> OrganizationAddresses { get; set; }
+
         public virtual DbSet<OrganizationAddressType> OrganizationAddressTypes { get; set; }
+
         public virtual DbSet<OrganizationContactPerson> OrganizationContactPersons { get; set; }
+
         public virtual DbSet<OrganizationContactPersonContact> OrganizationContactPersonContacts { get; set; }
+
         public virtual DbSet<OrganizationGTILink> OrganizationGTILinks { get; set; }
+
         public virtual DbSet<OrganizationProperty> OrganizationProperties { get; set; }
+
         public virtual DbSet<OrganizationPropertyType> OrganizationPropertyTypes { get; set; }
-        public virtual DbSet<OwnershipForm> OwnershipForms { get; set; }
 
-
+        public virtual DbSet<OrganizationLegalForm> OrganizationLegalForms { get; set; }
 
         public virtual DbSet<ShippingLine> ShippingLines { get; set; }
 
@@ -68,15 +85,12 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Terminal> Terminals { get; set; }
 
 
-
-
-
         /// <summary>
         /// Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public IEnumerable<OrganizationViewDTO> OrganizationsFilter(string myFilter)
+        public IEnumerable<OrganizationView> OrganizationsFilter(string myFilter)
         {
             if (myFilter == null)
                 myFilter = "";
@@ -89,10 +103,10 @@ namespace GTIWebAPI.Models.Context
                 Size = 1000,
                 Value = myFilter
             };
-            List<OrganizationViewDTO> organizationList = new List<OrganizationViewDTO>();
+            List<OrganizationView> organizationList = new List<OrganizationView>();
             try
             {
-                var result = Database.SqlQuery<OrganizationViewDTO>("exec OrganizationsFilter @filter", parameter).ToList();
+                var result = Database.SqlQuery<OrganizationView>("exec OrganizationsFilter @filter", parameter).ToList();
                 organizationList = result;
             }
             catch (Exception e)
@@ -105,95 +119,95 @@ namespace GTIWebAPI.Models.Context
 
 
 
-        /// <summary>
-        /// Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
-        /// </summary>
-        /// <param name="organizationId"></param>
-        /// <returns>List of linked GTI VFP Organization (klient table)</returns>
-        public IEnumerable<OrganizationGTILinkView> OrganizationGTILinkList(int organizationId)
-        {
+        ///// <summary>
+        ///// Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
+        ///// </summary>
+        ///// <param name="organizationId"></param>
+        ///// <returns>List of linked GTI VFP Organization (klient table)</returns>
+        //public IEnumerable<OrganizationGTILinkView> OrganizationGTILinkList(int organizationId)
+        //{
 
-            SqlParameter parameter = new SqlParameter
-            {
-                ParameterName = "@OrganizationId",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.Int32,
-                Value = organizationId
-            };
+        //    SqlParameter parameter = new SqlParameter
+        //    {
+        //        ParameterName = "@OrganizationId",
+        //        IsNullable = false,
+        //        Direction = ParameterDirection.Input,
+        //        DbType = DbType.Int32,
+        //        Value = organizationId
+        //    };
 
-            IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
-            try
-            {
-                var result = Database.SqlQuery<OrganizationGTILinkView>("exec OrganizationGTILinkList @ClientId", parameter).ToList();
-                organizationList = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return organizationList;
-        }
+        //    IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
+        //    try
+        //    {
+        //        var result = Database.SqlQuery<OrganizationGTILinkView>("exec OrganizationGTILinkList @ClientId", parameter).ToList();
+        //        organizationList = result;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string error = e.ToString();
+        //    }
+        //    return organizationList;
+        //}
 
-        /// <summary>
-        /// Deals linked to currency WEB API Organization, selected by their creation date 
-        /// </summary>
-        /// <param name="organizationId"></param>
-        /// <param name="dateBegin">Begin date, if not seleted - 01/01/1900</param>
-        /// <param name="dateEnd">End date, if not</param>
-        /// <returns></returns>
-        public IEnumerable<DealShortViewDTO> DealList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
-        {
-            if (dateBegin == null)
-            {
-                dateBegin = new DateTime(1900, 1, 1);
-            }
-            if (dateEnd == null)
-            {
-                dateEnd = new DateTime(2200, 1, 1);
-            }
-            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
+        ///// <summary>
+        ///// Deals linked to currency WEB API Organization, selected by their creation date 
+        ///// </summary>
+        ///// <param name="organizationId"></param>
+        ///// <param name="dateBegin">Begin date, if not seleted - 01/01/1900</param>
+        ///// <param name="dateEnd">End date, if not</param>
+        ///// <returns></returns>
+        //public IEnumerable<DealShortViewDTO> DealList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        //{
+        //    if (dateBegin == null)
+        //    {
+        //        dateBegin = new DateTime(1900, 1, 1);
+        //    }
+        //    if (dateEnd == null)
+        //    {
+        //        dateEnd = new DateTime(2200, 1, 1);
+        //    }
+        //    DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
+        //    DateTime dateEndParameter = dateEnd.GetValueOrDefault();
 
-            SqlParameter parOrganization = new SqlParameter
-            {
-                ParameterName = "@OrganizationId",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.Int32,
-                Value = organizationId
-            };
+        //    SqlParameter parOrganization = new SqlParameter
+        //    {
+        //        ParameterName = "@OrganizationId",
+        //        IsNullable = false,
+        //        Direction = ParameterDirection.Input,
+        //        DbType = DbType.Int32,
+        //        Value = organizationId
+        //    };
 
-            SqlParameter parBegin = new SqlParameter
-            {
-                ParameterName = "@DateBegin",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.DateTime,
-                Value = dateBeginParameter
-            };
+        //    SqlParameter parBegin = new SqlParameter
+        //    {
+        //        ParameterName = "@DateBegin",
+        //        IsNullable = false,
+        //        Direction = ParameterDirection.Input,
+        //        DbType = DbType.DateTime,
+        //        Value = dateBeginParameter
+        //    };
 
-            SqlParameter parEnd = new SqlParameter
-            {
-                ParameterName = "@DateEnd",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.DateTime,
-                Value = dateEndParameter
-            };
+        //    SqlParameter parEnd = new SqlParameter
+        //    {
+        //        ParameterName = "@DateEnd",
+        //        IsNullable = false,
+        //        Direction = ParameterDirection.Input,
+        //        DbType = DbType.DateTime,
+        //        Value = dateEndParameter
+        //    };
 
-            IEnumerable<DealShortViewDTO> dealList = new List<DealShortViewDTO>();
-            try
-            {
-                var result = Database.SqlQuery<DealShortViewDTO>("exec DealsFilter @OrganizationId, @DateBegin, @DateEnd", parOrganization, parBegin, parEnd).ToList();
-                dealList = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return dealList;
-        }
+        //    IEnumerable<DealShortViewDTO> dealList = new List<DealShortViewDTO>();
+        //    try
+        //    {
+        //        var result = Database.SqlQuery<DealShortViewDTO>("exec DealsFilter @OrganizationId, @DateBegin, @DateEnd", parOrganization, parBegin, parEnd).ToList();
+        //        dealList = result;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string error = e.ToString();
+        //    }
+        //    return dealList;
+        //}
 
         /// <summary>
         /// Stored procedure call to return invoice list selected by organization and dates 

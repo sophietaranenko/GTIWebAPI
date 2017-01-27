@@ -5,6 +5,7 @@ namespace GTIWebAPI.Models.Organizations
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Linq;
 
     [Table("OrganizationContactPerson")]
     public partial class OrganizationContactPerson
@@ -44,5 +45,22 @@ namespace GTIWebAPI.Models.Organizations
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationContactPersonContact> OrganizationContactPersonContact { get; set; }
+
+        public OrganizationContactPersonDTO ToDTO()
+        {
+            OrganizationContactPersonDTO dto = new OrganizationContactPersonDTO()
+            {
+                DateOfBirth = this.DateOfBirth,
+                FirstName = this.FirstName,
+                Email = this.Email,
+                Id = this.Id,
+                LastName = this.LastName,
+                OrganizationId = this.OrganizationId,
+                Position = this.Position,
+                SecondName = this.SecondName,
+                OrganizationContactPersonContact = this.OrganizationContactPersonContact == null ? null : this.OrganizationContactPersonContact.Select(c => c.ToDTO()).ToList()
+            };
+            return dto;
+        }
     }
 }

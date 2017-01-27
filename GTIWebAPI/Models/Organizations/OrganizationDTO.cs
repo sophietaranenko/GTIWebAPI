@@ -31,9 +31,9 @@ namespace GTIWebAPI.Models.Organizations
 
         public string Skype { get; set; }
 
-        public int? OwnershipFormId { get; set; }
+        public int? OrganizationLegalFormId { get; set; }
 
-        public OwnershipFormDTO OwnershipForm { get; set; }
+        public OrganizationLegalFormDTO OrganizationLegalForm { get; set; }
 
         public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
 

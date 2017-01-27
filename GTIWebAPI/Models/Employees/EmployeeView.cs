@@ -23,7 +23,7 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         [Column(TypeName = "date")]
         public DateTime? DateOfBirth { get; set; }
-        
+
         /// <summary>
         /// Employee identity code
         /// </summary>
@@ -57,7 +57,7 @@ namespace GTIWebAPI.Models.Employees
         /// Employee Age in int
         /// </summary>
         public int? AgeCount { get; set; }
-        
+
         /// <summary>
         /// UserName from AspNetUsers  
         /// </summary>
@@ -76,7 +76,7 @@ namespace GTIWebAPI.Models.Employees
         {
             get
             {
-                return new Age(AgeCount);
+                return new Age(AgeCount == null? 0 : AgeCount);
             }
         }
 
@@ -85,19 +85,27 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         [NotMapped]
         public IEnumerable<String> PositionLines
-            {
+        {
             get
             {
-                string[] mas;
+                IEnumerable<string> mas;
                 //удаляем последний символ |, чтобы внутри массива PositionLines не было пустых строк
-                Position.Substring(Position.Length - 2, 1);
-                if (Position != null && Position != "")
+                
+                if (Position != null)
                 {
-                    mas = Position.Split('|');
+                    if (Position != "")
+                    {
+                        Position.Substring(Position.Length - 2, 1);
+                        mas = Position.Split('|');
+                    }
+                    else
+                    {
+                        mas = new List<string>();
+                    }
                 }
                 else
                 {
-                    mas = new string[0];
+                    mas = new List<string>();
                 }
                 return mas;
             }
@@ -108,13 +116,13 @@ namespace GTIWebAPI.Models.Employees
             EmployeeViewDTO dto = new EmployeeViewDTO
             {
                 Id = this.Id,
-                Age = this.Age.ToString(),
+                Age = this.Age == null ? null : this.Age.ToString(),
                 DateOfBirth = this.DateOfBirth,
                 AgeCount = this.AgeCount,
                 FirstName = this.FirstName,
                 IdentityCode = this.IdentityCode,
                 Position = this.Position,
-                PositionLines = this.PositionLines,
+                PositionLines = this.PositionLines == null ? null : this.PositionLines,
                 SecondName = this.SecondName,
                 ShortAddress = this.ShortAddress,
                 Surname = this.Surname,

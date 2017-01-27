@@ -21,21 +21,21 @@ namespace GTIWebAPI.Controllers
         private DbOrganization db = new DbOrganization();
 
 
-        /// <summary>
-        /// Get organization gtiClient by organization id for VIEW
-        /// </summary>
-        /// <param name="organizationId">Client Id</param>
-        /// <returns>Collection of OrganizationGTILinkDTO</returns>
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetGTIClientsByClientId")]
-        [ResponseType(typeof(IEnumerable<OrganizationGTILinkView>))]
-        public IEnumerable<OrganizationGTILinkView> GetByClient(int organizationId)
-        {
-            IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
-            organizationList = db.OrganizationGTILinkList(organizationId);
-            return organizationList;       
-        }
+        ///// <summary>
+        ///// Get organization gtiClient by organization id for VIEW
+        ///// </summary>
+        ///// <param name="organizationId">Client Id</param>
+        ///// <returns>Collection of OrganizationGTILinkDTO</returns>
+        //[GTIFilter]
+        //[HttpGet]
+        //[Route("GetGTIClientsByClientId")]
+        //[ResponseType(typeof(IEnumerable<OrganizationGTILinkView>))]
+        //public IEnumerable<OrganizationGTILinkView> GetByClient(int organizationId)
+        //{
+        //    IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
+        //    organizationList = db.OrganizationGTILinkList(organizationId);
+        //    return organizationList;       
+        //}
 
         /// <summary>
         /// Get one gtiClient for view by gtiClient id
