@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Organizations
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace GTIWebAPI.Models.Organizations
     using System.Linq;
 
     [Table("OrganizationContactPerson")]
-    public partial class OrganizationContactPerson
+    public partial class OrganizationContactPerson : GTITable
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OrganizationContactPerson()
@@ -61,6 +62,14 @@ namespace GTIWebAPI.Models.Organizations
                 OrganizationContactPersonContact = this.OrganizationContactPersonContact == null ? null : this.OrganizationContactPersonContact.Select(c => c.ToDTO()).ToList()
             };
             return dto;
+        }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "OrganizationContactPerson";
+            }
         }
     }
 }

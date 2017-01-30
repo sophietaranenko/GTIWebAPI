@@ -37,7 +37,7 @@ namespace GTIWebAPI.Models.Organizations
             OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO
             {
                 Id = this.Id,
-                OrganizationGTIId = this.GTIId,
+                GTIId = this.GTIId,
                 OrganizationId = this.OrganizationId,
                 OrganizationGTI = this.OrganizationGTI == null ? null : this.OrganizationGTI.ToDTO()
             };

@@ -721,6 +721,90 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.GetOrganizationContactPersonByOrganizationId(System.Int32)">
+            <summary>
+            Get employee propertys by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of OrganizationContactPersonDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.GetOrganizationContactPerson(System.Int32)">
+            <summary>
+            Get one property by property id
+            </summary>
+            <param name="id">OrganizationContactPerson id</param>
+            <returns>OrganizationContactPersonEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.PutOrganizationContactPerson(System.Int32,GTIWebAPI.Models.Organizations.OrganizationContactPerson)">
+            <summary>
+            Update employee property
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="organizationContactPerson">OrganizationContactPerson object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.PostOrganizationContactPerson(GTIWebAPI.Models.Organizations.OrganizationContactPerson)">
+            <summary>
+            Insert new employee property
+            </summary>
+            <param name="organizationContactPerson">OrganizationContactPerson object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.DeleteOrganizationContactPerson(System.Int32)">
+            <summary>
+            Delete property
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetOrganizationGTILinkByOrganizationId(System.Int32)">
+            <summary>
+            Get employee links by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of OrganizationGTILinkDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetOrganizationGTILink(System.Int32)">
+            <summary>
+            Get one link by link id
+            </summary>
+            <param name="id">OrganizationGTILink id</param>
+            <returns>OrganizationGTILinkEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PutOrganizationGTILink(System.Int32,GTIWebAPI.Models.Organizations.OrganizationGTILink)">
+            <summary>
+            Update employee link
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="organizationGTILink">OrganizationGTILink object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostOrganizationGTILink(GTIWebAPI.Models.Organizations.OrganizationGTILink)">
+            <summary>
+            Insert new employee link
+            </summary>
+            <param name="organizationGTILink">OrganizationGTILink object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.DeleteOrganizationGTILink(System.Int32)">
+            <summary>
+            Delete link
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetOrganizationLegalForm(System.Int32)">
             <summary>
             Get one contact for edit by contact id

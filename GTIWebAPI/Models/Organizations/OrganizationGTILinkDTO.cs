@@ -10,7 +10,7 @@ namespace GTIWebAPI.Models.Organizations
     {
         public int Id { get; set; }
 
-        public int? OrganizationGTIId { get; set; }
+        public int? GTIId { get; set; }
 
         public int? OrganizationId { get; set; }
 
