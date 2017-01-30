@@ -12,6 +12,7 @@ using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Dictionary;
 using System.Data;
 using GTIWebAPI.Models.Organizations;
+using GTIWebAPI.Models.Personnel;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -47,6 +48,9 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Continent> Continents { get; set; }
 
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
+
+
+        public virtual DbSet<ContactType> ContactTypes { get; set; }
 
 
 

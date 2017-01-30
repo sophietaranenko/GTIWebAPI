@@ -23,6 +23,8 @@ namespace GTIWebAPI.Models.Organizations
         [StringLength(250)]
         public string Value { get; set; }
 
+        public bool? Deleted { get; set; }
+
         public virtual OrganizationContactPerson OrganizationContactPerson { get; set; }
 
         public OrganizationContactPersonContactDTO ToDTO()
