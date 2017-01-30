@@ -28,7 +28,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeOfficeDTO> GetEmployeeOffice()
+        public IEnumerable<EmployeeOfficeDTO> GetEmployeeOfficeAll()
         {
             Mapper.Initialize(m =>
             {
@@ -76,7 +76,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeOffice")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
-        public IHttpActionResult GetEmployeeOfficeView(int id)
+        public IHttpActionResult GetEmployeeOffice(int id)
         {
             EmployeeOffice employeeOffice = db.EmployeeOffices.Find(id);
             if (employeeOffice == null)
@@ -234,48 +234,6 @@ namespace GTIWebAPI.Controllers
             EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
 
             return Ok(dto);
-        }
-
-        /// <summary>
-        /// Get offices 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetOffices")]
-        public IEnumerable<OfficeDTO> GetOffices()
-        {
-            List<Office> offices = db.Offices.ToList();
-            Mapper.Initialize(m => m.CreateMap<Office, OfficeDTO>());
-            IEnumerable<OfficeDTO> dtos = Mapper.Map<IEnumerable<Office>, IEnumerable<OfficeDTO>>(offices);
-            return dtos;
-        }
-
-        /// <summary>
-        /// Get professions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetProfessions")]
-        public IEnumerable<ProfessionDTO> GetProfessions()
-        {
-            List<Profession> professions = db.Professions.ToList();
-            Mapper.Initialize(m => m.CreateMap<Profession, ProfessionDTO>());
-            IEnumerable<ProfessionDTO> dtos = Mapper.Map<IEnumerable<Profession>, IEnumerable<ProfessionDTO>>(professions);
-            return dtos;
-        }
-
-        /// <summary>
-        /// Get departments 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetDepartments")]
-        public IEnumerable<DepartmentDTO> GetDepartments()
-        {
-            List<Department> departments = db.Departments.ToList();
-            Mapper.Initialize(m => m.CreateMap<Department, DepartmentDTO>());
-            IEnumerable<DepartmentDTO> dtos = Mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentDTO>>(departments);
-            return dtos;
         }
 
         protected override void Dispose(bool disposing)

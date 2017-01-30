@@ -27,7 +27,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeGunDTO> GetAll()
+        public IEnumerable<EmployeeGunDTO> GetEmployeeGunAll()
         {
             Mapper.Initialize(m =>
             {
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
-        public IEnumerable<EmployeeGunDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeGunDTO> GetEmployeeGunByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeGun")]
         [ResponseType(typeof(EmployeeGunDTO))]
-        public IHttpActionResult GetGunView(int id)
+        public IHttpActionResult GetEmployeeGun(int id)
         {
             EmployeeGun gun = db.EmployeeGun.Find(id);
             if (gun == null)

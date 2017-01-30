@@ -48,14 +48,14 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            DealFullViewDTO dto = db.DealCardInfo(id);
+            DealFullViewDTO dto = db.GetDealCardInfo(id);
             if (dto == null)
             {
                 return NotFound();
             }
 
-            dto.Containers = db.ContainersByDeal(id);
-            dto.Invoices = db.InvoicesByDeal(id);
+            dto.Containers = db.GetContainersByDeal(id);
+            dto.Invoices = db.GetInvoicesByDeal(id);
 
             return Ok(dto);
         }

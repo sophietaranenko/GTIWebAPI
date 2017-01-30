@@ -679,6 +679,48 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.GetByOrganizationId(System.Int32)">
+            <summary>
+            Get employee addresss by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of OrganizationAddressDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.GetOrganizationAddressView(System.Int32)">
+            <summary>
+            Get one address by address id
+            </summary>
+            <param name="id">OrganizationAddress id</param>
+            <returns>OrganizationAddressEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.PutOrganizationAddress(System.Int32,GTIWebAPI.Models.Organizations.OrganizationAddress)">
+            <summary>
+            Update employee address
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="organizationAddress">OrganizationAddress object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.PostOrganizationAddress(GTIWebAPI.Models.Organizations.OrganizationAddress)">
+            <summary>
+            Insert new employee address
+            </summary>
+            <param name="organizationAddress">OrganizationAddress object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.DeleteOrganizationAddress(System.Int32)">
+            <summary>
+            Delete address
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetGTIClientView(System.Int32)">
             <summary>
             Get one gtiClient for view by gtiClient id
@@ -721,14 +763,14 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormController.GetContactEdit(System.Int32)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetContactEdit(System.Int32)">
             <summary>
             Get one contact for edit by contact id
             </summary>
             <param name="id">EmployeeContact id</param>
             <returns>EmployeeContactEditDTO object</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormController.Post(GTIWebAPI.Models.Organizations.OrganizationLegalForm)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.Post(GTIWebAPI.Models.Organizations.OrganizationLegalForm)">
             <summary>
             Insert new employee contact
             </summary>
@@ -1607,14 +1649,14 @@
             Rights to add and update deal document scans, show all other information 
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.OrganizationsFilter(System.String)">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetOrganizationsFilter(System.String)">
             <summary>
             Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
             </summary>
             <param name="myFilter"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Stored procedure call to return invoice list selected by organization and dates 
             </summary>
@@ -1623,28 +1665,28 @@
             <param name="dateEnd"></param>
             <returns>List of invoices</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.DealCardInfo(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetDealCardInfo(System.Guid)">
             <summary>
             Stored procedure call to return current deal data
             </summary>
             <param name="dealId"></param>
             <returns>Deal info</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.ContainersByDeal(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetContainersByDeal(System.Guid)">
             <summary>
             Selects containers by current deal 
             </summary>
             <param name="dealId"></param>
             <returns>List of containers</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoicesByDeal(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesByDeal(System.Guid)">
             <summary>
             Selects invoices by current deal using 
             </summary>
             <param name="dealId"></param>
             <returns>list of invoices</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.InvoiceLinesByInvoice(System.Int32)">
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoiceLinesByInvoice(System.Int32)">
             <summary>
             Select view InvoiceLines by invoiceId
             </summary>

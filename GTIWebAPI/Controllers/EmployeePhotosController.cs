@@ -28,7 +28,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("UploadFile")]
-        public HttpResponseMessage UploadFile(int employeeId)
+        public HttpResponseMessage UploadEmployeePhoto(int employeeId)
         {
             HttpResponseMessage result = null;
             var httpRequest = HttpContext.Current.Request;
@@ -104,7 +104,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeePhoto> GetPhotosByEmployeeId(int employeeId)
+        public IEnumerable<EmployeePhoto> GetEmployeePhotoByEmployeeId(int employeeId)
         {
             List<EmployeePhoto> photoList = db.EmployeePhotos
                 .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
@@ -120,7 +120,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
-        public IHttpActionResult GetPhoto(int id)
+        public IHttpActionResult GetEmployeePhoto(int id)
         {
             EmployeePhoto photo = db.EmployeePhotos.Find(id);
             if (photo != null)
@@ -141,7 +141,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        public IHttpActionResult DeletePhoto(int id)
+        public IHttpActionResult DeleteEmployeePhoto(int id)
         {
             EmployeePhoto photo = db.EmployeePhotos.Find(id);
             if (photo != null)

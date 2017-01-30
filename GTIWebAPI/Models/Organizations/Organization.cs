@@ -22,6 +22,7 @@ namespace GTIWebAPI.Models.Organizations
             OrganizationContactPersons = new HashSet<OrganizationContactPerson>();
             OrganizationGTILinks = new HashSet<OrganizationGTILink>();
             OrganizationProperties = new HashSet<OrganizationProperty>();
+            OrganizationTaxAddresses = new HashSet<OrganizationTaxAddress>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -77,6 +78,9 @@ namespace GTIWebAPI.Models.Organizations
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationProperty> OrganizationProperties { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationTaxAddress> OrganizationTaxAddresses { get; set; }
 
 
         protected override string TableName

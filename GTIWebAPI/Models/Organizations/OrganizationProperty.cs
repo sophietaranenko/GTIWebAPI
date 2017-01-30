@@ -28,5 +28,20 @@ namespace GTIWebAPI.Models.Organizations
         public virtual Organization Organization { get; set; }
 
         public virtual OrganizationPropertyType OrganizationPropertyType { get; set; }
+
+        public OrganizationPropertyDTO ToDTO()
+        {
+            OrganizationPropertyDTO dto = new OrganizationPropertyDTO()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Id = this.Id,
+                OrganizationId = this.OrganizationId,
+                OrganizationPropertyTypeId = this.OrganizationPropertyTypeId,
+                Value = this.Value,
+                OrganizationPropertyType = this.OrganizationPropertyType == null ? null : this.OrganizationPropertyType.ToDTO()
+            };
+            return dto;
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace GTIWebAPI.Security
             {
                 string controllerName = item.Name.Replace("Controller", "");
                 var methods = item.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                    .Where(m => m.GetCustomAttributes(typeof(Filters.GTIFilter), true).Any()).ToList();
+                    .Where(m => m.GetCustomAttributes(typeof(Filters.GTIFilter), true).Any() || m.GetCustomAttributes(typeof(Filters.GTIOfficeFilter), true).Any()).ToList();
                 if (methods.Count > 0)
                 {
                     //поиск контроллера с таким нэймом

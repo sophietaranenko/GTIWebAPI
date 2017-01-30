@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeContactDTO> GetAll()
+        public IEnumerable<EmployeeContactDTO> GetEmployeeContactAll()
         {
             Mapper.Initialize(m =>
             {
@@ -53,7 +53,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
-        public IEnumerable<EmployeeContactDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeContactDTO> GetEmployeeContactByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -76,7 +76,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeContact")]
         [ResponseType(typeof(EmployeeContactDTO))]
-        public IHttpActionResult GetContactEdit(int id)
+        public IHttpActionResult GetEmployeeContact(int id)
         {
             EmployeeContact contact = db.EmployeeContacts.Find(id);
             if (contact == null)
@@ -232,20 +232,6 @@ namespace GTIWebAPI.Controllers
             EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(employeeContact);
             return Ok(dto);
         }
-
-        ///// <summary>
-        ///// Types of contact 
-        ///// </summary>
-        ///// <returns></returns>
-        //[Route("GetContactTypes")]
-        //[HttpGet]
-        //public IEnumerable<ContactTypeDTO> GetContactTypes()
-        //{
-        //    List<ContactType> types = db.ContactTypes.Where(c => c.Deleted != true).ToList();
-        //    Mapper.Initialize(m => m.CreateMap<ContactType, ContactTypeDTO>());
-        //    IEnumerable<ContactTypeDTO> dtos = Mapper.Map<IEnumerable<ContactType>, IEnumerable<ContactTypeDTO>>(types);
-        //    return dtos;
-        //}
 
         /// <summary>
         /// Dispose controller

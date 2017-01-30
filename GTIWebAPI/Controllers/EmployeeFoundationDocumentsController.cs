@@ -28,7 +28,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeFoundationDocumentDTO> GetAll()
+        public IEnumerable<EmployeeFoundationDocumentDTO> GetEmployeeFoundationDocumentAll()
         {
             Mapper.Initialize(m =>
             {
@@ -50,7 +50,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
-        public IEnumerable<EmployeeFoundationDocumentDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeFoundationDocumentDTO> GetEmployeeFoundationDocumentByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -72,7 +72,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeFoundationDocument")]
         [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
-        public IHttpActionResult GetFoundationDocEdit(int id)
+        public IHttpActionResult GetEmployeeFoundationDocument(int id)
         {
             EmployeeFoundationDocument foundationDoc = db.EmployeeFoundationDocuments.Find(id);
             if (foundationDoc == null)
@@ -98,7 +98,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeFoundationDoc(int id, EmployeeFoundationDocument employeeFoundationDoc)
+        public IHttpActionResult PutEmployeeFoundationDocument(int id, EmployeeFoundationDocument employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null)
             {
@@ -119,7 +119,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmployeeFoundationDocExists(id))
+                if (!EmployeeFoundationDocumentExists(id))
                 {
                     return NotFound();
                 }
@@ -147,7 +147,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
-        public IHttpActionResult PostEmployeeFoundationDoc(EmployeeFoundationDocument employeeFoundationDoc)
+        public IHttpActionResult PostEmployeeFoundationDocument(EmployeeFoundationDocument employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null)
             {
@@ -167,7 +167,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (EmployeeFoundationDocExists(employeeFoundationDoc.Id))
+                if (EmployeeFoundationDocumentExists(employeeFoundationDoc.Id))
                 {
                     return Conflict();
                 }
@@ -195,7 +195,7 @@ namespace GTIWebAPI.Controllers
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeFoundationDocument))]
-        public IHttpActionResult DeleteEmployeeFoundationDoc(int id)
+        public IHttpActionResult DeleteEmployeeFoundationDocument(int id)
         {
             EmployeeFoundationDocument employeeFoundationDoc = db.EmployeeFoundationDocuments.Find(id);
             if (employeeFoundationDoc == null)
@@ -210,7 +210,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmployeeFoundationDocExists(id))
+                if (!EmployeeFoundationDocumentExists(id))
                 {
                     return NotFound();
                 }
@@ -258,7 +258,7 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool EmployeeFoundationDocExists(int id)
+        private bool EmployeeFoundationDocumentExists(int id)
         {
             return db.EmployeeFoundationDocuments.Count(e => e.Id == id) > 0;
         }

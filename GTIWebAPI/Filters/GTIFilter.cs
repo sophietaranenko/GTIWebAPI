@@ -39,6 +39,7 @@ namespace GTIWebAPI.Filters
             string cName = actionContext.ControllerContext.ControllerDescriptor.ControllerName;
             string aName = actionContext.ActionDescriptor.ActionName;
             string userId = actionContext.RequestContext.Principal.Identity.GetUserId();
+
             try
             {
                 ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
@@ -52,6 +53,7 @@ namespace GTIWebAPI.Filters
             {
                 string message = e.Message;
             }
+
             if (allow == false)
             {
                 return Task.FromResult<HttpResponseMessage>(

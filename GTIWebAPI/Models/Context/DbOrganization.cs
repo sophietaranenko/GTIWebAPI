@@ -68,6 +68,12 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationLegalForm> OrganizationLegalForms { get; set; }
 
+        public virtual DbSet<OrganizationTaxAddress> OrganizationTaxAddresses { get; set; }
+
+        public virtual DbSet<OrganizationTaxAddressType> OrganizationTaxAddressTypes { get; set; }
+
+
+
         public virtual DbSet<ShippingLine> ShippingLines { get; set; }
 
         public virtual DbSet<EmployeeGTI> GTIEmployees { get; set; }
@@ -90,7 +96,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public IEnumerable<OrganizationView> OrganizationsFilter(string myFilter)
+        public IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter)
         {
             if (myFilter == null)
                 myFilter = "";
@@ -116,6 +122,41 @@ namespace GTIWebAPI.Models.Context
             return organizationList;
         }
 
+
+        public IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Clear();
+            dataTable.Columns.Add("Value");
+
+            foreach (var id in officeIds)
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = id;
+                dataTable.Rows.Add(row);
+            }
+
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@OfficeIds",
+                TypeName = "ut_IntList",
+                Value = dataTable,
+                SqlDbType = SqlDbType.Structured
+            };
+
+            List<OrganizationView> organizationList = new List<OrganizationView>();
+            try
+            {
+                var result = Database.SqlQuery<OrganizationView>("exec OrganizationByOfficeIds @OfficeIds", parameter).ToList();
+                organizationList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return organizationList;
+        }
 
 
 
@@ -216,7 +257,7 @@ namespace GTIWebAPI.Models.Context
         /// <param name="dateBegin"></param>
         /// <param name="dateEnd"></param>
         /// <returns>List of invoices</returns>
-        public IEnumerable<DealInvoiceViewDTO> InvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -275,7 +316,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>Deal info</returns>
-        public DealFullViewDTO DealCardInfo(Guid dealId)
+        public DealFullViewDTO GetDealCardInfo(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -305,7 +346,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>List of containers</returns>
-        public IEnumerable<DealContainerViewDTO> ContainersByDeal(Guid dealId)
+        public IEnumerable<DealContainerViewDTO> GetContainersByDeal(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -335,7 +376,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>list of invoices</returns>
-        public IEnumerable<DealInvoiceViewDTO> InvoicesByDeal(Guid dealId)
+        public IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -361,7 +402,7 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
-        public InvoiceFullViewDTO InvoiceCardInfo(int invoiceId)
+        public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -391,7 +432,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="invoiceId">Invoice Id</param>
         /// <returns>List of invoice lines</returns>
-        public IEnumerable<InvoiceLineViewDTO> InvoiceLinesByInvoice(int invoiceId)
+        public IEnumerable<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -415,7 +456,7 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
-        public IEnumerable<InvoiceContainerViewDTO> ContainersByInvoiceId(int invoiceId)
+        public IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -455,50 +496,6 @@ namespace GTIWebAPI.Models.Context
             modelBuilder.Entity<DealType>()
                 .Property(e => e.Name)
                 .IsFixedLength();
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Name)
-            //    .IsFixedLength()
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Type)
-            //    .IsFixedLength()
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Remark)
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Platform)
-            //    .IsFixedLength()
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Weight)
-            //    .HasPrecision(12, 3);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.TerminalId)
-            //    .IsFixedLength()
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.Seal)
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.MRNCode)
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.PolicyNo)
-            //    .IsUnicode(false);
-
-            //modelBuilder.Entity<ClientContainer>()
-            //    .Property(e => e.DocumentNo)
-            //    .IsUnicode(false);
 
             modelBuilder.Entity<ShippingLine>()
                 .Property(e => e.Name)

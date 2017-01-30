@@ -12,8 +12,10 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
+    //it was just a helper controller for me to fill the table with data
+
     [RoutePrefix("api/OrganizationLegalForms")]
-    public class OrganizationLegalFormController : ApiController
+    public class OrganizationLegalFormsController : ApiController
     {
         DbOrganization db = new DbOrganization();
 
@@ -26,7 +28,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetOrganizationLegalForm")]
         [ResponseType(typeof(OrganizationLegalFormDTO))]
-        public IHttpActionResult GetContactEdit(int id)
+        public IHttpActionResult GetOrganizationLegalForm(int id)
         {
             OrganizationLegalForm form = db.OrganizationLegalForms.Find(id);
             if (form == null)
@@ -51,7 +53,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationLegalForm))]
-        public IHttpActionResult Post(OrganizationLegalForm form)
+        public IHttpActionResult PostOrganizationLegalForm(OrganizationLegalForm form)
         {
             if (form == null)
             {

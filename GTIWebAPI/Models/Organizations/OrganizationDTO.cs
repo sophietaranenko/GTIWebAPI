@@ -43,5 +43,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationPropertyDTO> OrganizationProperties { get; set; }
 
+        public IEnumerable<OrganizationTaxAddressDTO> OrganizationTaxAddresses { get; set; } 
+
     }
 }

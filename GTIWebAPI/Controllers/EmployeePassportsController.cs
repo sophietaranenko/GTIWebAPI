@@ -32,7 +32,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeePassportDTO> GetAll()
+        public IEnumerable<EmployeePassportDTO> GetEmployeePassportAll()
         {
             List<EmployeePassport> passports = db.EmployeePassports.Where(p => p.Deleted != true).ToList();
             List<EmployeePassportDTO> dtos = passports.Select(p => p.ToDTO()).ToList();
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
-        public IEnumerable<EmployeePassportDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeePassportDTO> GetEmployeePassportByEmployee(int employeeId)
         {
             List<EmployeePassport> passports = db.EmployeePassports
                 .Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList();
@@ -65,7 +65,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeePassport")]
         [ResponseType(typeof(EmployeePassportDTO))]
-        public IHttpActionResult GetPassportView(int id)
+        public IHttpActionResult GetEmployeePassport(int id)
         {
             EmployeePassport passport = db.EmployeePassports.Find(id);
             if (passport == null)

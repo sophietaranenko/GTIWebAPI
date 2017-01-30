@@ -1,53 +1,45 @@
 namespace GTIWebAPI.Models.Organizations
 {
     using Dictionary;
-    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("OrganizationAddress")]
-    public partial class OrganizationAddress : GTITable
+    [Table("OrganizationTaxAddress")]
+    public partial class OrganizationTaxAddress
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         public int? OrganizationId { get; set; }
 
-        public int? OrganizationAddressTypeId { get; set; }
-
         public int? AddressId { get; set; }
 
-        public bool? Deleted { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime? DateBegin { get; set; }
 
-        public virtual Address Address { get; set; } 
+        [Column(TypeName = "date")]
+        public DateTime? DateEnd { get; set; }
 
         public virtual Organization Organization { get; set; }
 
-        public virtual OrganizationAddressType OrganizationAddressType { get; set; }
+        public virtual Address Address { get; set; }
 
-        public OrganizationAddressDTO ToDTO()
+        public OrganizationTaxAddressDTO ToDTO()
         {
-            OrganizationAddressDTO dto = new OrganizationAddressDTO
+            OrganizationTaxAddressDTO dto = new OrganizationTaxAddressDTO
             {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
                 Address = this.Address == null ? null : this.Address.ToDTO(),
                 AddressId = this.AddressId,
                 Id = this.Id,
-                OrganizationAddressType = this.OrganizationAddressType == null ? null : this.OrganizationAddressType.ToDTO(),
-                OrganizationAddressTypeId = this.OrganizationAddressTypeId,
                 OrganizationId = this.OrganizationId
             };
             return dto;
         }
 
-        protected override string TableName
-        {
-            get
-            {
-                return "OrganizationAddress";
-            }
-        }
     }
 }

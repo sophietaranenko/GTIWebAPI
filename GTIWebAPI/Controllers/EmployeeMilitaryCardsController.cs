@@ -27,7 +27,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeMilitaryCardDTO> GetAll()
+        public IEnumerable<EmployeeMilitaryCardDTO> GetEmployeeMilitaryCardAll()
         {
             Mapper.Initialize(m =>
             {
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
-        public IEnumerable<EmployeeMilitaryCardDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeMilitaryCardDTO> GetEmployeeMilitaryCardByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeMilitaryCard")]
         [ResponseType(typeof(EmployeeMilitaryCardDTO))]
-        public IHttpActionResult GetMilitaryCardView(int id)
+        public IHttpActionResult GetEmployeeMilitaryCardView(int id)
         {
             EmployeeMilitaryCard militaryCard = db.EmployeeMilitaryCards.Find(id);
             if (militaryCard == null)

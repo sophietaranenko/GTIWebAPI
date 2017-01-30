@@ -11,7 +11,9 @@ namespace GTIWebAPI.Models.Security
     {
         [Key]
         public int Id { get; set; }
+
         public string ControllerName { get; set; }
+
         public List<ActionDTO> Actions { get; set; }
     }
 }

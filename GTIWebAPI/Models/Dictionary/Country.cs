@@ -16,7 +16,8 @@ namespace GTIWebAPI.Models.Dictionary
         public Country()
         {
             Addresses = new HashSet<Address>();
-            OrganizationLEgalForms = new HashSet<OrganizationLegalForm>();
+            OrganizationLegalForms = new HashSet<OrganizationLegalForm>();
+            OrganizationPropertyTypes = new HashSet<OrganizationPropertyType>();
         }
 
         public int Id { get; set; }
@@ -46,13 +47,27 @@ namespace GTIWebAPI.Models.Dictionary
 
         public bool? Deleted { get; set; }
 
-
         public virtual Continent Continent { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Address> Addresses { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrganizationLegalForm> OrganizationLEgalForms { get; set; }
+        public virtual ICollection<OrganizationLegalForm> OrganizationLegalForms { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationPropertyType> OrganizationPropertyTypes { get; set; }
+
+        public CountryDTO ToDTO()
+        {
+            CountryDTO dto = new CountryDTO
+            {
+                FullName = this.FullName,
+                Id = this.Id,
+                InternationalName = this.InternationalName,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

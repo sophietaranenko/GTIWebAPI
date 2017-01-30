@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
         [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeViewDTO> GetAll([FromUri]IEnumerable<int> officeIds)
+        public IEnumerable<EmployeeViewDTO> GetEmployeeAll([FromUri]IEnumerable<int> officeIds)
         {          
             IEnumerable<EmployeeView> employeeList = db.EmployeeByOffices(officeIds);
             IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(c => new EmployeeViewDTO
@@ -225,7 +225,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetEdit", Name = "GetEmployeeEdit")]
         [ResponseType(typeof(EmployeeEditDTO))]
-        public IHttpActionResult GetEdit(int id)
+        public IHttpActionResult GetEmployeeEdit(int id)
         {
             Employee employee = db.Employees.Find(id);
             if (employee == null)
@@ -321,7 +321,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeDTO))]
-        public IHttpActionResult EmployeeInsert(Employee employee)
+        public IHttpActionResult PostEmployee(Employee employee)
         {
             employee.Id = employee.NewId(db);
             employee.Address.Id = employee.Address.NewId(db);

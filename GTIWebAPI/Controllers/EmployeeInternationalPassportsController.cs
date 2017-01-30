@@ -27,7 +27,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeInternationalPassportDTO> GetAll()
+        public IEnumerable<EmployeeInternationalPassportDTO> GetEmployeeInternationalPassportAll()
         {
             Mapper.Initialize(m =>
             {
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
-        public IEnumerable<EmployeeInternationalPassportDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeInternationalPassportDTO> GetEmployeeInternationalPassportByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -70,7 +70,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeInternationalPassport")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
-        public IHttpActionResult GetInternationalPassportEdit(int id)
+        public IHttpActionResult GetEmployeeInternationalPassport(int id)
         {
             EmployeeInternationalPassport internationalPassport = db.EmployeeInternationalPassports.Find(id);
             if (internationalPassport == null)

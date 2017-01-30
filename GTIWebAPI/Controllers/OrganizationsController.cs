@@ -24,24 +24,15 @@ namespace GTIWebAPI.Controllers
     {
         private DbOrganization db = new DbOrganization();
 
-        [GTIFilter]
+        [GTIOfficeFilter]
         [HttpGet]
-        [Route("GetByFilter")]
-        public IEnumerable<OrganizationView> GetOrganizationsByFilter(string filter)
+        [Route("GetAll")]
+        public IEnumerable<OrganizationView> GetOrganizationByOfficeIds([FromUri]IEnumerable<int> officeIds)
         {
-            IEnumerable<OrganizationView> organizationList = db.OrganizationsFilter(filter);
+            IEnumerable<OrganizationView> organizationList = db.GetOrganizationsByOffices(officeIds);
             return organizationList;
         }
 
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetByEmployeeId")]
-        public IEnumerable<OrganizationView> GetOrganizationsByEmployeeId(int employeeId)
-        {
-            IEnumerable<OrganizationView> organizationList = db.OrganizationsFilter("")
-                .Where(c => c.EmployeeId == employeeId).ToList();
-            return organizationList;
-        }
 
         /// <summary>
         /// Get one organization by organization Id
@@ -58,15 +49,15 @@ namespace GTIWebAPI.Controllers
             OrganizationDTO dto = organization.MapToDTO();
 
 
-            List<OrganizationAddress> addresses = db.OrganizationAddresses.Where(a => a.Deleted != true).ToList();
+            List<OrganizationAddress> addresses = db.OrganizationAddresses.Where(a => a.Deleted != true && a.OrganizationId == id).ToList();
             dto.OrganizationAddresses = addresses.Select(a => a.ToDTO());
 
 
-            List<OrganizationContactPerson> contactPersons = db.OrganizationContactPersons.Where(p => p.Deleted != true).ToList();
+            List<OrganizationContactPerson> contactPersons = db.OrganizationContactPersons.Where(p => p.Deleted != true && p.OrganizationId == id).ToList();
             dto.OrganizationContactPersons = contactPersons.Select(c => c.ToDTO());
 
 
-            List<OrganizationGTILink> links = db.OrganizationGTILinks.Where(d => d.Deleted != true).ToList();
+            List<OrganizationGTILink> links = db.OrganizationGTILinks.Where(d => d.Deleted != true && d.OrganizationId == id).ToList();
             //поскольку в таблице OrganizationGTILink не может быть внешних ключей на старые базы 
             //можем доставать объекты только по такому сценарию
             foreach (var link in links)
@@ -82,9 +73,11 @@ namespace GTIWebAPI.Controllers
             }
             dto.OrganizationGTILinks = links.Select(c => c.ToDTO());
 
+            List<OrganizationProperty> properties = db.OrganizationProperties.Where(o => o.OrganizationId == id).ToList();
+            dto.OrganizationProperties = properties.Select(s => s.ToDTO());
 
-
-            dto.OrganizationProperties = new List<OrganizationPropertyDTO>();
+            List<OrganizationTaxAddress> taxAddresses = db.OrganizationTaxAddresses.Where(o => o.OrganizationId == id).ToList();
+            dto.OrganizationTaxAddresses = taxAddresses.Select(a => a.ToDTO());
 
             return Ok(dto);
         }
@@ -98,9 +91,8 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetEdit", Name = "GetOrganizationEdit")]
         [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult GetOrganization(int id)
+        public IHttpActionResult GetOrganizationEdit(int id)
         {
-            Mapper.Initialize(m => m.CreateMap<Address, AddressDTO>());
             Organization organization = db.Organizations.Find(id);
             OrganizationEditDTO dto = organization.MapToEdit();
             return Ok(dto);
@@ -110,25 +102,19 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        public IHttpActionResult PutOrganization(int id, OrganizationEditDTO organization)
+        public IHttpActionResult PutOrganization(int id, Organization organization)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             if (id != organization.Id)
             {
                 return BadRequest();
             }
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OrganizationLegalFormDTO, OrganizationLegalForm>();
-            });
-
-            Organization newOrganization = Mapper.Map<Organization>(organization);
-            db.Entry(newOrganization).State = EntityState.Modified;
+            
+            db.Entry(organization).State = EntityState.Modified;
 
             try
             {
@@ -145,25 +131,18 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+
+            OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();
+            return Ok(dto);
         }
 
 
         [GTIFilter]
         [HttpPost]
-        [Route("PostOrganization")]
+        [Route("Post")]
         [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult PostOrganization(OrganizationEditDTO postDto)
+        public IHttpActionResult PostOrganization(Organization organization)
         {
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<OrganizationEditDTO, Organization>();
-                m.CreateMap<OrganizationLegalFormDTO, OrganizationLegalForm>();
-                m.CreateMap<AddressDTO, Address>();
-            });
-
-            Organization organization = Mapper.Map<Organization>(postDto);
-
             organization.Id = organization.NewId(db);
 
             if (!ModelState.IsValid)
@@ -188,7 +167,7 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            OrganizationEditDTO dto = organization.MapToEdit();
+            OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();
             return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
         }
 
@@ -199,16 +178,18 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteOrganization")]
+        [Route("Delete")]
         public IHttpActionResult DeleteOrganization(int id)
         {
             Organization organization = db.Organizations.Find(id);
+
             if (organization != null)
             {
                 organization.Deleted = true;
                 db.Entry(organization).State = EntityState.Modified;
                 db.SaveChanges();
             }
+
             OrganizationEditDTO dto = organization.MapToEdit();
             return Ok(dto);
         }

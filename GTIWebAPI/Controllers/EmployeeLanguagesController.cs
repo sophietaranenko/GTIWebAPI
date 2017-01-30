@@ -27,7 +27,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeLanguageDTO> GetAll()
+        public IEnumerable<EmployeeLanguageDTO> GetEmployeeLanguageAll()
         {
             Mapper.Initialize(m =>
             {
@@ -50,7 +50,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
-        public IEnumerable<EmployeeLanguageDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeLanguageDTO> GetEmployeeLanguageByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -73,7 +73,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeLanguage")]
         [ResponseType(typeof(EmployeeLanguageDTO))]
-        public IHttpActionResult GetLanguageView(int id)
+        public IHttpActionResult GetEmployeeLanguage(int id)
         {
             EmployeeLanguage language = db.EmployeeLanguages.Find(id);
             if (language == null)

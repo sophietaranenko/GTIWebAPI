@@ -33,7 +33,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("UploadFile")]
-        public HttpResponseMessage UploadFile(string tableName, int tableId)
+        public HttpResponseMessage UploadEmployeeDocumentScan(string tableName, int tableId)
         {
             HttpResponseMessage result = null;
             var httpRequest = HttpContext.Current.Request;
@@ -111,7 +111,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByDocumentId")]
-        public IEnumerable<EmployeeDocumentScan> GetAllScansByDocumentId(string tableName, int tableId)
+        public IEnumerable<EmployeeDocumentScan> GetEmployeeDocumentScanByDocumentId(string tableName, int tableId)
         {
             List<EmployeeDocumentScan> scanList = db.EmployeeDocumentScans
                 .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
@@ -128,7 +128,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeeDocumentScanDTO> GetAllScansByEmployeeId(int employeeId)
+        public IEnumerable<EmployeeDocumentScanDTO> GetEmployeeDocumentScanByEmployeeId(int employeeId)
         {
             IEnumerable<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
             scanList = db.EmployeeAllDocumentScans(employeeId);
@@ -143,7 +143,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
-        public IHttpActionResult GetScan(int id)
+        public IHttpActionResult GetEmployeeDocumentScan(int id)
         {
             EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
             if (scan != null)
@@ -164,7 +164,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        public IHttpActionResult DeleteScan(int id)
+        public IHttpActionResult DeleteEmployeeDocumentScan(int id)
         {
             EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
             if (scan != null)

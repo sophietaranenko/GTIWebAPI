@@ -27,7 +27,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeDrivingLicenseDTO> GetAll()
+        public IEnumerable<EmployeeDrivingLicenseDTO> GetEmployeeDrivingLicenseAll()
         {
             Mapper.Initialize(m =>
             {
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
-        public IEnumerable<EmployeeDrivingLicenseDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeDrivingLicenseDTO> GetEmployeeDrivingLicenseByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetDrivingLicense")]
         [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
-        public IHttpActionResult GetDrivingLicenseView(int id)
+        public IHttpActionResult GetDrivingLicense(int id)
         {
             EmployeeDrivingLicense drivingLicense = db.EmployeeDrivingLicenses.Find(id);
             if (drivingLicense == null)

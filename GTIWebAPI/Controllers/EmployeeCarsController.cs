@@ -30,7 +30,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeCarDTO> GetAll()
+        public IEnumerable<EmployeeCarDTO> GetEmplyeeCarAll()
         {
             Mapper.Initialize(m =>
             {
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
-        public IEnumerable<EmployeeCarDTO> GetByEmployee(int employeeId)
+        public IEnumerable<EmployeeCarDTO> GetEmployeeCarByEmployee(int employeeId)
         {
             Mapper.Initialize(m =>
             {
@@ -72,7 +72,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("Get", Name = "GetEmployeeCar")]
         [ResponseType(typeof(EmployeeCarDTO))]
-        public IHttpActionResult GetCarView(int id)
+        public IHttpActionResult GetEmployeeCar(int id)
         {
             EmployeeCar car = db.EmployeeCars.Find(id);
             if (car == null)
