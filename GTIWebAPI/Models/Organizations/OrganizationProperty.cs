@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Organizations
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace GTIWebAPI.Models.Organizations
     using System.Data.Entity.Spatial;
 
     [Table("OrganizationProperty")]
-    public partial class OrganizationProperty
+    public partial class OrganizationProperty : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
@@ -24,6 +25,8 @@ namespace GTIWebAPI.Models.Organizations
 
         [Column(TypeName = "date")]
         public DateTime? DateEnd { get; set; }
+
+        public bool? Deleted { get; set; }
 
         public virtual Organization Organization { get; set; }
 
@@ -42,6 +45,14 @@ namespace GTIWebAPI.Models.Organizations
                 OrganizationPropertyType = this.OrganizationPropertyType == null ? null : this.OrganizationPropertyType.ToDTO()
             };
             return dto;
+        }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "OrganizationProperty";
+            }
         }
     }
 }

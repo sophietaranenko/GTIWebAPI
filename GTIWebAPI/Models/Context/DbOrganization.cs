@@ -483,6 +483,27 @@ namespace GTIWebAPI.Models.Context
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<AddressRegion>()
+               .HasMany(r => r.Addresses)
+               .WithOptional(r => r.AddressRegion)
+               .HasForeignKey(r => r.RegionId);
+
+            modelBuilder.Entity<AddressPlace>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressPlace)
+                .HasForeignKey(r => r.PlaceId);
+
+            modelBuilder.Entity<AddressVillage>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressVillage)
+                .HasForeignKey(r => r.VillageId);
+
+            modelBuilder.Entity<AddressLocality>()
+                .HasMany(r => r.Addresses)
+                .WithOptional(r => r.AddressLocality)
+                .HasForeignKey(r => r.LocalityId);
+
             modelBuilder.Entity<Terminal>()
                 .Property(e => e.Id)
                 .IsFixedLength()

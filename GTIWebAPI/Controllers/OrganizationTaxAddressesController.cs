@@ -13,8 +13,8 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
-    [RoutePrefix("api/OrganizationAddresses")]
-    public class OrganizationAddressesController : ApiController
+    [RoutePrefix("api/OrganizationTaxAddresses")]
+    public class OrganizationTaxAddressesController : ApiController
     {
         private DbOrganization db = new DbOrganization();
 
@@ -22,36 +22,36 @@ namespace GTIWebAPI.Controllers
         /// Get employee addresss by employee id 
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of OrganizationAddressDTO</returns>
+        /// <returns>Collection of OrganizationTaxAddressDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(IEnumerable<OrganizationAddressDTO>))]
-        public IEnumerable<OrganizationAddressDTO> GetOrganizationAddressByOrganizationId(int organizationId)
+        [ResponseType(typeof(IEnumerable<OrganizationTaxAddressDTO>))]
+        public IEnumerable<OrganizationTaxAddressDTO> GetOrganizationTaxAddressByOrganizationId(int organizationId)
         {
-            List<OrganizationAddress> addresses = db.OrganizationAddresses
+            List<OrganizationTaxAddress> addresses = db.OrganizationTaxAddresses
                 .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
-            List<OrganizationAddressDTO> dtos = addresses.Select(p => p.ToDTO()).ToList();
+            List<OrganizationTaxAddressDTO> dtos = addresses.Select(p => p.ToDTO()).ToList();
             return dtos;
         }
 
         /// <summary>
         /// Get one address by address id
         /// </summary>
-        /// <param name="id">OrganizationAddress id</param>
-        /// <returns>OrganizationAddressEditDTO object</returns>
+        /// <param name="id">OrganizationTaxAddress id</param>
+        /// <returns>OrganizationTaxAddressEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
-        [Route("Get", Name = "GetOrganizationAddress")]
-        [ResponseType(typeof(OrganizationAddressDTO))]
-        public IHttpActionResult GetOrganizationAddress(int id)
+        [Route("Get", Name = "GetOrganizationTaxAddress")]
+        [ResponseType(typeof(OrganizationTaxAddressDTO))]
+        public IHttpActionResult GetOrganizationTaxAddress(int id)
         {
-            OrganizationAddress address = db.OrganizationAddresses.Find(id);
+            OrganizationTaxAddress address = db.OrganizationTaxAddresses.Find(id);
             if (address == null)
             {
                 return NotFound();
             }
-            OrganizationAddressDTO dto = address.ToDTO();
+            OrganizationTaxAddressDTO dto = address.ToDTO();
             return Ok(dto);
         }
 
@@ -59,13 +59,13 @@ namespace GTIWebAPI.Controllers
         /// Update employee address
         /// </summary>
         /// <param name="id">Passport id</param>
-        /// <param name="organizationAddress">OrganizationAddress object</param>
+        /// <param name="organizationAddress">OrganizationTaxAddress object</param>
         /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutOrganizationAddress(int id, OrganizationAddress organizationAddress)
+        public IHttpActionResult PutOrganizationTaxAddress(int id, OrganizationTaxAddress organizationAddress)
         {
             if (organizationAddress == null)
             {
@@ -87,7 +87,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrganizationAddressExists(id))
+                if (!OrganizationTaxAddressExists(id))
                 {
                     return NotFound();
                 }
@@ -100,10 +100,6 @@ namespace GTIWebAPI.Controllers
             //Reload method of db context doesn't work
             //Visitor extension of dbContext doesn't wotk
             //that's why we reload related entities manually
-            if (organizationAddress.OrganizationAddressTypeId != null)
-            {
-                organizationAddress.OrganizationAddressType = db.OrganizationAddressTypes.Find(organizationAddress.OrganizationAddressTypeId);
-            }
 
             if (organizationAddress.Address != null)
             {
@@ -129,20 +125,20 @@ namespace GTIWebAPI.Controllers
                 }
             }
 
-            OrganizationAddressDTO dto = organizationAddress.ToDTO();
+            OrganizationTaxAddressDTO dto = organizationAddress.ToDTO();
             return Ok(dto);
         }
 
         /// <summary>
         /// Insert new employee address
         /// </summary>
-        /// <param name="organizationAddress">OrganizationAddress object</param>
+        /// <param name="organizationAddress">OrganizationTaxAddress object</param>
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
-        [ResponseType(typeof(OrganizationAddressDTO))]
-        public IHttpActionResult PostOrganizationAddress(OrganizationAddress organizationAddress)
+        [ResponseType(typeof(OrganizationTaxAddressDTO))]
+        public IHttpActionResult PostOrganizationTaxAddress(OrganizationTaxAddress organizationAddress)
         {
             if (organizationAddress == null)
             {
@@ -156,14 +152,14 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
             db.Addresses.Add(organizationAddress.Address);
-            db.OrganizationAddresses.Add(organizationAddress);
+            db.OrganizationTaxAddresses.Add(organizationAddress);
             try
             {
                 db.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                if (OrganizationAddressExists(organizationAddress.Id))
+                if (OrganizationTaxAddressExists(organizationAddress.Id))
                 {
                     return Conflict();
                 }
@@ -176,10 +172,7 @@ namespace GTIWebAPI.Controllers
             //Reload method of db context doesn't work
             //Visitor extension of dbContext doesn't wotk
             //that's why we reload related entities manually
-            if (organizationAddress.OrganizationAddressTypeId != null)
-            {
-                organizationAddress.OrganizationAddressType = db.OrganizationAddressTypes.Find(organizationAddress.OrganizationAddressTypeId);
-            }
+            
 
             if (organizationAddress.Address != null)
             {
@@ -204,8 +197,8 @@ namespace GTIWebAPI.Controllers
                     organizationAddress.Address.Country = db.Countries.Find(organizationAddress.Address.CountryId);
                 }
             }
-            OrganizationAddressDTO dto = organizationAddress.ToDTO();
-            return CreatedAtRoute("GetOrganizationAddress", new { id = dto.Id }, dto);
+            OrganizationTaxAddressDTO dto = organizationAddress.ToDTO();
+            return CreatedAtRoute("GetOrganizationTaxAddress", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -216,10 +209,10 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationAddress))]
-        public IHttpActionResult DeleteOrganizationAddress(int id)
+        [ResponseType(typeof(OrganizationTaxAddress))]
+        public IHttpActionResult DeleteOrganizationTaxAddress(int id)
         {
-            OrganizationAddress organizationAddress = db.OrganizationAddresses.Find(id);
+            OrganizationTaxAddress organizationAddress = db.OrganizationTaxAddresses.Find(id);
             if (organizationAddress == null)
             {
                 return NotFound();
@@ -232,7 +225,7 @@ namespace GTIWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrganizationAddressExists(id))
+                if (!OrganizationTaxAddressExists(id))
                 {
                     return NotFound();
                 }
@@ -241,7 +234,7 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
-            OrganizationAddressDTO dto = organizationAddress.ToDTO();
+            OrganizationTaxAddressDTO dto = organizationAddress.ToDTO();
             return Ok(dto);
         }
 
@@ -258,9 +251,10 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool OrganizationAddressExists(int id)
+        private bool OrganizationTaxAddressExists(int id)
         {
-            return db.OrganizationAddresses.Count(e => e.Id == id) > 0;
+            return db.OrganizationTaxAddresses.Count(e => e.Id == id) > 0;
         }
+
     }
 }

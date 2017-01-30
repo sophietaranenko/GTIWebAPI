@@ -380,6 +380,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\OrganizationAddressesController.cs" />
     <Compile Include="Controllers\OrganizationLegalFormsController.cs" />
+    <Compile Include="Controllers\OrganizationPropertiesController.cs" />
     <Compile Include="Controllers\OrganizationsController.cs" />
     <Compile Include="Controllers\DealsController.cs" />
     <Compile Include="Controllers\EmployeeCarsController.cs" />
@@ -398,6 +399,7 @@
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
+    <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
     <Compile Include="Filters\GTIOfficeFilter.cs" />
