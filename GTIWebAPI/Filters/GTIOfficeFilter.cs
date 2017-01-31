@@ -43,7 +43,7 @@ namespace GTIWebAPI.Filters
             string aName = actionContext.ActionDescriptor.ActionName;
 
             string query = actionContext.Request.RequestUri.Query;
-            List<int> queryOfficeIdRights = QueryParser.Parse("officeIds", query, '&');
+            List<int> queryOfficeIdRights = QueryParser.Parse("officeIds", query, ',');
 
 
             string userId = actionContext.RequestContext.Principal.Identity.GetUserId();

@@ -20,7 +20,7 @@ namespace GTIWebAPI.Models.Context
     /// Db set for organization users (contains info about organizations and what they need to read to show them) 
     /// Rights to add and update deal document scans, show all other information 
     /// </summary>
-    public class DbOrganization : DbContext
+    public class DbOrganization : DbContext, IDbContextOrganization
     {
 
         public DbOrganization()
@@ -46,6 +46,7 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Country> Countries { get; set; }
 
         public virtual DbSet<Continent> Continents { get; set; }
+
 
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
 

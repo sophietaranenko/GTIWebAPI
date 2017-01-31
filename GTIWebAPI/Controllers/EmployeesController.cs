@@ -30,36 +30,6 @@ namespace GTIWebAPI.Controllers
     {
         private DbPersonnel db = new DbPersonnel();
 
-        ///// <summary>
-        ///// </summary>
-        ///// <param name="filter">
-        ///// "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
-        ///// </param>
-        ///// <returns>a collection on EmployeeViewDTO objects</returns>
-        //[GTIFilter]
-        //[HttpGet]
-        //[Route("GetAll")]
-        //public IEnumerable<EmployeeViewDTO> GetAll(string filter)
-        //{
-        //    IEnumerable<EmployeeView> employeeList = db.EmployeeFilter(filter);
-        //    IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(c => new EmployeeViewDTO
-        //    {
-        //        Id = c.Id,
-        //        Age = c.Age == null ? null : c.Age.ToString(),
-        //        DateOfBirth = c.DateOfBirth,
-        //        AgeCount = c.AgeCount,
-        //        FirstName = c.FirstName,
-        //        IdentityCode = c.IdentityCode,
-        //        Position = c.Position,
-        //        PositionLines = c.PositionLines == null ? null : c.PositionLines,
-        //        SecondName = c.SecondName,
-        //        ShortAddress = c.ShortAddress,
-        //        Surname = c.Surname,
-        //        UserName = c.UserName
-        //    });
-        //    return dtos;
-        //}
-
         /// <summary>
         /// </summary>
         /// <param name="filter">
@@ -69,9 +39,10 @@ namespace GTIWebAPI.Controllers
         [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeViewDTO> GetEmployeeAll([FromUri]IEnumerable<int> officeIds)
-        {          
-            IEnumerable<EmployeeView> employeeList = db.EmployeeByOffices(officeIds);
+        public IEnumerable<EmployeeViewDTO> GetEmployeeAll(string officeIds)
+        {
+            IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
+            IEnumerable<EmployeeView> employeeList = db.EmployeeByOffices(OfficeIds);
             IEnumerable<EmployeeViewDTO> dtos = employeeList.Select(c => new EmployeeViewDTO
             {
                 Id = c.Id,
@@ -448,58 +419,10 @@ namespace GTIWebAPI.Controllers
         {
             EmployeeList list = new EmployeeList();
 
-            list.AddressList = new AddressList();
-            //Address data
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<AddressLocality, AddressLocalityDTO>();
-            });
-            list.AddressList.AddressLocalities =
-                Mapper.Map<IEnumerable<AddressLocality>, IEnumerable<AddressLocalityDTO>>(db.Localities.ToList());
+            list.AddressList = AddressList.CreateAddressList(db);
+            list.EmployeeLanguageList = EmployeeLanguageList.CreateEmployeeLanguageList(db);
 
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<AddressPlace, AddressPlaceDTO>();
-            });
-            list.AddressList.AddressPlaces =
-                Mapper.Map<IEnumerable<AddressPlace>, IEnumerable<AddressPlaceDTO>>(db.Places.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<AddressRegion, AddressRegionDTO>();
-            });
-            list.AddressList.AddressRegions =
-                Mapper.Map<IEnumerable<AddressRegion>, IEnumerable<AddressRegionDTO>>(db.Regions.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<AddressVillage, AddressVillageDTO>();
-            });
-            list.AddressList.AddressVillages =
-                Mapper.Map<IEnumerable<AddressVillage>, IEnumerable<AddressVillageDTO>>(db.Villages.ToList());
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Country, CountryDTO>();
-            });
-            list.AddressList.Countries =
-                Mapper.Map<IEnumerable<Country>, IEnumerable<CountryDTO>>(db.Countries.ToList());
-
-
-            list.EmployeeLanguageList = new EmployeeLanguageList();
-            //EmployeeLanguages data
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeLanguageType, EmployeeLanguageTypeDTO>();
-            });
-            list.EmployeeLanguageList.EmployeeLanguageTypes =
-                Mapper.Map<IEnumerable<EmployeeLanguageType>, IEnumerable<EmployeeLanguageTypeDTO>>(db.EmployeeLanguageTypes.ToList());
-
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<Language, LanguageDTO>();
-            });
-            list.EmployeeLanguageList.Languages =
-                Mapper.Map<IEnumerable<Language>, IEnumerable<LanguageDTO>>(db.Languages.ToList());
+            
 
             list.EmployeeOfficeList = new EmployeeOfficeList();
             //Employee Office data

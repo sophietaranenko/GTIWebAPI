@@ -402,6 +402,7 @@
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
+    <Compile Include="Controllers\OrganizationsGTIController.cs" />
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
@@ -422,6 +423,10 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Context\DbContextExtensions.cs" />
+    <Compile Include="Models\Context\IDbContextAddress.cs" />
+    <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
+    <Compile Include="Models\Context\IDbContextOrganization.cs" />
+    <Compile Include="Models\Organizations\OrganizationList.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddress.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddressDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddressType.cs" />
@@ -437,6 +442,7 @@
     <Compile Include="Models\Organizations\OrganizationPropertyDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationPropertyType.cs" />
     <Compile Include="Models\Organizations\OrganizationPropertyTypeDTO.cs" />
+    <Compile Include="Models\Organizations\OrganizationTaxAddressTypeDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationView.cs" />
     <Compile Include="Models\Organizations\OrganizationLegalForm.cs" />
     <Compile Include="Models\Dictionary\AddressList.cs" />

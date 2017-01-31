@@ -1576,7 +1576,7 @@
             Controller manipulating employees
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeAll(System.Collections.Generic.IEnumerable{System.Int32})">
+        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeAll(System.String)">
             <summary>
             </summary>
             <param name="filter">
@@ -1637,6 +1637,12 @@
             Dispose Conroller (to destroy DbContect connection)
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationsGTIController.GetOrganizationsGTI(System.String,System.String,System.String,System.String)">
+            <summary>
+            List of Text and Value of enum Sex
+            </summary>
+            <returns>Collection of Json objects</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.GetOrganizationTaxAddressByOrganizationId(System.Int32)">
             <summary>

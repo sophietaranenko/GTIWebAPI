@@ -26,5 +26,15 @@ namespace GTIWebAPI.Models.Employees
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeLanguage> EmployeeLanguage { get; set; }
+
+        public LanguageDTO ToDTO()
+        {
+            LanguageDTO dto = new LanguageDTO()
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

@@ -11,7 +11,7 @@ using System.Data.Common;
 
 namespace GTIWebAPI.Models.Context
 {
-    public class DbPersonnel : DbContext
+    public class DbPersonnel : DbContext, IDbContextAddress, IDbContextEmployeeLanguage
     {
         public DbPersonnel()
             : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345")

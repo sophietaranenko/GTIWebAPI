@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace GTIWebAPI.Models.Dictionary
+﻿namespace GTIWebAPI.Models.Dictionary
 {
     public class AddressDTO
     {
@@ -44,6 +39,7 @@ namespace GTIWebAPI.Models.Dictionary
         public string Housing { get; set; }
 
         public string Apartment { get; set; }
+
 
     }
 }

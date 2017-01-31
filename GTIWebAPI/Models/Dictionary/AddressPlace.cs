@@ -26,5 +26,15 @@ namespace GTIWebAPI.Models.Dictionary
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Address> Addresses { get; set; }
+
+        public AddressPlaceDTO ToDTO()
+        {
+            AddressPlaceDTO dto = new AddressPlaceDTO()
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

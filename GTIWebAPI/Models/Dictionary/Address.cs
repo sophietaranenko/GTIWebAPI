@@ -125,42 +125,20 @@
                 Apartment = this.Apartment,
                 BuildingNumber = this.BuildingNumber,
                 CountryId = this.CountryId,
-                Country = this.Country == null ? null : new CountryDTO
-                {
-                    Id = this.Country.Id,
-                    FullName = this.Country.FullName,
-                    InternationalName = this.Country.InternationalName,
-                    Name = this.Country.Name
-                },
+                Country = this.Country == null ? null : this.Country.ToDTO(),
                 Housing = this.Housing,
                 LocalityName = this.LocalityName,
-                Locality = this.AddressLocality == null? null : new AddressLocalityDTO
-                    {
-                        Id = this.AddressLocality.Id,
-                        Name = this.AddressLocality.Name
-                    },
+                Locality = this.AddressLocality == null? null : this.AddressLocality.ToDTO(),
                 LocalityId = this.LocalityId,
                 PlaceName = this.PlaceName,
-                Place = this.AddressPlace == null ? null : new AddressPlaceDTO
-                {
-                    Id = this.AddressPlace.Id,
-                    Name = this.AddressPlace.Name
-                },
+                Place = this.AddressPlace == null ? null : this.AddressPlace.ToDTO(),
                 PlaceId = this.PlaceId,
                 PostIndex = this.PostIndex,
                 RegionName = this.RegionName,
-                Region = this.AddressRegion == null ? null : new AddressRegionDTO
-                {
-                    Id = this.AddressRegion.Id,
-                    Name = this.AddressRegion.Name
-                },
+                Region = this.AddressRegion == null ? null : this.AddressRegion.ToDTO(),
                 RegionId = this.RegionId,
                 VillageName = this.VillageName,
-                Village = this.AddressVillage == null ? null : new AddressVillageDTO
-                {
-                    Id = this.AddressVillage.Id,
-                    Name = this.AddressVillage.Name
-                }
+                Village = this.AddressVillage == null ? null : this.AddressVillage.ToDTO()
             };
             return dto;
         }

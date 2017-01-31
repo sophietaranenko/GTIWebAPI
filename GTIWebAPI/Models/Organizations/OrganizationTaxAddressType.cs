@@ -19,5 +19,17 @@ namespace GTIWebAPI.Models.Organizations
         public int? CountryId { get; set; }
 
         public virtual Country Country { get; set; }
+
+        public OrganizationTaxAddressTypeDTO ToDTO()
+        {
+            OrganizationTaxAddressTypeDTO dto = new OrganizationTaxAddressTypeDTO()
+            {
+                Country = this.Country == null? null : this.Country.ToDTO(),
+                CountryId = this.CountryId,
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
     }
 }

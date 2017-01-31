@@ -195,17 +195,16 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        //instead of OrganizationType - OwnershipForm && method GetLists for all help lists in Organizations namespace
-        //[GTIFilter]
-        //[HttpGet]
-        //[Route("GetOrganizationTypes")]
-        //public IEnumerable<OrganizationTypeDTO> GetOrganizationTypes()
-        //{
-        //    List<OrganizationType> types = db.OrganizationTypes.OrderBy(o => o.Name).ToList();
-        //    Mapper.Initialize(m => m.CreateMap<OrganizationType, OrganizationTypeDTO>());
-        //    IEnumerable<OrganizationTypeDTO> dtos = Mapper.Map<IEnumerable<OrganizationType>, IEnumerable<OrganizationTypeDTO>>(types);
-        //    return dtos;
-        //}
+
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetOrganizationList")]
+        [ResponseType(typeof(OrganizationList))]
+        public IHttpActionResult GetOrganizationTypes()
+        {
+            OrganizationList list = OrganizationList.CreateOrganizationList(db);
+            return Ok(list);
+        }
 
         /// <summary>
         /// Dispose controller

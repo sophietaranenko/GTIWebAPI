@@ -27,7 +27,7 @@ namespace GTIWebAPI.Models.Organizations
         [StringLength(250)]
         public string Explanation { get; set; }
 
-        public int CountryId { get; set; }
+        public int? CountryId { get; set; }
 
         public virtual Country Country { get; set; }
 
@@ -36,7 +36,12 @@ namespace GTIWebAPI.Models.Organizations
 
         public OrganizationLegalFormDTO ToDTO()
         {
-            OrganizationLegalFormDTO dto = new OrganizationLegalFormDTO();
+            OrganizationLegalFormDTO dto = new OrganizationLegalFormDTO
+            {
+                Explanation = this.Explanation,
+                Id = this.Id,
+                Name = this.Name
+            };
             return dto;
         }
 
