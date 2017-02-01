@@ -24,12 +24,23 @@ namespace GTIWebAPI.Controllers
     {
         private DbOrganization db = new DbOrganization();
 
+
+        [GTIFilter]
+        [HttpGet]
+        [Route("SearchOrganization")]
+        public IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
+        {
+            IEnumerable<OrganizationSearchDTO> organizationList = db.SearchOrganization(countryId, registrationNumber);
+            return organizationList;
+        }
+
         [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<OrganizationView> GetOrganizationByOfficeIds([FromUri]IEnumerable<int> officeIds)
+        public IEnumerable<OrganizationView> GetOrganizationByOfficeIds(string officeIds)
         {
-            IEnumerable<OrganizationView> organizationList = db.GetOrganizationsByOffices(officeIds);
+            IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
+            IEnumerable<OrganizationView> organizationList = db.GetOrganizationsByOffices(OfficeIds);
             return organizationList;
         }
 

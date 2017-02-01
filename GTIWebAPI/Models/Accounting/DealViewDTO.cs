@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Accounting
 {
-    public class DealShortViewDTO
+    public class DealViewDTO
     {
         public string Number { get; set; }
         public DateTime CreateDate { get; set; }

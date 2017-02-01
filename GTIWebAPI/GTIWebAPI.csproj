@@ -378,6 +378,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ContainersController.cs" />
     <Compile Include="Controllers\OrganizationAddressesController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonContactsController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonsController.cs" />
@@ -427,6 +428,7 @@
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
     <Compile Include="Models\Organizations\OrganizationList.cs" />
+    <Compile Include="Models\Organizations\OrganizationSearchDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddress.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddressDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddressType.cs" />

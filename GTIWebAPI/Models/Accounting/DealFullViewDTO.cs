@@ -36,9 +36,9 @@ namespace GTIWebAPI.Models.Accounting
 
         public int? OfficeId { get; set; }
 
-        public int? ClientGTIId { get; set; }
+        public int? OrganizationGTIId { get; set; }
 
-        public int? ClientId { get; set; }
+        public int? OrganizationId { get; set; }
 
         public int? ForwarderGTIId { get; set; }
 

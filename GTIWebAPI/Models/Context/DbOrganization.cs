@@ -164,97 +164,96 @@ namespace GTIWebAPI.Models.Context
         }
 
 
+        public IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Clear();
+            dataTable.Columns.Add("Value");
 
-        ///// <summary>
-        ///// Stored procedure call to return GTI VFP Organizations linked to current WEB API Organization 
-        ///// </summary>
-        ///// <param name="organizationId"></param>
-        ///// <returns>List of linked GTI VFP Organization (klient table)</returns>
-        //public IEnumerable<OrganizationGTILinkView> OrganizationGTILinkList(int organizationId)
-        //{
+            foreach (var id in officeIds)
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = id;
+                dataTable.Rows.Add(row);
+            }
 
-        //    SqlParameter parameter = new SqlParameter
-        //    {
-        //        ParameterName = "@OrganizationId",
-        //        IsNullable = false,
-        //        Direction = ParameterDirection.Input,
-        //        DbType = DbType.Int32,
-        //        Value = organizationId
-        //    };
+            SqlParameter pOffices = new SqlParameter
+            {
+                ParameterName = "@OfficeIds",
+                TypeName = "ut_IntList",
+                Value = dataTable,
+                SqlDbType = SqlDbType.Structured
+            };
 
-        //    IEnumerable<OrganizationGTILinkView> organizationList = new List<OrganizationGTILinkView>();
-        //    try
-        //    {
-        //        var result = Database.SqlQuery<OrganizationGTILinkView>("exec OrganizationGTILinkList @ClientId", parameter).ToList();
-        //        organizationList = result;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        string error = e.ToString();
-        //    }
-        //    return organizationList;
-        //}
+            SqlParameter pRegistrationNumber = new SqlParameter
+            {
+                ParameterName = "@RegistrationNumber",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Size = 1000,
+                Value = registrationNumber
+            };
 
-        ///// <summary>
-        ///// Deals linked to currency WEB API Organization, selected by their creation date 
-        ///// </summary>
-        ///// <param name="organizationId"></param>
-        ///// <param name="dateBegin">Begin date, if not seleted - 01/01/1900</param>
-        ///// <param name="dateEnd">End date, if not</param>
-        ///// <returns></returns>
-        //public IEnumerable<DealShortViewDTO> DealList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
-        //{
-        //    if (dateBegin == null)
-        //    {
-        //        dateBegin = new DateTime(1900, 1, 1);
-        //    }
-        //    if (dateEnd == null)
-        //    {
-        //        dateEnd = new DateTime(2200, 1, 1);
-        //    }
-        //    DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-        //    DateTime dateEndParameter = dateEnd.GetValueOrDefault();
 
-        //    SqlParameter parOrganization = new SqlParameter
-        //    {
-        //        ParameterName = "@OrganizationId",
-        //        IsNullable = false,
-        //        Direction = ParameterDirection.Input,
-        //        DbType = DbType.Int32,
-        //        Value = organizationId
-        //    };
+            //SqlParameter pTaxNumber = new SqlParameter
+            //{
+            //    ParameterName = "@TaxNumber",
+            //    IsNullable = true,
+            //    Direction = ParameterDirection.Input,
+            //    DbType = DbType.String,
+            //    Size = 1000,
+            //    Value = taxNumber
+            //};
 
-        //    SqlParameter parBegin = new SqlParameter
-        //    {
-        //        ParameterName = "@DateBegin",
-        //        IsNullable = false,
-        //        Direction = ParameterDirection.Input,
-        //        DbType = DbType.DateTime,
-        //        Value = dateBeginParameter
-        //    };
 
-        //    SqlParameter parEnd = new SqlParameter
-        //    {
-        //        ParameterName = "@DateEnd",
-        //        IsNullable = false,
-        //        Direction = ParameterDirection.Input,
-        //        DbType = DbType.DateTime,
-        //        Value = dateEndParameter
-        //    };
+            IEnumerable<OrganizationGTI> gtis = new List<OrganizationGTI>();
+            try
+            {
+                var result = Database.SqlQuery<OrganizationGTI>("exec SearchOrganizationGTI @OfficeIds, @RegistrationNumber", pOffices, pRegistrationNumber).ToList();
+                gtis = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
 
-        //    IEnumerable<DealShortViewDTO> dealList = new List<DealShortViewDTO>();
-        //    try
-        //    {
-        //        var result = Database.SqlQuery<DealShortViewDTO>("exec DealsFilter @OrganizationId, @DateBegin, @DateEnd", parOrganization, parBegin, parEnd).ToList();
-        //        dealList = result;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        string error = e.ToString();
-        //    }
-        //    return dealList;
-        //}
+            return gtis;
+        }
 
+        public IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
+        {
+            SqlParameter pCountryId = new SqlParameter
+            {
+                ParameterName = "@CountryId",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = countryId
+            };
+            SqlParameter pRegistrationNumber = new SqlParameter
+            {
+                ParameterName = "@RegistrationNumber",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Size = 50,
+                Value = registrationNumber
+            };
+
+            IEnumerable<OrganizationSearchDTO> gtis = new List<OrganizationSearchDTO>();
+            try
+            {
+                var result = Database.SqlQuery<OrganizationSearchDTO>("exec SearchOrganization @CountryId, @RegistrationNumber", pCountryId, pRegistrationNumber).ToList();
+                gtis = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return gtis;
+        }
         /// <summary>
         /// Stored procedure call to return invoice list selected by organization and dates 
         /// </summary>
@@ -315,6 +314,60 @@ namespace GTIWebAPI.Models.Context
             return invoiceList;
         }
 
+
+        public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        {
+            if (dateBegin == null)
+            {
+                dateBegin = new DateTime(1900, 1, 1);
+            }
+            if (dateEnd == null)
+            {
+                dateEnd = new DateTime(2200, 1, 1);
+            }
+            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
+            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
+
+            SqlParameter parClient = new SqlParameter
+            {
+                ParameterName = "@OrganizationId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = organizationId
+            };
+
+            SqlParameter parBegin = new SqlParameter
+            {
+                ParameterName = "@DateBegin",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateBeginParameter
+            };
+
+            SqlParameter parEnd = new SqlParameter
+            {
+                ParameterName = "@DateEnd",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateEndParameter
+            };
+
+            IEnumerable<DealViewDTO> dealList = new List<DealViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<DealViewDTO>("exec DealsFilter @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
+                dealList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dealList;
+
+        }
 
         /// <summary>
         /// Stored procedure call to return current deal data
@@ -485,6 +538,83 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
+
+        public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        {
+            if (dateBegin == null)
+            {
+                dateBegin = new DateTime(1900, 1, 1);
+            }
+            if (dateEnd == null)
+            {
+                dateEnd = new DateTime(2200, 1, 1);
+            }
+            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
+            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
+
+            SqlParameter parClient = new SqlParameter
+            {
+                ParameterName = "@OrganizationId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = organizationId
+            };
+
+            SqlParameter parBegin = new SqlParameter
+            {
+                ParameterName = "@DateBegin",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateBeginParameter
+            };
+
+            SqlParameter parEnd = new SqlParameter
+            {
+                ParameterName = "@DateEnd",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateEndParameter
+            };
+
+            IEnumerable<DealContainerViewDTO> containersList = new List<DealContainerViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<DealContainerViewDTO>("exec ContainersList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
+                containersList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return containersList;
+        }
+
+        public DealContainerViewDTO GetContainer(Guid id)
+        {
+            SqlParameter parId = new SqlParameter
+            {
+                ParameterName = "@ContainerId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = id
+            };
+
+            DealContainerViewDTO container = new DealContainerViewDTO();
+            try
+            {
+                var result = Database.SqlQuery<DealContainerViewDTO>("exec ContainerFullView @ContainerId", parId).FirstOrDefault();
+                container = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return container;
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

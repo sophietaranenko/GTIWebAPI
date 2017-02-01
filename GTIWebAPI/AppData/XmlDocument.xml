@@ -1638,7 +1638,7 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsGTIController.GetOrganizationsGTI(System.String,System.String,System.String,System.String)">
+        <member name="M:GTIWebAPI.Controllers.OrganizationsGTIController.SearchOrganizationsGTI(System.String,System.String)">
             <summary>
             List of Text and Value of enum Sex
             </summary>

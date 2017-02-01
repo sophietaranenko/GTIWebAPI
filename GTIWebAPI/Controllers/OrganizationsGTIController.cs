@@ -1,4 +1,5 @@
 ﻿using GTIWebAPI.Filters;
+using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using System;
 using System.Collections.Generic;
@@ -12,17 +13,20 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationsGTI")]
     public class OrganizationsGTIController : ApiController
     {
+        DbOrganization db = new DbOrganization();
         /// <summary>
         /// List of Text and Value of enum Sex
         /// </summary>
         /// <returns>Collection of Json objects</returns>
         [GTIOfficeFilter]
         [HttpGet]
-        [Route("GetOrganizationsGTI")]
-        public IEnumerable<OrganizationGTIDTO> GetOrganizationsGTI(string officeIds, string registrationNumber = "", string taxNumber = "", string Name = "")
+        [Route("SearchOrganizationsGTI")]
+        public IEnumerable<OrganizationGTIDTO> SearchOrganizationsGTI(string officeIds, string registrationNumber = "")
         {
             IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
-            List<OrganizationGTIDTO> dtos = new List<OrganizationGTIDTO>();
+            IEnumerable<OrganizationGTI> orgs = new List<OrganizationGTI>();
+            orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
+            IEnumerable<OrganizationGTIDTO> dtos = orgs.Select(c => c.ToDTO()).ToList();
             return dtos;
         }
     }

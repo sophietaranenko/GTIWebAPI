@@ -16,25 +16,25 @@ namespace GTIWebAPI.Controllers
     {
         DbOrganization db = new DbOrganization();
 
-        //[GTIFilter]
-        //[HttpGet]
-        //[Route("GetAll")]
-        //public IEnumerable<DealShortViewDTO> GetDeals(int clientId, DateTime dateBegin, DateTime dateEnd)
-        //{
-        //    if (clientId == 0)
-        //    {
-        //        return new List<DealShortViewDTO>();
-        //    }
-        //    if (dateBegin == null)
-        //    {
-        //        dateBegin = new DateTime(1900, 1, 1);
-        //    }
-        //    if (dateEnd == null)
-        //    {
-        //        dateEnd = new DateTime(2200, 1, 1);
-        //    }
-        //    return db.DealList(clientId, dateBegin, dateEnd);
-        //}
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetAll")]
+        public IEnumerable<DealViewDTO> GetDeals(int clientId, DateTime dateBegin, DateTime dateEnd)
+        {
+            if (clientId == 0)
+            {
+                return new List<DealViewDTO>();
+            }
+            if (dateBegin == null)
+            {
+                dateBegin = new DateTime(1900, 1, 1);
+            }
+            if (dateEnd == null)
+            {
+                dateEnd = new DateTime(2200, 1, 1);
+            }
+            return db.GetDealsFiltered(clientId, dateBegin, dateEnd);
+        }
 
         [GTIFilter]
         [HttpGet]
