@@ -1750,11 +1750,6 @@
             Collection of rights
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Models.Account.ApplicationUser.GetUserRightsDTO">
-            <summary>
-            Collection of rights in another form of representation
-            </summary>
-        </member>
         <member name="M:GTIWebAPI.Models.Account.ApplicationUser.GenerateUserIdentityAsync(Microsoft.AspNet.Identity.UserManager{GTIWebAPI.Models.Account.ApplicationUser},System.String)">
             <summary>
             method that creates a new Claims Identity 

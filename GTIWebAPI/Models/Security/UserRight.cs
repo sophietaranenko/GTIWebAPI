@@ -24,6 +24,7 @@ namespace GTIWebAPI.Models.Security
 
         public string AspNetUserId { get; set; }
 
+        //[ForeignKey]
         public Int32 OfficeId { get; set; }
 
         public Int32 ControllerId { get; set; }

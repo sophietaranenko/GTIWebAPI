@@ -8,23 +8,17 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Dictionary
 {
-    [Table("office")]
+    [Table("Office")]
     public class Office 
     {
-
-        [Column("kod")]
         public int Id { get; set; }
 
-        [Column("naimen_rus")]
         public string NativeName { get; set; }
 
-        [Column("naimen")]
         public string ShortName { get; set; }
 
-        [Column("naimen_eng")]
-        public string FullName { get; set; }
+        public string EnglishName { get; set; }
 
-        [Column("naimen_small")]
         public string DealIndex { get; set; }
 
         public OfficeDTO ToDTO()

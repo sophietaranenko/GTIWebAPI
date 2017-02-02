@@ -51,67 +51,6 @@ namespace GTIWebAPI.Models.Account
         /// Collection of rights
         /// </summary>
         public virtual ICollection<UserRight> UserRights { get; set; }
-
-        /// <summary>
-        /// Collection of rights in another form of representation
-        /// </summary>
-        //public virtual List<UserRightDTO> UserRightsDto
-        //{
-        //    get
-        //    {
-        //        List<UserRightDTO> dtos = new List<UserRightDTO>();
-        //        if (UserRights != null)
-        //        {
-        //            if (UserRights.Count != 0)
-        //            {
-        //                var result = UserRights.Select(r => r.OfficeSecurity).Distinct().ToList();
-        //                if (result != null)
-        //                {
-        //                    foreach (var item in result)
-        //                    {
-        //                        UserRightDTO dto = new UserRightDTO();
-        //                        dto.OfficeId = item.Id;
-        //                        dto.OfficeName = item.ShortName;
-
-        //                        List<ControllerDTO> controllerList = new List<ControllerDTO>();
-        //                        var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
-
-        //                        if (cList != null)
-        //                        {
-        //                            foreach (var c in cList)
-        //                            {
-        //                                ControllerDTO cDto = new ControllerDTO();
-        //                                cDto.ControllerName = c.Name;
-        //                                cDto.Id = c.Id;
-
-        //                                List<ActionDTO> actionList = new List<ActionDTO>();
-        //                                var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
-        //                                if (aList != null)
-        //                                {
-        //                                    foreach (var a in aList)
-        //                                    {
-        //                                        ActionDTO aDto = new ActionDTO();
-        //                                        aDto.Id = a.Id;
-        //                                        aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
-        //                                        aDto.ActionName = a.Name == null ? "" : a.Name;
-        //                                        actionList.Add(aDto);
-        //                                    }
-        //                                }
-        //                                cDto.Actions = actionList;
-        //                                controllerList.Add(cDto);
-        //                            }
-        //                        }
-        //                        dto.Controllers = controllerList;
-        //                        dtos.Add(dto);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        return dtos;
-        //    }
-        //    set { }
-        //}
-
         public List<UserRightDTO>  GetUserRightsDTO()
         {
             List<UserRightDTO> dtos = new List<UserRightDTO>();
@@ -231,6 +170,10 @@ namespace GTIWebAPI.Models.Account
             modelBuilder.Entity<UserRight>()
                    .HasRequired<Service.OfficeSecurity>(s => s.OfficeSecurity)
                    .WithMany(s => s.UserRights);
+
+            //modelBuilder.Entity<OfficeSecurity>()
+            //    .HasKey()
+
 
 
             modelBuilder.Entity<UserRight>()
