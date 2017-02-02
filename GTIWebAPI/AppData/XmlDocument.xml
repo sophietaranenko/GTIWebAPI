@@ -1750,7 +1750,7 @@
             Collection of rights
             </summary>
         </member>
-        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.UserRightsDto">
+        <member name="M:GTIWebAPI.Models.Account.ApplicationUser.GetUserRightsDTO">
             <summary>
             Collection of rights in another form of representation
             </summary>

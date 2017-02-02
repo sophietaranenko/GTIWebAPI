@@ -29,6 +29,7 @@ using GTIWebAPI.Filters;
 using System.Net;
 using GTIWebAPI.Models;
 using System.Linq;
+using GTIWebAPI.Models.Context;
 
 namespace GTIWebAPI.Controllers
 {
@@ -85,7 +86,7 @@ namespace GTIWebAPI.Controllers
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
-          
+
             // (Perform new row creation including the userid we just looked up
 
             string UserId = User.Identity.GetUserId();
@@ -108,7 +109,8 @@ namespace GTIWebAPI.Controllers
                 model.TableId = user.TableId;
                 model.TableName = user.TableName;
                 model.ProfilePicturePath = profilePicturePath;
-                model.UserRights = user.UserRightsDto;
+                //model.UserRights = user.UserRightsDto;
+                model.UserRights = user.GetUserRightsDTO();
             }
             return model;
         }
@@ -179,7 +181,8 @@ namespace GTIWebAPI.Controllers
         public IEnumerable<UserRightDTO> GetUserRights()
         {
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-            return user.UserRightsDto;
+            //return user.UserRightsDto;
+            return user.GetUserRightsDTO();
         }
 
 
@@ -410,18 +413,26 @@ namespace GTIWebAPI.Controllers
 
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("SimpleRegisterClientContact")]
-        public async Task<IHttpActionResult> SimpleRegisterClientContact(int clientContactId, string email)
+        [GTIFilter]
+        [HttpPut]
+        [Route("SimpleRegisterOrganizationContactPerson")]
+        public async Task<IHttpActionResult> SimpleRegisterOrganizationContactPerson(int organizationContactPersonId)
         {
-            if (clientContactId != 0)
+            if (organizationContactPersonId != 0)
             {
-                //РАЗКОММЕНТИРОВАТЬ ОБЯЗАТЕЛЬНО
-                //if (CheckEmailExists(email))
-                //{
-                //    return BadRequest("Email already exists");
-                //}
+                string email = "";
+
+                DbOrganization db = new DbOrganization();
+                OrganizationContactPerson person = db.OrganizationContactPersons.Find(organizationContactPersonId);
+                if (person == null)
+                {
+                    return BadRequest("Organization contact person doesn't exist");
+                }
+                email = person.Email;
+                if (CheckEmailExists(email))
+                {
+                    return BadRequest("Email already exists");
+                }
 
                 string username = email;
                 string password = GenerateClientPassword();
@@ -430,15 +441,26 @@ namespace GTIWebAPI.Controllers
                 {
                     UserName = username,
                     Email = email,
-                    TableName = "ClientContact",
-                    TableId = clientContactId
+                    TableName = "OrganizationContactPerson",
+                    TableId = organizationContactPersonId
+                    //,
+                    //UserRights = null,
+                    //UserRightsDto = null
                 };
 
-                IdentityResult result = await UserManager.CreateAsync(user, password);
+                //тут еще нужно раздать права на просмотр сделок - счетов - контейнеров ... 
 
-                if (!result.Succeeded)
+                try
                 {
-                    return GetErrorResult(result);
+                    IdentityResult result = await UserManager.CreateAsync(user, password);
+                    if (!result.Succeeded)
+                    {
+                        return GetErrorResult(result);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string m = e.Message;
                 }
 
                 if (user == null)
@@ -446,19 +468,29 @@ namespace GTIWebAPI.Controllers
                     return BadRequest();
                 }
 
-                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                   // GenerateEmailConfirmationTokenAsync(user.Id);
-                var callbackUrl = Url.Link("DefaultApi", new
-                {
-                    Controller = "Account/SimplePasswordReset/",
-                    PasswordResetToken = code,
-                    UserId = user.Id
-                });
-                //ADD
-                //отсылка sms с кодом
-                //ADD
+                //string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                //// GenerateEmailConfirmationTokenAsync(user.Id);
+                //var callbackUrl = Url.Link("DefaultApi", new
+                //{
+                //    Controller = "Account/SimplePasswordReset/",
+                //    PasswordResetToken = code,
+                //    UserId = user.Id
+                //});
+                ////ADD
+                ////отсылка sms с кодом
+                ////ADD
+                //await UserManager.
+                //    SendEmailAsync(user.Id, "Register user", "Please register your login and set new password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
                 await UserManager.
-                    SendEmailAsync(user.Id, "Register user", "Please register your login and set new password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                SendEmailAsync(user.Id, 
+                "Register user", 
+                @"You have successfully registered for WEBSITE_URL. <br>
+                Thank you for your interest and we hope you will find useful information! <br> 
+                Your credentials in WEBSITE_URL: <br> 
+                login: " + email.Trim() + "<br>" +
+                "password: " + password.Trim() + "<br>"+ 
+                @"информация, которую мы знаем о контакнтом лице организации
+                тут реклама, пара картинок");
                 return Ok();
 
             }
@@ -466,40 +498,48 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("SimplePasswordReset")]
-        public IHttpActionResult SimplePasswordReset(string PasswordResetToken, string UserId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            ChangePasswordBindingModel model = new ChangePasswordBindingModel
-            {
-                ConfirmPassword = null,
-                OldPassword = PasswordResetToken
-            };
-            return Ok(model);
-        }
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("SimplePasswordReset")]
+        //public IHttpActionResult SimplePasswordReset(string PasswordResetToken, string UserId)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    ChangePasswordOrganizationBindingModel model = new ChangePasswordOrganizationBindingModel
+        //    {
+        //        ConfirmPassword = null,
+        //        OldPassword = PasswordResetToken,
+        //        UserId = UserId
+        //    };
+        //    return Ok(model);
+        //}
 
-        [AllowAnonymous]
-        [Route("PostSimplePasswordReset", Name = "PostSimplePasswordReset")]
-        public async Task<IHttpActionResult> PostSimplePasswordReset(ChangePasswordBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
-                model.NewPassword);
+        //[HttpPut]
+        //[AllowAnonymous]
+        //[Route("ChangeOrganizationContactPersonPassword", Name = "ChangeOrganizationContactPersonPassword")]
+        //public async Task<IHttpActionResult> PostSimplePasswordReset(ChangePasswordOrganizationBindingModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    try
+        //    {
+        //        IdentityResult result = await UserManager.ChangePasswordAsync(model.UserId, model.OldPassword, model.NewPassword);
 
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-            return Ok();
-        }
+        //        if (!result.Succeeded)
+        //        {
+        //            return GetErrorResult(result);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string m = e.Message;
+        //    }
+        //    return Ok();
+        //}
 
 
 

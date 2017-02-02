@@ -47,7 +47,8 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            List<UserRightDTO> rights = u.UserRightsDto;
+            //List<UserRightDTO> rights = u.UserRightsDto;
+            List<UserRightDTO> rights = u.GetUserRightsDTO();
             if (rights == null)
             {
                 return NotFound();
@@ -66,7 +67,8 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            List<UserRightDTO> rights = u.UserRightsDto;
+            //List<UserRightDTO> rights = u.UserRightsDto;
+            List<UserRightDTO> rights = u.GetUserRightsDTO();
             if (rights == null)
             {
                 return NotFound();
@@ -182,7 +184,8 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            List<UserRightDTO> rightsDTO = u.UserRightsDto;
+            //List<UserRightDTO> rightsDTO = u.UserRightsDto;
+            List<UserRightDTO> rightsDTO = u.GetUserRightsDTO();
             if (rightsDTO == null)
             {
                 return NotFound();

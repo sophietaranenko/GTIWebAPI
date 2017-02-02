@@ -30,7 +30,7 @@ namespace GTIWebAPI.Models.Account
         /// </summary>
         public ApplicationUser() : base()
         {
-            UserRights = new List<UserRight>();    
+            UserRights = new List<UserRight>();
         }
 
         [Column("TableName")]
@@ -55,12 +55,69 @@ namespace GTIWebAPI.Models.Account
         /// <summary>
         /// Collection of rights in another form of representation
         /// </summary>
-        public List<UserRightDTO> UserRightsDto
+        //public virtual List<UserRightDTO> UserRightsDto
+        //{
+        //    get
+        //    {
+        //        List<UserRightDTO> dtos = new List<UserRightDTO>();
+        //        if (UserRights != null)
+        //        {
+        //            if (UserRights.Count != 0)
+        //            {
+        //                var result = UserRights.Select(r => r.OfficeSecurity).Distinct().ToList();
+        //                if (result != null)
+        //                {
+        //                    foreach (var item in result)
+        //                    {
+        //                        UserRightDTO dto = new UserRightDTO();
+        //                        dto.OfficeId = item.Id;
+        //                        dto.OfficeName = item.ShortName;
+
+        //                        List<ControllerDTO> controllerList = new List<ControllerDTO>();
+        //                        var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
+
+        //                        if (cList != null)
+        //                        {
+        //                            foreach (var c in cList)
+        //                            {
+        //                                ControllerDTO cDto = new ControllerDTO();
+        //                                cDto.ControllerName = c.Name;
+        //                                cDto.Id = c.Id;
+
+        //                                List<ActionDTO> actionList = new List<ActionDTO>();
+        //                                var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
+        //                                if (aList != null)
+        //                                {
+        //                                    foreach (var a in aList)
+        //                                    {
+        //                                        ActionDTO aDto = new ActionDTO();
+        //                                        aDto.Id = a.Id;
+        //                                        aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
+        //                                        aDto.ActionName = a.Name == null ? "" : a.Name;
+        //                                        actionList.Add(aDto);
+        //                                    }
+        //                                }
+        //                                cDto.Actions = actionList;
+        //                                controllerList.Add(cDto);
+        //                            }
+        //                        }
+        //                        dto.Controllers = controllerList;
+        //                        dtos.Add(dto);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return dtos;
+        //    }
+        //    set { }
+        //}
+
+        public List<UserRightDTO>  GetUserRightsDTO()
         {
-            get
+            List<UserRightDTO> dtos = new List<UserRightDTO>();
+            if (UserRights != null)
             {
-                List<UserRightDTO> dtos = new List<UserRightDTO>();
-                if (UserRights != null)
+                if (UserRights.Count != 0)
                 {
                     var result = UserRights.Select(r => r.OfficeSecurity).Distinct().ToList();
                     if (result != null)
@@ -91,7 +148,7 @@ namespace GTIWebAPI.Models.Account
                                             ActionDTO aDto = new ActionDTO();
                                             aDto.Id = a.Id;
                                             aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
-                                            aDto.ActionName = a.Name == null? "" : a.Name;
+                                            aDto.ActionName = a.Name == null ? "" : a.Name;
                                             actionList.Add(aDto);
                                         }
                                     }
@@ -104,10 +161,8 @@ namespace GTIWebAPI.Models.Account
                         }
                     }
                 }
-                return dtos;
             }
-            
-
+            return dtos;
         }
 
         /// <summary>
@@ -184,7 +239,7 @@ namespace GTIWebAPI.Models.Account
 
 
             modelBuilder.Entity<ApplicationUser>()
-                            .HasOptional(s => s.Image) 
+                            .HasOptional(s => s.Image)
                             .WithRequired(ad => ad.ApplicationUser);
         }
 
@@ -216,7 +271,7 @@ namespace GTIWebAPI.Models.Account
         /// image name
         /// </summary>
         public string ImageName { get; set; }
-        
+
         /// <summary>
         /// image byte array 
         /// </summary>
