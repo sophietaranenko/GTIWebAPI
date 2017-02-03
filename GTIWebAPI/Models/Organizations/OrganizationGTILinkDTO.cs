@@ -14,6 +14,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? OrganizationId { get; set; }
 
+        public int? EmployeeId { get; set; }
+
         public OrganizationGTIDTO OrganizationGTI { get; set; }
 
     }

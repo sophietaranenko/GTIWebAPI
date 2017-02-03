@@ -31,6 +31,7 @@ namespace GTIWebAPI.Controllers
         {
             List<OrganizationGTILink> links = db.OrganizationGTILinks
                 .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
+
             foreach (var link in links)
             {
                 if (link.GTIId != null)
@@ -42,6 +43,7 @@ namespace GTIWebAPI.Controllers
                     }
                 }
             }
+
             List<OrganizationGTILinkDTO> dtos = links.Select(p => p.ToDTO()).ToList();
             return dtos;
         }
@@ -58,6 +60,7 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult GetOrganizationGTILink(int id)
         {
             OrganizationGTILink link = db.OrganizationGTILinks.Find(id);
+
             if (link == null)
             {
                 return NotFound();
@@ -70,12 +73,13 @@ namespace GTIWebAPI.Controllers
                     link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
                 }
             }
+
             OrganizationGTILinkDTO dto = link.ToDTO();
             return Ok(dto);
         }
 
         /// <summary>
-        /// Update employee link
+        /// Update link (no need to change EmployeeId, EmployeeId is only a creator of record)
         /// </summary>
         /// <param name="id">Passport id</param>
         /// <param name="organizationGTILink">OrganizationGTILink object</param>
@@ -131,7 +135,7 @@ namespace GTIWebAPI.Controllers
         }
 
         /// <summary>
-        /// Insert new employee link
+        /// Insert new employee link (with EmployeeId as creator) 
         /// </summary>
         /// <param name="organizationGTILink">OrganizationGTILink object</param>
         /// <returns></returns>
@@ -178,6 +182,7 @@ namespace GTIWebAPI.Controllers
                     organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
                 }
             }
+
             OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
             return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
         }

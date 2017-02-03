@@ -24,13 +24,16 @@ namespace GTIWebAPI.Controllers
     {
         private DbOrganization db = new DbOrganization();
 
-
         [GTIFilter]
         [HttpGet]
         [Route("SearchOrganization")]
         public IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
         {
             IEnumerable<OrganizationSearchDTO> organizationList = db.SearchOrganization(countryId, registrationNumber);
+            foreach (var item in organizationList)
+            {
+                item.OrganizationGTILinks = db.GetOrganizationGTIByOrganization(item.Id);
+            }
             return organizationList;
         }
 

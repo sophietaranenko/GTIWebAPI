@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Organizations
 {
+    using Employees;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -19,10 +20,15 @@ namespace GTIWebAPI.Models.Organizations
 
         public bool? Deleted { get; set; }
 
+        public int? EmployeeId { get; set; }
+
         public virtual Organization Organization { get; set; }
 
         [NotMapped]
         public virtual OrganizationGTI OrganizationGTI { get; set; }
+
+        //[NotMapped]
+        //public virtual Employee Employee { get; set; }
 
         protected override string TableName
         {

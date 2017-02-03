@@ -379,6 +379,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ContainersController.cs" />
+    <Compile Include="Controllers\DealDocumentScansController.cs" />
     <Compile Include="Controllers\OrganizationAddressesController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonContactsController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonsController.cs" />
@@ -415,6 +416,8 @@
     <Compile Include="Models\Accounting\DealContainerViewDTO.cs" />
     <Compile Include="Models\Accounting\DealFullViewDTO.cs" />
     <Compile Include="Models\Accounting\DealViewDTO.cs" />
+    <Compile Include="Models\Accounting\DocumentScanDTO.cs" />
+    <Compile Include="Models\Accounting\DocumentScanTypeDTO.cs" />
     <Compile Include="Models\Accounting\InvoiceContainerViewDTO.cs" />
     <Compile Include="Models\Accounting\InvoiceFullViewDTO.cs" />
     <Compile Include="Models\Accounting\InvoiceLineViewDTO.cs" />
@@ -427,6 +430,7 @@
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
+    <Compile Include="Models\Organizations\OrganizationGTIShortDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationList.cs" />
     <Compile Include="Models\Organizations\OrganizationSearchDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddress.cs" />

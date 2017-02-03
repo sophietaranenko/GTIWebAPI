@@ -14,8 +14,8 @@ namespace GTIWebAPI.Models.Service
 
         public int NewId(DbContext context)
         {
-            SqlParameter table = new SqlParameter("@table_name", TableName);
-            int result = context.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+            SqlParameter table = new SqlParameter("@TableName", TableName);
+            int result = context.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
             return result;
         }
     }

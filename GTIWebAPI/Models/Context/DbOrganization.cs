@@ -616,6 +616,77 @@ namespace GTIWebAPI.Models.Context
             return container;
         }
 
+        public IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
+        {
+            IEnumerable<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
+
+            try
+            {
+                var result = Database.SqlQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes").ToList();
+                dtos = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return dtos;
+        }
+
+        public IEnumerable<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
+        {
+            IEnumerable<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
+
+
+            SqlParameter parId = new SqlParameter
+            {
+                ParameterName = "@DealId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = dealId
+            };
+
+            try
+            {
+                var result = Database.SqlQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parId).ToList();
+                dtos = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return dtos;
+        }
+
+        public IEnumerable<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId)
+        {
+            IEnumerable<OrganizationGTIShortDTO> dtos = new List<OrganizationGTIShortDTO>();
+
+
+            SqlParameter parId = new SqlParameter
+            {
+                ParameterName = "@OrganizationId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = organizationId
+            };
+
+            try
+            {
+                var result = Database.SqlQuery<OrganizationGTIShortDTO>("exec OrganizationGTILinkForSearchByOrganization @OrganizationId", parId).ToList();
+                dtos = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return dtos;
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 
