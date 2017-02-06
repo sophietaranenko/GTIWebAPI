@@ -29,7 +29,11 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? CountryId { get; set; }
 
+        public int? OrganizationPropertyTypeAliasId { get; set; }
+
         public virtual Country Country { get; set; }
+
+        public virtual OrganizationPropertyTypeAlias OrganizationPropertyTypeAlias { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationProperty> OrganizationProperty { get; set; }
@@ -40,6 +44,7 @@ namespace GTIWebAPI.Models.Organizations
             {
                 Constant = this.Constant,
                 Country = this.Country == null? null : this.Country.ToDTO(),
+                OrganizationPropertyTypeAlias = this.OrganizationPropertyTypeAlias == null ? null : this.OrganizationPropertyTypeAlias.ToDTO(),
                 CountryId = this.CountryId,
                 Id = this.Id,
                 Name = this.Name,

@@ -109,8 +109,8 @@ namespace GTIWebAPI.Models.Context
         public virtual int FileNameUnique()
         {
             string tableName = "FileNameUnique";
-            SqlParameter table = new SqlParameter("@table_name", tableName);
-            int result = this.Database.SqlQuery<int>("exec table_id @table_name", table).FirstOrDefault();
+            SqlParameter table = new SqlParameter("@TableName", tableName);
+            int result = this.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
             return result;
         }
 

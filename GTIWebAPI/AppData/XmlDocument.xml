@@ -1807,15 +1807,6 @@
             <param name="myFilter"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            Stored procedure call to return invoice list selected by organization and dates 
-            </summary>
-            <param name="organizationId"></param>
-            <param name="dateBegin"></param>
-            <param name="dateEnd"></param>
-            <returns>List of invoices</returns>
-        </member>
         <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetDealCardInfo(System.Guid)">
             <summary>
             Stored procedure call to return current deal data
@@ -1836,6 +1827,15 @@
             </summary>
             <param name="dealId"></param>
             <returns>list of invoices</returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Stored procedure call to return invoice list selected by organization and dates 
+            </summary>
+            <param name="organizationId"></param>
+            <param name="dateBegin"></param>
+            <param name="dateEnd"></param>
+            <returns>List of invoices</returns>
         </member>
         <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoiceLinesByInvoice(System.Int32)">
             <summary>
@@ -1892,7 +1892,7 @@
         </member>
         <member name="T:GTIWebAPI.Models.Dictionary.Address">
             <summary>
-            To get new Id from procedure (table_id) class must inherit abstract GTITable 
+            To get new Id from procedure (NewTableId) class must inherit abstract GTITable 
             </summary>
         </member>
         <member name="P:GTIWebAPI.Models.Dictionary.Address.PostIndex">

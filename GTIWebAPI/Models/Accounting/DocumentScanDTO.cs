@@ -15,7 +15,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public string FileName { get; set; }
 
-        public int? TableId { get; set; }
+        public Guid TableId { get; set; }
 
         public string TableName { get; set; }
 
@@ -27,7 +27,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public DateTime? UploadDate { get; set; }
 
-        public int? DocumentScanTypeId { get; set; }
+        public Int16? DocumentScanTypeId { get; set; }
 
         public DocumentScanTypeDTO DocumentScanType { get; set; }
 

@@ -33,6 +33,7 @@ namespace GTIWebAPI.Models.Context
             return new DbOrganization();
         }
 
+        //For addresses work
         public virtual DbSet<Address> Addresses { get; set; }
 
         public virtual DbSet<AddressLocality> Localities { get; set; }
@@ -48,13 +49,15 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Continent> Continents { get; set; }
 
 
+        //Some Id-Name data 
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
-
 
         public virtual DbSet<ContactType> ContactTypes { get; set; }
 
+        public virtual DbSet<Office> Offices { get; set; }
 
 
+        //Organizations
         public virtual DbSet<Organization> Organizations { get; set; }
 
         public virtual DbSet<OrganizationAddress> OrganizationAddresses { get; set; }
@@ -71,6 +74,8 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationPropertyType> OrganizationPropertyTypes { get; set; }
 
+        public virtual DbSet<OrganizationPropertyTypeAlias> OrganizationPropertyTypeAliases { get; set; }
+
         public virtual DbSet<OrganizationLegalForm> OrganizationLegalForms { get; set; }
 
         public virtual DbSet<OrganizationTaxAddress> OrganizationTaxAddresses { get; set; }
@@ -78,24 +83,7 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<OrganizationTaxAddressType> OrganizationTaxAddressTypes { get; set; }
 
 
-
-        public virtual DbSet<ShippingLine> ShippingLines { get; set; }
-
-        public virtual DbSet<EmployeeGTI> GTIEmployees { get; set; }
-
-        public virtual DbSet<Vessel> Vessels { get; set; }
-
-        public virtual DbSet<Incoterms> Incoterms { get; set; }
-
-        public virtual DbSet<Deal> Deals { get; set; }
-
-        public virtual DbSet<DealType> DealTypes { get; set; }
-
-        public virtual DbSet<Office> Offices { get; set; }
-
-        public virtual DbSet<Terminal> Terminals { get; set; }
-
-
+        //Organizations - for woth with new Organization table and OrganizationGTI - synonym of klient
         /// <summary>
         /// Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
         /// </summary>
@@ -126,7 +114,6 @@ namespace GTIWebAPI.Models.Context
             }
             return organizationList;
         }
-
 
         public IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds)
         {
@@ -163,7 +150,6 @@ namespace GTIWebAPI.Models.Context
             return organizationList;
         }
 
-
         public IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber)
         {
             DataTable dataTable = new DataTable();
@@ -194,18 +180,6 @@ namespace GTIWebAPI.Models.Context
                 Size = 1000,
                 Value = registrationNumber
             };
-
-
-            //SqlParameter pTaxNumber = new SqlParameter
-            //{
-            //    ParameterName = "@TaxNumber",
-            //    IsNullable = true,
-            //    Direction = ParameterDirection.Input,
-            //    DbType = DbType.String,
-            //    Size = 1000,
-            //    Value = taxNumber
-            //};
-
 
             IEnumerable<OrganizationGTI> gtis = new List<OrganizationGTI>();
             try
@@ -254,67 +228,10 @@ namespace GTIWebAPI.Models.Context
 
             return gtis;
         }
-        /// <summary>
-        /// Stored procedure call to return invoice list selected by organization and dates 
-        /// </summary>
-        /// <param name="organizationId"></param>
-        /// <param name="dateBegin"></param>
-        /// <param name="dateEnd"></param>
-        /// <returns>List of invoices</returns>
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
-        {
-            if (dateBegin == null)
-            {
-                dateBegin = new DateTime(1900, 1, 1);
-            }
-            if (dateEnd == null)
-            {
-                dateEnd = new DateTime(2200, 1, 1);
-            }
-            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
 
-            SqlParameter parClient = new SqlParameter
-            {
-                ParameterName = "@OrganizationId",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.Int32,
-                Value = organizationId
-            };
+        
 
-            SqlParameter parBegin = new SqlParameter
-            {
-                ParameterName = "@DateBegin",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.DateTime,
-                Value = dateBeginParameter
-            };
-
-            SqlParameter parEnd = new SqlParameter
-            {
-                ParameterName = "@DateEnd",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.DateTime,
-                Value = dateEndParameter
-            };
-
-            IEnumerable<DealInvoiceViewDTO> invoiceList = new List<DealInvoiceViewDTO>();
-            try
-            {
-                var result = Database.SqlQuery<DealInvoiceViewDTO>("exec InvoicesList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
-                invoiceList = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return invoiceList;
-        }
-
-
+        //Deals - for work with DealGTI - synonym of booking
         public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
@@ -429,6 +346,7 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
+
         /// <summary>
         /// Selects invoices by current deal using 
         /// </summary>
@@ -458,6 +376,69 @@ namespace GTIWebAPI.Models.Context
                 string error = e.ToString();
             }
             return dto;
+        }
+
+
+
+        //Invoices - for wirk with InvoicesGTI - synonym of account
+        /// <summary>
+        /// Stored procedure call to return invoice list selected by organization and dates 
+        /// </summary>
+        /// <param name="organizationId"></param>
+        /// <param name="dateBegin"></param>
+        /// <param name="dateEnd"></param>
+        /// <returns>List of invoices</returns>
+        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        {
+            if (dateBegin == null)
+            {
+                dateBegin = new DateTime(1900, 1, 1);
+            }
+            if (dateEnd == null)
+            {
+                dateEnd = new DateTime(2200, 1, 1);
+            }
+            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
+            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
+
+            SqlParameter parClient = new SqlParameter
+            {
+                ParameterName = "@OrganizationId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = organizationId
+            };
+
+            SqlParameter parBegin = new SqlParameter
+            {
+                ParameterName = "@DateBegin",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateBeginParameter
+            };
+
+            SqlParameter parEnd = new SqlParameter
+            {
+                ParameterName = "@DateEnd",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.DateTime,
+                Value = dateEndParameter
+            };
+
+            IEnumerable<DealInvoiceViewDTO> invoiceList = new List<DealInvoiceViewDTO>();
+            try
+            {
+                var result = Database.SqlQuery<DealInvoiceViewDTO>("exec InvoicesList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd).ToList();
+                invoiceList = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return invoiceList;
         }
 
         public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
@@ -539,6 +520,9 @@ namespace GTIWebAPI.Models.Context
         }
 
 
+
+
+        //Containers - for work with ContainerGTI - synonym of book_cntr
         public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
@@ -616,6 +600,10 @@ namespace GTIWebAPI.Models.Context
             return container;
         }
 
+
+
+
+        //DealDocumentScans - for work with DocumentScanGTI - synonym of doc table
         public IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
         {
             IEnumerable<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
@@ -687,6 +675,166 @@ namespace GTIWebAPI.Models.Context
             return dtos;
         }
 
+        public Guid InsertDealDocumentScan(Guid dealId, byte[] fileContent, string fileName, string email, int documentScanTypeId)
+        {
+            
+
+            SqlParameter pDealId = new SqlParameter
+            {
+                ParameterName = "@DealId",
+                IsNullable = false,
+                //Direction = ParameterDirection.Output,
+                DbType = DbType.Guid,
+                Value = dealId
+            };
+
+            SqlParameter pFileContent = new SqlParameter
+            {
+                ParameterName = "@FileContent",
+                IsNullable = false,
+               // Direction = ParameterDirection.Output,
+                DbType = DbType.Binary,
+                Value = fileContent
+            };
+
+            SqlParameter pFileName = new SqlParameter
+            {
+                ParameterName = "@FileName",
+                IsNullable = false,
+                //Direction = ParameterDirection,
+                DbType = DbType.AnsiStringFixedLength,
+                Size = 100,
+                Value = fileName
+            };
+
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Email",
+                IsNullable = false,
+                // Direction = ParameterDirection.Output,
+                DbType = DbType.AnsiStringFixedLength,
+                Size = 25,
+                Value = email
+            };
+
+            SqlParameter pTypeId = new SqlParameter
+            {
+                ParameterName = "@DocumentScanTypeId",
+                IsNullable = false,
+               // Direction = ParameterDirection.Output,
+                DbType = DbType.Int32,
+                Value = documentScanTypeId
+            };
+
+            Guid scanId = Guid.NewGuid();
+            try
+            {
+                var result = Database.SqlQuery<Guid>("exec InsertDocumentScanByDeal @DealId, @FileContent, @FileName, @Email, @DocumentScanTypeId",
+                    pDealId,
+                    pFileContent,
+                    pFileName,
+                    pEmail,
+                    pTypeId
+                    ).FirstOrDefault();
+
+                scanId = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return scanId;
+        }
+
+        public DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId)
+        {
+            SqlParameter pScanId = new SqlParameter
+            {
+                ParameterName = "@ScanId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = scanId
+            };
+
+            SqlParameter pDocumentScanTypeId = new SqlParameter
+            {
+                ParameterName = "@DocumentScanTypeId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int16,
+                Value = documentScanTypeId
+            };
+
+            DocumentScanDTO dto = new DocumentScanDTO();
+            try
+            {
+                var result = Database.SqlQuery<DocumentScanDTO>("exec UpdateDocumentScanType @ScanId, @DocumentScanTypeId ",
+                    pScanId, pDocumentScanTypeId
+                    ).FirstOrDefault();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+
+
+        public bool DeleteDocumentScan(Guid scanId)
+        {
+            SqlParameter pScanId = new SqlParameter
+            {
+                ParameterName = "@ScanId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = scanId
+            };
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec DeleteDocumentScan @ScanId",
+                    pScanId
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+        public DocumentScanDTO GetDealDocumentScanById(Guid scanId)
+        {
+            SqlParameter pScanId = new SqlParameter
+            {
+                ParameterName = "@ScanId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Guid,
+                Value = scanId
+            };
+            DocumentScanDTO dto = new DocumentScanDTO();
+            try
+            {
+                var result = Database.SqlQuery<DocumentScanDTO>("exec GetDocumentScanById @ScanId",
+                    pScanId
+                    ).FirstOrDefault();
+                dto = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return dto;
+        }
+        
+
+        //Addresses foreign keys 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 
@@ -709,69 +857,6 @@ namespace GTIWebAPI.Models.Context
                 .HasMany(r => r.Addresses)
                 .WithOptional(r => r.AddressLocality)
                 .HasForeignKey(r => r.LocalityId);
-
-            modelBuilder.Entity<Terminal>()
-                .Property(e => e.Id)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Terminal>()
-                .Property(e => e.Name)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<DealType>()
-                .Property(e => e.Name)
-                .IsFixedLength();
-
-            modelBuilder.Entity<ShippingLine>()
-                .Property(e => e.Name)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<EmployeeGTI>()
-                .Property(e => e.Name)
-                .IsFixedLength();
-
-            modelBuilder.Entity<EmployeeGTI>()
-                .Property(e => e.NativeName)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Vessel>()
-                .Property(e => e.VesselName)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Vessel>()
-                .Property(e => e.Name)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Incoterms>()
-                .Property(e => e.Name)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Deal>()
-              .Property(e => e.Cargo)
-              .IsUnicode(false);
-
-            modelBuilder.Entity<Deal>()
-                .Property(e => e.PortOfOrigin)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Deal>()
-                .Property(e => e.PortOfLoading)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Deal>()
-                .Property(e => e.PortOfDestination)
-                .IsFixedLength()
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Deal>()
-                .Property(e => e.FinalDestination)
-                .IsFixedLength()
-                .IsUnicode(false);
         }
     }
 }

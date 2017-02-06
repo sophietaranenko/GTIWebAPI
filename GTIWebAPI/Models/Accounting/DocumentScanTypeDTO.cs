@@ -8,7 +8,7 @@ namespace GTIWebAPI.Models.Accounting
 {
     public class DocumentScanTypeDTO
     {
-        public int Id { get; set; }
+        public Int16 Id { get; set; }
 
         public string FullName { get; set; }
 

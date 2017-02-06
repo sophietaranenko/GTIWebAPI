@@ -12,7 +12,7 @@
     using System.Web.Mvc;
 
     /// <summary>
-    /// To get new Id from procedure (table_id) class must inherit abstract GTITable 
+    /// To get new Id from procedure (NewTableId) class must inherit abstract GTITable 
     /// </summary>
     [Table("Address")]
     public partial class Address : GTITable
