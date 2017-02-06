@@ -45,6 +45,7 @@ namespace GTIWebAPI.Models.Organizations
                 Constant = this.Constant,
                 Country = this.Country == null? null : this.Country.ToDTO(),
                 OrganizationPropertyTypeAlias = this.OrganizationPropertyTypeAlias == null ? null : this.OrganizationPropertyTypeAlias.ToDTO(),
+                OrganizationPropertyTypeAliasId = this.OrganizationPropertyTypeAliasId,
                 CountryId = this.CountryId,
                 Id = this.Id,
                 Name = this.Name,

@@ -22,6 +22,8 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<OrganizationLegalForm> OrganizationLegalForms { get; set; }
 
+        DbSet<OrganizationPropertyTypeAlias> OrganizationPropertyTypeAliases { get; set; }
+
         DbSet<Address> Addresses { get; set; }
 
         DbSet<AddressLocality> Localities { get; set; }

@@ -18,6 +18,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationLegalFormDTO> OrganizationLegalForms { get; set; }
 
+        public IEnumerable<OrganizationPropertyTypeAliasDTO> OrganizationPropertyTypeAliases { get; set; }
+
         public AddressList AddressList { get; set; }
 
         public OrganizationList()
@@ -43,6 +45,9 @@ namespace GTIWebAPI.Models.Organizations
 
             List<OrganizationPropertyType> pTypes = db.OrganizationPropertyTypes.ToList();
             list.OrganizationPropertyTypes = pTypes.Select(a => a.ToDTO()).ToList();
+
+            List<OrganizationPropertyTypeAlias> pAliases = db.OrganizationPropertyTypeAliases.ToList();
+            list.OrganizationPropertyTypeAliases = pAliases.Select(a => a.ToDTO()).ToList();
 
             return list;
         }

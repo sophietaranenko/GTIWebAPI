@@ -19,6 +19,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? CountryId { get; set; }
 
+        public int? OrganizationPropertyTypeAliasId { get; set; }
+
         public CountryDTO Country { get; set; }
 
         public OrganizationPropertyTypeAliasDTO OrganizationPropertyTypeAlias { get; set; }
