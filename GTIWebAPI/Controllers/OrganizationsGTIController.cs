@@ -26,6 +26,10 @@ namespace GTIWebAPI.Controllers
             IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             IEnumerable<OrganizationGTI> orgs = new List<OrganizationGTI>();
             orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
+            foreach (var item in orgs)
+            {      
+                    item.Office = db.Offices.Find(item.OfficeId);
+            }
             IEnumerable<OrganizationGTIDTO> dtos = orgs.Select(c => c.ToDTO()).ToList();
             return dtos;
         }
