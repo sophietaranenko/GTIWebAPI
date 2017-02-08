@@ -44,17 +44,22 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetOrganizationContactPerson")]
-        [ResponseType(typeof(OrganizationContactPersonDTO))]
+        [ResponseType(typeof(OrganizationContactPersonView))]
         public IHttpActionResult GetOrganizationContactPerson(int id)
         {
-            OrganizationContactPerson person = db.OrganizationContactPersons.Find(id);
-            if (person == null)
-            {
-                return NotFound();
-            }
-            OrganizationContactPersonDTO dto = person.ToDTO();
+            OrganizationContactPersonView view = db.OrganizationContactPersonViews.Find(id);
+            view.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
+               .Where(c => c.OrganizationContactPersonId == view.Id)
+               .ToList();
+
+            OrganizationContactPersonDTO dto = view.ToDTO();
+            //if (person == null)
+            //{
+            //    return NotFound();
+            //}
+            //OrganizationContactPersonView dto = person.ToDTO();
+            //return Ok(dto);
             return Ok(dto);
-            //return Ok(person);
         }
 
         /// <summary>
@@ -73,15 +78,19 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             if (id != organizationContactPerson.Id)
             {
                 return BadRequest();
             }
+
             db.Entry(organizationContactPerson).State = EntityState.Modified;
+
             try
             {
                 db.SaveChanges();
@@ -97,13 +106,17 @@ namespace GTIWebAPI.Controllers
                     throw;
                 }
             }
+
             //Reload method of db context doesn't work
             //Visitor extension of dbContext doesn't wotk
             //that's why we reload related entities manually
-            organizationContactPerson.OrganizationContactPersonContact = db.OrganizationContactPersonContacts
+            OrganizationContactPersonView view = db.OrganizationContactPersonViews.Find(organizationContactPerson.Id);
+            view.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
                .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
                .ToList();
-            OrganizationContactPersonDTO dto = organizationContactPerson.ToDTO();
+
+            OrganizationContactPersonDTO dto = view.ToDTO();
+
             return Ok(dto);
         }
 
@@ -147,10 +160,17 @@ namespace GTIWebAPI.Controllers
             //Reload method of db context doesn't work
             //Visitor extension of dbContext doesn't wotk
             //that's why we reload related entities manually
-            organizationContactPerson.OrganizationContactPersonContact = db.OrganizationContactPersonContacts
-                .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
-                .ToList();
-            OrganizationContactPersonDTO dto = organizationContactPerson.ToDTO();
+            OrganizationContactPersonView view = db.OrganizationContactPersonViews.Find(organizationContactPerson.Id);
+            view.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
+               .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
+               .ToList();
+
+            OrganizationContactPersonDTO dto = view.ToDTO();
+
+            //organizationContactPerson.OrganizationContactPersonContact = db.OrganizationContactPersonContacts
+            //    .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
+            //    .ToList();
+            //OrganizationContactPersonDTO dto = organizationContactPerson.ToDTO();
             return CreatedAtRoute("GetOrganizationContactPerson", new { id = dto.Id }, dto);
         }
 
