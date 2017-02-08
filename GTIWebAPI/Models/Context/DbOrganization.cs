@@ -66,6 +66,8 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationContactPerson> OrganizationContactPersons { get; set; }
 
+        public virtual DbSet<OrganizationContactPersonView> OrganizationContactPersonViews { get; set; }
+
         public virtual DbSet<OrganizationContactPersonContact> OrganizationContactPersonContacts { get; set; }
 
         public virtual DbSet<OrganizationGTILink> OrganizationGTILinks { get; set; }

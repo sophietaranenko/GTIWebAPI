@@ -26,13 +26,14 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(IEnumerable<OrganizationContactPersonDTO>))]
-        public IEnumerable<OrganizationContactPersonDTO> GetOrganizationContactPersonByOrganizationId(int organizationId)
+        [ResponseType(typeof(IEnumerable<OrganizationContactPersonView>))]
+        public IEnumerable<OrganizationContactPersonView> GetOrganizationContactPersonByOrganizationId(int organizationId)
         {
-            List<OrganizationContactPerson> persons = db.OrganizationContactPersons
+            List<OrganizationContactPersonView> persons = db.OrganizationContactPersonViews
                 .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
-            List<OrganizationContactPersonDTO> dtos = persons.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            //List<OrganizationContactPersonDTO> dtos = persons.Select(p => p.ToDTO()).ToList();
+            //return dtos;
+            return persons;
         }
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace GTIWebAPI.Controllers
             }
             OrganizationContactPersonDTO dto = person.ToDTO();
             return Ok(dto);
+            //return Ok(person);
         }
 
         /// <summary>
