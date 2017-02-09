@@ -12,7 +12,10 @@ using GTIWebAPI.Models.Dictionary;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Web.Http.Description;
-
+using GTIWebAPI.Models.Account;
+using Microsoft.AspNet.Identity;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace GTIWebAPI.Controllers
 {
@@ -157,32 +160,42 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationEditDTO))]
         public IHttpActionResult PostOrganization(Organization organization)
         {
-            organization.Id = organization.NewId(db);
+            string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+            ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
 
-            if (!ModelState.IsValid)
+            if (user != null && user.TableName == "Employee")
             {
-                return BadRequest(ModelState);
-            }
+                organization.EmployeeId = user.TableId;
+                organization.Id = organization.NewId(db);
 
-            db.Organizations.Add(organization);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (OrganizationExists(organization.Id))
+                if (!ModelState.IsValid)
                 {
-                    return Conflict();
+                    return BadRequest(ModelState);
                 }
-                else
+
+                db.Organizations.Add(organization);
+
+                try
                 {
-                    throw;
+                    db.SaveChanges();
                 }
+                catch (DbUpdateException)
+                {
+                    if (OrganizationExists(organization.Id))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();
+                return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
             }
-            OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();
-            return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
+
+            return BadRequest();            
         }
 
         /// <summary>

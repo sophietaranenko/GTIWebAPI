@@ -431,6 +431,7 @@
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
     <Compile Include="Models\Organizations\OrganizationContactPersonView.cs" />
+    <Compile Include="Models\Organizations\OrganizationGTICreateLinkDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationGTIShortDTO.cs" />
     <Compile Include="Models\Organizations\OrganizationList.cs" />
     <Compile Include="Models\Organizations\OrganizationPropertyTypeAlias.cs" />

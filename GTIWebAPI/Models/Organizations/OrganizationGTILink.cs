@@ -45,7 +45,8 @@ namespace GTIWebAPI.Models.Organizations
                 Id = this.Id,
                 GTIId = this.GTIId,
                 OrganizationId = this.OrganizationId,
-                OrganizationGTI = this.OrganizationGTI == null ? null : this.OrganizationGTI.ToDTO()
+                OrganizationGTI = this.OrganizationGTI == null ? null : this.OrganizationGTI.ToDTO(),
+                EmployeeId = this.EmployeeId
             };
             return dto;
         }

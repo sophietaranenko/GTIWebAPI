@@ -819,17 +819,16 @@
             <param name="id">OrganizationGTILink id</param>
             <returns>OrganizationGTILinkEditDTO object</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PutOrganizationGTILink(System.Int32,GTIWebAPI.Models.Organizations.OrganizationGTILink)">
-            <summary>
-            Update link (no need to change EmployeeId, EmployeeId is only a creator of record)
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationGTILink">OrganizationGTILink object</param>
-            <returns>204 - No content</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostOrganizationGTILink(GTIWebAPI.Models.Organizations.OrganizationGTILink)">
             <summary>
-            Insert new employee link (with EmployeeId as creator) 
+            Insert new organizationGTI link (with EmployeeId as creator) 
+            </summary>
+            <param name="organizationGTILink">OrganizationGTILink object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostOrganizationGTICreateLink(GTIWebAPI.Models.Organizations.OrganizationGTICreateLinkDTO)">
+            <summary>
+            Insert new organizationGTI link (with EmployeeId as creator) 
             </summary>
             <param name="organizationGTILink">OrganizationGTILink object</param>
             <returns></returns>
