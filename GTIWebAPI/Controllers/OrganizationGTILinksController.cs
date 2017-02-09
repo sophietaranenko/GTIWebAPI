@@ -213,7 +213,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
-        [Route("CreateOrganizationPost")]
+        [Route("SeveralLinksPost")]
         [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult PostOrganizationGTICreateLink(OrganizationGTICreateLinkDTO links)
         {
