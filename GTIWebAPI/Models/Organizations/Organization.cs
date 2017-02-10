@@ -33,13 +33,7 @@ namespace GTIWebAPI.Models.Organizations
         public int? EmployeeId { get; set; }
 
         [StringLength(500)]
-        public string EnglishName { get; set; }
-
-        [StringLength(500)]
         public string NativeName { get; set; }
-
-        [StringLength(500)]
-        public string RussianName { get; set; }
 
         [StringLength(50)]
         public string ShortName { get; set; }
@@ -108,11 +102,9 @@ namespace GTIWebAPI.Models.Organizations
             {
                 Email = Email,
                 EmployeeId = EmployeeId,
-                EnglishName = EnglishName,
                 FaxNumber = FaxNumber,
                 Id = Id,
                 NativeName = NativeName,
-                RussianName = RussianName,
                 PhoneNumber = PhoneNumber,
                 Website = Website
             };
@@ -127,13 +119,11 @@ namespace GTIWebAPI.Models.Organizations
                 Skype = this.Skype,
                 Email = this.Email,
                 EmployeeId = this.EmployeeId,
-                EnglishName = this.EnglishName,
                 FaxNumber = this.FaxNumber,
                 OrganizationLegalFormId = this.OrganizationLegalFormId,
                 Id = this.Id,
                 NativeName = this.NativeName,
                 PhoneNumber = this.PhoneNumber,
-                RussianName = this.RussianName,
                 Website = this.Website
             };
             return dto;
@@ -147,11 +137,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? EmployeeId { get; set; }
 
-        public string EnglishName { get; set; }
-
         public string NativeName { get; set; }
-
-        public string RussianName { get; set; }
 
         public string ShortName { get; set; }
 
@@ -192,11 +178,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? EmployeeId { get; set; }
 
-        public string EnglishName { get; set; }
-
         public string NativeName { get; set; }
-
-        public string RussianName { get; set; }
 
         public string PhoneNumber { get; set; }
 
@@ -226,11 +208,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? EmployeeId { get; set; }
 
-        public string EnglishName { get; set; }
-
         public string NativeName { get; set; }
-
-        public string RussianName { get; set; }
 
         public string ShortName { get; set; }
 
