@@ -888,48 +888,6 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.GetOrganizationLanguageShortNameByOrganizationId(System.Int32)">
-            <summary>
-            Get employee languageNames by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationLanguageShortNameDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.GetOrganizationLanguageShortName(System.Int32)">
-            <summary>
-            Get one languageName by languageName id
-            </summary>
-            <param name="id">OrganizationLanguageShortName id</param>
-            <returns>OrganizationLanguageShortNameEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.PutOrganizationLanguageShortName(System.Int32,GTIWebAPI.Models.Organizations.OrganizationLanguageShortName)">
-            <summary>
-            Update employee languageName
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationShortLanguageName">OrganizationLanguageShortName object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.PostOrganizationLanguageShortName(GTIWebAPI.Models.Organizations.OrganizationLanguageShortName)">
-            <summary>
-            Insert new employee languageName
-            </summary>
-            <param name="organizationShortLanguageName">OrganizationLanguageShortName object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.DeleteOrganizationLanguageShortName(System.Int32)">
-            <summary>
-            Delete languageName
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetOrganizationLegalForm(System.Int32)">
             <summary>
             Get one contact for edit by contact id

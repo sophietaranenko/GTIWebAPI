@@ -99,9 +99,6 @@ namespace GTIWebAPI.Controllers
             List<OrganizationLanguageName> names = db.OrganizationLanguageNames.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
             dto.OrganizationLanguageNames = names.Select(a => a.ToDTO());
 
-            List<OrganizationLanguageShortName> shortNames = db.OrganizationLanguageShortNames.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
-            dto.OrganizationLanguageShortNames = shortNames.Select(d => d.ToDTO());
-
             return Ok(dto);
         }
 
@@ -155,6 +152,15 @@ namespace GTIWebAPI.Controllers
                 }
             }
 
+            if (organization.OrganizationLegalFormId != null)
+            {
+                organization.OrganizationLegalForm = db.OrganizationLegalForms.Find(organization.OrganizationLegalFormId);
+            }
+            if (organization.CountryId != null)
+            {
+                organization.Country = db.Countries.Find(organization.CountryId);
+            }
+
             OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();
             return Ok(dto);
         }
@@ -195,6 +201,15 @@ namespace GTIWebAPI.Controllers
                     {
                         throw;
                     }
+                }
+
+                if (organization.OrganizationLegalFormId != null)
+                {
+                    organization.OrganizationLegalForm = db.OrganizationLegalForms.Find(organization.OrganizationLegalFormId);
+                }
+                if (organization.CountryId != null)
+                {
+                    organization.Country = db.Countries.Find(organization.CountryId);
                 }
 
                 OrganizationEditDTO dto = db.Organizations.Find(organization.Id).MapToEdit();

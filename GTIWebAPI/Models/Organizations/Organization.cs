@@ -24,7 +24,6 @@ namespace GTIWebAPI.Models.Organizations
             OrganizationProperties = new HashSet<OrganizationProperty>();
             OrganizationTaxAddresses = new HashSet<OrganizationTaxAddress>();
             OrganizationLanguageNames = new HashSet<OrganizationLanguageName>();
-            OrganizationLanguageShortNames = new HashSet<OrganizationLanguageShortName>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -59,9 +58,13 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? CountryId { get; set; }
 
+        public int? ParentOrganizationId { get; set; }
+        
+        public virtual Organization ParentOrganization { get; set; }
+
         public virtual Country Country { get; set; }
 
-        public virtual OrganizationLegalForm OrganizationLegalForms { get; set; }
+        public virtual OrganizationLegalForm OrganizationLegalForm { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationAddress> OrganizationAddresses { get; set; }
@@ -81,8 +84,6 @@ namespace GTIWebAPI.Models.Organizations
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrganizationLanguageShortName> OrganizationLanguageShortNames { get; set; }
 
         protected override string TableName
         {
@@ -100,13 +101,20 @@ namespace GTIWebAPI.Models.Organizations
         {
             OrganizationEditDTO dto = new OrganizationEditDTO
             {
-                Email = Email,
-                EmployeeId = EmployeeId,
-                FaxNumber = FaxNumber,
-                Id = Id,
-                NativeName = NativeName,
-                PhoneNumber = PhoneNumber,
-                Website = Website
+                ShortName = this.ShortName,
+                Skype = this.Skype,
+                Email = this.Email,
+                EmployeeId = this.EmployeeId,
+                FaxNumber = this.FaxNumber,
+                OrganizationLegalFormId = this.OrganizationLegalFormId,
+                Id = this.Id,
+                NativeName = this.NativeName,
+                PhoneNumber = this.PhoneNumber,
+                Website = this.Website,
+                ParentOrganizationId = this.ParentOrganizationId,
+                CountryId = this.CountryId,
+                Country = this.Country == null ? null : this.Country.ToDTO(),
+                OrganizationLegalForm = this.OrganizationLegalForm == null ? null : this.OrganizationLegalForm.ToDTO()
             };
             return dto;
         }
@@ -124,13 +132,19 @@ namespace GTIWebAPI.Models.Organizations
                 Id = this.Id,
                 NativeName = this.NativeName,
                 PhoneNumber = this.PhoneNumber,
-                Website = this.Website
+                Website = this.Website,
+                ParentOrganizationId = this.ParentOrganizationId,
+                CountryId = this.CountryId,
+                Country = this.Country == null? null : this.Country.ToDTO(),
+                OrganizationLegalForm = this.OrganizationLegalForm == null? null : this.OrganizationLegalForm.ToDTO()
+               
             };
             return dto;
         }
 
     }
 
+    //view
     public class OrganizationDTO
     {
         public int Id { get; set; }
@@ -153,6 +167,12 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? OrganizationLegalFormId { get; set; }
 
+        public int? ParentOrganizationId { get; set; }
+
+        public int? CountryId { get; set; }
+
+        public CountryDTO Country { get; set; }
+
         public OrganizationLegalFormDTO OrganizationLegalForm { get; set; }
 
         public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
@@ -167,7 +187,6 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationLanguageNameDTO> OrganizationLanguageNames { get; set; }
 
-        public IEnumerable<OrganizationLanguageShortNameDTO> OrganizationLanguageShortNames { get; set; }
 
     }
 
@@ -180,6 +199,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public string NativeName { get; set; }
 
+        public string ShortName { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public string FaxNumber { get; set; }
@@ -187,7 +208,25 @@ namespace GTIWebAPI.Models.Organizations
         public string Website { get; set; }
 
         public string Email { get; set; }
+
+        public string Skype { get; set; }
+
+        public int? OrganizationLegalFormId { get; set; }
+
+        public int? ParentOrganizationId { get; set; }
+
+        public int? CountryId { get; set; }
+
+        public CountryDTO Country { get; set; }
+
+        public OrganizationLegalFormDTO OrganizationLegalForm { get; set; }
+
+
     }
+
+
+
+    //classes for results of stored procedure work
 
     public class OrganizationSearchDTO
     {

@@ -92,8 +92,6 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
-        public virtual DbSet<OrganizationLanguageShortName> OrganizationLanguageShortNames { get; set; }
-
 
         //Organizations - for woth with new Organization table and OrganizationGTI - synonym of klient
         /// <summary>

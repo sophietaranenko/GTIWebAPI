@@ -24,6 +24,12 @@ namespace GTIWebAPI.Models.Organizations
 
         public string Name { get; set; }
 
+        public string ShortName { get; set; }
+
+        public string LegalFormName { get; set;}
+
+        public string LegalFormShortName { get; set; }
+
         public virtual Language Language { get; set; }
 
         public virtual Organization Organization { get; set; }
@@ -36,7 +42,10 @@ namespace GTIWebAPI.Models.Organizations
                 Language = this.Language == null ? null : this.Language.ToDTO(),
                 LanguageId = this.LanguageId,
                 OrganizationId = this.OrganizationId,
-                Name = this.Name
+                Name = this.Name,
+                ShortName = this.ShortName,
+                LegalFormName = this.LegalFormName,
+                LegalFormShortName = this.LegalFormShortName
             };
             return dto;
         }
@@ -57,6 +66,12 @@ namespace GTIWebAPI.Models.Organizations
         public int? OrganizationId { get; set; }
 
         public int? LanguageId { get; set; }
+
+        public string ShortName { get; set; }
+
+        public string LegalFormName { get; set; }
+
+        public string LegalFormShortName { get; set; }
 
         public string Name { get; set; }
 
