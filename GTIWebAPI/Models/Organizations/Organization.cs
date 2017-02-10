@@ -23,6 +23,8 @@ namespace GTIWebAPI.Models.Organizations
             OrganizationGTILinks = new HashSet<OrganizationGTILink>();
             OrganizationProperties = new HashSet<OrganizationProperty>();
             OrganizationTaxAddresses = new HashSet<OrganizationTaxAddress>();
+            OrganizationLanguageNames = new HashSet<OrganizationLanguageName>();
+            OrganizationLanguageShortNames = new HashSet<OrganizationLanguageShortName>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -82,6 +84,11 @@ namespace GTIWebAPI.Models.Organizations
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationTaxAddress> OrganizationTaxAddresses { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationLanguageShortName> OrganizationLanguageShortNames { get; set; }
 
         protected override string TableName
         {
@@ -132,5 +139,123 @@ namespace GTIWebAPI.Models.Organizations
             return dto;
         }
 
+    }
+
+    public class OrganizationDTO
+    {
+        public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
+
+        public string EnglishName { get; set; }
+
+        public string NativeName { get; set; }
+
+        public string RussianName { get; set; }
+
+        public string ShortName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string FaxNumber { get; set; }
+
+        public string Website { get; set; }
+
+        public string Email { get; set; }
+
+        public string Skype { get; set; }
+
+        public int? OrganizationLegalFormId { get; set; }
+
+        public OrganizationLegalFormDTO OrganizationLegalForm { get; set; }
+
+        public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
+
+        public IEnumerable<OrganizationContactPersonDTO> OrganizationContactPersons { get; set; }
+
+        public IEnumerable<OrganizationGTILinkDTO> OrganizationGTILinks { get; set; }
+
+        public IEnumerable<OrganizationPropertyDTO> OrganizationProperties { get; set; }
+
+        public IEnumerable<OrganizationTaxAddressDTO> OrganizationTaxAddresses { get; set; }
+
+        public IEnumerable<OrganizationLanguageNameDTO> OrganizationLanguageNames { get; set; }
+
+        public IEnumerable<OrganizationLanguageShortNameDTO> OrganizationLanguageShortNames { get; set; }
+
+    }
+
+
+    public class OrganizationEditDTO
+    {
+        public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
+
+        public string EnglishName { get; set; }
+
+        public string NativeName { get; set; }
+
+        public string RussianName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string FaxNumber { get; set; }
+
+        public string Website { get; set; }
+
+        public string Email { get; set; }
+    }
+
+    public class OrganizationSearchDTO
+    {
+        public int Id { get; set; }
+
+        public string NativeName { get; set; }
+
+        public string PropertyName { get; set; }
+
+        public string PropertyValue { get; set; }
+
+        public IEnumerable<OrganizationGTIShortDTO> OrganizationGTILinks { get; set; }
+    }
+
+    public class OrganizationView
+    {
+        public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
+
+        public string EnglishName { get; set; }
+
+        public string NativeName { get; set; }
+
+        public string RussianName { get; set; }
+
+        public string ShortName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string FaxNumber { get; set; }
+
+        public string Website { get; set; }
+
+        public string Email { get; set; }
+
+        public string Skype { get; set; }
+
+        public bool? Deleted { get; set; }
+
+        public int? CountryId { get; set; }
+
+        public int? OrganizationLegalFormId { get; set; }
+
+        public string OrganizationLegalFormName { get; set; }
+
+        public string OrganizationLegalFormExplanation { get; set; }
+
+        public string OrganizationRegistrationCountryName { get; set; }
+
+        public string CreatorShortName { get; set; }
     }
 }

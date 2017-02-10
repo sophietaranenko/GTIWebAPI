@@ -31,4 +31,11 @@ namespace GTIWebAPI.Models.Dictionary
             return dto;
         }
     }
+
+    public class OfficeDTO
+    {
+        public int Id { get; set; }
+        public string ShortName { get; set; }
+        public string DealIndex { get; set; }
+    }
 }

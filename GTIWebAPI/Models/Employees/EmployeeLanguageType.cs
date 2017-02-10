@@ -36,4 +36,12 @@ namespace GTIWebAPI.Models.Employees
             return dto;
         }
     }
+
+    public class EmployeeLanguageTypeDTO
+    {
+        public int Id { get; set; }
+
+        [StringLength(30)]
+        public string Name { get; set; }
+    }
 }

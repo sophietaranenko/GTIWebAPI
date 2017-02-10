@@ -35,4 +35,11 @@ namespace GTIWebAPI.Models.Organizations
             return dto;
         }
     }
+
+    public class OrganizationPropertyTypeAliasDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+    }
 }

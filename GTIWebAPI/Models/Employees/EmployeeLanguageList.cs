@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Dictionary;
 using System;
 using System.Collections.Generic;
 using System.Linq;

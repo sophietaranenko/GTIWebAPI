@@ -846,6 +846,90 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.GetOrganizationLanguageNameByOrganizationId(System.Int32)">
+            <summary>
+            Get employee languageNames by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of OrganizationLanguageNameDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.GetOrganizationLanguageName(System.Int32)">
+            <summary>
+            Get one languageName by languageName id
+            </summary>
+            <param name="id">OrganizationLanguageName id</param>
+            <returns>OrganizationLanguageNameEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.PutOrganizationLanguageName(System.Int32,GTIWebAPI.Models.Organizations.OrganizationLanguageName)">
+            <summary>
+            Update employee languageName
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="organizationLanguageName">OrganizationLanguageName object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.PostOrganizationLanguageName(GTIWebAPI.Models.Organizations.OrganizationLanguageName)">
+            <summary>
+            Insert new employee languageName
+            </summary>
+            <param name="organizationLanguageName">OrganizationLanguageName object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.DeleteOrganizationLanguageName(System.Int32)">
+            <summary>
+            Delete languageName
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.GetOrganizationLanguageShortNameByOrganizationId(System.Int32)">
+            <summary>
+            Get employee languageNames by employee id 
+            </summary>
+            <param name="employeeId">Employee Id</param>
+            <returns>Collection of OrganizationLanguageShortNameDTO</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.GetOrganizationLanguageShortName(System.Int32)">
+            <summary>
+            Get one languageName by languageName id
+            </summary>
+            <param name="id">OrganizationLanguageShortName id</param>
+            <returns>OrganizationLanguageShortNameEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.PutOrganizationLanguageShortName(System.Int32,GTIWebAPI.Models.Organizations.OrganizationLanguageShortName)">
+            <summary>
+            Update employee languageName
+            </summary>
+            <param name="id">Passport id</param>
+            <param name="organizationShortLanguageName">OrganizationLanguageShortName object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.PostOrganizationLanguageShortName(GTIWebAPI.Models.Organizations.OrganizationLanguageShortName)">
+            <summary>
+            Insert new employee languageName
+            </summary>
+            <param name="organizationShortLanguageName">OrganizationLanguageShortName object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.DeleteOrganizationLanguageShortName(System.Int32)">
+            <summary>
+            Delete languageName
+            </summary>
+            <param name="id">Passport Id</param>
+            <returns>200</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageShortNamesController.Dispose(System.Boolean)">
+            <summary>
+            Dispose controller
+            </summary>
+            <param name="disposing"></param>
+        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetOrganizationLegalForm(System.Int32)">
             <summary>
             Get one contact for edit by contact id
@@ -1954,29 +2038,54 @@
             Улица, переулок, площадь...
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeDocumentScanDTO">
+        <member name="T:GTIWebAPI.Models.Dictionary.Language">
             <summary>
-            class for results of procedure EmployeeDocumentScanValid 
+            Languages that employee can have
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeCarDTO">
+        <member name="T:GTIWebAPI.Models.Employees.Employee">
             <summary>
-            DTO for EmployeeCar
+            Class for Employee table
             </summary>
         </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.VehicleCategory">
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Id">
             <summary>
-            A, B, C, D ...
+            Id of Employee
             </summary>
         </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.FuelType">
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Sex">
             <summary>
-            Бензин, D ... 
+            short value of Employee Sex (can be 1 or 2) 
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeDTO">
+        <member name="P:GTIWebAPI.Models.Employees.Employee.IdentityCode">
             <summary>
-            Class for current Employee View 
+            Employee identity code
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.DateOfBirth">
+            <summary>
+            Employee's date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.AddressId">
+            <summary>
+            Id of Employee's Address of permanent residence in Address table 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Deleted">
+            <summary>
+            Deleted mark
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.Age">
+            <summary>
+            Age, counted from date of birth
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.SexString">
+            <summary>
+            String value of Employee Sex
             </summary>
         </member>
         <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Id">
@@ -2069,11 +2178,6 @@
             Collection of employee military cards
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeEditDTO">
-            <summary>
-            DTO form Employee Edit
-            </summary>
-        </member>
         <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.Id">
             <summary>
             Employee Id
@@ -2099,252 +2203,19 @@
             Employee Address Id
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeEducationDTO">
-            <summary>
-            DTO for EmployeeEducation
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Id">
-            <summary>
-            Education id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.EmployeeId">
-            <summary>
-            Employee id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Seria">
-            <summary>
-            Education document seria
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Number">
-            <summary>
-            Education document number
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Year">
-            <summary>
-            Year of education end
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.StudyFormId">
-            <summary>
-            Study form
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Institution">
-            <summary>
-            Institution name 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Specialty">
-            <summary>
-            Specialty name
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Qualification">
-            <summary>
-            Qualification
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeePassportDTO">
-            <summary>
-            DTO for EmployeePassport
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Id">
-            <summary>
-            EmployeePassport Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.EmployeeId">
-            <summary>
-            Employee owner Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Seria">
-            <summary>
-            Passport seria
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Number">
-            <summary>
-            Passport number
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.FirstName">
-            <summary>
-            Employee First Name specified in Passport
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.SecondName">
-            <summary>
-            Employee second name specified in Passport
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Surname">
-            <summary>
-            Employee surname specified in Passport
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.ShortName">
-            <summary>
-            Short format of employee name "С.Э. Тараненко" 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedWhen">
-            <summary>
-            Date when passport was issued to Employee
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedBy">
-            <summary>
-            Government organization that issued Passport to Employee
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.AddressId">
-            <summary>
-            Id of registration Id specified in Passport 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Address">
-            <summary>
-            AddressDTO from registration Address
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Employees.EmployeeViewDTO">
-            <summary>
-            DTO for results of stored procedure "EmployeeFilter"
-            DTO для результатов хранимой процедуры "EmployeeFilter" 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Id">
-            <summary>
-            Employee Id
-            Id сотрудника
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.DateOfBirth">
-            <summary>
-            Employee date of birth
-            Дата рождения сотрудника
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.IdentityCode">
-            <summary>
-            Employee government identity code 
-            Идентификационный код сотрудника
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.FirstName">
-            <summary>
-            First name from last issued passport
-            Имя из последнего по дате выдачи паспорта
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.SecondName">
-            <summary>
-            Second name from last issued passport
-            Отчество из последнего по дате выдачи паспорта
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Surname">
-            <summary>
-            Surname from last issued passport
-            Фамилия из последнего по дате выдачи паспорта
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.ShortAddress">
-            <summary>
-            Short address of permanent residence in format of Country, City
-            Краткий адрес проживания в формате Страна, Город
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.AgeCount">
-            <summary>
-            Employee's age in int counted from date of birth
-            Возраст сотрудника, вычисленный по дате рожения
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.UserName">
-            <summary>
-            Username of AspNetUsers connected to Employee
-            Имя логина сотрудника по связи в AspNetUsers
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Position">
-            <summary>
-            Today positions of employee in format Position Department Office, separated by symbol '|'
-            Текущие должности сотрудника в формате Должность Отдел Офис, отделенные друг от друга символом '|'
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Age">
-            <summary>
-            Employee's age in string for features of Russian language
-            Возраст сотрудника в строковом формате, для указания "25 лет", "23 года" или "21 год" 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.PositionLines">
-            <summary>
-            Collection of Positions of employee in format Position Department Office
-            Коллекция строк, каждая из которых содержит в себе только одну должность в формате Должность Отдел Офис из всех должностей сотрудника
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Employees.LanguageDTO">
-            <summary>
-            DTO for language
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Employees.Employee">
-            <summary>
-            Class for Employee table
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Id">
-            <summary>
-            Id of Employee
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Sex">
-            <summary>
-            short value of Employee Sex (can be 1 or 2) 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.IdentityCode">
-            <summary>
-            Employee identity code
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.DateOfBirth">
-            <summary>
-            Employee's date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.AddressId">
-            <summary>
-            Id of Employee's Address of permanent residence in Address table 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Deleted">
-            <summary>
-            Deleted mark
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Age">
-            <summary>
-            Age, counted from date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.SexString">
-            <summary>
-            String value of Employee Sex
-            </summary>
-        </member>
         <member name="T:GTIWebAPI.Models.Employees.EmployeeCar">
             <summary>
             Data from car registration document
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.VehicleCategory">
+            <summary>
+            A, B, C, D ...
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeCarDTO.FuelType">
+            <summary>
+            Áåíçèí, D ... 
             </summary>
         </member>
         <member name="T:GTIWebAPI.Models.Employees.EmployeeDocumentScan">
@@ -2430,6 +2301,51 @@
         <member name="P:GTIWebAPI.Models.Employees.EmployeeEducation.Deleted">
             <summary>
             Delete mark 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Id">
+            <summary>
+            Education id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.EmployeeId">
+            <summary>
+            Employee id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Seria">
+            <summary>
+            Education document seria
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Number">
+            <summary>
+            Education document number
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Year">
+            <summary>
+            Year of education end
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.StudyFormId">
+            <summary>
+            Study form
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Institution">
+            <summary>
+            Institution name 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Specialty">
+            <summary>
+            Specialty name
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeEducationDTO.Qualification">
+            <summary>
+            Qualification
             </summary>
         </member>
         <member name="P:GTIWebAPI.Models.Employees.EmployeeFoundationDocument.FoundationDocumentId">
@@ -2547,6 +2463,66 @@
             Short name construcred from passport (Ñ.Ý. Òàðàíåíêî) 
             </summary>
         </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Id">
+            <summary>
+            EmployeePassport Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.EmployeeId">
+            <summary>
+            Employee owner Id
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Seria">
+            <summary>
+            Passport seria
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Number">
+            <summary>
+            Passport number
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.FirstName">
+            <summary>
+            Employee First Name specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.SecondName">
+            <summary>
+            Employee second name specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Surname">
+            <summary>
+            Employee surname specified in Passport
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.ShortName">
+            <summary>
+            Short format of employee name "Ñ.Ý. Òàðàíåíêî" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedWhen">
+            <summary>
+            Date when passport was issued to Employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.IssuedBy">
+            <summary>
+            Government organization that issued Passport to Employee
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.AddressId">
+            <summary>
+            Id of registration Id specified in Passport 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeePassportDTO.Address">
+            <summary>
+            AddressDTO from registration Address
+            </summary>
+        </member>
         <member name="T:GTIWebAPI.Models.Employees.EmployeePhoto">
             <summary>
             Class for employee photo 
@@ -2617,14 +2593,76 @@
             Position in array of string
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Employees.Language">
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Id">
             <summary>
-            Languages that employee can have
+            Employee Id
+            Id ñîòðóäíèêà
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Security.UserRightEditDTO">
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.DateOfBirth">
             <summary>
-            
+            Employee date of birth
+            Äàòà ðîæäåíèÿ ñîòðóäíèêà
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.IdentityCode">
+            <summary>
+            Employee government identity code 
+            Èäåíòèôèêàöèîííûé êîä ñîòðóäíèêà
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.FirstName">
+            <summary>
+            First name from last issued passport
+            Èìÿ èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.SecondName">
+            <summary>
+            Second name from last issued passport
+            Îò÷åñòâî èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Surname">
+            <summary>
+            Surname from last issued passport
+            Ôàìèëèÿ èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.ShortAddress">
+            <summary>
+            Short address of permanent residence in format of Country, City
+            Êðàòêèé àäðåñ ïðîæèâàíèÿ â ôîðìàòå Ñòðàíà, Ãîðîä
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.AgeCount">
+            <summary>
+            Employee's age in int counted from date of birth
+            Âîçðàñò ñîòðóäíèêà, âû÷èñëåííûé ïî äàòå ðîæåíèÿ
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.UserName">
+            <summary>
+            Username of AspNetUsers connected to Employee
+            Èìÿ ëîãèíà ñîòðóäíèêà ïî ñâÿçè â AspNetUsers
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Position">
+            <summary>
+            Today positions of employee in format Position Department Office, separated by symbol '|'
+            Òåêóùèå äîëæíîñòè ñîòðóäíèêà â ôîðìàòå Äîëæíîñòü Îòäåë Îôèñ, îòäåëåííûå äðóã îò äðóãà ñèìâîëîì '|'
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Age">
+            <summary>
+            Employee's age in string for features of Russian language
+            Âîçðàñò ñîòðóäíèêà â ñòðîêîâîì ôîðìàòå, äëÿ óêàçàíèÿ "25 ëåò", "23 ãîäà" èëè "21 ãîä" 
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.PositionLines">
+            <summary>
+            Collection of Positions of employee in format Position Department Office
+            Êîëëåêöèÿ ñòðîê, êàæäàÿ èç êîòîðûõ ñîäåðæèò â ñåáå òîëüêî îäíó äîëæíîñòü â ôîðìàòå Äîëæíîñòü Îòäåë Îôèñ èç âñåõ äîëæíîñòåé ñîòðóäíèêà
             </summary>
         </member>
         <member name="T:GTIWebAPI.Models.Service.Age">

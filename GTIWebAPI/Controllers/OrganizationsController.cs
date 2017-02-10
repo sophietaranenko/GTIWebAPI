@@ -90,11 +90,17 @@ namespace GTIWebAPI.Controllers
             }
             dto.OrganizationGTILinks = links.Select(c => c.ToDTO());
 
-            List<OrganizationProperty> properties = db.OrganizationProperties.Where(o => o.OrganizationId == id).ToList();
+            List<OrganizationProperty> properties = db.OrganizationProperties.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
             dto.OrganizationProperties = properties.Select(s => s.ToDTO());
 
-            List<OrganizationTaxAddress> taxAddresses = db.OrganizationTaxAddresses.Where(o => o.OrganizationId == id).ToList();
+            List<OrganizationTaxAddress> taxAddresses = db.OrganizationTaxAddresses.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
             dto.OrganizationTaxAddresses = taxAddresses.Select(a => a.ToDTO());
+
+            List<OrganizationLanguageName> names = db.OrganizationLanguageNames.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
+            dto.OrganizationLanguageNames = names.Select(a => a.ToDTO());
+
+            List<OrganizationLanguageShortName> shortNames = db.OrganizationLanguageShortNames.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
+            dto.OrganizationLanguageShortNames = shortNames.Select(d => d.ToDTO());
 
             return Ok(dto);
         }

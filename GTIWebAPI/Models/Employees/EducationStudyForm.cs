@@ -25,5 +25,22 @@ namespace GTIWebAPI.Models.Employees
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeEducation> EmployeeEducations { get; set; }
+
+        public EducationStudyFormDTO ToDTO()
+        {
+            EducationStudyFormDTO dto = new EducationStudyFormDTO()
+            {
+                Id = this.Id,
+                Name = this.Name
+            };
+            return dto;
+        }
+    }
+
+    public class EducationStudyFormDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Employees;
+﻿using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Models.Employees;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

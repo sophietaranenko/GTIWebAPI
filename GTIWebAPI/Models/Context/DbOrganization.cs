@@ -33,6 +33,8 @@ namespace GTIWebAPI.Models.Context
             return new DbOrganization();
         }
 
+
+
         //For addresses work
         public virtual DbSet<Address> Addresses { get; set; }
 
@@ -49,7 +51,11 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<Continent> Continents { get; set; }
 
 
+
+
         //Some Id-Name data 
+        public virtual DbSet<Language> Languages { get; set; }
+
         public virtual DbSet<OrganizationGTI> GTIOrganizations { get; set; }
 
         public virtual DbSet<ContactType> ContactTypes { get; set; }
@@ -83,6 +89,10 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<OrganizationTaxAddress> OrganizationTaxAddresses { get; set; }
 
         public virtual DbSet<OrganizationTaxAddressType> OrganizationTaxAddressTypes { get; set; }
+
+        public virtual DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
+
+        public virtual DbSet<OrganizationLanguageShortName> OrganizationLanguageShortNames { get; set; }
 
 
         //Organizations - for woth with new Organization table and OrganizationGTI - synonym of klient

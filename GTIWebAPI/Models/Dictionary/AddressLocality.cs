@@ -37,4 +37,12 @@ namespace GTIWebAPI.Models.Dictionary
             return dto;
         }
     }
+
+    public class AddressLocalityDTO
+    {
+        public byte Id { get; set; }
+
+        [StringLength(20)]
+        public string Name { get; set; }
+    }
 }

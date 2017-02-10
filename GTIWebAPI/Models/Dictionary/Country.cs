@@ -70,4 +70,15 @@ namespace GTIWebAPI.Models.Dictionary
             return dto;
         }
     }
+
+    public class CountryDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string InternationalName { get; set; }
+
+        public string FullName { get; set; }
+    }
 }

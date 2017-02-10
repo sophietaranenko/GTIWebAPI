@@ -1,5 +1,6 @@
 ﻿using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Personnel;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace GTIWebAPI.Models.Organizations
         public IEnumerable<OrganizationLegalFormDTO> OrganizationLegalForms { get; set; }
 
         public IEnumerable<OrganizationPropertyTypeAliasDTO> OrganizationPropertyTypeAliases { get; set; }
+
+        public IEnumerable<LanguageDTO> Languages { get; set; }
 
         public AddressList AddressList { get; set; }
 
@@ -48,6 +51,9 @@ namespace GTIWebAPI.Models.Organizations
 
             List<OrganizationPropertyTypeAlias> pAliases = db.OrganizationPropertyTypeAliases.ToList();
             list.OrganizationPropertyTypeAliases = pAliases.Select(a => a.ToDTO()).ToList();
+
+            List<Language> languages = db.Languages.ToList();
+            list.Languages = languages.Select(a => a.ToDTO()).ToList();
 
             return list;
         }

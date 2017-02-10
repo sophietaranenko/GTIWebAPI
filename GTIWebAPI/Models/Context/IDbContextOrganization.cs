@@ -1,4 +1,5 @@
 ﻿using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
 using System;
@@ -37,5 +38,7 @@ namespace GTIWebAPI.Models.Context
         DbSet<Country> Countries { get; set; }
 
         DbSet<Continent> Continents { get; set; }
+
+        DbSet<Language> Languages { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Employees
 {
+    using Dictionary;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -50,5 +51,28 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeLanguage";
             }
         }
+    }
+
+    public class EmployeeLanguageDTO
+    {
+        public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
+
+        public int? LanguageId { get; set; }
+
+        public DateTime? DateBegin { get; set; }
+
+        public DateTime? DateEnd { get; set; }
+
+        public int? EmployeeLanguageTypeId { get; set; }
+
+        public string Definition { get; set; }
+
+        public string Remark { get; set; }
+
+        public LanguageDTO Language { get; set; }
+
+        public EmployeeLanguageTypeDTO EmployeeLanguageType { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
+using GTIWebAPI.Models.Dictionary;
 
 namespace GTIWebAPI.Controllers
 {

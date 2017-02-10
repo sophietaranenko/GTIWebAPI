@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Models.Service;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,15 @@ namespace GTIWebAPI.Models.Security
         protected override string TableName { get { return "RightControllerAction"; } }
 
         public virtual ICollection<UserRight> UserRights { get; set; }
+    }
+
+    public class ActionDTO
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string ActionName { get; set; }
+
+        public string ActionLongName { get; set; }
     }
 }

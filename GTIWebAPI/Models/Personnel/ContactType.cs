@@ -36,4 +36,10 @@ namespace GTIWebAPI.Models.Personnel
             return dto;
         }
     }
+
+    public class ContactTypeDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

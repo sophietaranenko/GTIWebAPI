@@ -1,5 +1,7 @@
-namespace GTIWebAPI.Models.Employees
+namespace GTIWebAPI.Models.Dictionary
 {
+    using Employees;
+    using Organizations;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -16,6 +18,8 @@ namespace GTIWebAPI.Models.Employees
         public Language()
         {
             EmployeeLanguage = new HashSet<EmployeeLanguage>();
+            OrganizationLanguageNames = new HashSet<OrganizationLanguageName>();
+            OrganizationLanguageShortNames = new HashSet<OrganizationLanguageShortName>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -27,6 +31,11 @@ namespace GTIWebAPI.Models.Employees
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeLanguage> EmployeeLanguage { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrganizationLanguageShortName> OrganizationLanguageShortNames { get; set; }
         public LanguageDTO ToDTO()
         {
             LanguageDTO dto = new LanguageDTO()
@@ -37,4 +46,13 @@ namespace GTIWebAPI.Models.Employees
             return dto;
         }
     }
+
+
+    public class LanguageDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+    }
+
 }

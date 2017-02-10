@@ -77,4 +77,32 @@ namespace GTIWebAPI.Models.Employees
             return dto;
         }
     }
+
+    public class EmployeeMilitaryCardDTO
+    {
+        public int Id { get; set; }
+
+        public int? EmployeeId { get; set; }
+
+        public string Number { get; set; }
+
+        public DateTime? OfficeDate { get; set; }
+
+        public string Seria { get; set; }
+
+        public string Rank { get; set; }
+
+        public string Category { get; set; }
+
+        public string TypeGroup { get; set; }
+
+        public string Corps { get; set; }
+
+        public string Specialty { get; set; }
+
+        public string SpecialtyNumber { get; set; }
+
+        public string Office { get; set; }
+
+    }
 }

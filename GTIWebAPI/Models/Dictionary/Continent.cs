@@ -26,4 +26,11 @@ namespace GTIWebAPI.Models.Dictionary
         public virtual ICollection<Country> Countries { get; set; }
 
     }
+
+    public class ContinentDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+    }
 }

@@ -29,4 +29,11 @@ namespace GTIWebAPI.Models.Personnel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeFoundationDocument> EmployeeFoundationDoc { get; set; }
     }
+
+
+    public class FoundationDocumentDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }
