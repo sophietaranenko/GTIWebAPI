@@ -40,7 +40,8 @@ namespace GTIWebAPI.Models.Organizations
             {
                 Explanation = this.Explanation,
                 Id = this.Id,
-                Name = this.Name
+                Name = this.Name,
+                CountryId = this.CountryId 
             };
             return dto;
         }
@@ -65,5 +66,7 @@ namespace GTIWebAPI.Models.Organizations
         public string Name { get; set; }
 
         public string Explanation { get; set; }
+
+        public int? CountryId { get; set; }
     }
 }

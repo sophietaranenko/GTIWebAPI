@@ -14,7 +14,8 @@ namespace GTIWebAPI.Models.Context
     public class DbPersonnel : DbContext, IDbContextAddress, IDbContextEmployeeLanguage
     {
         public DbPersonnel()
-            : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345")
+           // : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345")
+           : base ("name=DbPersonnel")
         {
         }
 
