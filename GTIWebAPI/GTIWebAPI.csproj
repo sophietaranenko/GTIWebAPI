@@ -18,7 +18,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -407,10 +407,12 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\OrganizationsGTIController.cs" />
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
+    <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
     <Compile Include="Filters\GTIOfficeFilter.cs" />
     <Compile Include="Filters\QueryParser.cs" />
+    <Compile Include="Filters\RequireHttpsAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -428,6 +430,7 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Context\DbContextExtensions.cs" />
+    <Compile Include="Models\Context\DbSession.cs" />
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />

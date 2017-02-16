@@ -155,6 +155,64 @@ namespace GTIWebAPI.Controllers
             return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
         }
 
+        [GTIFilter]
+        [HttpPost]
+        [Route("PostConstant")]
+        [ResponseType(typeof(OrganizationPropertyDTO))]
+        public IHttpActionResult PostArrayOrganizationProperty(IEnumerable<OrganizationPropertyConstant> properties)
+        {
+            if (properties == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            List<OrganizationPropertyDTO> propertiesToReturn = new List<OrganizationPropertyDTO>();
+
+            foreach (var item in properties)
+            {
+                OrganizationProperty organizationProperty = new OrganizationProperty()
+                {
+                    DateBegin = null,
+                    DateEnd = null,
+                    Deleted = null,
+                    OrganizationId = item.OrganizationId,
+                    OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
+                    Value = item.Value
+                };
+                organizationProperty.Id = organizationProperty.NewId(db);
+                db.OrganizationProperties.Add(organizationProperty);
+
+
+                if (organizationProperty.OrganizationPropertyTypeId != null)
+                {
+                    organizationProperty.OrganizationPropertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
+                }
+                OrganizationPropertyDTO dto = organizationProperty.ToDTO();
+                propertiesToReturn.Add(dto);
+            }
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                    throw;
+            }
+
+            //Reload method of db context doesn't work
+            //Visitor extension of dbContext doesn't wotk
+            //that's why we reload related entities manually
+
+
+            return Ok(propertiesToReturn);
+        }
+
         /// <summary>
         /// Delete property
         /// </summary>

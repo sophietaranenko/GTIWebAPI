@@ -25,6 +25,7 @@ namespace GTIWebAPI.Controllers
         /// Get all positions
         /// </summary>
         /// <returns></returns>
+      //  [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
@@ -49,6 +50,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeId">Employee id</param>
         /// <returns></returns>
+       // [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
@@ -72,6 +74,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+      //  [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeOffice")]
@@ -100,6 +103,7 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">id of position</param>
         /// <param name="employeeOffice">EmployeeOffice</param>
         /// <returns></returns>
+       // [RequireHttps]
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
@@ -149,6 +153,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeOffice">EmployeeOffice object contains id = 0</param>
         /// <returns></returns>
+       // [RequireHttps]
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
@@ -195,6 +200,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">id of document</param>
         /// <returns></returns>
+       // [RequireHttps]
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]

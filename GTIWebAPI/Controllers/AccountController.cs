@@ -31,6 +31,7 @@ using GTIWebAPI.Models;
 using System.Linq;
 using GTIWebAPI.Models.Context;
 
+
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
@@ -83,6 +84,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
+       // [RequireHttps]
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {

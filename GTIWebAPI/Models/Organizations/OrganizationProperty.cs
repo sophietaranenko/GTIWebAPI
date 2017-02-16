@@ -72,4 +72,20 @@ namespace GTIWebAPI.Models.Organizations
 
         public OrganizationPropertyTypeDTO OrganizationPropertyType { get; set; }
     }
+
+    public class OrganizationPropertyConstant
+    {
+        public int Id { get; set; }
+
+        public int OrganizationId { get; set; }
+
+        public int? OrganizationPropertyTypeId { get; set; }
+
+        public string Value { get; set; }
+    }
+
+    public class OrganizationPropertyConstantDTO
+    {
+        public IEnumerable<OrganizationPropertyConstant> Properties { get; set; }
+    }
 }

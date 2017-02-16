@@ -88,6 +88,11 @@ namespace GTIWebAPI.Providers
                 CookieAuthenticationDefaults.AuthenticationType);
             AuthenticationProperties properties = CreateProperties(user.UserName);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
+
+            //create session when /Token
+            DbSession s = new DbSession();
+            bool res = s.CreateSession(user.Id);
+
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
         }
