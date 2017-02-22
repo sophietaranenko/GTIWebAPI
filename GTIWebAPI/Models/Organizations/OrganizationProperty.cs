@@ -6,6 +6,7 @@ namespace GTIWebAPI.Models.Organizations
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Linq;
 
     [Table("OrganizationProperty")]
     public partial class OrganizationProperty : GTITable
@@ -15,7 +16,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? OrganizationId { get; set; }
 
-        public int? OrganizationPropertyTypeId { get; set; }
+        public int OrganizationPropertyTypeId { get; set; }
 
         [StringLength(250)]
         public string Value { get; set; }
@@ -62,7 +63,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public int? OrganizationId { get; set; }
 
-        public int? OrganizationPropertyTypeId { get; set; }
+        public int OrganizationPropertyTypeId { get; set; }
 
         public string Value { get; set; }
 
@@ -79,13 +80,17 @@ namespace GTIWebAPI.Models.Organizations
 
         public int OrganizationId { get; set; }
 
-        public int? OrganizationPropertyTypeId { get; set; }
+        public int OrganizationPropertyTypeId { get; set; }
 
         public string Value { get; set; }
     }
 
-    public class OrganizationPropertyConstantDTO
+    public class OrganizationPropertyTreeView
     {
-        public IEnumerable<OrganizationPropertyConstant> Properties { get; set; }
+        public int? OrganizationPropertyTypeId { get; set; }
+
+        public IEnumerable<OrganizationPropertyDTO> PropertiesById { get; set; }
     }
+
+
 }

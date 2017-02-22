@@ -407,7 +407,6 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\OrganizationsGTIController.cs" />
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
-    <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
     <Compile Include="Filters\GTIOfficeFilter.cs" />
@@ -430,7 +429,7 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Context\DbContextExtensions.cs" />
-    <Compile Include="Models\Context\DbSession.cs" />
+    <Compile Include="Models\Context\DbRights.cs" />
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
@@ -462,6 +461,8 @@
     <Compile Include="Models\Organizations\OrganizationGTILink.cs" />
     <Compile Include="Models\Employees\EmployeeList.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
+    <Compile Include="Models\Security\UserRightsManager.cs" />
+    <Compile Include="Models\Security\UserRightsProvider.cs" />
     <Compile Include="Models\Service\GTITable.cs" />
     <Compile Include="Models\Dictionary\Address.cs" />
     <Compile Include="Models\Security\Action.cs" />

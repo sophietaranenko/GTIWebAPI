@@ -64,37 +64,86 @@ namespace GTIWebAPI.Providers
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-            NovellManager novellManager = new NovellManager("192.168.0.1", userManager);
 
-            ApplicationUser user = novellManager.Find(context.UserName, context.Password);
+            ApplicationUser user = null;
 
-            if (user == null)
+            if (NovellManager.CredentialsCorrect(context.UserName, context.Password))
             {
-                user = await userManager.FindAsync(context.UserName, context.Password);
+                user = userManager.Find(context.UserName, context.Password);
+                //if found in eDirectory but not found in ApplicationUsers - then create employee user 
+                //but in database to local users only DBA can grant rights 
+                if (user == null)
+                {
+                    user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
+                }
             }
+            else
+            {
+                user = null;
+            }
+
+
 
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
-                //была проблема с возвращением 400
-                //а надо было возвращать 401 
-                //пришлось решить
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;
             }
+
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
+            
             AuthenticationProperties properties = CreateProperties(user.UserName);
-            AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
 
-            //create session when /Token
-            DbSession s = new DbSession();
-            bool res = s.CreateSession(user.Id);
+            AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
 
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
+
+        }
+
+        private ApplicationUser CreateEmployeeApplicationUser(string email, string password, ApplicationUserManager userManager)
+        {
+            int employeeId = CreateEmployee();
+            if (employeeId != 0)
+            {
+                ApplicationUser newUser = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    TableName = "Employee",
+                    TableId = employeeId
+                };
+                userManager.Create(newUser, password);
+                return newUser;
+            }
+            return null;
+        }
+
+        private int CreateEmployee()
+        {
+            int employeeId = 0;
+
+            using (Models.Context.DbPersonnel db = new Models.Context.DbPersonnel())
+            {
+                Models.Dictionary.Address address = new Models.Dictionary.Address();
+                address.Id = address.NewId(db);
+                db.Addresses.Add(address);
+                db.SaveChanges();
+
+                Models.Employees.Employee employee = new Models.Employees.Employee();
+                employee.Id = employee.NewId(db);
+                employee.AddressId = address.Id;
+                db.Employees.Add(employee);
+                db.SaveChanges();
+
+                employeeId = employee.Id;
+            }
+
+            return employeeId;
         }
 
         /// <summary>

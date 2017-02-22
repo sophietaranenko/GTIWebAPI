@@ -16,6 +16,7 @@ using System;
 using System.Net.Mime;
 using System.Web;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -43,6 +44,7 @@ namespace GTIWebAPI.Models.Account
         /// Id in table TableName
         /// </summary>
         public int TableId { get; set; }
+
         /// <summary>
         /// Profile picture
         /// </summary>
@@ -193,6 +195,42 @@ namespace GTIWebAPI.Models.Account
             int result = this.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
             return result;
         }
+
+        public bool CreateOrganization(string email, string password)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Email",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
+
+            SqlParameter pPassword = new SqlParameter
+            {
+                ParameterName = "@Password",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = password
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Email, @Password ",
+                    pEmail, pPassword
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
     }
 
 
@@ -249,29 +287,6 @@ namespace GTIWebAPI.Models.Account
             {
                 string m = e.Message;
             }
-        }
-
-        void sendMail(string to, string subject, string body)
-        {
-            #region formatter
-            string text = string.Format("Please click on this link to {0}: {1}", subject, body);
-            string html = "Please confirm your account by clicking this link: <a href=\"" + body + "\">link</a><br/>";
-
-            html += HttpUtility.HtmlEncode(@"Or click on the copy the following link on the browser:" + body);
-            #endregion
-
-            MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("joe@contoso.com");
-            msg.To.Add(new MailAddress(to));
-            msg.Subject = subject;
-            msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
-            msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
-
-            SmtpClient smtpClient = new SmtpClient("192.168.0.9", Convert.ToInt32(25));
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("joe@contoso.com", "XXXXXX");
-            smtpClient.Credentials = credentials;
-            smtpClient.EnableSsl = true;
-            smtpClient.Send(msg);
         }
     }
 }

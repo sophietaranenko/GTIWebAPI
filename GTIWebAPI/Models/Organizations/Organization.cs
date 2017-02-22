@@ -181,7 +181,8 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationGTILinkDTO> OrganizationGTILinks { get; set; }
 
-        public IEnumerable<OrganizationPropertyDTO> OrganizationProperties { get; set; }
+        //public IEnumerable<OrganizationPropertyDTO> OrganizationProperties { get; set; }
+        public IEnumerable<OrganizationPropertyTreeView> OrganizationProperties { get; set; }
 
         public IEnumerable<OrganizationTaxAddressDTO> OrganizationTaxAddresses { get; set; }
 

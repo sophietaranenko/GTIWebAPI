@@ -9,92 +9,96 @@ using System.Web;
 
 namespace GTIWebAPI.Novell
 {
-    public class NovellManager
-    {
-        private string ServerAddress { get; set; }
-        private ApplicationUserManager userManager { get; set; }
-        public NovellManager(string serverAddress, ApplicationUserManager manager)
-        {
-            if (serverAddress != null && serverAddress != "")
-            {
-                ServerAddress = serverAddress;
-            }
-            userManager = manager;   
-        }
+    //class which knows how to user NovellProvider class
+    //one method - one connect - one action with Novell Provider ??? 
 
-        private bool NovellEntryExist(string UserName, string Password, out string Email)
+    public static class NovellManager
+    {
+        //Миша писал в скайп 17.02 
+        //сейчас только 0.9 работает в режиме non-TLS. Остальные требуют TLS для подключения к ДВФЗ-серверу. 
+        //Вообще я бы хотел для авторизации и всех операций с LDAP использовать в порядке очередности: 0.20, 1.1, 0.6, 0.9.
+        private static string[] ServerAddresses = { "192.168.0.20", "192.168.1.1", "192.168.0.6", "192.168.0.9" };
+
+        //noone knows server address
+        //it'll be better if we change location to web.config 
+
+        private static bool VerifyPassword(string email, string password)
         {
             bool result = false;
-            //проверка в коннекте на соответствие в eDirectory
-            using (NovellProvider novell = new NovellProvider())
+
+            //connect to Novell with one of server addresses 
+            foreach (string serverAddress in ServerAddresses)
             {
                 try
                 {
-                    novell.Bind(ServerAddress, "cn=gtildap,ou=Tech,ou=ALL,o=World", "wemayont");
-                    NovellEntry entry = novell.FindEntry(UserName);
-                    Email = entry.Email;
-                    string DN = entry.DN;
-                    novell.Bind(ServerAddress, DN, Password);
-                    result = true;
+                    using (NovellProvider novell = new NovellProvider(serverAddress))
+                    {
+                        //bind with gtildap
+                        novell.Bind();
+                        //search if LdapEntry with such email exists 
+                        bool entryExist = novell.FindEntryByEmail(email);
+                        if (entryExist)
+                        {
+                            //verify password
+                            result = novell.VerifyPassword(email, password);
+                            break;
+                        }
+                    }
                 }
-                catch
+                catch (Exception e)
                 {
-                    Email = "";
-                    result = false;
+                    continue;
                 }
+
             }
+            //if Connect Error happened, restart with another server address 
             return result;
         }
 
-        public ApplicationUser Find(string UserName, string Password)
+
+        public static bool CredentialsCorrect(string email, string password)
         {
-            ApplicationUser user = null;
-            String Email = "";
-            bool result = NovellEntryExist(UserName, Password, out Email);
-            if (result == false)
+            bool result = VerifyPassword(email, password);
+            return result;
+        }
+
+        public static bool CreateOrganization(string email, string password)
+        {
+            bool result = CreateNovellOrganization(email, password);
+            return result;
+        }
+
+        private static bool CreateNovellOrganization(string email, string password)
+        {
+            bool result = false;
+
+            //connect to Novell with one of server addresses 
+            foreach (string serverAddress in ServerAddresses)
             {
-                user = null;
-            }
-            else
-            {
-                user = userManager.Find(UserName, Password);
-                if (user == null)
+                try
                 {
-                    int employeeId = CreateUserEmployee();
-                    ApplicationUser newUser = new ApplicationUser { UserName = UserName, Email = Email, TableName = "Employee", TableId = employeeId };
-                    userManager.Create(newUser, Password);
-                    userManager.AddToRole(newUser.Id, "User");
-                    user = newUser;
+                    using (NovellProvider novell = new NovellProvider(serverAddress))
+                    {
+                        //bind with gtildap
+                        novell.Bind();
+                        //search if LdapEntry with such email exists 
+                        bool entryExist = novell.FindEntryByEmail(email);
+                        if (!entryExist)
+                        {
+                            //create new entry if we can 
+                            result = novell.CreateEntry(email, password);
+                        }
+                        break;
+                    }
                 }
-            }
-            return user;
-        }
+                catch (Exception e)
+                {
+                    continue;
+                }
 
-        private int CreateUserEmployee()
-        {
-            int employeeId = 0;
-            using (Models.Context.DbPersonnel db = new Models.Context.DbPersonnel())
-            {
-                Models.Dictionary.Address address = new Models.Dictionary.Address();
-                address.Id = address.NewId(db);
-                db.Addresses.Add(address);
-                db.SaveChanges();
-                Models.Employees.Employee employee = new Models.Employees.Employee();
-                employee.Id = employee.NewId(db);
-                employee.AddressId = address.Id;
-                db.Employees.Add(employee);
-                db.SaveChanges();
-                employeeId = employee.Id;
             }
-            return employeeId;
+            return result;
         }
-
-        //private ApplicationUser CreateNovellUser(ApplicationUserManager userManager, ApplicationUser user, string Password)
-        //{
-        //    userManager.Create(user, Password);
-        //    userManager.AddToRole(user.Id, "User");
-        //    return user;
-        //}
 
 
     }

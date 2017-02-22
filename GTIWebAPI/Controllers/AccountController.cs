@@ -30,7 +30,7 @@ using System.Net;
 using GTIWebAPI.Models;
 using System.Linq;
 using GTIWebAPI.Models.Context;
-
+using GTIWebAPI.Novell;
 
 namespace GTIWebAPI.Controllers
 {
@@ -84,7 +84,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
-       // [RequireHttps]
+        // [RequireHttps]
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
@@ -299,87 +299,7 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        //[AllowAnonymous]
-        //[HttpPost]
-        //[Route("ForgotPassword")]
-        //public async Task<IHttpActionResult> ClientPassword(string userName)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = await UserManager.FindByNameAsync(userName);
-        //        if (user == null)
-        //        {
-        //            return Ok();
-        //        }
-        //        string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-
-        //        string url = Url.Link(
-        //            "DefaultApi",
-        //            new
-        //            {
-        //                controller = "Account/ResetPassword/",
-        //                UserId = user.Id,
-        //                PasswordResetToken = code
-        //            }
-        //        );
-        //        await UserManager.
-        //            SendEmailAsync(user.Id, "Set Password", "Please set your password by clicking here: <a href=\"" + url + "\">link</a>");
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("ResetPassword", Name = "ResetPassword")]
-        //public IHttpActionResult ResetPassword(string UserId, string PasswordResetToken)
-        //{
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    ChangePasswordBindingModel model = new ChangePasswordBindingModel
-        //    {
-        //        ConfirmPassword = null,
-        //        OldPassword = PasswordResetToken
-        //    };
-        //    return Ok(model);
-        //}
-
-
-        //[AllowAnonymous]
-        //[Route("PostResetPassword", Name = "PostResetPassword")]
-        //public async Task<IHttpActionResult> PostResetPassword(ChangePasswordBindingModel model)
-        //{
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
-        //        model.NewPassword);
-
-        //    if (!result.Succeeded)
-        //    {
-        //        return GetErrorResult(result);
-        //    }
-
-        //    return Ok();
-        //}
-
-
-        //private string GenerateClientUsername()
-        //{
-        //    string name = "";
-        //    using (DbClient db = new DbClient())
-        //    {
-        //        name = db.ClientUserNameGenerator();
-        //    }
-        //    return name;
-        //}
+      
         private string GenerateClientPassword()
         {
             return System.Web.Security.Membership.GeneratePassword(8, 0);
@@ -425,6 +345,7 @@ namespace GTIWebAPI.Controllers
                 string email = "";
 
                 DbOrganization db = new DbOrganization();
+
                 OrganizationContactPerson person = db.OrganizationContactPersons.Find(organizationContactPersonId);
                 if (person == null)
                 {
@@ -438,241 +359,65 @@ namespace GTIWebAPI.Controllers
 
                 string username = email;
                 string password = GenerateClientPassword();
+                ApplicationUser user = null;
 
-                ApplicationUser user = new ApplicationUser()
+                //FIRST REGISTER LDAP USER
+                bool novellResult = NovellManager.CreateOrganization(email, password);
+
+                if (novellResult)
                 {
-                    UserName = username,
-                    Email = email,
-                    TableName = "OrganizationContactPerson",
-                    TableId = organizationContactPersonId
-                    //,
-                    //UserRights = null,
-                    //UserRightsDto = null
-                };
-
-                //тут еще нужно раздать права на просмотр сделок - счетов - контейнеров ... 
-
-                try
-                {
-                    IdentityResult result = await UserManager.CreateAsync(user, password);
-                    if (!result.Succeeded)
+                    //SECOND REGISTER DATABASE USER
+                    using (ApplicationDbContext iDb = new ApplicationDbContext())
                     {
-                        return GetErrorResult(result);
+                        bool dbResult = iDb.CreateOrganization(email, password);
+                        if (dbResult)
+                        {
+                            //THIRD REGISTER ASPNET USER
+                            user = new ApplicationUser()
+                            {
+                                UserName = username,
+                                Email = email,
+                                TableName = "OrganizationContactPerson",
+                                TableId = organizationContactPersonId
+                            };
+                            try
+                            {
+                                IdentityResult result = await UserManager.CreateAsync(user, password);
+                                if (!result.Succeeded)
+                                {
+                                    return GetErrorResult(result);
+                                }
+                                else
+                                {
+                                    //FOURTH GRANT ORGANIZATION RIGHTS in ASPNET USER RIGHTS  
+                                    bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
+                                    if (rightsResult)
+                                    {
+                                        await UserManager.
+                                            SendEmailAsync(user.Id,
+                                            "Register user",
+                                            @"You have successfully registered for WEBSITE_URL. <br>
+                                            Thank you for your interest and we hope you will find useful information! <br> 
+                                            Your credentials in WEBSITE_URL: <br> 
+                                            login: " + email.Trim() + "<br>" +
+                                            "password: " + password.Trim() + "<br>" +
+                                            @"информация, которую мы знаем о контакнтом лице организации
+                                            тут реклама, пара картинок");
+                                        return Ok();
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                string m = e.Message;
+                            }
+                        }
                     }
                 }
-                catch (Exception e)
-                {
-                    string m = e.Message;
-                }
-
-                if (user == null)
-                {
-                    return BadRequest();
-                }
-
-                //string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                //// GenerateEmailConfirmationTokenAsync(user.Id);
-                //var callbackUrl = Url.Link("DefaultApi", new
-                //{
-                //    Controller = "Account/SimplePasswordReset/",
-                //    PasswordResetToken = code,
-                //    UserId = user.Id
-                //});
-                ////ADD
-                ////отсылка sms с кодом
-                ////ADD
-                //await UserManager.
-                //    SendEmailAsync(user.Id, "Register user", "Please register your login and set new password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
-                await UserManager.
-                SendEmailAsync(user.Id, 
-                "Register user", 
-                @"You have successfully registered for WEBSITE_URL. <br>
-                Thank you for your interest and we hope you will find useful information! <br> 
-                Your credentials in WEBSITE_URL: <br> 
-                login: " + email.Trim() + "<br>" +
-                "password: " + password.Trim() + "<br>"+ 
-                @"информация, которую мы знаем о контакнтом лице организации
-                тут реклама, пара картинок");
-                return Ok();
-
             }
+
             return BadRequest();
         }
-
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("SimplePasswordReset")]
-        //public IHttpActionResult SimplePasswordReset(string PasswordResetToken, string UserId)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    ChangePasswordOrganizationBindingModel model = new ChangePasswordOrganizationBindingModel
-        //    {
-        //        ConfirmPassword = null,
-        //        OldPassword = PasswordResetToken,
-        //        UserId = UserId
-        //    };
-        //    return Ok(model);
-        //}
-
-        //[HttpPut]
-        //[AllowAnonymous]
-        //[Route("ChangeOrganizationContactPersonPassword", Name = "ChangeOrganizationContactPersonPassword")]
-        //public async Task<IHttpActionResult> PostSimplePasswordReset(ChangePasswordOrganizationBindingModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    try
-        //    {
-        //        IdentityResult result = await UserManager.ChangePasswordAsync(model.UserId, model.OldPassword, model.NewPassword);
-
-        //        if (!result.Succeeded)
-        //        {
-        //            return GetErrorResult(result);
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        string m = e.Message;
-        //    }
-        //    return Ok();
-        //}
-
-
-
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //[Route("RegisterClient")]
-        //public async Task<IHttpActionResult> RegisterClient(ClientRegisterBindingModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (CheckEmailExists(model.Email))
-        //        {
-        //            return BadRequest("Email already exists");
-        //        }
-        //        string username = GenerateClientUsername();
-        //        string password = GenerateClientPassword();
-        //        ApplicationUser user = new ApplicationUser()
-        //        {
-        //            UserName = username,
-        //            Email = model.Email,
-        //            PhoneNumber = model.PhoneNumber
-        //        };
-        //        IdentityResult result = await UserManager.CreateAsync(user, password);
-        //        if (!result.Succeeded)
-        //        {
-        //            return GetErrorResult(result);
-        //        }
-        //        if (user == null)
-        //        {
-        //            return BadRequest();
-        //        }
-        //        string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-        //        var callbackUrl = Url.Link("DefaultApi", new
-        //        {
-        //            Controller = "Account/ConfirmEmail/",
-        //            ConfirmEmailToken = code,
-        //            UserId = user.Id
-        //        });
-        //        //ADD
-        //        //отсылка sms с кодом
-        //        //ADD
-        //        await UserManager.
-        //            SendEmailAsync(user.Id, "Confirm e-mail", "Please confirm your e-mail by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("GetClientRegister", Name = "GetClientRegister")]
-        //public async Task<IHttpActionResult> GetClientRegister(string ConfirmEmailToken, string UserId)
-        //{
-        //    if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
-        //    {
-
-        //        string code = await UserManager.GeneratePasswordResetTokenAsync(UserId);
-        //        ClientRegisterModel model = new ClientRegisterModel()
-        //        {
-        //            ConfirmEmailToken = ConfirmEmailToken,
-        //            ResetPasswordToken = code,
-        //            UserId = UserId
-        //        };
-        //        return Ok(model);
-        //    }
-        //    return BadRequest();
-        //}
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //[Route("PostClientRegister", Name = "PostClientRegister")]
-        //public async Task<IHttpActionResult> PostClientRegister(ClientRegisterModel model)
-        //{
-        //    //тут проверка кода из смс
-        //    //если все хорошо, отправляем на смену пароля
-        //    if (model.UserId == null || model.ConfirmEmailToken == null || model.ResetPasswordToken == null)
-        //    {
-        //        return BadRequest("Empty parameters");
-        //    }
-        //    if (model.NewPassword == null)
-        //    {
-        //        return BadRequest("Empty password");
-        //    }
-        //    var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
-        //    if (result.Succeeded)
-        //    {
-        //        result = await UserManager.ResetPasswordAsync(model.UserId, model.ResetPasswordToken, model.NewPassword);
-        //        if (result.Succeeded)
-        //        {
-        //            return Ok();
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
-
-
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("ConfirmEmail", Name = "ConfirmEmail")]
-        //public IHttpActionResult ConfirmEmail(string ConfirmEmailToken, string UserId)
-        //{
-        //    //окошко для ввода кода из смс
-        //    if (UserId != null && UserId != "" && ConfirmEmailToken != null && ConfirmEmailToken != "")
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //[Route("PostConfirmEmail", Name = "PostConfirmEmail")]
-        //public async Task<IHttpActionResult> PostConfirmEmail(ConfirmEmailModel model)
-        //{
-        //    //тут проверка кода из смс
-        //    //если все хорошо, отправляем на смену пароля
-        //    if (model.UserId == null || model.ConfirmEmailToken == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var result = await UserManager.ConfirmEmailAsync(model.UserId, model.ConfirmEmailToken);
-        //    if (result.Succeeded)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
 
         /// <summary>
         /// GetExtenal login (not useful for GTI)

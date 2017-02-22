@@ -30,6 +30,23 @@ namespace GTIWebAPI.Novell
             }
         }
 
+        public string CommonName
+        {
+            get
+            {
+                string result = "";
+
+                var attribute = Entry.getAttribute("cn");
+                if (attribute != null)
+                {
+                    result = attribute.StringValueArray[0];
+                }
+                return result;
+            }
+        }
+
+
+
         public string DN
         {
             get

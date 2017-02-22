@@ -70,7 +70,7 @@ namespace GTIWebAPI.Controllers
             dto.OrganizationAddresses = addresses.Select(a => a.ToDTO());
 
 
-            List<OrganizationContactPerson> contactPersons = db.OrganizationContactPersons.Where(p => p.Deleted != true && p.OrganizationId == id).ToList();
+            List<OrganizationContactPersonView> contactPersons = db.OrganizationContactPersonViews.Where(p => p.Deleted != true && p.OrganizationId == id).ToList();
             dto.OrganizationContactPersons = contactPersons.Select(c => c.ToDTO());
 
 
@@ -90,14 +90,28 @@ namespace GTIWebAPI.Controllers
             }
             dto.OrganizationGTILinks = links.Select(c => c.ToDTO());
 
-            List<OrganizationProperty> properties = db.OrganizationProperties.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
-            dto.OrganizationProperties = properties.Select(s => s.ToDTO());
+            List<OrganizationProperty> properties = db.OrganizationProperties.Where(o => o.Deleted != true && o.OrganizationId == id ).ToList();
 
-            List<OrganizationTaxAddress> taxAddresses = db.OrganizationTaxAddresses.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
+            IEnumerable<int> popertyTypeIds = properties.Select(d => d.OrganizationPropertyTypeId).Distinct();
+            List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
+            foreach (int value in popertyTypeIds)
+            {
+                List<OrganizationProperty> propertiesByType = properties.Where(d => d.OrganizationPropertyTypeId == value).ToList();
+                propertiesDTO.Add(new OrganizationPropertyTreeView
+                {
+                    OrganizationPropertyTypeId = value,
+                    PropertiesById = propertiesByType.Select(d => d.ToDTO())
+                });
+            }
+            dto.OrganizationProperties = propertiesDTO;
+
+            List <OrganizationTaxAddress> taxAddresses = db.OrganizationTaxAddresses.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
             dto.OrganizationTaxAddresses = taxAddresses.Select(a => a.ToDTO());
 
             List<OrganizationLanguageName> names = db.OrganizationLanguageNames.Where(o => o.Deleted != true && o.OrganizationId == id).ToList();
             dto.OrganizationLanguageNames = names.Select(a => a.ToDTO());
+
+
 
             return Ok(dto);
         }

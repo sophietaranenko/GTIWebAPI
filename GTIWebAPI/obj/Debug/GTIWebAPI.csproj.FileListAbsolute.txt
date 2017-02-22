@@ -157,7 +157,6 @@ C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.pdb
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\AutoMapper.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\AutoMapper.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\XmlDocument.xml
-C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csprojResolveAssemblyReference.cache
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNetCore.Authorization.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNetCore.Hosting.Abstractions.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll
@@ -229,3 +228,4 @@ C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Diagnostics.DiagnosticSource.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Text.Encodings.Web.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Swashbuckle.Core.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\WebActivatorEx.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csprojResolveAssemblyReference.cache

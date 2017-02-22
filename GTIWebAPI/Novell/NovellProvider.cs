@@ -16,6 +16,7 @@ namespace GTIWebAPI.Novell
         private bool bHowToProceed = false;
         private bool removeFlag = false;
         private int bindCount = 0;
+
         private LdapConnection ldapConn;
 
         //to work with
@@ -27,23 +28,75 @@ namespace GTIWebAPI.Novell
         //}
 
 
-        public NovellProvider()
+        public NovellProvider(string serverAddress)
         {
             ldapConn = new LdapConnection();
             ldapConn.SecureSocketLayer = true;
             bHowToProceed = true;
             ldapConn.UserDefinedServerCertValidationDelegate += new CertificateValidationCallback(MySSLHandler);
-        }
-
-        public void Bind(string LdapServer = "192.168.0.1", string DN = "cn=gtildap,ou=Tech,ou=ALL,o=World", string Password = "wemayont")
-        {
-            bHowToProceed = true;
             bindCount = 0;
-            ldapConn.Connect(LdapServer, 636);
-            ldapConn.Bind(DN, Password);
+            ldapConn.Connect(serverAddress, 636);
         }
 
-        public NovellEntry FindEntry(string UserName)
+        //public void Bind(string LdapServer = "192.168.0.1", string DN = "cn=gtildap,ou=Tech,ou=ALL,o=World", string Password = "wemayont")
+        public void Bind(string DN = "cn=gtildap,ou=odessa,o=world", string Password = "wemayont")
+        {
+            //bHowToProceed = true;
+            ldapConn.Bind(DN, Password);
+            bindCount++;
+
+        }
+
+        public bool CommonNameExist(string commonName)
+        {
+           // bHowToProceed = false;
+            //bindCount = 0;
+
+            LdapEntry nextEntry = null;
+            try
+            {
+                LdapSearchResults lsc = ldapConn.Search("", LdapConnection.SCOPE_SUB, "cn=" + commonName.Trim(), null, false);
+                while (lsc.hasMore())
+                {
+                    nextEntry = lsc.next();
+                }
+            }
+            catch (LdapException e)
+            {
+                throw e;
+            }
+            return nextEntry == null ? false : true;
+        }
+
+        public bool VerifyPassword(string email, string password)
+        {
+            //bHowToProceed = false;
+            //bindCount = 0;
+
+            LdapEntry nextEntry = null;
+            try
+            {
+                LdapSearchResults lsc = ldapConn.Search("", LdapConnection.SCOPE_SUB, "mail=" + email.Trim(), null, false);
+                while (lsc.hasMore())
+                {
+                    nextEntry = lsc.next();
+                }
+            }
+            catch (LdapException e)
+            {
+                throw e;
+            }
+
+            string DN = nextEntry.DN;
+            LdapAttribute passwordAttr = new LdapAttribute("userPassword", password);
+
+            bool correct = ldapConn.Compare(DN, passwordAttr);
+
+            return correct;
+        }
+
+
+        public bool FindEntryByName(string UserName)
         {
             bHowToProceed = false;
             bindCount = 0;
@@ -54,57 +107,115 @@ namespace GTIWebAPI.Novell
                 LdapSearchResults lsc = ldapConn.Search("", LdapConnection.SCOPE_SUB, "cn=" + UserName.Trim(), null, false);
                 while (lsc.hasMore())
                 {
-                    try
-                    {
-                        nextEntry = lsc.next();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("No such user in eDirectory found", e);
-                    }
+                    nextEntry = lsc.next();
                 }
             }
-            catch (Exception myException)
+            catch (LdapException e)
             {
-                RuntimeWrappedException rwe = myException as RuntimeWrappedException;
-                if (rwe != null)
-                {
-                    String s = rwe.WrappedException as String;
-                    if (s != null)
-                    {
-                        Console.WriteLine(s);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Cannot connect to LDAP Server " + ldapConn.Host + ". LDAP Connection eDirectory error.", myException);
-                }
+                throw e;
             }
-            return new NovellEntry(nextEntry);
+            return nextEntry == null ? false : true;
         }
 
-        public bool BindEntry(LdapEntry entry, string Password)
+        public bool FindEntryByEmail(string Email)
         {
-            bool result = false;
-            if (entry != null)
+            bHowToProceed = false;
+            bindCount = 0;
+
+            LdapEntry nextEntry = null;
+            try
             {
-                string DN = entry.DN;
-                ldapConn.Disconnect();
+                LdapSearchResults lsc = ldapConn.Search("", LdapConnection.SCOPE_SUB, "mail=" + Email.Trim(), null, false);
+                while (lsc.hasMore())
+                {
+                    nextEntry = lsc.next();
+                }
+            }
+            catch (LdapException e)
+            {
+                throw e;
+            }
+            return nextEntry == null ? false : true;
+        }
+
+        public bool CreateEntry(string email, string password)
+        {
+            bool created = false;
+
+            //bHowToProceed = false;
+            //bindCount = 0;
+
+            int symbolPosition = email.IndexOf('@');
+            string commonName = "new_LDAP_user";
+
+            string containerName = "ou=users,o=alien";
+
+            if (symbolPosition > 0)
+            {
+                commonName = email.Substring(0, email.IndexOf('@'));
+            }
+            commonName = GenerateCN(commonName);
+
+            if (commonName != "")
+            {
+
                 try
                 {
-                    bHowToProceed = true;
-                    bindCount = 0;
-                    Bind(DN = entry.DN, Password);
+                    LdapAttributeSet attributeSet = new LdapAttributeSet();
+                    attributeSet.Add(new LdapAttribute(
+                    "objectclass", "inetOrgPerson"));
+                    attributeSet.Add(new LdapAttribute("cn",
+                    new string[] { commonName }));
+                    attributeSet.Add(new LdapAttribute("givenname", commonName));
+                    attributeSet.Add(new LdapAttribute("sn", commonName));
+                    //attributeSet.Add(new LdapAttribute("telephonenumber", ""));
+                    attributeSet.Add(new LdapAttribute("mail", email));
+                    attributeSet.Add(new LdapAttribute("userpassword", password));
+
+                    string dn = "cn=" + commonName + "," + containerName;
+                    LdapEntry newEntry = new LdapEntry(dn, attributeSet);
+
+                    //Bind("192.168.0.20", "cn=gtildap,ou=odessa,o=world", "wemayont");
+                    ldapConn.Add(newEntry);
+                    created = true;
                 }
-                catch
+                catch (LdapException e)
                 {
-                    result = false;
+                    throw e;
                 }
-                result = true;
             }
-            return result;
+
+            return created;
+
         }
 
+        private string GenerateCN(string commonName)
+        {
+            bool cnExist = true;
+            if (cnExist == true)
+            {
+                for (int i = 1; ; i++)
+                {
+                    cnExist = CommonNameExist(commonName);
+                    if (cnExist == true)
+                    {
+                        commonName = commonName + i.ToString().Trim();
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+            }
+            return commonName;
+        }
+
+
+
+
+
+        //method for correct eDirectory work
         public bool MySSLHandler(X509Certificate certificate, int[] certificateErrors)
         {
 
@@ -165,6 +276,7 @@ namespace GTIWebAPI.Novell
             }
             return bHowToProceed;
         }
+
 
         public void Dispose()
         {
