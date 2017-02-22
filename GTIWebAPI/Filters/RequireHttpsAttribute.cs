@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,15 +25,15 @@ namespace GTIWebAPI.Filters
             }
             else
             {
-                var cert = actionContext.Request.GetClientCertificate();
-                if (cert == null)
-                {
-                    actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden)
-                    {
-                        ReasonPhrase = "Client Certificate Required"
-                    };
+                //X509Certificate2 cert = actionContext.Request.GetClientCertificate();
+                //if (cert == null)
+                //{
+                //    actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden)
+                //    {
+                //        ReasonPhrase = "Client Certificate Required"
+                //    };
 
-                }
+                //}
                 base.OnAuthorization(actionContext);
             }
         }

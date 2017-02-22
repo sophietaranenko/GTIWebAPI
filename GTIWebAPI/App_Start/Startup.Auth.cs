@@ -53,7 +53,7 @@ namespace GTIWebAPI
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
                 // In production mode set AllowInsecureHttp = false
-                AllowInsecureHttp = true
+               // AllowInsecureHttp = true
             };
 
             // Enable the application to use bearer tokens to authenticate users

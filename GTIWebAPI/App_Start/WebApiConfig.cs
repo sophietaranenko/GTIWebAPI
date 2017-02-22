@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
+using GTIWebAPI.Filters;
 
 namespace GTIWebAPI
 {
@@ -23,6 +24,8 @@ namespace GTIWebAPI
             // Configure Web API to use only bearer token authentication.
             config.SuppressDefaultHostAuthentication();
             config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+
+            config.Filters.Add(new RequireHttpsAttribute());
 
             // Web API routes
             config.MapHttpAttributeRoutes();

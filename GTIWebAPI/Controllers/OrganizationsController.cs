@@ -56,6 +56,7 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+
         [GTIFilter]
         [HttpGet]
         [Route("GetView", Name = "GetOrganizationView")]
