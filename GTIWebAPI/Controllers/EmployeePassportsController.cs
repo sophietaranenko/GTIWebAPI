@@ -19,12 +19,9 @@ namespace GTIWebAPI.Controllers
     /// <summary>
     /// Controller for employee passports
     /// </summary>
-    //  [Authorize]
     [RoutePrefix("api/EmployeePassports")]
     public class EmployeePassportsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// Get all employee passports
         /// </summary>
@@ -32,11 +29,27 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeePassportDTO> GetEmployeePassportAll()
+        [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
+        public IHttpActionResult GetEmployeePassportAll()
         {
-            List<EmployeePassport> passports = db.EmployeePassports.Where(p => p.Deleted != true).ToList();
+            List<EmployeePassport> passports = new List<EmployeePassport>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    passports = db.EmployeePassports.Where(p => p.Deleted != true)
+                        .Include(d => d.Address)
+                        .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             List<EmployeePassportDTO> dtos = passports.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -48,12 +61,27 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
-        public IEnumerable<EmployeePassportDTO> GetEmployeePassportByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeePassportByEmployee(int employeeId)
         {
-            List<EmployeePassport> passports = db.EmployeePassports
-                .Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList();
+            List<EmployeePassport> passports = new List<EmployeePassport>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    passports = db.EmployeePassports
+                    .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
+                    .Include(d => d.Address)
+                    .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             List<EmployeePassportDTO> dtos = passports.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -67,7 +95,23 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeePassportDTO))]
         public IHttpActionResult GetEmployeePassport(int id)
         {
-            EmployeePassport passport = db.EmployeePassports.Find(id);
+            EmployeePassport passport = new EmployeePassport();
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    passport = db.EmployeePassports.Find(id);
+                    if (passport != null)
+                    {
+                        db.Entry(passport).Reference(d => d.Address).Load();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (passport == null)
             {
                 return NotFound();
@@ -100,50 +144,58 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeePassport.Address).State = EntityState.Modified;
-            db.Entry(employeePassport).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeePassportExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                    db.Entry(employeePassport.Address).State = EntityState.Modified;
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
+                    db.Entry(employeePassport).State = EntityState.Modified;
 
-            if (employeePassport.Address != null)
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeePassportExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    if (employeePassport.Address != null)
+                    {
+                        if (employeePassport.Address.PlaceId != null)
+                        {
+                            employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
+                        }
+                        if (employeePassport.Address.LocalityId != null)
+                        {
+                            employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
+                        }
+                        if (employeePassport.Address.VillageId != null)
+                        {
+                            employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
+                        }
+                        if (employeePassport.Address.RegionId != null)
+                        {
+                            employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
+                        }
+                        if (employeePassport.Address.CountryId != null)
+                        {
+                            employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
             {
-                if (employeePassport.Address.PlaceId != null)
-                {
-                    employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
-                }
-                if (employeePassport.Address.LocalityId != null)
-                {
-                    employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
-                }
-                if (employeePassport.Address.VillageId != null)
-                {
-                    employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
-                }
-                if (employeePassport.Address.RegionId != null)
-                {
-                    employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
-                }
-                if (employeePassport.Address.CountryId != null)
-                {
-                    employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
-                }
+                return BadRequest();
             }
 
             EmployeePassportDTO dto = employeePassport.ToDTO();
@@ -165,57 +217,65 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            employeePassport.Id = employeePassport.NewId(db);
-            employeePassport.Address.Id = employeePassport.Address.NewId(db);
-            employeePassport.AddressId = employeePassport.Address.Id;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.Addresses.Add(employeePassport.Address);
-            db.EmployeePassports.Add(employeePassport);
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    employeePassport.Id = employeePassport.NewId(db);
+                    employeePassport.Address.Id = employeePassport.Address.NewId(db);
+                    employeePassport.AddressId = employeePassport.Address.Id;
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    db.Addresses.Add(employeePassport.Address);
+                    db.EmployeePassports.Add(employeePassport);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeePassportExists(employeePassport.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    if (employeePassport.Address != null)
+                    {
+                        if (employeePassport.Address.PlaceId != null)
+                        {
+                            employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
+                        }
+                        if (employeePassport.Address.LocalityId != null)
+                        {
+                            employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
+                        }
+                        if (employeePassport.Address.VillageId != null)
+                        {
+                            employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
+                        }
+                        if (employeePassport.Address.RegionId != null)
+                        {
+                            employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
+                        }
+                        if (employeePassport.Address.CountryId != null)
+                        {
+                            employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
+                        }
+                    }
+                }
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                if (EmployeePassportExists(employeePassport.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
 
-            if (employeePassport.Address != null)
-            {
-                if (employeePassport.Address.PlaceId != null)
-                {
-                    employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
-                }
-                if (employeePassport.Address.LocalityId != null)
-                {
-                    employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
-                }
-                if (employeePassport.Address.VillageId != null)
-                {
-                    employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
-                }
-                if (employeePassport.Address.RegionId != null)
-                {
-                    employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
-                }
-                if (employeePassport.Address.CountryId != null)
-                {
-                    employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
-                }
-            }
             EmployeePassportDTO dto = employeePassport.ToDTO();
             return CreatedAtRoute("GetEmployeePassport", new { id = dto.Id }, dto);
         }
@@ -231,28 +291,44 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeePassport))]
         public IHttpActionResult DeleteEmployeePassport(int id)
         {
-            EmployeePassport employeePassport = db.EmployeePassports.Find(id);
-            if (employeePassport == null)
-            {
-                return NotFound();
-            }
-            employeePassport.Deleted = true;
-            db.Entry(employeePassport).State = EntityState.Modified;
+            EmployeePassport employeePassport = new EmployeePassport();
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    employeePassport = db.EmployeePassports.Find(id);
+                    if (employeePassport == null)
+                    {
+                        return NotFound();
+                    }
+                    db.Entry(employeePassport).Reference(d => d.Address).Load();
+
+                    employeePassport.Deleted = true;
+                    db.Entry(employeePassport).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeePassportExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!EmployeePassportExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
+
             EmployeePassportDTO dto = employeePassport.ToDTO();
             return Ok(dto);
         }
@@ -263,16 +339,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeePassportExists(int id)
         {
-            return db.EmployeePassports.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeePassports.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

@@ -14,17 +14,26 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Deals")]
     public class DealsController : ApiController
     {
-        DbOrganization db = new DbOrganization();
-
+        /// <summary>
+        /// Get short info about deals 
+        /// </summary>
+        /// <param name="organizationId"></param>
+        /// <param name="dateBegin"></param>
+        /// <param name="dateEnd"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<DealViewDTO> GetDeals(int clientId, DateTime dateBegin, DateTime dateEnd)
+        [ResponseType(typeof(IEnumerable<DealViewDTO>))]
+        public IHttpActionResult GetDeals(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            if (clientId == 0)
+            IEnumerable<DealViewDTO> dtos = new List<DealViewDTO>();
+
+            if (organizationId == 0)
             {
-                return new List<DealViewDTO>();
+                return Ok(dtos);
             }
+
             if (dateBegin == null)
             {
                 dateBegin = new DateTime(1900, 1, 1);
@@ -33,9 +42,27 @@ namespace GTIWebAPI.Controllers
             {
                 dateEnd = new DateTime(2200, 1, 1);
             }
-            return db.GetDealsFiltered(clientId, dateBegin, dateEnd);
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.GetDealsFiltered(organizationId, dateBegin, dateEnd);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
+
+        /// <summary>
+        /// Get one deal full view by its id 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
@@ -48,14 +75,26 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            DealFullViewDTO dto = db.GetDealCardInfo(id);
-            if (dto == null)
+            DealFullViewDTO dto = new DealFullViewDTO();
+            try
             {
-                return NotFound();
-            }
+                using (DbMain db = new DbMain(User))
+                {
+                    dto = db.GetDealCardInfo(id);
 
-            dto.Containers = db.GetContainersByDeal(id);
-            dto.Invoices = db.GetInvoicesByDeal(id);
+                    if (dto == null)
+                    {
+                        return NotFound();
+                    }
+
+                    dto.Containers = db.GetContainersByDeal(id);
+                    dto.Invoices = db.GetInvoicesByDeal(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
 
             return Ok(dto);
         }

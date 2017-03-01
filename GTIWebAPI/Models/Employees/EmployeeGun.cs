@@ -47,6 +47,22 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeGun";
             }
         }
+
+        public EmployeeGunDTO ToDTO()
+        {
+            EmployeeGunDTO dto = new EmployeeGunDTO
+            {
+                Id = this.Id,
+                DateEnd = this.DateEnd,
+                Description = this.Description,
+                EmployeeId = this.EmployeeId,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number,
+                Seria = this.Seria
+            };
+            return dto;
+        }
     }
 
     public class EmployeeGunDTO

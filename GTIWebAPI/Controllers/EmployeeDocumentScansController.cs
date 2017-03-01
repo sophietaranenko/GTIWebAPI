@@ -3,9 +3,6 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,7 +19,7 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeDocumentScans")]
     public class EmployeeDocumentScansController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
+        //private DbPersonnel db = new DbPersonnel();
 
         /// <summary>
         /// Method fo file upload
@@ -39,24 +36,27 @@ namespace GTIWebAPI.Controllers
             var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count == 1)
             {
-                int uploadedScanId = 0;
-                foreach (string file in httpRequest.Files)
+                using (DbMain db = new DbMain(User))
                 {
-                    EmployeeDocumentScan scan = new EmployeeDocumentScan();
-                    scan.Id = scan.NewId(db);
-                    scan.TableId = tableId;
-                    scan.ScanTableName = tableName;
-                    var postedFile = httpRequest.Files[file];
-                    var filePath = HttpContext.Current.Server.MapPath(
-                        "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-                    postedFile.SaveAs(filePath);
-                    scan.ScanName = filePath;
-                    db.EmployeeDocumentScans.Add(scan);
-                    db.SaveChanges();
-                    uploadedScanId = scan.Id;
+                    int uploadedScanId = 0;
+                    foreach (string file in httpRequest.Files)
+                    {
+                        EmployeeDocumentScan scan = new EmployeeDocumentScan();
+                        scan.Id = scan.NewId(db);
+                        scan.TableId = tableId;
+                        scan.ScanTableName = tableName;
+                        var postedFile = httpRequest.Files[file];
+                        var filePath = HttpContext.Current.Server.MapPath(
+                            "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
+                        postedFile.SaveAs(filePath);
+                        scan.ScanName = filePath;
+                        db.EmployeeDocumentScans.Add(scan);
+                        db.SaveChanges();
+                        uploadedScanId = scan.Id;
+                    }
+                    EmployeeDocumentScan uploadedScan = db.EmployeeDocumentScans.Find(uploadedScanId);
+                    result = Request.CreateResponse(HttpStatusCode.Created, uploadedScan);
                 }
-                EmployeeDocumentScan uploadedScan = db.EmployeeDocumentScans.Find(uploadedScanId);
-                result = Request.CreateResponse(HttpStatusCode.Created, uploadedScan);
             }
             else
             {
@@ -74,32 +74,43 @@ namespace GTIWebAPI.Controllers
         [Route("PutDbFilesToFilesystem")]
         public HttpResponseMessage PutDbFilesToFilesystem()
         {
-            List<int> scans = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
-            List<EmployeeDocumentScan> newScans = new List<EmployeeDocumentScan>();
-            foreach (var item in scans)
+            try
             {
-                EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
-                if (scan.Scan != null)
+                using (DbMain db = new DbMain(User))
                 {
-                    try
+                    List<int> scans = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
+                    List<EmployeeDocumentScan> newScans = new List<EmployeeDocumentScan>();
+                    foreach (var item in scans)
                     {
-                        WebImage image = new WebImage(scan.Scan);
-                        var formatString = image.ImageFormat.ToString();
-                        var filePath = HttpContext.Current.Server.MapPath(
-   "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                        image.Save(filePath);
-                            scan.ScanName = filePath;
-                            db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                            db.SaveChanges();
+                        EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
+                        if (scan.Scan != null)
+                        {
+                            try
+                            {
+                                WebImage image = new WebImage(scan.Scan);
+                                var formatString = image.ImageFormat.ToString();
+                                var filePath = HttpContext.Current.Server.MapPath(
+           "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
+                                image.Save(filePath);
+                                scan.ScanName = filePath;
+                                db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
                     }
-                    catch
-                    {
-                        continue;
-                    }
+
+                    var result = Request.CreateResponse(HttpStatusCode.Created, newScans.Select(a => new { a.Id, a.ScanName }));
+                    return result;
                 }
             }
-            var result = Request.CreateResponse(HttpStatusCode.Created, newScans.Select(a => new { a.Id, a.ScanName }));
-            return result;
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            } 
         }
 
         /// <summary>
@@ -111,12 +122,26 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByDocumentId")]
-        public IEnumerable<EmployeeDocumentScan> GetEmployeeDocumentScanByDocumentId(string tableName, int tableId)
+        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
+        public IHttpActionResult GetEmployeeDocumentScanByDocumentId(string tableName, int tableId)
         {
-            List<EmployeeDocumentScan> scanList = db.EmployeeDocumentScans
-                .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
-                .ToList();
-            return scanList;
+
+            List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    scanList = db.EmployeeDocumentScans
+                    .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
+                    .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(scanList);
         }
 
         /// <summary>
@@ -128,11 +153,24 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeeDocumentScanDTO> GetEmployeeDocumentScanByEmployeeId(int employeeId)
+        [ResponseType(typeof(IEnumerable<EmployeeDocumentScanDTO>))]
+        public IHttpActionResult GetEmployeeDocumentScanByEmployeeId(int employeeId)
         {
             IEnumerable<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
-            scanList = db.EmployeeAllDocumentScans(employeeId);
-            return scanList;
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    scanList = db.EmployeeAllDocumentScans(employeeId).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(scanList);
         }
 
         /// <summary>
@@ -145,7 +183,20 @@ namespace GTIWebAPI.Controllers
         [Route("Get")]
         public IHttpActionResult GetEmployeeDocumentScan(int id)
         {
-            EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
+            EmployeeDocumentScan scan = new EmployeeDocumentScan();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    db.EmployeeDocumentScans.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
             if (scan != null)
             { 
                 return Ok(scan);
@@ -166,13 +217,26 @@ namespace GTIWebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult DeleteEmployeeDocumentScan(int id)
         {
-            EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(id);
-            if (scan != null)
+            EmployeeDocumentScan scan = new EmployeeDocumentScan();
+
+            try
             {
-                scan.Deleted = true;
-                db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    db.EmployeeDocumentScans.Find(id);
+                    if (scan != null)
+                    {
+                        scan.Deleted = true;
+                        db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
             return Ok(scan);
         }
 
@@ -182,16 +246,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeDocumentScanExists(int id)
         {
-            return db.EmployeeDocumentScans.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeDocumentScans.Count(e => e.Id == id) > 0;
+            }
         }
     }
 

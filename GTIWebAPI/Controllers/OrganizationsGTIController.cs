@@ -7,13 +7,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
     [RoutePrefix("api/OrganizationsGTI")]
     public class OrganizationsGTIController : ApiController
     {
-        DbOrganization db = new DbOrganization();
         /// <summary>
         /// List of Text and Value of enum Sex
         /// </summary>
@@ -21,17 +21,30 @@ namespace GTIWebAPI.Controllers
         [GTIOfficeFilter]
         [HttpGet]
         [Route("SearchOrganizationsGTI")]
-        public IEnumerable<OrganizationGTIDTO> SearchOrganizationsGTI(string officeIds, string registrationNumber = "")
+        [ResponseType(typeof(IEnumerable<OrganizationGTIDTO>))]
+        public IHttpActionResult SearchOrganizationsGTI(string officeIds, string registrationNumber = "")
         {
             IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             IEnumerable<OrganizationGTI> orgs = new List<OrganizationGTI>();
-            orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
-            foreach (var item in orgs)
-            {      
-                    item.Office = db.Offices.Find(item.OfficeId);
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
+                    foreach (var item in orgs)
+                    {
+                        item.Office = db.Offices.Find(item.OfficeId);
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             IEnumerable<OrganizationGTIDTO> dtos = orgs.Select(c => c.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
     }
 }

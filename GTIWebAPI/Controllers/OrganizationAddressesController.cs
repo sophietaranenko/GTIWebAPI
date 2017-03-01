@@ -16,8 +16,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationAddresses")]
     public class OrganizationAddressesController : ApiController
     {
-        private DbOrganization db = new DbOrganization();
-
         /// <summary>
         /// Get employee addresss by employee id 
         /// </summary>
@@ -27,12 +25,33 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByOrganizationId")]
         [ResponseType(typeof(IEnumerable<OrganizationAddressDTO>))]
-        public IEnumerable<OrganizationAddressDTO> GetOrganizationAddressByOrganizationId(int organizationId)
+        public IHttpActionResult GetOrganizationAddressByOrganizationId(int organizationId)
         {
-            List<OrganizationAddress> addresses = db.OrganizationAddresses
-                .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
+            List<OrganizationAddress> addresses = new List<OrganizationAddress>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    addresses = db.OrganizationAddresses
+                        .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
+                        .Include(d => d.Address)
+                        .Include(d => d.Address.Country)
+                        .Include(d => d.OrganizationAddressType)
+                        .Include(d => d.Address.AddressLocality)
+                        .Include(d => d.Address.AddressPlace)
+                        .Include(d => d.Address.AddressRegion)
+                        .Include(d => d.Address.AddressVillage)
+                        .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             List<OrganizationAddressDTO> dtos = addresses.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -46,12 +65,40 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationAddressDTO))]
         public IHttpActionResult GetOrganizationAddress(int id)
         {
-            OrganizationAddress address = db.OrganizationAddresses.Find(id);
-            if (address == null)
+            OrganizationAddress organizationAddress = new OrganizationAddress();
+
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationAddress = db.OrganizationAddresses.Find(id);
+                    if (organizationAddress != null)
+                    {
+                        db.Entry(organizationAddress).Reference(d => d.OrganizationAddressType).Load();
+                        db.Entry(organizationAddress).Reference(d => d.Address).Load();
+                        if (organizationAddress.Address != null)
+                        {
+                            db.Entry(organizationAddress.Address).Reference(d => d.AddressLocality).Load();
+                            db.Entry(organizationAddress.Address).Reference(d => d.AddressPlace).Load();
+                            db.Entry(organizationAddress.Address).Reference(d => d.AddressVillage).Load();
+                            db.Entry(organizationAddress.Address).Reference(d => d.AddressRegion).Load();
+                            db.Entry(organizationAddress.Address).Reference(d => d.Country).Load();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            if (organizationAddress == null)
             {
                 return NotFound();
             }
-            OrganizationAddressDTO dto = address.ToDTO();
+
+            OrganizationAddressDTO dto = organizationAddress.ToDTO();
             return Ok(dto);
         }
 
@@ -79,54 +126,47 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(organizationAddress.Address).State = EntityState.Modified;
-            db.Entry(organizationAddress).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrganizationAddressExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                    db.Entry(organizationAddress.Address).State = EntityState.Modified;
+                    db.Entry(organizationAddress).State = EntityState.Modified;
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationAddress.OrganizationAddressTypeId != null)
-            {
-                organizationAddress.OrganizationAddressType = db.OrganizationAddressTypes.Find(organizationAddress.OrganizationAddressTypeId);
-            }
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationAddressExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
 
-            if (organizationAddress.Address != null)
+                    db.Entry(organizationAddress).Reference(d => d.OrganizationAddressType).Load();
+                    db.Entry(organizationAddress).Reference(d => d.Address).Load();
+                    if (organizationAddress.Address != null)
+                    {
+                        db.Entry(organizationAddress.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(organizationAddress.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(organizationAddress.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(organizationAddress.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(organizationAddress.Address).Reference(d => d.Country).Load();
+                    }
+
+                }
+
+            }
+            catch (Exception e)
             {
-                if (organizationAddress.Address.PlaceId != null)
-                {
-                    organizationAddress.Address.AddressPlace = db.Places.Find(organizationAddress.Address.PlaceId);
-                }
-                if (organizationAddress.Address.LocalityId != null)
-                {
-                    organizationAddress.Address.AddressLocality = db.Localities.Find(organizationAddress.Address.LocalityId);
-                }
-                if (organizationAddress.Address.VillageId != null)
-                {
-                    organizationAddress.Address.AddressVillage = db.Villages.Find(organizationAddress.Address.VillageId);
-                }
-                if (organizationAddress.Address.RegionId != null)
-                {
-                    organizationAddress.Address.AddressRegion = db.Regions.Find(organizationAddress.Address.RegionId);
-                }
-                if (organizationAddress.Address.CountryId != null)
-                {
-                    organizationAddress.Address.Country = db.Countries.Find(organizationAddress.Address.CountryId);
-                }
+                return BadRequest();
             }
 
             OrganizationAddressDTO dto = organizationAddress.ToDTO();
@@ -148,62 +188,49 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            organizationAddress.Id = organizationAddress.NewId(db);
-            organizationAddress.Address.Id = organizationAddress.Address.NewId(db);
-            organizationAddress.AddressId = organizationAddress.Address.Id;
-            if (!ModelState.IsValid)
+
+            using (DbMain db = new DbMain(User))
             {
-                return BadRequest(ModelState);
-            }
-            db.Addresses.Add(organizationAddress.Address);
-            db.OrganizationAddresses.Add(organizationAddress);
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (OrganizationAddressExists(organizationAddress.Id))
+                organizationAddress.Id = organizationAddress.NewId(db);
+                organizationAddress.Address.Id = organizationAddress.Address.NewId(db);
+                organizationAddress.AddressId = organizationAddress.Address.Id;
+
+                if (!ModelState.IsValid)
                 {
-                    return Conflict();
+                    return BadRequest(ModelState);
                 }
-                else
+
+                db.Addresses.Add(organizationAddress.Address);
+                db.OrganizationAddresses.Add(organizationAddress);
+                try
                 {
-                    throw;
+                    db.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    if (OrganizationAddressExists(organizationAddress.Id))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                db.Entry(organizationAddress).Reference(d => d.OrganizationAddressType).Load();
+                db.Entry(organizationAddress).Reference(d => d.Address).Load();
+                if (organizationAddress.Address != null)
+                {
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressLocality).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressPlace).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressVillage).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressRegion).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.Country).Load();
                 }
             }
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationAddress.OrganizationAddressTypeId != null)
-            {
-                organizationAddress.OrganizationAddressType = db.OrganizationAddressTypes.Find(organizationAddress.OrganizationAddressTypeId);
-            }
 
-            if (organizationAddress.Address != null)
-            {
-                if (organizationAddress.Address.PlaceId != null)
-                {
-                    organizationAddress.Address.AddressPlace = db.Places.Find(organizationAddress.Address.PlaceId);
-                }
-                if (organizationAddress.Address.LocalityId != null)
-                {
-                    organizationAddress.Address.AddressLocality = db.Localities.Find(organizationAddress.Address.LocalityId);
-                }
-                if (organizationAddress.Address.VillageId != null)
-                {
-                    organizationAddress.Address.AddressVillage = db.Villages.Find(organizationAddress.Address.VillageId);
-                }
-                if (organizationAddress.Address.RegionId != null)
-                {
-                    organizationAddress.Address.AddressRegion = db.Regions.Find(organizationAddress.Address.RegionId);
-                }
-                if (organizationAddress.Address.CountryId != null)
-                {
-                    organizationAddress.Address.Country = db.Countries.Find(organizationAddress.Address.CountryId);
-                }
-            }
             OrganizationAddressDTO dto = organizationAddress.ToDTO();
             return CreatedAtRoute("GetOrganizationAddress", new { id = dto.Id }, dto);
         }
@@ -219,26 +246,42 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationAddress))]
         public IHttpActionResult DeleteOrganizationAddress(int id)
         {
-            OrganizationAddress organizationAddress = db.OrganizationAddresses.Find(id);
-            if (organizationAddress == null)
+            OrganizationAddress organizationAddress = new OrganizationAddress();
+
+            using (DbMain db = new DbMain(User))
             {
-                return NotFound();
-            }
-            organizationAddress.Deleted = true;
-            db.Entry(organizationAddress).State = EntityState.Modified;
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrganizationAddressExists(id))
+                organizationAddress = db.OrganizationAddresses.Find(id);
+                if (organizationAddress == null)
                 {
                     return NotFound();
                 }
-                else
+                db.Entry(organizationAddress).Reference(d => d.OrganizationAddressType).Load();
+                db.Entry(organizationAddress).Reference(d => d.Address).Load();
+                if (organizationAddress.Address != null)
                 {
-                    throw;
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressLocality).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressPlace).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressVillage).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.AddressRegion).Load();
+                    db.Entry(organizationAddress.Address).Reference(d => d.Country).Load();
+                }
+
+                organizationAddress.Deleted = true;
+                db.Entry(organizationAddress).State = EntityState.Modified;
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrganizationAddressExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
             OrganizationAddressDTO dto = organizationAddress.ToDTO();
@@ -251,16 +294,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool OrganizationAddressExists(int id)
         {
-            return db.OrganizationAddresses.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.OrganizationAddresses.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

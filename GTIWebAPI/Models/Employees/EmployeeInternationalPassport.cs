@@ -61,6 +61,27 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeInternationalPassport";
             }
         }
+
+        public EmployeeInternationalPassportDTO ToDTO()
+        {
+            EmployeeInternationalPassportDTO dto = new EmployeeInternationalPassportDTO
+            {
+                Id = this.Id,
+                CountryCode = this.CountryCode,
+                DateOfExpiry = this.DateOfExpiry,
+                EmployeeId = this.EmployeeId,
+                GivenNames = this.GivenNames,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Nationality = this.Nationality,
+                Number = this.Number,
+                PersonalNo = this.PersonalNo,
+                Seria = this.Seria,
+                Surname = this.Surname,
+                Type = this.Type
+            };
+            return dto;
+        }
     }
 
     public class EmployeeInternationalPassportDTO

@@ -35,6 +35,19 @@
                 return "EmployeeContact";
             }
         }
+
+        public EmployeeContactDTO ToDTO()
+        {
+            EmployeeContactDTO dto = new EmployeeContactDTO()
+            {
+                ContactType = this.ContactType == null ? null : this.ContactType.ToDTO(),
+                ContactTypeId = this.ContactTypeId,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Value = this.Value
+            };
+            return dto;
+        }
     }
 
     public class EmployeeContactDTO

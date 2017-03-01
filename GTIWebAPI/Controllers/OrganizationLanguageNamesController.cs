@@ -17,8 +17,6 @@ namespace GTIWebAPI.Controllers
     public class OrganizationLanguageNamesController : ApiController
     {
 
-        private DbOrganization db = new DbOrganization();
-
         /// <summary>
         /// Get employee languageNames by employee id 
         /// </summary>
@@ -28,12 +26,27 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByOrganizationId")]
         [ResponseType(typeof(IEnumerable<OrganizationLanguageNameDTO>))]
-        public IEnumerable<OrganizationLanguageNameDTO> GetOrganizationLanguageNameByOrganizationId(int organizationId)
+        public IHttpActionResult GetOrganizationLanguageNameByOrganizationId(int organizationId)
         {
-            List<OrganizationLanguageName> languageNames = db.OrganizationLanguageNames
-                .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
+            List<OrganizationLanguageName> languageNames = new List<OrganizationLanguageName>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    languageNames = db.OrganizationLanguageNames
+                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
+                    .Include(d => d.Language)
+                    .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             List<OrganizationLanguageNameDTO> dtos = languageNames.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -47,11 +60,29 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationLanguageNameDTO))]
         public IHttpActionResult GetOrganizationLanguageName(int id)
         {
-            OrganizationLanguageName languageName = db.OrganizationLanguageNames.Find(id);
+            OrganizationLanguageName languageName = new OrganizationLanguageName();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    languageName = db.OrganizationLanguageNames.Find(id);
+                    if (languageName != null)
+                    {
+                        db.Entry(languageName).Reference(d => d.Language).Load();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (languageName == null)
             {
                 return NotFound();
             }
+
             OrganizationLanguageNameDTO dto = languageName.ToDTO();
             return Ok(dto);
         }
@@ -80,31 +111,35 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(organizationLanguageName).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    db.Entry(organizationLanguageName).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationLanguageNameExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationLanguageNameExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-
-            if (organizationLanguageName.LanguageId != null)
-            {
-                organizationLanguageName.Language = db.Languages.Find(organizationLanguageName.LanguageId);
-            }
             OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
 
             return Ok(dto);
@@ -120,42 +155,49 @@ namespace GTIWebAPI.Controllers
         [Route("Post")]
         [ResponseType(typeof(OrganizationLanguageNameDTO))]
         public IHttpActionResult PostOrganizationLanguageName(OrganizationLanguageName organizationLanguageName)
-       {
+        {
             if (organizationLanguageName == null)
             {
                 return BadRequest(ModelState);
             }
-            organizationLanguageName.Id = organizationLanguageName.NewId(db);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.OrganizationLanguageNames.Add(organizationLanguageName);
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (OrganizationLanguageNameExists(organizationLanguageName.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    organizationLanguageName.Id = organizationLanguageName.NewId(db);
+
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    db.OrganizationLanguageNames.Add(organizationLanguageName);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (OrganizationLanguageNameExists(organizationLanguageName.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
                 }
             }
-
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-
-
-            if (organizationLanguageName.LanguageId != null)
+            catch (Exception e)
             {
-                organizationLanguageName.Language = db.Languages.Find(organizationLanguageName.LanguageId);
+                return BadRequest();
             }
+
+
             OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
             return CreatedAtRoute("GetOrganizationLanguageName", new { id = dto.Id }, dto);
         }
@@ -171,28 +213,45 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationLanguageName))]
         public IHttpActionResult DeleteOrganizationLanguageName(int id)
         {
-            OrganizationLanguageName organizationLanguageName = db.OrganizationLanguageNames.Find(id);
-            if (organizationLanguageName == null)
-            {
-                return NotFound();
-            }
-            organizationLanguageName.Deleted = true;
-            db.Entry(organizationLanguageName).State = EntityState.Modified;
+            OrganizationLanguageName organizationLanguageName = new OrganizationLanguageName();
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationLanguageName = db.OrganizationLanguageNames.Find(id);
+                    if (organizationLanguageName == null)
+                    {
+                        return NotFound();
+
+                    }
+                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
+
+                    organizationLanguageName.Deleted = true;
+                    db.Entry(organizationLanguageName).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationLanguageNameExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationLanguageNameExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
+
+
             OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
             return Ok(dto);
         }
@@ -203,16 +262,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool OrganizationLanguageNameExists(int id)
         {
-            return db.OrganizationLanguageNames.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.OrganizationLanguageNames.Count(e => e.Id == id) > 0;
+            }
         }
 
     }

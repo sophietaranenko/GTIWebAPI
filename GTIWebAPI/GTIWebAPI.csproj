@@ -430,6 +430,7 @@
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Context\DbContextExtensions.cs" />
     <Compile Include="Models\Context\DbRights.cs" />
+    <Compile Include="Models\Context\DbSecureEmployeeCreator.cs" />
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
@@ -473,7 +474,7 @@
     <Compile Include="Models\Organizations\OrganizationGTI.cs" />
     <Compile Include="Models\Personnel\ContactType.cs" />
     <Compile Include="Models\Context\DbOrganization.cs" />
-    <Compile Include="Models\Context\DbPersonnel.cs" />
+    <Compile Include="Models\Context\DbMain.cs" />
     <Compile Include="Models\Accounting\Deal.cs" />
     <Compile Include="Models\Accounting\DealType.cs" />
     <Compile Include="Models\Personnel\Department.cs" />

@@ -75,6 +75,8 @@ namespace GTIWebAPI.Providers
                 if (user == null)
                 {
                     user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
+                    userManager.AddToRole(user.Id, "Personnel");
+                    userManager.AddClaim(user.Id, new Claim(ClaimTypes.Role, "Personnel"));
                 }
             }
             else
@@ -91,6 +93,8 @@ namespace GTIWebAPI.Providers
                 return;
             }
 
+
+            
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
@@ -127,20 +131,9 @@ namespace GTIWebAPI.Providers
         {
             int employeeId = 0;
 
-            using (Models.Context.DbPersonnel db = new Models.Context.DbPersonnel())
+            using (DbSecureEmployeeCreator db = new DbSecureEmployeeCreator())
             {
-                Models.Dictionary.Address address = new Models.Dictionary.Address();
-                address.Id = address.NewId(db);
-                db.Addresses.Add(address);
-                db.SaveChanges();
-
-                Models.Employees.Employee employee = new Models.Employees.Employee();
-                employee.Id = employee.NewId(db);
-                employee.AddressId = address.Id;
-                db.Employees.Add(employee);
-                db.SaveChanges();
-
-                employeeId = employee.Id;
+                employeeId = db.CreateEmployee();
             }
 
             return employeeId;

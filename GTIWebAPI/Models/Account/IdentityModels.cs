@@ -207,21 +207,21 @@ namespace GTIWebAPI.Models.Account
                 Value = email
             };
 
-            SqlParameter pPassword = new SqlParameter
-            {
-                ParameterName = "@Password",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                Value = password
-            };
+            //SqlParameter pPassword = new SqlParameter
+            //{
+            //    ParameterName = "@Password",
+            //    IsNullable = false,
+            //    Direction = ParameterDirection.Input,
+            //    DbType = DbType.String,
+            //    Value = password
+            //};
 
             bool methodResult = false;
 
             try
             {
-                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Email, @Password ",
-                    pEmail, pPassword
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Email ",
+                    pEmail
                     ).FirstOrDefault();
                 methodResult = result;
             }

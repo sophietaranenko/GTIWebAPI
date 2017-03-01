@@ -11,21 +11,36 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// To show invoices by organization
+    /// </summary>
     [RoutePrefix("api/Invoices")]
     public class InvoicesController : ApiController
     {
-        DbOrganization db = new DbOrganization();
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<DealInvoiceViewDTO> GetInvoiceAll(int clientId, DateTime? dateBegin, DateTime? dateEnd)
+        [ResponseType(typeof(IEnumerable<DealInvoiceViewDTO>))]
+        public IHttpActionResult GetInvoiceAll(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
-            if (clientId == 0)
+            IEnumerable<DealInvoiceViewDTO> dtos = new List<DealInvoiceViewDTO>();
+            if (organizationId == 0)
             {
-                return new List<DealInvoiceViewDTO>();
+                return Ok(dtos);
             }
-            return db.GetInvoicesList(clientId, dateBegin, dateEnd);
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.GetInvoicesList(organizationId, dateBegin, dateEnd);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+            return Ok(dtos);
         }
 
 
@@ -39,9 +54,24 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            InvoiceFullViewDTO dto = db.GetInvoiceCardInfo(id);
-            dto.Containers = db.GetContainersByInvoiceId(id);
-            dto.Lines = db.GetInvoiceLinesByInvoice(id);
+            InvoiceFullViewDTO dto = new InvoiceFullViewDTO();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dto = db.GetInvoiceCardInfo(id);
+                    if (dto != null)
+                    {
+                        dto.Containers = db.GetContainersByInvoiceId(id);
+                        dto.Lines = db.GetInvoiceLinesByInvoice(id);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
             return Ok(dto);
         }
     }

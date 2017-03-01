@@ -14,6 +14,9 @@ namespace GTIWebAPI
     /// </summary>
     public static class WebApiConfig
     {
+        //public static string UrlPrefix { get { return "api"; } }
+        //public static string UrlPrefixRelative { get { return "~/api"; } }
+
         /// <summary>
         /// Register roures method
         /// </summary>
@@ -40,7 +43,10 @@ namespace GTIWebAPI
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+
             );
         }
     }
+
+    
 }

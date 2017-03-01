@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
-using AutoMapper;
+using System;
 
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
-    /// Manipulating Employee cars 
+    /// EmployeeCar is a car technical passport which employee owns 
     /// </summary>
     [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// All the cars
         /// </summary>
@@ -30,20 +25,29 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeCarDTO> GetEmplyeeCarAll()
+        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
+        public IHttpActionResult GetEmplyeeCarAll()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeCarDTO> dtos = new List<EmployeeCarDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            IEnumerable<EmployeeCarDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
-                (db.EmployeeCars.Where(p => p.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeCars.Where(p => p.Deleted != true).ToList()
+                        .Select(p => p.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
-        /// Get employee car by employee id for VIEW
+        /// Get employee car by employee id 
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
         /// <returns>Collection of EmployeeCarDTO</returns>
@@ -51,16 +55,24 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
-        public IEnumerable<EmployeeCarDTO> GetEmployeeCarByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeeCarByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeCarDTO> dtos = new List<EmployeeCarDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            IEnumerable<EmployeeCarDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeCar>, IEnumerable<EmployeeCarDTO>>
-                (db.EmployeeCars.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeCars.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
+                        .Select(c => c.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            } 
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -74,16 +86,25 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult GetEmployeeCar(int id)
         {
-            EmployeeCar car = db.EmployeeCars.Find(id);
-            if (car == null)
+            EmployeeCar employeeCar = new EmployeeCar();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    employeeCar = db.EmployeeCars.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+            if (employeeCar == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            EmployeeCarDTO dto = Mapper.Map<EmployeeCarDTO>(car);
+
+            EmployeeCarDTO dto = employeeCar.ToDTO();
             return Ok(dto);
         }
 
@@ -111,27 +132,35 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeCar).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeCarExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeCar).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeCarExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeCarDTO dto = employeeCar.ToDTO(); 
             return Ok(dto);
         }
 
@@ -155,29 +184,36 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employeeCar.Id = employeeCar.NewId(db);
-            db.EmployeeCars.Add(employeeCar);
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeCarExists(employeeCar.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeCar.Id = employeeCar.NewId(db);
+                    db.EmployeeCars.Add(employeeCar);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeCarExists(employeeCar.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeCarDTO dto = employeeCar.ToDTO();
             return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
         }
 
@@ -192,52 +228,56 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeCar))]
         public IHttpActionResult DeleteEmployeeCar(int id)
         {
-            EmployeeCar employeeCar = db.EmployeeCars.Find(id);
-            if (employeeCar == null)
-            {
-                return NotFound();
-            }
-            employeeCar.Deleted = true;
-            db.Entry(employeeCar).State = EntityState.Modified;
+            EmployeeCar employeeCar = new EmployeeCar();
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeCarExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeCar = db.EmployeeCars.Find(id);
+                    if (employeeCar == null)
+                    {
+                        return NotFound();
+                    }
+                    employeeCar.Deleted = true;
+                    db.Entry(employeeCar).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeCarExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeCar, EmployeeCarDTO>();
-            });
-            EmployeeCarDTO dto = Mapper.Map<EmployeeCar, EmployeeCarDTO>(employeeCar);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeCarDTO dto = employeeCar.ToDTO();
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeCarExists(int id)
         {
-            return db.EmployeeCars.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeCars.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

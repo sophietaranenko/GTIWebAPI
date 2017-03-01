@@ -84,19 +84,15 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
-        // [RequireHttps]
+
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
-
-            // (Perform new row creation including the userid we just looked up
-
             string UserId = User.Identity.GetUserId();
             ApplicationUser user = UserManager.FindById(UserId);
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
             {
-                //GTIUser gtiUser = GetGTIUser(UserId);
                 string profilePicturePath = null;
                 UserImage im = user.Image;
 
@@ -111,7 +107,6 @@ namespace GTIWebAPI.Controllers
                 model.TableId = user.TableId;
                 model.TableName = user.TableName;
                 model.ProfilePicturePath = profilePicturePath;
-                //model.UserRights = user.UserRightsDto;
                 model.UserRights = user.GetUserRightsDTO();
             }
             return model;
@@ -183,7 +178,6 @@ namespace GTIWebAPI.Controllers
         public IEnumerable<UserRightDTO> GetUserRights()
         {
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-            //return user.UserRightsDto;
             return user.GetUserRightsDTO();
         }
 
@@ -192,7 +186,6 @@ namespace GTIWebAPI.Controllers
         /// Get information about user
         /// </summary>
         /// <returns>UserIfoViewModel</returns>
-        // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfoExternalLogin")]
         public UserInfoViewModel GetUserExternalLoginInfo()
@@ -210,7 +203,6 @@ namespace GTIWebAPI.Controllers
         /// Logout
         /// </summary>
         /// <returns>200</returns>
-        // POST api/Account/Logout
         [Route("Logout")]
         public IHttpActionResult Logout()
         {
@@ -228,7 +220,6 @@ namespace GTIWebAPI.Controllers
         /// <param name="returnUrl"></param>
         /// <param name="generateState"></param>
         /// <returns></returns>
-        // GET api/Account/ManageInfo?returnUrl=%2F&generateState=true
         [Route("ManageInfo")]
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
@@ -270,16 +261,11 @@ namespace GTIWebAPI.Controllers
 
 
 
-
-
-
-
         /// <summary>
         /// Set passport
         /// </summary>
         /// <param name="model"></param>
         /// <returns>200</returns>
-        // POST api/Account/SetPassword
         [Route("SetPassword")]
         public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
         {
@@ -299,7 +285,7 @@ namespace GTIWebAPI.Controllers
         }
 
 
-      
+
         private string GenerateClientPassword()
         {
             return System.Web.Security.Membership.GeneratePassword(8, 0);
@@ -333,8 +319,21 @@ namespace GTIWebAPI.Controllers
             return result;
         }
 
+        
+        [HttpPut]
+        [Route("AddToRole")]
+        public bool AddToRole(string role)
+        {
+            UserManager.AddToRole(User.Identity.GetUserId(), role);
+            UserManager.AddClaim(User.Identity.GetUserId(), new Claim(ClaimTypes.Role, "Personnel"));
+            return true;
+        }
 
-
+        /// <summary>
+        /// Simple register of organization contact person 
+        /// </summary>
+        /// <param name="organizationContactPersonId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpPut]
         [Route("SimpleRegisterOrganizationContactPerson")]
@@ -344,9 +343,13 @@ namespace GTIWebAPI.Controllers
             {
                 string email = "";
 
-                DbOrganization db = new DbOrganization();
+                //DbOrganization db = new DbOrganization();
+                OrganizationContactPerson person = null;
+                using (DbMain db = new DbMain(User))
+                { 
+                    person  = db.OrganizationContactPersons.Find(organizationContactPersonId);
+                }
 
-                OrganizationContactPerson person = db.OrganizationContactPersons.Find(organizationContactPersonId);
                 if (person == null)
                 {
                     return BadRequest("Organization contact person doesn't exist");
@@ -389,6 +392,12 @@ namespace GTIWebAPI.Controllers
                                 }
                                 else
                                 {
+                                   IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
+                                  //  UserManager.AddClaim(user.Id, new Claim(ClaimTypes.Role, "Organization"));
+                                    if (!roleResult.Succeeded)
+                                    {
+                                        return GetErrorResult(roleResult);
+                                    }
                                     //FOURTH GRANT ORGANIZATION RIGHTS in ASPNET USER RIGHTS  
                                     bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
                                     if (rightsResult)
@@ -410,13 +419,24 @@ namespace GTIWebAPI.Controllers
                             catch (Exception e)
                             {
                                 string m = e.Message;
+                                return BadRequest("AspNetUser has not been created");
                             }
                         }
+                        else
+                        {
+                            return BadRequest("Database login has not been created");
+                        }
                     }
-                }
-            }
 
-            return BadRequest();
+                }
+                else
+                {
+                    return BadRequest("eDirectory login has not been created");
+                }
+
+
+            }
+            return BadRequest("Wrong organization contact person");
         }
 
         /// <summary>
@@ -425,7 +445,6 @@ namespace GTIWebAPI.Controllers
         /// <param name="provider"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-            // GET api/Account/ExternalLogin
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
@@ -488,7 +507,6 @@ namespace GTIWebAPI.Controllers
         /// <param name="returnUrl"></param>
         /// <param name="generateState"></param>
         /// <returns></returns>
-        // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
         [AllowAnonymous]
         [Route("ExternalLogins")]
         public IEnumerable<ExternalLoginViewModel> GetExternalLogins(string returnUrl, bool generateState = false)

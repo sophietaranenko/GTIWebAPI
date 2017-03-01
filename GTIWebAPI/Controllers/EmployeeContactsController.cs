@@ -1,69 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
-using AutoMapper;
-using GTIWebAPI.Models.Personnel;
+using System;
+using System.Net;
 
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
-    /// Controller for contacts
+    /// Controller for employee contacts (facebook, skype, home phone number etc. and their values) 
     /// </summary>
     [RoutePrefix("api/EmployeeContacts")]
     public class EmployeeContactsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
-        /// All contacts
+        /// To get all not deleted contacts 
         /// </summary>
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeContactDTO> GetEmployeeContactAll()
+        [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
+        public IHttpActionResult GetEmployeeContactAll()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeContactDTO> dtos = new List<EmployeeContactDTO>();
+
+            try
             {
-            m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-            m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            IEnumerable<EmployeeContactDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeContact>, IEnumerable<EmployeeContactDTO>>
-                (db.EmployeeContacts.Where(p => p.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeContacts.Where(p => p.Deleted != true).Include(b => b.ContactType).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
-        /// Get employee contact by employee id for VIEW
+        /// Get currenct employee contacts by employee id 
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of EmployeeContactDTO</returns>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
-        public IEnumerable<EmployeeContactDTO> GetEmployeeContactByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeeContactByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeContactDTO> dtos = new List<EmployeeContactDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-                m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            IEnumerable<EmployeeContactDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeContact>, IEnumerable<EmployeeContactDTO>>
-                (db.EmployeeContacts.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
-            return dtos;
+               using (DbMain db = new DbMain(User))
+               {
+                    dtos = db.EmployeeContacts.Where(p => p.Deleted != true && p.EmployeeId == employeeId).Include(c => c.ContactType).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(dtos);
         }
 
 
@@ -78,17 +88,31 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeContactDTO))]
         public IHttpActionResult GetEmployeeContact(int id)
         {
-            EmployeeContact contact = db.EmployeeContacts.Find(id);
-            if (contact == null)
+            EmployeeContact employeeContact = new EmployeeContact();
+            
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    employeeContact = db.EmployeeContacts.Find(id);
+                    if (employeeContact != null)
+                    {
+                        db.Entry(employeeContact).Reference(d => d.ContactType).Load();
+                    }      
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            if (employeeContact == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-                m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(contact);
+
+            EmployeeContactDTO dto = employeeContact.ToDTO();
+
             return Ok(dto);
         }
 
@@ -116,35 +140,41 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeContact).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeContactExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                    db.Entry(employeeContact).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeContactExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    employeeContact = db.EmployeeContacts.Find(employeeContact.Id);
+                    employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
+                 }
+
             }
-            employeeContact = db.EmployeeContacts.Find(employeeContact.Id);
-            employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-                m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            EmployeeContactDTO dto = Mapper.Map<EmployeeContactDTO>(employeeContact);
+                return BadRequest("Troubles with database connection");
+            }
+            EmployeeContactDTO dto = employeeContact.ToDTO();
             return Ok(dto);
         }
 
         /// <summary>
-        /// Insert new employee contact
+        /// Add employee contact 
         /// </summary>
         /// <param name="employeeContact">EmployeeContact object</param>
         /// <returns></returns>
@@ -163,31 +193,22 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employeeContact.Id = employeeContact.NewId(db);
-            db.EmployeeContacts.Add(employeeContact);
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeContactExists(employeeContact.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeContact.Id = employeeContact.NewId(db);
+                    db.EmployeeContacts.Add(employeeContact);
+                    db.SaveChanges();
+                    employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
                 }
             }
-            employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-                m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            EmployeeContactDTO dto = Mapper.Map<EmployeeContactDTO>(employeeContact);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeContactDTO dto = employeeContact.ToDTO();
             return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
         }
 
@@ -202,34 +223,43 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeContact))]
         public IHttpActionResult DeleteEmployeeContact(int id)
         {
-            EmployeeContact employeeContact = db.EmployeeContacts.Find(id);
-            if (employeeContact == null)
-            {
-                return NotFound();
-            }
-            employeeContact.Deleted = true;
-            db.Entry(employeeContact).State = EntityState.Modified;
+            EmployeeContact employeeContact = new EmployeeContact();
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeContactExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeContact = db.EmployeeContacts.Find(id);
+                    if (employeeContact == null)
+                    {
+                        return NotFound();
+                    }
+                    db.Entry(employeeContact).Reference(d => d.ContactType).Load();
+
+                    employeeContact.Deleted = true;
+                    db.Entry(employeeContact).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeContactExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeContact, EmployeeContactDTO>();
-                m.CreateMap<ContactType, ContactTypeDTO>();
-            });
-            EmployeeContactDTO dto = Mapper.Map<EmployeeContact, EmployeeContactDTO>(employeeContact);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeContactDTO dto = employeeContact.ToDTO();
             return Ok(dto);
         }
 
@@ -239,16 +269,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeContactExists(int id)
         {
-            return db.EmployeeContacts.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeContacts.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

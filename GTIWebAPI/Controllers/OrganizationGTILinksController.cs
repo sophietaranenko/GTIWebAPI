@@ -20,7 +20,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationGTILinks")]
     public class OrganizationGTILinksController : ApiController
     {
-        private DbOrganization db = new DbOrganization();
 
         /// <summary>
         /// Get employee links by employee id 
@@ -31,25 +30,41 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByOrganizationId")]
         [ResponseType(typeof(IEnumerable<OrganizationGTILinkDTO>))]
-        public IEnumerable<OrganizationGTILinkDTO> GetOrganizationGTILinkByOrganizationId(int organizationId)
+        public IHttpActionResult GetOrganizationGTILinkByOrganizationId(int organizationId)
         {
-            List<OrganizationGTILink> links = db.OrganizationGTILinks
-                .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
+            List<OrganizationGTILink> links = new List<OrganizationGTILink>();
 
-            foreach (var link in links)
+            try
             {
-                if (link.GTIId != null)
+                using (DbMain db = new DbMain(User))
                 {
-                    link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
-                    if (link.OrganizationGTI != null)
+                    links = db.OrganizationGTILinks
+                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
+                    .ToList();
+
+                    foreach (var link in links)
                     {
-                        link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
+                        if (link.GTIId != null)
+                        {
+                            link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
+                            if (link.OrganizationGTI != null)
+                            {
+                                link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
+                            }
+                        }
                     }
+
                 }
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
             }
 
+
             List<OrganizationGTILinkDTO> dtos = links.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -63,81 +78,38 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult GetOrganizationGTILink(int id)
         {
-            OrganizationGTILink link = db.OrganizationGTILinks.Find(id);
+            OrganizationGTILink link = new OrganizationGTILink();
 
-            if (link == null)
+            try
             {
-                return NotFound();
-            }
-            if (link.GTIId != null)
-            {
-                link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
-                if (link.OrganizationGTI != null)
+                using (DbMain db = new DbMain(User))
                 {
-                    link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
+                    link = db.OrganizationGTILinks.Find(id);
+
+                    if (link == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (link.GTIId != null)
+                    {
+                        link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
+                        if (link.OrganizationGTI != null)
+                        {
+                            link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
+                        }
+                    }
+
                 }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
             }
 
             OrganizationGTILinkDTO dto = link.ToDTO();
             return Ok(dto);
         }
-
-        //no need to put link 
-        ///// <summary>
-        ///// Update link (no need to change EmployeeId, EmployeeId is only a creator of record)
-        ///// </summary>
-        ///// <param name="id">Passport id</param>
-        ///// <param name="organizationGTILink">OrganizationGTILink object</param>
-        ///// <returns>204 - No content</returns>
-        //[GTIFilter]
-        //[HttpPut]
-        //[Route("Put")]
-        //[ResponseType(typeof(void))]
-        //public IHttpActionResult PutOrganizationGTILink(int id, OrganizationGTILink organizationGTILink)
-        //{
-        //    if (organizationGTILink == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (id != organizationGTILink.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    db.Entry(organizationGTILink).State = EntityState.Modified;
-        //    try
-        //    {
-        //        db.SaveChanges();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!OrganizationGTILinkExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    //Reload method of db context doesn't work
-        //    //Visitor extension of dbContext doesn't wotk
-        //    //that's why we reload related entities manually
-        //    if (organizationGTILink.GTIId != null)
-        //    {
-        //        organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
-        //        if (organizationGTILink.OrganizationGTI != null)
-        //        {
-        //            organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
-        //        }
-        //    }
-        //    OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
-        //    return Ok(dto);
-        //}
 
         /// <summary>
         /// Insert new organizationGTI link (with EmployeeId as creator) 
@@ -162,42 +134,50 @@ namespace GTIWebAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-                organizationGTILink.EmployeeId = EmployeeId;
-                organizationGTILink.Id = organizationGTILink.NewId(db);
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                db.OrganizationGTILinks.Add(organizationGTILink);
-
                 try
                 {
-                    db.SaveChanges();
-                }
-                catch (DbUpdateException)
-                {
-                    if (OrganizationGTILinkExists(organizationGTILink.Id))
+                    using (DbMain db = new DbMain(User))
                     {
-                        return Conflict();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                        organizationGTILink.EmployeeId = EmployeeId;
+                        organizationGTILink.Id = organizationGTILink.NewId(db);
 
-                //Reload method of db context doesn't work
-                //Visitor extension of dbContext doesn't wotk
-                //that's why we reload related entities manually
-                if (organizationGTILink.GTIId != null)
-                {
-                    organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
-                    if (organizationGTILink.OrganizationGTI != null)
-                    {
-                        organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
+                        if (!ModelState.IsValid)
+                        {
+                            return BadRequest(ModelState);
+                        }
+
+
+                        db.OrganizationGTILinks.Add(organizationGTILink);
+
+                        try
+                        {
+                            db.SaveChanges();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            if (OrganizationGTILinkExists(organizationGTILink.Id))
+                            {
+                                return Conflict();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+
+                        if (organizationGTILink.GTIId != null)
+                        {
+                            organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
+                            if (organizationGTILink.OrganizationGTI != null)
+                            {
+                                organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
+                            }
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    return BadRequest();
                 }
 
                 OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
@@ -235,25 +215,34 @@ namespace GTIWebAPI.Controllers
 
                 int OrganzationId = links.OrganizationId;
 
-
-                foreach (var item in links.OrganizationGTIIds)
-                {
-                    int OrganizationGTIId = item;
-                    OrganizationGTILink link = new OrganizationGTILink();
-                    link.OrganizationId = OrganzationId;
-                    link.GTIId = OrganizationGTIId;
-                    link.EmployeeId = EmployeeId;
-                    link.Id = link.NewId(db);
-                    db.OrganizationGTILinks.Add(link);
-                }
-
                 try
                 {
-                    db.SaveChanges();
+                    using (DbMain db = new DbMain(User))
+                    {
+                        foreach (var item in links.OrganizationGTIIds)
+                        {
+                            int OrganizationGTIId = item;
+                            OrganizationGTILink link = new OrganizationGTILink();
+                            link.OrganizationId = OrganzationId;
+                            link.GTIId = OrganizationGTIId;
+                            link.EmployeeId = EmployeeId;
+                            link.Id = link.NewId(db);
+                            db.OrganizationGTILinks.Add(link);
+                        }
+
+                        try
+                        {
+                            db.SaveChanges();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            throw;
+                        }
+                    }
                 }
-                catch (DbUpdateException)
+                catch (Exception e)
                 {
-                    throw;
+                    return BadRequest();
                 }
 
                 return Ok();
@@ -272,36 +261,49 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILink))]
         public IHttpActionResult DeleteOrganizationGTILink(int id)
         {
-            OrganizationGTILink organizationGTILink = db.OrganizationGTILinks.Find(id);
-            if (organizationGTILink == null)
-            {
-                return NotFound();
-            }
-            organizationGTILink.Deleted = true;
-            db.Entry(organizationGTILink).State = EntityState.Modified;
+            OrganizationGTILink organizationGTILink = new OrganizationGTILink();
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationGTILink = db.OrganizationGTILinks.Find(id);
+                    if (organizationGTILink == null)
+                    {
+                        return NotFound();
+                    }
+                    organizationGTILink.Deleted = true;
+                    db.Entry(organizationGTILink).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationGTILinkExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    if (organizationGTILink.GTIId != null)
+                    {
+                        organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
+                        if (organizationGTILink.OrganizationGTI != null)
+                        {
+                            organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
+                        }
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationGTILinkExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
-            if (organizationGTILink.GTIId != null)
-            {
-                organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
-                if (organizationGTILink.OrganizationGTI != null)
-                {
-                    organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
-                }
-            }
+
             OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
             return Ok(dto);
         }
@@ -312,16 +314,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool OrganizationGTILinkExists(int id)
         {
-            return db.OrganizationGTILinks.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.OrganizationGTILinks.Count(e => e.Id == id) > 0;
+            }
         }
 
 

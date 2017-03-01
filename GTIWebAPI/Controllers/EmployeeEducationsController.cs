@@ -4,14 +4,10 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
-using AutoMapper;
-using GTIWebAPI.Models.Service;
 using GTIWebAPI.Filters;
 
 namespace GTIWebAPI.Controllers
@@ -19,11 +15,9 @@ namespace GTIWebAPI.Controllers
     /// <summary>
     /// Controller for employee educations
     /// </summary>
- //   [Authorize]
     [RoutePrefix("api/EmployeeEducations")]
     public class EmployeeEducationsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
 
         /// <summary>
         /// Get all education documents
@@ -32,17 +26,25 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeEducationDTO> GetEmployeeEducation()
+        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
+        public IHttpActionResult GetEmployeeEducation()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeEducationDTO> dtos = new List<EmployeeEducationDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
-                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
-            });
-            IEnumerable<EmployeeEducationDTO> dtos =
-                Mapper.Map<IEnumerable<EmployeeEducation>, IEnumerable<EmployeeEducationDTO>>
-                (db.EmployeeEducations.Where(e => e.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeEducations.Where(e => e.Deleted != true).Include(d => d.EducationStudyForm).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -53,17 +55,25 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeeEducationDTO> GetEmployeeEducationByEmployeeId(int employeeId)
+        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
+        public IHttpActionResult GetEmployeeEducationByEmployeeId(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeEducationDTO> dtos = null;
+
+            try
             {
-                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
-                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
-            });
-            IEnumerable<EmployeeEducationDTO> dtos =
-                Mapper.Map<IEnumerable<EmployeeEducation>, IEnumerable<EmployeeEducationDTO>>
-                (db.EmployeeEducations.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeEducations.Where(e => e.Deleted != true && e.EmployeeId == employeeId).Include(d => d.EducationStudyForm).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -77,12 +87,31 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult GetEmployeeEducationView(int id)
         {
-            EmployeeEducation employeeEducation = db.EmployeeEducations.Find(id);
+            EmployeeEducation employeeEducation = new EmployeeEducation();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    employeeEducation = db.EmployeeEducations.Find(id);
+                    if (employeeEducation != null)
+                    {
+                        db.Entry(employeeEducation).Reference(d => d.EducationStudyForm).Load();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (employeeEducation == null)
             {
                 return NotFound();
             }
+
             EmployeeEducationDTO dto = employeeEducation.ToDTO();
+
             return Ok(dto);
         }
 
@@ -107,36 +136,46 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeEducation).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeEducationExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeEducation).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeEducationExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    if (employeeEducation.StudyFormId != null)
+                    {
+                        employeeEducation.EducationStudyForm = db.EducationStudyForms.Find(employeeEducation.StudyFormId);
+                    }
                 }
             }
-            int Id = employeeEducation.Id;
-            EmployeeEducation education = db.EmployeeEducations.Find(Id);
-            if (education.StudyFormId != null)
+            catch (Exception e)
             {
-                education.EducationStudyForm = db.EducationStudyForms.Find(education.StudyFormId);
+                return BadRequest();
             }
-            EmployeeEducationDTO dto = education.ToDTO();
+
+            EmployeeEducationDTO dto = employeeEducation.ToDTO();
             return Ok(dto);
         }
 
         /// <summary>
         /// Insert new employee education document
         /// </summary>
-        /// <param name="employeeEducation">EmployeeEducation object contains id = 0</param>
+        /// <param name="employeeEducation"></param>
         /// <returns></returns>
         [GTIFilter]
         [HttpPost]
@@ -144,41 +183,54 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult PostEmployeeEducation(EmployeeEducation employeeEducation)
         {
-            employeeEducation.Id = employeeEducation.NewId(db);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.EmployeeEducations.Add(employeeEducation);
+            EmployeeEducationDTO dto = null;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeEducationExists(employeeEducation.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeEducation.Id = employeeEducation.NewId(db);
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
+                    db.EmployeeEducations.Add(employeeEducation);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeEducationExists(employeeEducation.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    int Id = employeeEducation.Id;
+                    EmployeeEducation education = db.EmployeeEducations.Find(Id);
+                    if (education.StudyFormId != null)
+                    {
+                        education.EducationStudyForm = db.EducationStudyForms.Find(education.StudyFormId);
+                    }
+                    dto = education.ToDTO();
                 }
             }
-            int Id = employeeEducation.Id;
-            EmployeeEducation education = db.EmployeeEducations.Find(Id);
-            if (education.StudyFormId != null)
+            catch (Exception e)
             {
-                education.EducationStudyForm = db.EducationStudyForms.Find(education.StudyFormId);
+                return BadRequest();
             }
-            EmployeeEducationDTO dto = education.ToDTO();
+
             return CreatedAtRoute("GetEmployeeEducation", new { id = dto.Id }, dto);
         }
 
         /// <summary>
         /// Dleete education document
         /// </summary>
-        /// <param name="id">id of document</param>
+        /// <param name="id">id of education document</param>
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
@@ -186,50 +238,57 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeEducationDTO))]
         public IHttpActionResult DeleteEmployeeEducation(int id)
         {
-            EmployeeEducation employeeEducation = db.EmployeeEducations.Find(id);
-            if (employeeEducation == null)
-            {
-                return NotFound();
-            }
-
-            employeeEducation.Deleted = true;
-            db.Entry(employeeEducation).State = EntityState.Modified;
+            EmployeeEducation employeeEducation = null;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeEducationExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeEducation = db.EmployeeEducations.Find(id);
+                    if (employeeEducation == null)
+                    {
+                        return NotFound();
+                    }
+                    db.Entry(employeeEducation).Reference(d => d.EducationStudyForm).Load();
+
+                    employeeEducation.Deleted = true;
+                    db.Entry(employeeEducation).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeEducationExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeEducation, EmployeeEducationDTO>();
-                m.CreateMap<EducationStudyForm, EducationStudyFormDTO>();
-            });
-            EmployeeEducationDTO dto = Mapper.Map<EmployeeEducationDTO>(employeeEducation);
+                return BadRequest();
+            }
+
+            EmployeeEducationDTO dto = employeeEducation.ToDTO();
             return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeEducationExists(int id)
         {
-            return db.EmployeeEducations.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeEducations.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

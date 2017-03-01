@@ -137,6 +137,7 @@
                 RegionName = this.RegionName,
                 Region = this.AddressRegion == null ? null : this.AddressRegion.ToDTO(),
                 RegionId = this.RegionId,
+                VillageId = this.VillageId,
                 VillageName = this.VillageName,
                 Village = this.AddressVillage == null ? null : this.AddressVillage.ToDTO()
             };

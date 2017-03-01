@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
@@ -18,8 +19,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeePhotos")]
     public class EmployeePhotosController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// Method fo file upload
         /// </summary>
@@ -34,23 +33,33 @@ namespace GTIWebAPI.Controllers
             var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count > 0)
             {
-                int photoId = 0;
-                foreach (string file in httpRequest.Files)
+                try
                 {
-                    EmployeePhoto photo = new EmployeePhoto();
-                    photo.Id = photo.NewId(db);
-                    photo.EmployeeId = employeeId;
-                    var postedFile = httpRequest.Files[file];
-                    var filePath = HttpContext.Current.Server.MapPath(
-                        "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-                    postedFile.SaveAs(filePath);
-                    photo.PhotoName = filePath;
-                    db.EmployeePhotos.Add(photo);
-                    db.SaveChanges();
-                    photoId = photo.Id;
+                    using (DbMain db = new DbMain(User))
+                    {
+                        int photoId = 0;
+                        foreach (string file in httpRequest.Files)
+                        {
+                            EmployeePhoto photo = new EmployeePhoto();
+                            photo.Id = photo.NewId(db);
+                            photo.EmployeeId = employeeId;
+                            var postedFile = httpRequest.Files[file];
+                            var filePath = HttpContext.Current.Server.MapPath(
+                                "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
+                            postedFile.SaveAs(filePath);
+                            photo.PhotoName = filePath;
+                            db.EmployeePhotos.Add(photo);
+                            db.SaveChanges();
+                            photoId = photo.Id;
+                        }
+                        EmployeePhoto uploadedPhoto = db.EmployeePhotos.Find(photoId);
+                        result = Request.CreateResponse(HttpStatusCode.Created, uploadedPhoto);
+                    }
                 }
-                EmployeePhoto uploadedPhoto = db.EmployeePhotos.Find(photoId);
-                result = Request.CreateResponse(HttpStatusCode.Created, uploadedPhoto);
+                catch (Exception e)
+                {
+                    result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                }
             }
             else
             {
@@ -68,31 +77,45 @@ namespace GTIWebAPI.Controllers
         [Route("PutDbFilesToFilesystem")]
         public HttpResponseMessage PutDbFilesToFilesystem()
         {
-            List<int> photos = db.EmployeePhotos.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
-            List<EmployeePhoto> newPhotos = new List<EmployeePhoto>();
-            foreach (var item in photos)
+            List<int> photos = null;
+            var result = Request.CreateResponse(HttpStatusCode.BadRequest);
+
+            try
             {
-                EmployeePhoto photo = db.EmployeePhotos.Find(item);
-                if (photo.Photo != null)
+                using (DbMain db = new DbMain(User))
                 {
-                    try
+                    photos = db.EmployeePhotos.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
+                    List<EmployeePhoto> newPhotos = new List<EmployeePhoto>();
+                    foreach (var item in photos)
                     {
-                        WebImage image = new WebImage(photo.Photo);
-                        var formatString = image.ImageFormat.ToString();
-                        var filePath = HttpContext.Current.Server.MapPath(
-   "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                        image.Save(filePath);
-                        photo.PhotoName = filePath;
-                        db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
+                        EmployeePhoto photo = db.EmployeePhotos.Find(item);
+                        if (photo.Photo != null)
+                        {
+                            try
+                            {
+                                WebImage image = new WebImage(photo.Photo);
+                                var formatString = image.ImageFormat.ToString();
+                                var filePath = HttpContext.Current.Server.MapPath(
+           "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
+                                image.Save(filePath);
+                                photo.PhotoName = filePath;
+                                db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
                     }
-                    catch
-                    {
-                        continue;
-                    }
+
+                    result = Request.CreateResponse(HttpStatusCode.Created, newPhotos.Select(a => new { a.Id, a.PhotoName }));
                 }
             }
-            var result = Request.CreateResponse(HttpStatusCode.Created, newPhotos.Select(a => new { a.Id, a.PhotoName }));
+            catch (Exception e)
+            {
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
             return result;
         }
 
@@ -104,12 +127,25 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeePhoto> GetEmployeePhotoByEmployeeId(int employeeId)
+        [ResponseType(typeof(IEnumerable<EmployeePhoto>))]
+        public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
         {
-            List<EmployeePhoto> photoList = db.EmployeePhotos
-                .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
-                .ToList();
-            return photoList;
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    List<EmployeePhoto> photoList = db.EmployeePhotos
+                    .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
+                    .ToList();
+                    return Ok(photoList);
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -122,7 +158,20 @@ namespace GTIWebAPI.Controllers
         [Route("Get")]
         public IHttpActionResult GetEmployeePhoto(int id)
         {
-            EmployeePhoto photo = db.EmployeePhotos.Find(id);
+            EmployeePhoto photo = new EmployeePhoto();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    photo = db.EmployeePhotos.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (photo != null)
             {
                 return Ok(photo);
@@ -143,13 +192,30 @@ namespace GTIWebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult DeleteEmployeePhoto(int id)
         {
-            EmployeePhoto photo = db.EmployeePhotos.Find(id);
-            if (photo != null)
+            EmployeePhoto photo = new EmployeePhoto();
+
+            try
             {
-                photo.Deleted = true;
-                db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    photo = db.EmployeePhotos.Find(id);
+                    if (photo != null)
+                    {
+                        photo.Deleted = true;
+                        db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        return BadRequest("Not found");
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             return Ok(photo);
         }
 
@@ -159,16 +225,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeePhotoExists(int id)
         {
-            return db.EmployeePhotos.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeePhotos.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

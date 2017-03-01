@@ -18,8 +18,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeInternationalPassports")]
     public class EmployeeInternationalPassportsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// All internationalPassports
         /// </summary>
@@ -27,16 +25,24 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeInternationalPassportDTO> GetEmployeeInternationalPassportAll()
+        [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
+        public IHttpActionResult GetEmployeeInternationalPassportAll()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeInternationalPassportDTO> dtos = new List<EmployeeInternationalPassportDTO>();
+            try
             {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            IEnumerable<EmployeeInternationalPassportDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeInternationalPassport>, IEnumerable<EmployeeInternationalPassportDTO>>
-                (db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList()
+                            .Select(e => e.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -48,16 +54,25 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
-        public IEnumerable<EmployeeInternationalPassportDTO> GetEmployeeInternationalPassportByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeeInternationalPassportByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeInternationalPassportDTO> dtos = new List<EmployeeInternationalPassportDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            IEnumerable<EmployeeInternationalPassportDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeInternationalPassport>, IEnumerable<EmployeeInternationalPassportDTO>>
-                (db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos =
+                     db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
+                     .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
 
@@ -72,16 +87,26 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
         public IHttpActionResult GetEmployeeInternationalPassport(int id)
         {
-            EmployeeInternationalPassport internationalPassport = db.EmployeeInternationalPassports.Find(id);
+            EmployeeInternationalPassport internationalPassport = new EmployeeInternationalPassport();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    internationalPassport = db.EmployeeInternationalPassports.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (internationalPassport == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(internationalPassport);
+
+            EmployeeInternationalPassportDTO dto = internationalPassport.ToDTO();
             return Ok(dto);
         }
 
@@ -109,27 +134,34 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeInternationalPassport).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeInternationalPassportExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeInternationalPassport).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeInternationalPassportExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
+                return BadRequest();
+            }
+
+            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
             return Ok(dto);
         }
 
@@ -153,29 +185,36 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employeeInternationalPassport.Id = employeeInternationalPassport.NewId(db);
-            db.EmployeeInternationalPassports.Add(employeeInternationalPassport);
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeInternationalPassportExists(employeeInternationalPassport.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeInternationalPassport.Id = employeeInternationalPassport.NewId(db);
+                    db.EmployeeInternationalPassports.Add(employeeInternationalPassport);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeInternationalPassportExists(employeeInternationalPassport.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
+                return BadRequest();
+            }
+
+            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
             return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
         }
 
@@ -190,33 +229,42 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeInternationalPassport))]
         public IHttpActionResult DeleteEmployeeInternationalPassport(int id)
         {
-            EmployeeInternationalPassport employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
-            if (employeeInternationalPassport == null)
-            {
-                return NotFound();
-            }
-            employeeInternationalPassport.Deleted = true;
-            db.Entry(employeeInternationalPassport).State = EntityState.Modified;
+            EmployeeInternationalPassport employeeInternationalPassport = null;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeInternationalPassportExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
+                    if (employeeInternationalPassport == null)
+                    {
+                        return NotFound();
+                    }
+                    employeeInternationalPassport.Deleted = true;
+                    db.Entry(employeeInternationalPassport).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeInternationalPassportExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>();
-            });
-            EmployeeInternationalPassportDTO dto = Mapper.Map<EmployeeInternationalPassport, EmployeeInternationalPassportDTO>(employeeInternationalPassport);
+                return BadRequest();
+            }
+
+            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
             return Ok(dto);
         }
 
@@ -226,16 +274,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeInternationalPassportExists(int id)
         {
-            return db.EmployeeInternationalPassports.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeInternationalPassports.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

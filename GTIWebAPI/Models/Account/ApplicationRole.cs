@@ -2,9 +2,9 @@
 
 namespace GTIWebAPI.Models.Account
 {
-    //public class ApplicationRole : IdentityRole
-    //{
-    //    public ApplicationRole() { }
-    //    public string Description { get; set; }
-    //}
+    public class ApplicationRole : IdentityRole
+    {
+        public ApplicationRole() { }
+        public string Description { get; set; }
+    }
 }

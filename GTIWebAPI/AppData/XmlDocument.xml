@@ -643,6 +643,13 @@
             <param name="model"></param>
             <returns>200</returns>
         </member>
+        <member name="M:GTIWebAPI.Controllers.AccountController.SimpleRegisterOrganizationContactPerson(System.Int32)">
+            <summary>
+            Simple register of organization contact person 
+            </summary>
+            <param name="organizationContactPersonId"></param>
+            <returns></returns>
+        </member>
         <member name="M:GTIWebAPI.Controllers.AccountController.GetExternalLogin(System.String,System.String)">
             <summary>
             GetExtenal login (not useful for GTI)
@@ -678,6 +685,63 @@
             Dispose AccountConrtoller (to destroy connections)
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.ContainersController.GetContainers(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            All containers by organization and dates (date of deal, to change - look into database) 
+            </summary>
+            <param name="organizationId"></param>
+            <param name="dateBegin"></param>
+            <param name="dateEnd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.ContainersController.GetContainer(System.Guid)">
+            <summary>
+            One container by its id 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.DealDocumentScansController">
+            <summary>
+            Document scans that person attaches to deal 
+            </summary>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.GetDocumentScanTypes">
+            <summary>
+            To get all scan types (types of document type we attach - BL, CMR etc.) 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.GetDocumentScansByDealId(System.Guid)">
+            <summary>
+            Get one document scan by id of deal it is attached to 
+            </summary>
+            <param name="dealId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.PutDealDocumentScan(System.Guid,System.Int32)">
+            <summary>
+            We can update only type of document to deal document scan. Otherwise we need to delete and upload new document scan. 
+            </summary>
+            <param name="scanId"></param>
+            <param name="documentScanTypeId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.UploadDealDocumentScan(System.Int32,System.Guid)">
+            <summary>
+            Upload new document scan to some deal by deal id 
+            </summary>
+            <param name="documentScanTypeId"></param>
+            <param name="dealId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.DeleteDealDocumentScan(System.Guid)">
+            <summary>
+            Delete document scan by its id 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.GetOrganizationAddressByOrganizationId(System.Int32)">
             <summary>
@@ -721,6 +785,11 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="T:GTIWebAPI.Controllers.OrganizationContactPersonContactsController">
+            <summary>
+            Persons with whom our company has business  
+            </summary>
+        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonContactsController.GetOrganizationContactPersonContactByOrganizationContactPersonId(System.Int32)">
             <summary>
             Get employee contacts by employee id 
@@ -762,6 +831,11 @@
             Dispose controller
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.OrganizationContactPersonsController">
+            <summary>
+            Contact persons are pepople we contact to 
+            </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.GetOrganizationContactPersonByOrganizationId(System.Int32)">
             <summary>
@@ -976,9 +1050,25 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:GTIWebAPI.Controllers.DealsController.GetDeals(System.Int32,System.DateTime,System.DateTime)">
+            <summary>
+            Get short info about deals 
+            </summary>
+            <param name="organizationId"></param>
+            <param name="dateBegin"></param>
+            <param name="dateEnd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealsController.GetDealView(System.String)">
+            <summary>
+            Get one deal full view by its id 
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeCarsController">
             <summary>
-            Manipulating Employee cars 
+            EmployeeCar is a car technical passport which employee owns 
             </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.GetEmplyeeCarAll">
@@ -989,7 +1079,7 @@
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.GetEmployeeCarByEmployee(System.Int32)">
             <summary>
-            Get employee car by employee id for VIEW
+            Get employee car by employee id 
             </summary>
             <param name="employeeId">Employee Id</param>
             <returns>Collection of EmployeeCarDTO</returns>
@@ -1023,29 +1113,23 @@
             <param name="id">Car Id</param>
             <returns>200</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeCarsController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeContactsController">
             <summary>
-            Controller for contacts
+            Controller for employee contacts (facebook, skype, home phone number etc. and their values) 
             </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetEmployeeContactAll">
             <summary>
-            All contacts
+            To get all not deleted contacts 
             </summary>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetEmployeeContactByEmployee(System.Int32)">
             <summary>
-            Get employee contact by employee id for VIEW
+            Get currenct employee contacts by employee id 
             </summary>
             <param name="employeeId">Employee Id</param>
-            <returns>Collection of EmployeeContactDTO</returns>
+            <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.GetEmployeeContact(System.Int32)">
             <summary>
@@ -1064,7 +1148,7 @@
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeContactsController.PostEmployeeContact(GTIWebAPI.Models.Employees.EmployeeContact)">
             <summary>
-            Insert new employee contact
+            Add employee contact 
             </summary>
             <param name="employeeContact">EmployeeContact object</param>
             <returns></returns>
@@ -1137,46 +1221,51 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeDrivingLicensesController">
+            <summary>
+            Driving license is a document employee needs to drive a car 
+            </summary>
+        </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetEmployeeDrivingLicenseAll">
             <summary>
-            All drivingLicenses
+            All driving licenses
             </summary>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetEmployeeDrivingLicenseByEmployee(System.Int32)">
             <summary>
-            Get employee drivingLicense by employee id for VIEW
+            Get employee driving license by employee id 
             </summary>
             <param name="employeeId">Employee Id</param>
             <returns>Collection of EmployeeDrivingLicenseDTO</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.GetDrivingLicense(System.Int32)">
             <summary>
-            Get one drivingLicense for view by drivingLicense id
+            Get one driving license for view by driving license id
             </summary>
             <param name="id">EmployeeDrivingLicense id</param>
             <returns>EmployeeDrivingLicenseEditDTO object</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.PutEmployeeDrivingLicense(System.Int32,GTIWebAPI.Models.Employees.EmployeeDrivingLicense)">
             <summary>
-            Update employee drivingLicense
+            Update employee driving license
             </summary>
-            <param name="id">DrivingLicense id</param>
+            <param name="id">Driving license id</param>
             <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
             <returns>204 - No content</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.PostEmployeeDrivingLicense(GTIWebAPI.Models.Employees.EmployeeDrivingLicense)">
             <summary>
-            Insert new employee drivingLicense
+            Insert new employee driving license
             </summary>
             <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.DeleteEmployeeDrivingLicense(System.Int32)">
             <summary>
-            Delete drivingLicense
+            Delete driving license
             </summary>
-            <param name="id">DrivingLicense Id</param>
+            <param name="id">Driving license id</param>
             <returns>200</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDrivingLicensesController.Dispose(System.Boolean)">
@@ -1222,32 +1311,37 @@
             <summary>
             Insert new employee education document
             </summary>
-            <param name="employeeEducation">EmployeeEducation object contains id = 0</param>
+            <param name="employeeEducation"></param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeEducationsController.DeleteEmployeeEducation(System.Int32)">
             <summary>
             Dleete education document
             </summary>
-            <param name="id">id of document</param>
+            <param name="id">id of education document</param>
             <returns></returns>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController">
+            <summary>
+            Foundation documents are additional documents, that employee has. These documents give employee a right for some privileges. 
+            </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetEmployeeFoundationDocumentAll">
             <summary>
-            All foundationDocs
+            All foundation documents 
             </summary>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetEmployeeFoundationDocumentByEmployee(System.Int32)">
             <summary>
-            Get employee foundationDoc by employee id for VIEW
+            Get employee foundation documents by employee id 
             </summary>
             <param name="employeeId">Employee Id</param>
             <returns>Collection of EmployeeFoundationDocDTO</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.GetEmployeeFoundationDocument(System.Int32)">
             <summary>
-            Get one foundationDoc for edit by id
+            Get one foundation document by id
             </summary>
             <param name="id">EmployeeFoundationDoc id</param>
             <returns>EmployeeFoundationDocEditDTO object</returns>
@@ -1262,23 +1356,22 @@
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.PostEmployeeFoundationDocument(GTIWebAPI.Models.Employees.EmployeeFoundationDocument)">
             <summary>
-            Insert new employee foundationDoc
+            Insert new employee foundation document
             </summary>
             <param name="employeeFoundationDoc">EmployeeFoundationDoc object</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.DeleteEmployeeFoundationDocument(System.Int32)">
             <summary>
-            Delete foundationDoc
+            Delete foundation document 
             </summary>
             <param name="id">FoundationDoc Id</param>
             <returns>200</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeFoundationDocumentsController.Dispose(System.Boolean)">
+        <member name="T:GTIWebAPI.Controllers.EmployeeGunsController">
             <summary>
-            Dispose controller
+            Document confirming employee's permission to store and carry weapon 
             </summary>
-            <param name="disposing"></param>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.GetEmployeeGunAll">
             <summary>
@@ -1295,7 +1388,7 @@
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeGunsController.GetEmployeeGun(System.Int32)">
             <summary>
-            Get one gun for view by gun id
+            Get one gun permission for view by gun id
             </summary>
             <param name="id">EmployeeGun id</param>
             <returns>EmployeeGunEditDTO object</returns>
@@ -1375,6 +1468,11 @@
             Dispose controller
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeLanguagesController">
+            <summary>
+            Languages employee knows anf documents that confirm that fact 
+            </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetEmployeeLanguageAll">
             <summary>
@@ -1471,6 +1569,11 @@
             Dispose controller
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.EmployeeOfficeController">
+            <summary>
+            Employee's positions in departments of offices 
+            </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOfficeAll">
             <summary>
@@ -1661,12 +1764,6 @@
             <param name="id">Employee Id</param>
             <returns>200</returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetSexTypes">
-            <summary>
-            List of Text and Value of enum Sex
-            </summary>
-            <returns>Collection of Json objects</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeLists">
             <summary>
             List of Text and Value of enum Sex
@@ -1678,6 +1775,11 @@
             Dispose Conroller (to destroy DbContect connection)
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="T:GTIWebAPI.Controllers.InvoicesController">
+            <summary>
+            To show invoices by organization
+            </summary>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationsGTIController.SearchOrganizationsGTI(System.String,System.String)">
             <summary>
@@ -1704,14 +1806,14 @@
             Update employee address
             </summary>
             <param name="id">Passport id</param>
-            <param name="organizationAddress">OrganizationTaxAddress object</param>
+            <param name="organizationTaxAddress">OrganizationTaxAddress object</param>
             <returns>204 - No content</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.PostOrganizationTaxAddress(GTIWebAPI.Models.Organizations.OrganizationTaxAddress)">
             <summary>
             Insert new employee address
             </summary>
-            <param name="organizationAddress">OrganizationTaxAddress object</param>
+            <param name="organizationTaxAddress">OrganizationTaxAddress object</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.DeleteOrganizationTaxAddress(System.Int32)">
@@ -1835,41 +1937,89 @@
             image byte array 
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Context.DbOrganization">
+        <member name="T:GTIWebAPI.Models.Context.DbMain">
             <summary>
-            Db set for organization users (contains info about organizations and what they need to read to show them) 
-            Rights to add and update deal document scans, show all other information 
+            Context for working with Employees 
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetOrganizationsFilter(System.String)">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.#ctor(System.Security.Principal.IPrincipal)">
+            <summary>
+            Connect to database only within username
+            </summary>
+            <param name="user"></param>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbMain.CreateConnectionString(System.Security.Principal.IPrincipal)">
+            <summary>
+            Construct connection string for current user 
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbMain.Addresses">
+            <summary>
+            Addresses block
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbMain.Employees">
+            <summary>
+            Employees block
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Context.DbMain.Languages">
+            <summary>
+            Tables with Id-Name data
+            </summary>
+                    //Some Id-Name data 
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbMain.FileNameUnique">
+            <summary>
+            Procedure call that returns unique number to name photo with
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbMain.EmployeeFilter(System.String)">
+            <summary>
+            Stored procedure call that filters employee list 
+            </summary>
+            <param name="myFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbMain.EmployeeAllDocumentScans(System.Int32)">
+            <summary>
+            Stored procedure call that filters employee list 
+            </summary>
+            <param name="myFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetOrganizationsFilter(System.String)">
             <summary>
             Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
             </summary>
             <param name="myFilter"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetDealCardInfo(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetDealCardInfo(System.Guid)">
             <summary>
             Stored procedure call to return current deal data
             </summary>
             <param name="dealId"></param>
             <returns>Deal info</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetContainersByDeal(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetContainersByDeal(System.Guid)">
             <summary>
             Selects containers by current deal 
             </summary>
             <param name="dealId"></param>
             <returns>List of containers</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesByDeal(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetInvoicesByDeal(System.Guid)">
             <summary>
             Selects invoices by current deal using 
             </summary>
             <param name="dealId"></param>
             <returns>list of invoices</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Stored procedure call to return invoice list selected by organization and dates 
             </summary>
@@ -1878,47 +2028,12 @@
             <param name="dateEnd"></param>
             <returns>List of invoices</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.DbOrganization.GetInvoiceLinesByInvoice(System.Int32)">
+        <member name="M:GTIWebAPI.Models.Context.DbMain.GetInvoiceLinesByInvoice(System.Int32)">
             <summary>
             Select view InvoiceLines by invoiceId
             </summary>
             <param name="invoiceId">Invoice Id</param>
             <returns>List of invoice lines</returns>
-        </member>
-        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Addresses">
-            <summary>
-            Addresses block
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Employees">
-            <summary>
-            Employees block
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Context.DbPersonnel.Languages">
-            <summary>
-            Some staff
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.FileNameUnique">
-            <summary>
-            Procedure call that returns unique number to name photo with
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.EmployeeFilter(System.String)">
-            <summary>
-            Stored procedure call that filters employee list 
-            </summary>
-            <param name="myFilter"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.DbPersonnel.EmployeeAllDocumentScans(System.Int32)">
-            <summary>
-            Stored procedure call that filters employee list 
-            </summary>
-            <param name="myFilter"></param>
-            <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Models.Organizations.Organization">
             <summary>

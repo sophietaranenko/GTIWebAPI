@@ -50,6 +50,23 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeFoundationDoc";
             }
         }
+
+        public EmployeeFoundationDocumentDTO ToDTO()
+        {
+            EmployeeFoundationDocumentDTO dto = new EmployeeFoundationDocumentDTO()
+            {
+                FoundationDocument = this.FoundationDocument == null ? null : this.FoundationDocument.ToDTO(),
+                Description =  this.Description,
+                EmployeeId = this.EmployeeId,
+                FoundationDocumentId = this.FoundationDocumentId,
+                Id = this.Id,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number,
+                Seria = this.Seria
+            };
+            return dto;
+        }
     }
 
 

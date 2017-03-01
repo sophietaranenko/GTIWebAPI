@@ -48,6 +48,22 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeDrivingLicense";
             }
         }
+
+        public EmployeeDrivingLicenseDTO ToDTO()
+        {
+            EmployeeDrivingLicenseDTO dto = new EmployeeDrivingLicenseDTO
+            {
+                Category = this.Category,
+                EmployeeId = this.EmployeeId,
+                ExpiryDate = this.ExpiryDate,
+                Id = this.Id,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number,
+                Seria = this.Seria
+            };
+            return dto;
+        }
     }
 
     public class EmployeeDrivingLicenseDTO

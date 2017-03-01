@@ -49,7 +49,7 @@ namespace GTIWebAPI.Novell
 
         public bool CommonNameExist(string commonName)
         {
-           // bHowToProceed = false;
+            // bHowToProceed = false;
             //bindCount = 0;
 
             LdapEntry nextEntry = null;
@@ -142,9 +142,6 @@ namespace GTIWebAPI.Novell
         {
             bool created = false;
 
-            //bHowToProceed = false;
-            //bindCount = 0;
-
             int symbolPosition = email.IndexOf('@');
             string commonName = "new_LDAP_user";
 
@@ -158,7 +155,6 @@ namespace GTIWebAPI.Novell
 
             if (commonName != "")
             {
-
                 try
                 {
                     LdapAttributeSet attributeSet = new LdapAttributeSet();
@@ -168,14 +164,11 @@ namespace GTIWebAPI.Novell
                     new string[] { commonName }));
                     attributeSet.Add(new LdapAttribute("givenname", commonName));
                     attributeSet.Add(new LdapAttribute("sn", commonName));
-                    //attributeSet.Add(new LdapAttribute("telephonenumber", ""));
                     attributeSet.Add(new LdapAttribute("mail", email));
                     attributeSet.Add(new LdapAttribute("userpassword", password));
 
                     string dn = "cn=" + commonName + "," + containerName;
                     LdapEntry newEntry = new LdapEntry(dn, attributeSet);
-
-                    //Bind("192.168.0.20", "cn=gtildap,ou=odessa,o=world", "wemayont");
                     ldapConn.Add(newEntry);
                     created = true;
                 }
@@ -184,28 +177,23 @@ namespace GTIWebAPI.Novell
                     throw e;
                 }
             }
-
             return created;
-
         }
 
         private string GenerateCN(string commonName)
         {
             bool cnExist = true;
-            if (cnExist == true)
+
+            if (CommonNameExist(commonName))
             {
                 for (int i = 1; ; i++)
                 {
-                    cnExist = CommonNameExist(commonName);
-                    if (cnExist == true)
+                    cnExist = CommonNameExist(commonName + "_" + i.ToString().Trim());
+                    if (cnExist == false)
                     {
-                        commonName = commonName + i.ToString().Trim();
-                    }
-                    else
-                    {
+                        commonName = commonName + "_" + i.ToString().Trim();
                         break;
                     }
-
                 }
             }
             return commonName;

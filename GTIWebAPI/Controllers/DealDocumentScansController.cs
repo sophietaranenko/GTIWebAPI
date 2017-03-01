@@ -13,61 +13,123 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Document scans that person attaches to deal 
+    /// </summary>
     [RoutePrefix("api/DealDocumentScans")]
     public class DealDocumentScansController : ApiController
     {
-        DbOrganization db = new DbOrganization();
-
+        /// <summary>
+        /// To get all scan types (types of document type we attach - BL, CMR etc.) 
+        /// </summary>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetDocumentScanTypes")]
-        public IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
+        [ResponseType(typeof(IEnumerable<DocumentScanTypeDTO>))]
+        public IHttpActionResult GetDocumentScanTypes()
         {
             IEnumerable<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
-            dtos = db.GetDocumentScanTypes();
-            return dtos;
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.GetDocumentScanTypes();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
+        /// <summary>
+        /// Get one document scan by id of deal it is attached to 
+        /// </summary>
+        /// <param name="dealId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByDealId")]
-        public IEnumerable<DocumentScanDTO> GetDocumentScansByDealId(Guid dealId)
+        [ResponseType(typeof(IEnumerable<DocumentScanDTO>))]
+        public IHttpActionResult GetDocumentScansByDealId(Guid dealId)
         {
             IEnumerable<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
-            dtos = db.GetDocumentScanByDeal(dealId);
-            return dtos;
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.GetDocumentScanByDeal(dealId);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
+        /// <summary>
+        /// We can update only type of document to deal document scan. Otherwise we need to delete and upload new document scan. 
+        /// </summary>
+        /// <param name="scanId"></param>
+        /// <param name="documentScanTypeId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         public IHttpActionResult PutDealDocumentScan(Guid scanId, int documentScanTypeId)
         {
-            DocumentScanDTO dto = db.GetDealDocumentScanById(scanId);
-            if (dto != null)
-            {
-                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                if (user != null)
-                {
-                    string email = user.Email;
+            DocumentScanDTO dto = new DocumentScanDTO();
 
-                    if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+            //everything must be all right when return into using (Stackoverflow told me!) 
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dto = db.GetDealDocumentScanById(scanId);
+                    if (dto != null)
                     {
-                        dto = db.UpdateDocumentScanType(scanId, documentScanTypeId);
-                        if (dto != null)
+                        string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                        ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+                        if (user != null)
                         {
-                            return Ok(dto);
+                            string email = user.Email;
+
+                            if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+                            {
+                                dto = db.UpdateDocumentScanType(scanId, documentScanTypeId);
+                                if (dto != null)
+                                {
+                                    return Ok(dto);
+                                }
+                            }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
             return BadRequest();
         }
 
+        /// <summary>
+        /// Upload new document scan to some deal by deal id 
+        /// </summary>
+        /// <param name="documentScanTypeId"></param>
+        /// <param name="dealId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Upload")]
@@ -93,55 +155,92 @@ namespace GTIWebAPI.Controllers
                 {
                     var postedFile = httpRequest.Files[file];
                     byte[] fileData = null;
-                    using (var binaryReader = new BinaryReader(postedFile.InputStream))
+                    try
                     {
-                        fileData = binaryReader.ReadBytes(postedFile.ContentLength);
+                        using (var binaryReader = new BinaryReader(postedFile.InputStream))
+                        {
+                            fileData = binaryReader.ReadBytes(postedFile.ContentLength);
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        return BadRequest("Error reading file");
+                    }
+
                     fileContent = fileData;
                     fileName = postedFile.FileName;
-                    Guid scanId = db.InsertDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
-                    dto = db.GetDealDocumentScanById(scanId);
+                    try
+                    {
+                        using (DbMain db = new DbMain(User))
+                        {
+                            Guid scanId = db.InsertDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
+                            dto = db.GetDealDocumentScanById(scanId);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest();
+                    }
                 }
-                return Ok(dto);
+
             }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok(dto);
+
+
         }
 
-
+        /// <summary>
+        /// Delete document scan by its id 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("Delete")]
         public IHttpActionResult DeleteDealDocumentScan(Guid id)
         {
-            DocumentScanDTO dto = db.GetDealDocumentScanById(id);
-            if (dto != null)
-            {
-                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                if (user != null)
-                {
-                    string email = user.Email;
+            DocumentScanDTO dto = new DocumentScanDTO();
 
-                    if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+
+                    db.GetDealDocumentScanById(id);
+
+                    if (dto != null)
                     {
-                        bool result = db.DeleteDocumentScan(id);
-                        if (result == true)
+                        string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                        ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+                        if (user != null)
                         {
-                            return Ok();
-                        }
-                        else
-                        {
-                            return BadRequest();
+                            string email = user.Email;
+
+                            if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+                            {
+                                bool result = db.DeleteDocumentScan(id);
+                                if (result == true)
+                                {
+                                    return Ok();
+                                }
+                                else
+                                {
+                                    return BadRequest();
+                                }
+                            }
+                            else
+                            {
+                                return BadRequest("Sorry you can delete only your own uploads");
+                            }
                         }
                     }
-                    else
-                    {
-                        return BadRequest("Sorry you can delete only your own uploads");
-                    }
+
                 }
             }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             return BadRequest();
         }
 

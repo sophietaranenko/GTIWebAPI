@@ -13,11 +13,12 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Persons with whom our company has business  
+    /// </summary>
     [RoutePrefix("api/OrganizationContactPersonContacts")]
     public class OrganizationContactPersonContactsController : ApiController
     {
-        private DbOrganization db = new DbOrganization();
-
         /// <summary>
         /// Get employee contacts by employee id 
         /// </summary>
@@ -27,12 +28,27 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByOrganizationContactPersonId")]
         [ResponseType(typeof(IEnumerable<OrganizationContactPersonContactDTO>))]
-        public IEnumerable<OrganizationContactPersonContactDTO> GetOrganizationContactPersonContactByOrganizationContactPersonId(int organizationContactPersonId)
+        public IHttpActionResult GetOrganizationContactPersonContactByOrganizationContactPersonId(int organizationContactPersonId)
         {
-            List<OrganizationContactPersonContact> ptoperties = db.OrganizationContactPersonContacts
-                .Where(p => p.Deleted != true && p.OrganizationContactPersonId == organizationContactPersonId).ToList();
-            List<OrganizationContactPersonContactDTO> dtos = ptoperties.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            List<OrganizationContactPersonContact> organizationContactPersonContacts = new List<OrganizationContactPersonContact>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationContactPersonContacts = db.OrganizationContactPersonContacts
+                .Where(p => p.Deleted != true && p.OrganizationContactPersonId == organizationContactPersonId)
+                .Include(d => d.ContactType)
+                .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            List<OrganizationContactPersonContactDTO> dtos = organizationContactPersonContacts.Select(p => p.ToDTO()).ToList();
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -46,12 +62,30 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationContactPersonContactDTO))]
         public IHttpActionResult GetOrganizationContactPersonContact(int id)
         {
-            OrganizationContactPersonContact contact = db.OrganizationContactPersonContacts.Find(id);
-            if (contact == null)
+            OrganizationContactPersonContact organizationContactPersonContact = new OrganizationContactPersonContact();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationContactPersonContact = db.OrganizationContactPersonContacts.Find(id);
+                    if (organizationContactPersonContact != null)
+                    {
+                        db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            if (organizationContactPersonContact == null)
             {
                 return NotFound();
             }
-            OrganizationContactPersonContactDTO dto = contact.ToDTO();
+
+            OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
             return Ok(dto);
         }
 
@@ -79,29 +113,32 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(organizationContactPersonContact).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrganizationContactPersonContactExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(organizationContactPersonContact).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationContactPersonContactExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
                 }
             }
-
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationContactPersonContact.ContactTypeId != null)
+            catch (Exception e)
             {
-                organizationContactPersonContact.ContactType = db.ContactTypes.Find(organizationContactPersonContact.ContactTypeId);
+                return BadRequest();
             }
             OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
             return Ok(dto);
@@ -122,35 +159,43 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            organizationContactPersonContact.Id = organizationContactPersonContact.NewId(db);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.OrganizationContactPersonContacts.Add(organizationContactPersonContact);
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+
+                    organizationContactPersonContact.Id = organizationContactPersonContact.NewId(db);
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
+
+                    db.OrganizationContactPersonContacts.Add(organizationContactPersonContact);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (OrganizationContactPersonContactExists(organizationContactPersonContact.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
+                }
+
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                if (OrganizationContactPersonContactExists(organizationContactPersonContact.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationContactPersonContact.ContactTypeId != null)
-            {
-                organizationContactPersonContact.ContactType = db.ContactTypes.Find(organizationContactPersonContact.ContactTypeId);
-            }
             OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
             return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
         }
@@ -166,27 +211,44 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationContactPersonContact))]
         public IHttpActionResult DeleteOrganizationContactPersonContact(int id)
         {
-            OrganizationContactPersonContact organizationContactPersonContact = db.OrganizationContactPersonContacts.Find(id);
-            if (organizationContactPersonContact == null)
-            {
-                return NotFound();
-            }
-            organizationContactPersonContact.Deleted = true;
-            db.Entry(organizationContactPersonContact).State = EntityState.Modified;
+            OrganizationContactPersonContact organizationContactPersonContact = new OrganizationContactPersonContact();
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationContactPersonContact = db.OrganizationContactPersonContacts.Find(id);
+                    if (organizationContactPersonContact == null)
+                    {
+                        return NotFound();
+                    }
+                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
+
+                    organizationContactPersonContact.Deleted = true;
+
+
+                    db.Entry(organizationContactPersonContact).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationContactPersonContactExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                }
+
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationContactPersonContactExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
             OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
             return Ok(dto);
@@ -198,16 +260,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool OrganizationContactPersonContactExists(int id)
         {
-            return db.OrganizationContactPersonContacts.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.OrganizationContactPersonContacts.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

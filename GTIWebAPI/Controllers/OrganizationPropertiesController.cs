@@ -16,8 +16,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationProperties")]
     public class OrganizationPropertiesController : ApiController
     {
-        private DbOrganization db = new DbOrganization();
-
         /// <summary>
         /// Get employee propertys by employee id 
         /// </summary>
@@ -27,12 +25,28 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByOrganizationId")]
         [ResponseType(typeof(IEnumerable<OrganizationPropertyDTO>))]
-        public IEnumerable<OrganizationPropertyDTO> GetOrganizationPropertyByOrganizationId(int organizationId)
+        public IHttpActionResult GetOrganizationPropertyByOrganizationId(int organizationId)
         {
-            List<OrganizationProperty> ptoperties = db.OrganizationProperties
-                .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
-            List<OrganizationPropertyDTO> dtos = ptoperties.Select(p => p.ToDTO()).ToList();
-            return dtos;
+            List<OrganizationProperty> properties = new List<OrganizationProperty>();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    properties = db.OrganizationProperties
+                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
+                    .Include(d => d.OrganizationPropertyType)
+                    .Include(d => d.OrganizationPropertyType.OrganizationPropertyTypeAlias)
+                    .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            List<OrganizationPropertyDTO> dtos = properties.Select(p => p.ToDTO()).ToList();
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -46,12 +60,34 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationPropertyDTO))]
         public IHttpActionResult GetOrganizationProperty(int id)
         {
-            OrganizationProperty property = db.OrganizationProperties.Find(id);
-            if (property == null)
+            OrganizationProperty organizationProperty = new OrganizationProperty();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationProperty = db.OrganizationProperties.Find(id);
+                    if (organizationProperty != null)
+                    {
+                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
+                        if (organizationProperty.OrganizationPropertyType != null)
+                        {
+                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
+                        }
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            if (organizationProperty == null)
             {
                 return NotFound();
             }
-            OrganizationPropertyDTO dto = property.ToDTO();
+            OrganizationPropertyDTO dto = organizationProperty.ToDTO();
             return Ok(dto);
         }
 
@@ -79,30 +115,54 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(organizationProperty).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+
+                    OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
+                    int? propertyCountryId = propertyType.CountryId;
+                    Organization organization = db.Organizations.Find(organizationProperty.OrganizationId);
+                    int? organizationCountryId = organization.CountryId;
+                    if (propertyCountryId != organizationCountryId)
+                    {
+                        return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
+                    }
+
+
+                    db.Entry(organizationProperty).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationPropertyExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    if (organizationProperty != null)
+                    {
+                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
+                        if (organizationProperty.OrganizationPropertyType != null)
+                        {
+                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
+                        }
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationPropertyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationProperty.OrganizationPropertyTypeId != null)
-            {
-                organizationProperty.OrganizationPropertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
-            }
+
             OrganizationPropertyDTO dto = organizationProperty.ToDTO();
             return Ok(dto);
         }
@@ -122,35 +182,58 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            organizationProperty.Id = organizationProperty.NewId(db);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.OrganizationProperties.Add(organizationProperty);
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
+                    int? propertyCountryId = propertyType.CountryId;
+                    Organization organization = db.Organizations.Find(organizationProperty.OrganizationId);
+                    int? organizationCountryId = organization.CountryId;
+                    if (propertyCountryId != organizationCountryId)
+                    {
+                        return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
+                    }
+
+                    organizationProperty.Id = organizationProperty.NewId(db);
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
+                    db.OrganizationProperties.Add(organizationProperty);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (OrganizationPropertyExists(organizationProperty.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    if (organizationProperty != null)
+                    {
+                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
+                        if (organizationProperty.OrganizationPropertyType != null)
+                        {
+                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
+                        }
+                    }
+                }
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                if (OrganizationPropertyExists(organizationProperty.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-            if (organizationProperty.OrganizationPropertyTypeId != null)
-            {
-                organizationProperty.OrganizationPropertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
-            }
             OrganizationPropertyDTO dto = organizationProperty.ToDTO();
             return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
         }
@@ -173,43 +256,51 @@ namespace GTIWebAPI.Controllers
 
             List<OrganizationPropertyDTO> propertiesToReturn = new List<OrganizationPropertyDTO>();
 
-            foreach (var item in properties)
-            {
-                OrganizationProperty organizationProperty = new OrganizationProperty()
-                {
-                    DateBegin = null,
-                    DateEnd = null,
-                    Deleted = null,
-                    OrganizationId = item.OrganizationId,
-                    OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
-                    Value = item.Value
-                };
-                organizationProperty.Id = organizationProperty.NewId(db);
-                db.OrganizationProperties.Add(organizationProperty);
-
-
-                if (organizationProperty.OrganizationPropertyTypeId != null)
-                {
-                    organizationProperty.OrganizationPropertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
-                }
-                OrganizationPropertyDTO dto = organizationProperty.ToDTO();
-                propertiesToReturn.Add(dto);
-            }
-
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    foreach (var item in properties)
+                    {
+                        OrganizationProperty organizationProperty = new OrganizationProperty()
+                        {
+                            DateBegin = null,
+                            DateEnd = null,
+                            Deleted = null,
+                            OrganizationId = item.OrganizationId,
+                            OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
+                            Value = item.Value
+                        };
+                        organizationProperty.Id = organizationProperty.NewId(db);
+                        db.OrganizationProperties.Add(organizationProperty);
+
+
+                        if (organizationProperty != null)
+                        {
+                            db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
+                            if (organizationProperty.OrganizationPropertyType != null)
+                            {
+                                db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
+                            }
+                        }
+                        OrganizationPropertyDTO dto = organizationProperty.ToDTO();
+                        propertiesToReturn.Add(dto);
+                    }
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        throw;
+                    }
+                }
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                    throw;
+                return BadRequest();
             }
-
-            //Reload method of db context doesn't work
-            //Visitor extension of dbContext doesn't wotk
-            //that's why we reload related entities manually
-
-
             return Ok(propertiesToReturn);
         }
 
@@ -224,28 +315,48 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationProperty))]
         public IHttpActionResult DeleteOrganizationProperty(int id)
         {
-            OrganizationProperty organizationProperty = db.OrganizationProperties.Find(id);
-            if (organizationProperty == null)
-            {
-                return NotFound();
-            }
-            organizationProperty.Deleted = true;
-            db.Entry(organizationProperty).State = EntityState.Modified;
+            OrganizationProperty organizationProperty = new OrganizationProperty();
+
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    organizationProperty = db.OrganizationProperties.Find(id);
+                    if (organizationProperty == null)
+                    {
+                        return NotFound();
+                    }
+
+                    db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
+                    if (organizationProperty.OrganizationPropertyType != null)
+                    {
+                        db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
+                    }
+
+                    organizationProperty.Deleted = true;
+                    db.Entry(organizationProperty).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!OrganizationPropertyExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!OrganizationPropertyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
+
             OrganizationPropertyDTO dto = organizationProperty.ToDTO();
             return Ok(dto);
         }
@@ -256,16 +367,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool OrganizationPropertyExists(int id)
         {
-            return db.OrganizationProperties.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.OrganizationProperties.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

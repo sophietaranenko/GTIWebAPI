@@ -16,33 +16,43 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Employee's positions in departments of offices 
+    /// </summary>
     [RoutePrefix("api/EmployeeOffices")]
     public class EmployeeOfficeController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
 
         /// <summary>
         /// Get all positions
         /// </summary>
         /// <returns></returns>
-      //  [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeOfficeDTO> GetEmployeeOfficeAll()
+        [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
+        public IHttpActionResult GetEmployeeOfficeAll()
         {
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
+            IEnumerable<EmployeeOfficeDTO> dtos = new List<EmployeeOfficeDTO>();
 
-            IEnumerable<EmployeeOfficeDTO> dtos =
-                Mapper.Map<IEnumerable<EmployeeOffice>, IEnumerable<EmployeeOfficeDTO>>
-                (db.EmployeeOffices.Where(e => e.Deleted != true).ToList());
-            return dtos;
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeOffices.Where(e => e.Deleted != true)
+                        .Include(d => d.Profession)
+                        .Include(d => d.Office)
+                        .Include(d => d.Department)
+                        .ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            } 
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -50,23 +60,33 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeId">Employee id</param>
         /// <returns></returns>
-       // [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        public IEnumerable<EmployeeOfficeDTO> GetEmployeeOfficeByEmployeeId(int employeeId)
+        [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
+        public IHttpActionResult GetEmployeeOfficeByEmployeeId(int employeeId)
         {
-            Mapper.Initialize(m =>
+
+            IEnumerable<EmployeeOfficeDTO> dtos = new List<EmployeeOfficeDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            IEnumerable<EmployeeOfficeDTO> dtos =
-                Mapper.Map<IEnumerable<EmployeeOffice>, IEnumerable<EmployeeOfficeDTO>>
-                (db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId)
+                        .Include(d => d.Profession)
+                        .Include(d => d.Office)
+                        .Include(d => d.Department)
+                        .ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -74,26 +94,38 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-      //  [RequireHttps]
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeOffice")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult GetEmployeeOffice(int id)
         {
-            EmployeeOffice employeeOffice = db.EmployeeOffices.Find(id);
+            EmployeeOffice employeeOffice = new EmployeeOffice();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    employeeOffice = db.EmployeeOffices.Find(id);
+                    if (employeeOffice != null)
+                    {
+                        db.Entry(employeeOffice).Reference(d => d.Department).Load();
+                        db.Entry(employeeOffice).Reference(d => d.Office).Load();
+                        db.Entry(employeeOffice).Reference(d => d.Profession).Load();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (employeeOffice == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
+
+            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
             return Ok(dto);
         }
 
@@ -103,7 +135,6 @@ namespace GTIWebAPI.Controllers
         /// <param name="id">id of position</param>
         /// <param name="employeeOffice">EmployeeOffice</param>
         /// <returns></returns>
-       // [RequireHttps]
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
@@ -118,33 +149,38 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeOffice).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeOfficeExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeOffice).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeOfficeExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
+                    employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
+                    employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
                 }
             }
-            employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
-            employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-            employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
+                return BadRequest();
+            }
+
+            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
             return Ok(dto);
         }
 
@@ -153,44 +189,47 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="employeeOffice">EmployeeOffice object contains id = 0</param>
         /// <returns></returns>
-       // [RequireHttps]
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult PostEmployeeOffice(EmployeeOffice employeeOffice)
         {
-            employeeOffice.Id = employeeOffice.NewId(db);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            db.EmployeeOffices.Add(employeeOffice);
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeOfficeExists(employeeOffice.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeOffice.Id = employeeOffice.NewId(db);
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    db.EmployeeOffices.Add(employeeOffice);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeOfficeExists(employeeOffice.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
+                    employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
+                    employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
                 }
             }
-            employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
-            employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-            employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
+                return BadRequest();
+            }
+
             EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
             return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
         }
@@ -200,60 +239,68 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="id">id of document</param>
         /// <returns></returns>
-       // [RequireHttps]
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult DeleteEmployeeOffice(int id)
         {
-            EmployeeOffice employeeOffice = db.EmployeeOffices.Find(id);
-            if (employeeOffice == null)
-            {
-                return NotFound();
-            }
+            EmployeeOffice employeeOffice = new EmployeeOffice();
 
-            employeeOffice.Deleted = true;
-            db.Entry(employeeOffice).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeOfficeExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeOffice = db.EmployeeOffices.Find(id);
+
+                    if (employeeOffice == null)
+                    {
+                        return NotFound();
+                    }
+                    db.Entry(employeeOffice).Reference(d => d.Department).Load();
+                    db.Entry(employeeOffice).Reference(d => d.Office).Load();
+                    db.Entry(employeeOffice).Reference(d => d.Profession).Load();
+
+                    employeeOffice.Deleted = true;
+                    db.Entry(employeeOffice).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeOfficeExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeOffice, EmployeeOfficeDTO>();
-                m.CreateMap<Department, DepartmentDTO>();
-                m.CreateMap<Profession, ProfessionDTO>();
-                m.CreateMap<Office, OfficeDTO>();
-            });
-            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
+                return BadRequest();
+            }
+
+            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
 
             return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeOfficeExists(int id)
         {
-            return db.EmployeeOffices.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeOffices.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

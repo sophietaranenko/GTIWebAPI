@@ -1,46 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
-using AutoMapper;
+using System;
 
 namespace GTIWebAPI.Controllers
 {
+    /// <summary>
+    /// Driving license is a document employee needs to drive a car 
+    /// </summary>
     [RoutePrefix("api/EmployeeDrivingLicenses")]
     public class EmployeeDrivingLicensesController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
-        /// All drivingLicenses
+        /// All driving licenses
         /// </summary>
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeDrivingLicenseDTO> GetEmployeeDrivingLicenseAll()
+        [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
+        public IHttpActionResult GetEmployeeDrivingLicenseAll()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeDrivingLicenseDTO> dtos = new List<EmployeeDrivingLicenseDTO>();
+            try
             {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            IEnumerable<EmployeeDrivingLicenseDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeDrivingLicense>, IEnumerable<EmployeeDrivingLicenseDTO>>
-                (db.EmployeeDrivingLicenses.Where(p => p.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeDrivingLicenses.Where(p => p.Deleted != true).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+            return Ok(dtos);
         }
 
         /// <summary>
-        /// Get employee drivingLicense by employee id for VIEW
+        /// Get employee driving license by employee id 
         /// </summary>
         /// <param name="employeeId">Employee Id</param>
         /// <returns>Collection of EmployeeDrivingLicenseDTO</returns>
@@ -48,20 +53,28 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
-        public IEnumerable<EmployeeDrivingLicenseDTO> GetEmployeeDrivingLicenseByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeeDrivingLicenseByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeDrivingLicenseDTO> dtos = new List<EmployeeDrivingLicenseDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            IEnumerable<EmployeeDrivingLicenseDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeDrivingLicense>, IEnumerable<EmployeeDrivingLicenseDTO>>
-                (db.EmployeeDrivingLicenses.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeDrivingLicenses.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
-        /// Get one drivingLicense for view by drivingLicense id
+        /// Get one driving license for view by driving license id
         /// </summary>
         /// <param name="id">EmployeeDrivingLicense id</param>
         /// <returns>EmployeeDrivingLicenseEditDTO object</returns>
@@ -71,24 +84,33 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
         public IHttpActionResult GetDrivingLicense(int id)
         {
-            EmployeeDrivingLicense drivingLicense = db.EmployeeDrivingLicenses.Find(id);
-            if (drivingLicense == null)
+            EmployeeDrivingLicense employeeDrivingLicense = new EmployeeDrivingLicense();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Troubles with database connection");
+            }
+
+            if (employeeDrivingLicense == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicenseDTO>(drivingLicense);
+            EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
             return Ok(dto);
         }
 
-        
+
         /// <summary>
-        /// Update employee drivingLicense
+        /// Update employee driving license
         /// </summary>
-        /// <param name="id">DrivingLicense id</param>
+        /// <param name="id">Driving license id</param>
         /// <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
         /// <returns>204 - No content</returns>
         [GTIFilter]
@@ -109,32 +131,39 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeDrivingLicense).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeDrivingLicenseExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeDrivingLicense).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeDrivingLicenseExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
             return Ok(dto);
         }
 
         /// <summary>
-        /// Insert new employee drivingLicense
+        /// Insert new employee driving license
         /// </summary>
         /// <param name="employeeDrivingLicense">EmployeeDrivingLicense object</param>
         /// <returns></returns>
@@ -152,37 +181,43 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            employeeDrivingLicense.Id = employeeDrivingLicense.NewId(db);
-            db.EmployeeDrivingLicenses.Add(employeeDrivingLicense);
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeDrivingLicenseExists(employeeDrivingLicense.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeDrivingLicense.Id = employeeDrivingLicense.NewId(db);
+                    db.EmployeeDrivingLicenses.Add(employeeDrivingLicense);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeDrivingLicenseExists(employeeDrivingLicense.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
             return CreatedAtRoute("GetDrivingLicense", new { id = dto.Id }, dto);
         }
 
         /// <summary>
-        /// Delete drivingLicense
+        /// Delete driving license
         /// </summary>
-        /// <param name="id">DrivingLicense Id</param>
+        /// <param name="id">Driving license id</param>
         /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
@@ -190,33 +225,42 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeDrivingLicense))]
         public IHttpActionResult DeleteEmployeeDrivingLicense(int id)
         {
-            EmployeeDrivingLicense employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
-            if (employeeDrivingLicense == null)
-            {
-                return NotFound();
-            }
-            employeeDrivingLicense.Deleted = true;
-            db.Entry(employeeDrivingLicense).State = EntityState.Modified;
+            EmployeeDrivingLicense employeeDrivingLicense = new EmployeeDrivingLicense();
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeDrivingLicenseExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
+                    if (employeeDrivingLicense == null)
+                    {
+                        return NotFound();
+                    }
+                    employeeDrivingLicense.Deleted = true;
+                    db.Entry(employeeDrivingLicense).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeDrivingLicenseExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>();
-            });
-            EmployeeDrivingLicenseDTO dto = Mapper.Map<EmployeeDrivingLicense, EmployeeDrivingLicenseDTO>(employeeDrivingLicense);
+                return BadRequest("Troubles with database connection");
+            }
+
+            EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
             return Ok(dto);
         }
 
@@ -226,16 +270,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeDrivingLicenseExists(int id)
         {
-            return db.EmployeeDrivingLicenses.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeDrivingLicenses.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

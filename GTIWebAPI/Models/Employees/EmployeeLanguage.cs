@@ -51,6 +51,24 @@ namespace GTIWebAPI.Models.Employees
                 return "EmployeeLanguage";
             }
         }
+
+        public EmployeeLanguageDTO ToDTO()
+        {
+            EmployeeLanguageDTO dto = new EmployeeLanguageDTO()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Definition = this.Definition,
+                EmployeeId = this.EmployeeId,
+                EmployeeLanguageType = this.EmployeeLanguageType == null ? null : this.EmployeeLanguageType.ToDTO(),
+                EmployeeLanguageTypeId = this.EmployeeLanguageTypeId,
+                Id = this.Id,
+                Language = this.Language == null ? null : this.Language.ToDTO(),
+                LanguageId = this.LanguageId,
+                Remark = this.Remark
+            };
+            return dto;
+        }
     }
 
     public class EmployeeLanguageDTO

@@ -17,8 +17,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationLegalForms")]
     public class OrganizationLegalFormsController : ApiController
     {
-        DbOrganization db = new DbOrganization();
-
         /// <summary>
         /// Get one contact for edit by contact id
         /// </summary>
@@ -30,17 +28,25 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationLegalFormDTO))]
         public IHttpActionResult GetOrganizationLegalForm(int id)
         {
-            OrganizationLegalForm form = db.OrganizationLegalForms.Find(id);
+            OrganizationLegalForm form = new OrganizationLegalForm();
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    form = db.OrganizationLegalForms.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (form == null)
             {
                 return NotFound();
             }
-            AutoMapper.Mapper.Initialize(m =>
-            {
-                m.CreateMap<OrganizationLegalForm, OrganizationLegalFormDTO>();
-            });
 
-            OrganizationLegalFormDTO dto = AutoMapper.Mapper.Map<OrganizationLegalForm, OrganizationLegalFormDTO>(form);
+            OrganizationLegalFormDTO dto = form.ToDTO();
             return Ok(dto);
         }
 
@@ -63,32 +69,45 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            form.Id = form.NewId(db);
-            db.OrganizationLegalForms.Add(form);
-
             try
             {
-                db.SaveChanges();
+                using (DbMain db = new DbMain(User))
+                {
+                    form.Id = form.NewId(db);
+                    db.OrganizationLegalForms.Add(form);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (OrganizationLegalFormExists(form.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                if (OrganizationLegalFormExists(form.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
+
             OrganizationLegalFormDTO dto = new OrganizationLegalFormDTO { Id = form.Id, Name = form.Name, Explanation = form.Explanation };
             return CreatedAtRoute("GetOrganizationLegalForm", new { id = dto.Id }, dto);
         }
 
         private bool OrganizationLegalFormExists(int id)
         {
-            return db.OrganizationLegalForms.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            { 
+                return db.OrganizationLegalForms.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }

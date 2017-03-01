@@ -18,8 +18,6 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeMilitaryCards")]
     public class EmployeeMilitaryCardsController : ApiController
     {
-        private DbPersonnel db = new DbPersonnel();
-
         /// <summary>
         /// All militaryCards
         /// </summary>
@@ -27,16 +25,25 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<EmployeeMilitaryCardDTO> GetEmployeeMilitaryCardAll()
+        [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
+        public IHttpActionResult GetEmployeeMilitaryCardAll()
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeMilitaryCardDTO> dtos = new List<EmployeeMilitaryCardDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            IEnumerable<EmployeeMilitaryCardDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeMilitaryCard>, IEnumerable<EmployeeMilitaryCardDTO>>
-                (db.EmployeeMilitaryCards.Where(p => p.Deleted != true).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeMilitaryCards.Where(p => p.Deleted != true).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -48,16 +55,24 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
-        public IEnumerable<EmployeeMilitaryCardDTO> GetEmployeeMilitaryCardByEmployee(int employeeId)
+        public IHttpActionResult GetEmployeeMilitaryCardByEmployee(int employeeId)
         {
-            Mapper.Initialize(m =>
+            IEnumerable<EmployeeMilitaryCardDTO> dtos = new List<EmployeeMilitaryCardDTO>();
+
+            try
             {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            IEnumerable<EmployeeMilitaryCardDTO> dtos = Mapper
-                .Map<IEnumerable<EmployeeMilitaryCard>, IEnumerable<EmployeeMilitaryCardDTO>>
-                (db.EmployeeMilitaryCards.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList());
-            return dtos;
+                using (DbMain db = new DbMain(User))
+                {
+                    dtos = db.EmployeeMilitaryCards.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
+                        .Select(d => d.ToDTO()).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
+            return Ok(dtos);
         }
 
         /// <summary>
@@ -71,16 +86,26 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeMilitaryCardDTO))]
         public IHttpActionResult GetEmployeeMilitaryCardView(int id)
         {
-            EmployeeMilitaryCard militaryCard = db.EmployeeMilitaryCards.Find(id);
+            EmployeeMilitaryCard militaryCard = new EmployeeMilitaryCard();
+
+            try
+            {
+                using (DbMain db = new DbMain(User))
+                {
+                    militaryCard = db.EmployeeMilitaryCards.Find(id);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
             if (militaryCard == null)
             {
                 return NotFound();
             }
-            Mapper.Initialize(m =>
-            {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCardDTO>(militaryCard);
+
+            EmployeeMilitaryCardDTO dto = militaryCard.ToDTO();
             return Ok(dto);
         }
 
@@ -109,27 +134,35 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            db.Entry(employeeMilitaryCard).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeMilitaryCardExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Entry(employeeMilitaryCard).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeMilitaryCardExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
+                return BadRequest();
+            }
+
+            EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
             return Ok(dto);
         }
 
@@ -153,29 +186,37 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employeeMilitaryCard.Id = employeeMilitaryCard.NewId(db);
-            db.EmployeeMilitaryCards.Add(employeeMilitaryCard);
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (EmployeeMilitaryCardExists(employeeMilitaryCard.Id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
+                    employeeMilitaryCard.Id = employeeMilitaryCard.NewId(db);
+                    db.EmployeeMilitaryCards.Add(employeeMilitaryCard);
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        if (EmployeeMilitaryCardExists(employeeMilitaryCard.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
+                return BadRequest();
+            }
+
+
+            EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
             return CreatedAtRoute("GetEmployeeMilitaryCard", new { id = dto.Id }, dto);
         }
 
@@ -190,33 +231,42 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeMilitaryCard))]
         public IHttpActionResult DeleteEmployeeMilitaryCard(int id)
         {
-            EmployeeMilitaryCard employeeMilitaryCard = db.EmployeeMilitaryCards.Find(id);
-            if (employeeMilitaryCard == null)
-            {
-                return NotFound();
-            }
-            employeeMilitaryCard.Deleted = true;
-            db.Entry(employeeMilitaryCard).State = EntityState.Modified;
+            EmployeeMilitaryCard employeeMilitaryCard = new EmployeeMilitaryCard();
+
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeMilitaryCardExists(id))
+                using (DbMain db = new DbMain(User))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    employeeMilitaryCard = db.EmployeeMilitaryCards.Find(id);
+                    if (employeeMilitaryCard == null)
+                    {
+                        return NotFound();
+                    }
+                    employeeMilitaryCard.Deleted = true;
+                    db.Entry(employeeMilitaryCard).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!EmployeeMilitaryCardExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            Mapper.Initialize(m =>
+            catch (Exception e)
             {
-                m.CreateMap<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>();
-            });
-            EmployeeMilitaryCardDTO dto = Mapper.Map<EmployeeMilitaryCard, EmployeeMilitaryCardDTO>(employeeMilitaryCard);
+                return BadRequest();
+            }
+
+            EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
             return Ok(dto);
         }
 
@@ -226,16 +276,15 @@ namespace GTIWebAPI.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private bool EmployeeMilitaryCardExists(int id)
         {
-            return db.EmployeeMilitaryCards.Count(e => e.Id == id) > 0;
+            using (DbMain db = new DbMain(User))
+            {
+                return db.EmployeeMilitaryCards.Count(e => e.Id == id) > 0;
+            }
         }
     }
 }
