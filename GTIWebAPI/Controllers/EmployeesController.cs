@@ -83,41 +83,91 @@ namespace GTIWebAPI.Controllers
                         return NotFound();
                     }
 
-                    if (employee.AddressId != null)
+                    db.Entry(employee).Reference(d => d.Address).Load();
+                    if (employee.Address != null)
                     {
-                        employee.Address = db.Addresses.Find(employee.AddressId);
+                        db.Entry(employee.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employee.Address).Reference(d => d.Country).Load();
+
                     }
 
                     employeeDTO = employee.ToDTOView();
 
-                    List<EmployeeOffice> offices = db.EmployeeOffices.Where(o => o.Deleted != true && o.EmployeeId == id).ToList();
+                    List<EmployeeOffice> offices = 
+                        db.EmployeeOffices
+                        .Where(o => o.Deleted != true && o.EmployeeId == id)
+                        .Include(d => d.Department)
+                        .Include(d => d.Office)
+                        .Include(d => d.Profession)
+                        .ToList();
                     employeeDTO.EmployeeOffice = offices.Select(o => o.ToDTO());
 
-                    List<EmployeePassport> passports = db.EmployeePassports.Where(p => p.Deleted != true && p.EmployeeId == id).ToList();
+                    List<EmployeePassport> passports = 
+                        db.EmployeePassports
+                        .Where(p => p.Deleted != true && p.EmployeeId == id)
+                        .Include(d => d.Address)
+                        .Include(d => d.Address.AddressLocality)
+                        .Include(d => d.Address.AddressPlace)
+                        .Include(d => d.Address.AddressRegion)
+                        .Include(d => d.Address.AddressVillage)
+                        .Include(d => d.Address.Country)
+                        .ToList();
                     employeeDTO.EmployeePassport = passports.Select(p => p.ToDTO()).ToList();
 
-                    List<EmployeeMilitaryCard> cards = db.EmployeeMilitaryCards.Where(m => m.Deleted != true && m.EmployeeId == id).ToList();
+                    List<EmployeeMilitaryCard> cards = 
+                        db.EmployeeMilitaryCards
+                        .Where(m => m.Deleted != true && m.EmployeeId == id)
+                        .ToList();
                     employeeDTO.EmployeeMilitaryCard = cards.Select(m => m.ToDTO()).ToList();
 
-                    List<EmployeeLanguage> languages = db.EmployeeLanguages.Where(l => l.Deleted != true && l.EmployeeId == id).ToList();
+                    List<EmployeeLanguage> languages = 
+                        db.EmployeeLanguages
+                        .Where(l => l.Deleted != true && l.EmployeeId == id)
+                        .Include(d => d.EmployeeLanguageType)
+                        .Include(d => d.Language)
+                        .ToList();
                     employeeDTO.EmployeeLanguage = languages.Select(l => l.ToDTO());
 
-                    List<EmployeeInternationalPassport> iPassports = db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == id).ToList();
+                    List<EmployeeInternationalPassport> iPassports = 
+                        db.EmployeeInternationalPassports
+                        .Where(p => p.Deleted != true && p.EmployeeId == id)
+                        .ToList();
                     employeeDTO.EmployeeInternationalPassport = iPassports.Select(i => i.ToDTO());
 
-                    List<EmployeeGun> guns = db.EmployeeGun.Where(g => g.Deleted != true && g.EmployeeId == id).ToList();
+                    List<EmployeeGun> guns = 
+                        db.EmployeeGun
+                        .Where(g => g.Deleted != true && g.EmployeeId == id)
+                        .ToList();
                     employeeDTO.EmployeeGun = guns.Select(g => g.ToDTO());
 
-                    List<EmployeeFoundationDocument> docs = db.EmployeeFoundationDocuments.Where(d => d.Deleted != true && d.EmployeeId == id).ToList();
+                    List<EmployeeFoundationDocument> docs = 
+                        db.EmployeeFoundationDocuments
+                        .Where(d => d.Deleted != true && d.EmployeeId == id)
+                        .Include(d => d.FoundationDocument)
+                        .ToList();
                     employeeDTO.EmployeeFoundationDoc = docs.Select(d => d.ToDTO());
 
-                    List<EmployeeEducation> edu = db.EmployeeEducations.Where(e => e.Deleted != true && e.EmployeeId == id).ToList();
+                    List<EmployeeEducation> edu = 
+                        db.EmployeeEducations
+                        .Where(e => e.Deleted != true && e.EmployeeId == id)
+                        .Include(d => d.EducationStudyForm)
+                        .ToList();
                     employeeDTO.EmployeeEducation = edu.Select(e => e.ToDTO());
 
-                    List<EmployeeDrivingLicense> licenses = db.EmployeeDrivingLicenses.Where(d => d.Deleted != true && d.EmployeeId == id).ToList();
+                    List<EmployeeDrivingLicense> licenses = 
+                        db.EmployeeDrivingLicenses
+                        .Where(d => d.Deleted != true && d.EmployeeId == id)
+                        .ToList();
                     employeeDTO.EmployeeDrivingLicense = licenses.Select(l => l.ToDTO());
 
-                    List<EmployeeContact> contacts = db.EmployeeContacts.Where(c => c.Deleted != true && c.EmployeeId == id).ToList();
+                    List<EmployeeContact> contacts = 
+                        db.EmployeeContacts
+                        .Where(c => c.Deleted != true && c.EmployeeId == id)
+                        .Include(d => d.ContactType)
+                        .ToList();
                     employeeDTO.EmployeeContact = contacts.Select(l => l.ToDTO());
 
                     List<EmployeeCar> cars = db.EmployeeCars.Where(c => c.Deleted != true && c.EmployeeId == id).ToList();
@@ -155,6 +205,16 @@ namespace GTIWebAPI.Controllers
                     {
                         return NotFound();
                     }
+                    db.Entry(employee).Reference(d => d.Address).Load();
+                    if (employee.Address != null)
+                    {
+                        db.Entry(employee.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employee.Address).Reference(d => d.Country).Load();
+                    }
+
                     if (employee.AddressId != null && employee.AddressId != 0)
                     {
                         employee.Address = db.Addresses.Find(employee.AddressId);
@@ -217,31 +277,14 @@ namespace GTIWebAPI.Controllers
                         }
                     }
                     employee = db.Employees.Find(employee.Id);
-
-                    if (employee.AddressId != null)
+                    db.Entry(employee).Reference(d => d.Address).Load();
+                    if (employee.Address != null)
                     {
-                        employee.Address = db.Addresses.Find(employee.AddressId);
-
-                        if (employee.Address.PlaceId != null)
-                        {
-                            employee.Address.AddressPlace = db.Places.Find(employee.Address.PlaceId);
-                        }
-                        if (employee.Address.LocalityId != null)
-                        {
-                            employee.Address.AddressLocality = db.Localities.Find(employee.Address.LocalityId);
-                        }
-                        if (employee.Address.VillageId != null)
-                        {
-                            employee.Address.AddressVillage = db.Villages.Find(employee.Address.VillageId);
-                        }
-                        if (employee.Address.RegionId != null)
-                        {
-                            employee.Address.AddressRegion = db.Regions.Find(employee.Address.RegionId);
-                        }
-                        if (employee.Address.CountryId != null)
-                        {
-                            employee.Address.Country = db.Countries.Find(employee.Address.CountryId);
-                        }
+                        db.Entry(employee.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employee.Address).Reference(d => d.Country).Load();
                     }
                 }
             }
@@ -295,31 +338,14 @@ namespace GTIWebAPI.Controllers
                         }
                     }
                     employee = db.Employees.Find(employee.Id);
-
-                    if (employee.AddressId != null)
+                    db.Entry(employee).Reference(d => d.Address).Load();
+                    if (employee.Address != null)
                     {
-                        employee.Address = db.Addresses.Find(employee.AddressId);
-
-                        if (employee.Address.PlaceId != null)
-                        {
-                            employee.Address.AddressPlace = db.Places.Find(employee.Address.PlaceId);
-                        }
-                        if (employee.Address.LocalityId != null)
-                        {
-                            employee.Address.AddressLocality = db.Localities.Find(employee.Address.LocalityId);
-                        }
-                        if (employee.Address.VillageId != null)
-                        {
-                            employee.Address.AddressVillage = db.Villages.Find(employee.Address.VillageId);
-                        }
-                        if (employee.Address.RegionId != null)
-                        {
-                            employee.Address.AddressRegion = db.Regions.Find(employee.Address.RegionId);
-                        }
-                        if (employee.Address.CountryId != null)
-                        {
-                            employee.Address.Country = db.Countries.Find(employee.Address.CountryId);
-                        }
+                        db.Entry(employee.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employee.Address).Reference(d => d.Country).Load();
                     }
                 }
             }
@@ -352,6 +378,15 @@ namespace GTIWebAPI.Controllers
                     if (employee == null)
                     {
                         return NotFound();
+                    }
+                    db.Entry(employee).Reference(d => d.Address).Load();
+                    if (employee.Address != null)
+                    {
+                        db.Entry(employee.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employee.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employee.Address).Reference(d => d.Country).Load();
                     }
                     employee.Deleted = true;
                     db.Entry(employee).State = EntityState.Modified;

@@ -79,6 +79,9 @@ namespace GTIWebAPI.Controllers
                         .Include(d => d.Department)
                         .ToList()
                         .Select(d => d.ToDTO()).ToList();
+
+                    //offices = db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList();
+
                 }
             }
             catch (Exception e)
@@ -230,7 +233,7 @@ namespace GTIWebAPI.Controllers
                 return BadRequest();
             }
 
-            EmployeeOfficeDTO dto = Mapper.Map<EmployeeOfficeDTO>(employeeOffice);
+            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
             return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
         }
 

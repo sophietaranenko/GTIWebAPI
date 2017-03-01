@@ -3,6 +3,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -189,7 +190,7 @@ namespace GTIWebAPI.Controllers
             {
                 using (DbMain db = new DbMain(User))
                 {
-                    db.EmployeeDocumentScans.Find(id);
+                    scan = db.EmployeeDocumentScans.Find(id);
                 }
             }
             catch (Exception e)
@@ -223,12 +224,30 @@ namespace GTIWebAPI.Controllers
             {
                 using (DbMain db = new DbMain(User))
                 {
-                    db.EmployeeDocumentScans.Find(id);
+                    scan = db.EmployeeDocumentScans.Find(id);
                     if (scan != null)
                     {
                         scan.Deleted = true;
                         db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
+
+                        bool saveFailed = false;
+                        do
+
+                        {
+                            try
+                            {
+                                db.SaveChanges();
+                            }
+                            catch (DbUpdateConcurrencyException ex)
+                            {
+                                saveFailed = true;
+
+                                // Update the values of the entity that failed to save from the store 
+                                ex.Entries.Single().Reload();
+                            }
+                        } while (saveFailed);
+
+                        //db.SaveChanges();
                     }
                 }
             }

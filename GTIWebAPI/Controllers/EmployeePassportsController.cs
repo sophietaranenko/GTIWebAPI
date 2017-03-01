@@ -40,6 +40,11 @@ namespace GTIWebAPI.Controllers
                 {
                     passports = db.EmployeePassports.Where(p => p.Deleted != true)
                         .Include(d => d.Address)
+                        .Include(d => d.Address.Country)
+                        .Include(d => d.Address.AddressLocality)
+                        .Include(d => d.Address.AddressPlace)
+                        .Include(d => d.Address.AddressRegion)
+                        .Include(d => d.Address.AddressVillage)
                         .ToList();
                 }
             }
@@ -72,6 +77,11 @@ namespace GTIWebAPI.Controllers
                     passports = db.EmployeePassports
                     .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                     .Include(d => d.Address)
+                        .Include(d => d.Address.Country)
+                        .Include(d => d.Address.AddressLocality)
+                        .Include(d => d.Address.AddressPlace)
+                        .Include(d => d.Address.AddressRegion)
+                        .Include(d => d.Address.AddressVillage)
                     .ToList();
                 }
             }
@@ -95,15 +105,23 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeePassportDTO))]
         public IHttpActionResult GetEmployeePassport(int id)
         {
-            EmployeePassport passport = new EmployeePassport();
+            EmployeePassport employeePassport = new EmployeePassport();
             try
             {
                 using (DbMain db = new DbMain(User))
                 {
-                    passport = db.EmployeePassports.Find(id);
-                    if (passport != null)
+                    employeePassport = db.EmployeePassports.Find(id);
+                    if (employeePassport != null)
                     {
-                        db.Entry(passport).Reference(d => d.Address).Load();
+                        db.Entry(employeePassport).Reference(d => d.Address).Load();
+                        if (employeePassport.Address != null)
+                        {
+                            db.Entry(employeePassport.Address).Reference(d => d.AddressLocality).Load();
+                            db.Entry(employeePassport.Address).Reference(d => d.AddressPlace).Load();
+                            db.Entry(employeePassport.Address).Reference(d => d.AddressRegion).Load();
+                            db.Entry(employeePassport.Address).Reference(d => d.AddressVillage).Load();
+                            db.Entry(employeePassport.Address).Reference(d => d.Country).Load();
+                        }
                     }
                 }
             }
@@ -112,11 +130,11 @@ namespace GTIWebAPI.Controllers
                 return BadRequest();
             }
 
-            if (passport == null)
+            if (employeePassport == null)
             {
                 return NotFound();
             }
-            EmployeePassportDTO dto = passport.ToDTO();
+            EmployeePassportDTO dto = employeePassport.ToDTO();
             return Ok(dto);
         }
 
@@ -168,29 +186,16 @@ namespace GTIWebAPI.Controllers
                             throw;
                         }
                     }
+                    db.Entry(employeePassport).Reference(d => d.Address).Load();
                     if (employeePassport.Address != null)
                     {
-                        if (employeePassport.Address.PlaceId != null)
-                        {
-                            employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
-                        }
-                        if (employeePassport.Address.LocalityId != null)
-                        {
-                            employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
-                        }
-                        if (employeePassport.Address.VillageId != null)
-                        {
-                            employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
-                        }
-                        if (employeePassport.Address.RegionId != null)
-                        {
-                            employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
-                        }
-                        if (employeePassport.Address.CountryId != null)
-                        {
-                            employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
-                        }
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.Country).Load();
                     }
+
                 }
             }
             catch (Exception e)
@@ -246,28 +251,14 @@ namespace GTIWebAPI.Controllers
                             throw;
                         }
                     }
+                    db.Entry(employeePassport).Reference(d => d.Address).Load();
                     if (employeePassport.Address != null)
                     {
-                        if (employeePassport.Address.PlaceId != null)
-                        {
-                            employeePassport.Address.AddressPlace = db.Places.Find(employeePassport.Address.PlaceId);
-                        }
-                        if (employeePassport.Address.LocalityId != null)
-                        {
-                            employeePassport.Address.AddressLocality = db.Localities.Find(employeePassport.Address.LocalityId);
-                        }
-                        if (employeePassport.Address.VillageId != null)
-                        {
-                            employeePassport.Address.AddressVillage = db.Villages.Find(employeePassport.Address.VillageId);
-                        }
-                        if (employeePassport.Address.RegionId != null)
-                        {
-                            employeePassport.Address.AddressRegion = db.Regions.Find(employeePassport.Address.RegionId);
-                        }
-                        if (employeePassport.Address.CountryId != null)
-                        {
-                            employeePassport.Address.Country = db.Countries.Find(employeePassport.Address.CountryId);
-                        }
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.Country).Load();
                     }
                 }
             }
@@ -303,7 +294,14 @@ namespace GTIWebAPI.Controllers
                         return NotFound();
                     }
                     db.Entry(employeePassport).Reference(d => d.Address).Load();
-
+                    if (employeePassport.Address != null)
+                    {
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressLocality).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressPlace).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressRegion).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.AddressVillage).Load();
+                        db.Entry(employeePassport.Address).Reference(d => d.Country).Load();
+                    }
                     employeePassport.Deleted = true;
                     db.Entry(employeePassport).State = EntityState.Modified;
                     try
