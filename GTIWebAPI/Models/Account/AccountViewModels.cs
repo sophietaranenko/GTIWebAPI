@@ -42,6 +42,8 @@ namespace GTIWebAPI.Models.Account
         public IEnumerable<UserRightDTO> UserRights { get; set; }
 
         public string ProfilePicturePath { get; set; }
+
+        public bool EmployeeInformation { get; set; }
     }
 
     public class UserLoginInfoViewModel

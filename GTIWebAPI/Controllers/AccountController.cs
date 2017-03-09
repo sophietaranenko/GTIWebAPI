@@ -86,16 +86,18 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
-
+        [Authorize]
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
             string UserId = User.Identity.GetUserId();
             ApplicationUser user = UserManager.FindById(UserId);
+
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
             {
                 string profilePicturePath = null;
+                bool employeeInformation = false;
                 UserImage im = user.Image;
 
                 if (im != null)
@@ -105,11 +107,21 @@ namespace GTIWebAPI.Controllers
                         profilePicturePath = im.ImageName;
                     }
                 }
+
+                if (user.TableName == "Employee")
+                {
+                    using (DbMain db = new DbMain(User))
+                    {
+                        employeeInformation = db.IsEmployeeInformationFilled(user.TableId);
+                    }
+                }
+
                 model.UserName = user.UserName;
                 model.TableId = user.TableId;
                 model.TableName = user.TableName;
                 model.ProfilePicturePath = profilePicturePath;
                 model.UserRights = user.GetUserRightsDTO();
+                model.EmployeeInformation = employeeInformation;
             }
             return model;
         }

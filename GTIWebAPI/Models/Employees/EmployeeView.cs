@@ -68,6 +68,10 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         public string Position { get; set; }
 
+        public string PhotoPath { get; set; }
+
+        public string Email { get; set; }
+
         /// <summary>
         /// Age object of employees ages (for Russian language) "23 года", "21 год", "25 лет" 
         /// </summary>
@@ -130,7 +134,9 @@ namespace GTIWebAPI.Models.Employees
                 ShortAddress = this.ShortAddress,
                 Surname = this.Surname,
                 UserName = this.UserName,
-                EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts
+                EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts,
+                Email = this.Email,
+                PhotoPath = this.PhotoPath
             };
             return dto;
         }
@@ -204,6 +210,11 @@ namespace GTIWebAPI.Models.Employees
         public IEnumerable<String> PositionLines { get; set; }
 
         public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
+
+
+        public string PhotoPath { get; set; }
+
+        public string Email { get; set; }
 
     }
 }

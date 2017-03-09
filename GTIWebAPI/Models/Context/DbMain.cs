@@ -178,7 +178,31 @@ namespace GTIWebAPI.Models.Context
 
 
 
+        public bool IsEmployeeInformationFilled(int employeeId)
+        {
+            SqlParameter parameter = new SqlParameter
+            {
+                ParameterName = "@EmployeeId",
+                IsNullable = true,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Size = 1000,
+                Value = employeeId
+            };
+            bool methodResult = false;
 
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec IsEmployeeInformationFilled @EmployeeId", parameter).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+
+            return methodResult;
+        }
 
         /// <summary>
         /// Procedure call that returns unique number to name photo with
@@ -198,7 +222,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public IEnumerable<EmployeeView> EmployeeFilter(string myFilter)
+        public virtual IEnumerable<EmployeeView> EmployeeFilter(string myFilter)
         {
             if (myFilter == null)
                 myFilter = "";
@@ -227,7 +251,7 @@ namespace GTIWebAPI.Models.Context
             return employeeList;
         }
 
-        public IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds)
+        public virtual IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds)
         {
             DataTable dataTable = new DataTable();
             dataTable.Clear();
@@ -267,7 +291,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId)
+        public virtual IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -307,7 +331,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter)
+        public virtual IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter)
         {
             if (myFilter == null)
                 myFilter = "";
