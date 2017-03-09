@@ -1873,26 +1873,6 @@
             User of application
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Models.Account.ApplicationUser.#ctor">
-            <summary>
-            Ctor
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.TableId">
-            <summary>
-            Id in table TableName
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.Image">
-            <summary>
-            Profile picture
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.ApplicationUser.UserRights">
-            <summary>
-            Collection of rights
-            </summary>
-        </member>
         <member name="M:GTIWebAPI.Models.Account.ApplicationUser.GenerateUserIdentityAsync(Microsoft.AspNet.Identity.UserManager{GTIWebAPI.Models.Account.ApplicationUser},System.String)">
             <summary>
             method that creates a new Claims Identity 
@@ -1910,12 +1890,6 @@
             <summary>
             Ctor
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Models.Account.ApplicationDbContext.Create">
-            <summary>
-            Factory
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Models.Account.UserImage">
             <summary>

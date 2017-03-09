@@ -31,6 +31,7 @@ using GTIWebAPI.Models;
 using System.Linq;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Novell;
+using System.Text.RegularExpressions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -41,6 +42,7 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private int SMSCode { get; set; }
@@ -132,8 +134,6 @@ namespace GTIWebAPI.Controllers
                 string userId = User.Identity.GetUserId();
                 foreach (string file in httpRequest.Files)
                 {
-
-
                     var postedFile = httpRequest.Files[file];
                     var filePath = HttpContext.Current.Server.MapPath(
                         "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
@@ -286,48 +286,7 @@ namespace GTIWebAPI.Controllers
 
 
 
-        private string GenerateClientPassword()
-        {
-            return System.Web.Security.Membership.GeneratePassword(8, 0);
-        }
 
-        private bool CheckLoginExists(string login)
-        {
-            bool result = true;
-            if (login != null && login != "")
-            {
-                ApplicationUser user = UserManager.FindByName(login);
-                if (user == null)
-                {
-                    result = false;
-                }
-            }
-            return result;
-        }
-
-        private bool CheckEmailExists(string email)
-        {
-            bool result = true;
-            if (email != null && email != "")
-            {
-                ApplicationUser user = UserManager.FindByEmail(email);
-                if (user == null)
-                {
-                    result = false;
-                }
-            }
-            return result;
-        }
-
-        
-        [HttpPut]
-        [Route("AddToRole")]
-        public bool AddToRole(string role)
-        {
-            UserManager.AddToRole(User.Identity.GetUserId(), role);
-            UserManager.AddClaim(User.Identity.GetUserId(), new Claim(ClaimTypes.Role, "Personnel"));
-            return true;
-        }
 
         /// <summary>
         /// Simple register of organization contact person 
@@ -335,70 +294,78 @@ namespace GTIWebAPI.Controllers
         /// <param name="organizationContactPersonId"></param>
         /// <returns></returns>
         [GTIFilter]
-        [HttpPut]
+        [HttpPost]
         [Route("SimpleRegisterOrganizationContactPerson")]
         public async Task<IHttpActionResult> SimpleRegisterOrganizationContactPerson(int organizationContactPersonId)
         {
             if (organizationContactPersonId != 0)
             {
-                string email = "";
-
-                //DbOrganization db = new DbOrganization();
-                OrganizationContactPerson person = null;
+                OrganizationContactPersonView person = null;
                 using (DbMain db = new DbMain(User))
-                { 
-                    person  = db.OrganizationContactPersons.Find(organizationContactPersonId);
+                {
+                    person = db.OrganizationContactPersonViews.Find(organizationContactPersonId);
                 }
 
-                if (person == null)
+                if (person == null || person.Deleted == true)
                 {
                     return BadRequest("Organization contact person doesn't exist");
                 }
-                email = person.Email;
-                if (CheckEmailExists(email))
+                if (person.IsRegistered == true)
                 {
-                    return BadRequest("Email already exists");
+                    return BadRequest("Organization contact person is already registered as an API  user");
+                }
+                if (person.Email == null || person.Email == "")
+                {
+                    return BadRequest("Organization contact person email is empty");
                 }
 
-                string username = email;
-                string password = GenerateClientPassword();
+
+                NovellOrganizationContactPerson novellPerson;
+                try
+                {
+                    novellPerson = new NovellOrganizationContactPerson(person);
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(e.Message);
+                }
+
                 ApplicationUser user = null;
 
-                //FIRST REGISTER LDAP USER
-                bool novellResult = NovellManager.CreateOrganization(email, password);
+                bool novellResult = NovellManager.CreateOrganization(novellPerson);
 
                 if (novellResult)
                 {
-                    //SECOND REGISTER DATABASE USER
                     using (ApplicationDbContext iDb = new ApplicationDbContext())
                     {
-                        bool dbResult = iDb.CreateOrganization(email, password);
+                        bool dbResult = iDb.CreateOrganization(novellPerson.Login, novellPerson.Password);
+                    
+
                         if (dbResult)
                         {
-                            //THIRD REGISTER ASPNET USER
                             user = new ApplicationUser()
                             {
-                                UserName = username,
-                                Email = email,
+                                UserName = novellPerson.Login,
+                                Email = novellPerson.Email,
                                 TableName = "OrganizationContactPerson",
                                 TableId = organizationContactPersonId
                             };
                             try
                             {
-                                IdentityResult result = await UserManager.CreateAsync(user, password);
+                                IdentityResult result = await UserManager.CreateAsync(user, novellPerson.Password);
                                 if (!result.Succeeded)
                                 {
                                     return GetErrorResult(result);
                                 }
                                 else
                                 {
-                                   IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
-                                  //  UserManager.AddClaim(user.Id, new Claim(ClaimTypes.Role, "Organization"));
+                                    IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
+
                                     if (!roleResult.Succeeded)
                                     {
                                         return GetErrorResult(roleResult);
                                     }
-                                    //FOURTH GRANT ORGANIZATION RIGHTS in ASPNET USER RIGHTS  
+
                                     bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
                                     if (rightsResult)
                                     {
@@ -408,8 +375,8 @@ namespace GTIWebAPI.Controllers
                                             @"You have successfully registered for WEBSITE_URL. <br>
                                             Thank you for your interest and we hope you will find useful information! <br> 
                                             Your credentials in WEBSITE_URL: <br> 
-                                            login: " + email.Trim() + "<br>" +
-                                            "password: " + password.Trim() + "<br>" +
+                                            login: " + novellPerson.Login + "<br>" +
+                                            "password: " + novellPerson.Password + "<br>" +
                                             @"информация, которую мы знаем о контакнтом лице организации
                                             тут реклама, пара картинок");
                                         return Ok();
@@ -434,10 +401,15 @@ namespace GTIWebAPI.Controllers
                     return BadRequest("eDirectory login has not been created");
                 }
 
-
             }
+
+
             return BadRequest("Wrong organization contact person");
         }
+
+
+
+
 
         /// <summary>
         /// GetExtenal login (not useful for GTI)
@@ -488,7 +460,7 @@ namespace GTIWebAPI.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName); //, image.ImageData);
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
@@ -552,7 +524,6 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
@@ -579,7 +550,6 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        // POST api/Account/RegisterExternal
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("RegisterExternal")]

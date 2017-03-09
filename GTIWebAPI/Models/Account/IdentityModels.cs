@@ -26,33 +26,20 @@ namespace GTIWebAPI.Models.Account
     /// </summary>
     public class ApplicationUser : IdentityUser
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public ApplicationUser() : base()
         {
             UserRights = new List<UserRight>();
         }
 
         [Column("TableName")]
-        /// <summary>
-        /// Is it Employee or Client 
-        /// </summary>
         public string TableName { get; set; }
 
-        /// <summary>
-        /// Id in table TableName
-        /// </summary>
         public int TableId { get; set; }
 
-        /// <summary>
-        /// Profile picture
-        /// </summary>
         public virtual UserImage Image { get; set; }
-        /// <summary>
-        /// Collection of rights
-        /// </summary>
+
         public virtual ICollection<UserRight> UserRights { get; set; }
+
         public List<UserRightDTO>  GetUserRightsDTO()
         {
             List<UserRightDTO> dtos = new List<UserRightDTO>();
@@ -130,14 +117,10 @@ namespace GTIWebAPI.Models.Account
         /// Ctor
         /// </summary>
         public ApplicationDbContext()
-            : base("Data Source=192.168.0.229;Initial Catalog=GTIWeb_DEV;User ID=sa;Password=12345", throwIfV1Schema: false)
+            :base("name=DbUsers", throwIfV1Schema: false)
         {
         }
 
-        /// <summary>
-        /// Factory
-        /// </summary>
-        /// <returns></returns>
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
@@ -173,10 +156,6 @@ namespace GTIWebAPI.Models.Account
                    .HasRequired<Service.OfficeSecurity>(s => s.OfficeSecurity)
                    .WithMany(s => s.UserRights);
 
-            //modelBuilder.Entity<OfficeSecurity>()
-            //    .HasKey()
-
-
 
             modelBuilder.Entity<UserRight>()
                    .HasRequired<ApplicationUser>(s => s.ApplicationUser)
@@ -200,27 +179,45 @@ namespace GTIWebAPI.Models.Account
         {
             SqlParameter pEmail = new SqlParameter
             {
-                ParameterName = "@Email",
+                ParameterName = "@Username",
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.String,
                 Value = email
             };
 
-            //SqlParameter pPassword = new SqlParameter
-            //{
-            //    ParameterName = "@Password",
-            //    IsNullable = false,
-            //    Direction = ParameterDirection.Input,
-            //    DbType = DbType.String,
-            //    Value = password
-            //};
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+        public bool CreateHoldingUser(string email, string password)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Username",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
 
             bool methodResult = false;
 
             try
             {
-                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Email ",
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseHoldingUser @Username ",
                     pEmail
                     ).FirstOrDefault();
                 methodResult = result;

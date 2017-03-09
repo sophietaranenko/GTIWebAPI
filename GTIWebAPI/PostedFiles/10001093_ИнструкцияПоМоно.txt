@@ -1,0 +1,12 @@
+по Mono:
+
+устанавливаем Mono 
+ищем certmgr.exe в папке Mono (у Microsoft есть свой, нам нужно запустить именно Mono)
+через командную строку идем в папку, где лежит Mono'вский certmgr.exe
+берем наш действующий LDAP-сертификат cert2015.der
+копируем наш сертификат, меняем ему расширение на cer - cert2015.cer
+в командной строке пишем строку вида:
+certmgr -add -c Trust C:\Mono\LdapTest\cert2015.cer 
+таким образом, добавляем сертификат в папку Trusted Certs 
+
+после этого спокойно можем юзать dll-ки Mono.Security и Novell.Directory.Ldap для доступа в eDirectory

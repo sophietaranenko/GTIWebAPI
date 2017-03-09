@@ -42,5 +42,32 @@ namespace GTIWebAPI.Models.Context
             return methodResult;
         }
 
+        public bool GrantStandardRightsToPersonnel(string userId)
+        {
+            SqlParameter pUserId = new SqlParameter
+            {
+                ParameterName = "@AspNetUserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec GrantAspNetUserStandardRightsForPersonnel @AspNetUserId ",
+                    pUserId
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
     }
 }

@@ -39,7 +39,10 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<EmployeeViewDTO>))]
         public IHttpActionResult GetEmployeeAll(string officeIds)
         {
+
+
             IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
+
 
             IEnumerable<EmployeeView> employeeList = new List<EmployeeView>();
 
@@ -48,6 +51,19 @@ namespace GTIWebAPI.Controllers
                 using (DbMain db = new DbMain(User))
                 {
                     employeeList = db.EmployeeByOffices(OfficeIds);
+                    if (employeeList != null)
+                    {
+                        foreach (var item in employeeList)
+                        {
+                            item.EmployeeContacts = 
+                                db.EmployeeContacts
+                                .Where(d => d.Deleted != true && d.EmployeeId == item.Id)
+                                .Include(d => d.ContactType)
+                                .ToList()
+                                .Select(d => d.ToDTO())
+                                .ToList();
+                        }
+                    }
                 }
             }
             catch (Exception e)

@@ -463,7 +463,6 @@
     <Compile Include="Models\Employees\EmployeeList.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightsManager.cs" />
-    <Compile Include="Models\Security\UserRightsProvider.cs" />
     <Compile Include="Models\Service\GTITable.cs" />
     <Compile Include="Models\Dictionary\Address.cs" />
     <Compile Include="Models\Security\Action.cs" />
@@ -473,7 +472,6 @@
     <Compile Include="Models\Account\ApplicationRoleManager.cs" />
     <Compile Include="Models\Organizations\OrganizationGTI.cs" />
     <Compile Include="Models\Personnel\ContactType.cs" />
-    <Compile Include="Models\Context\DbOrganization.cs" />
     <Compile Include="Models\Context\DbMain.cs" />
     <Compile Include="Models\Accounting\Deal.cs" />
     <Compile Include="Models\Accounting\DealType.cs" />
@@ -514,10 +512,12 @@
     <Compile Include="Models\Accounting\Terminal.cs" />
     <Compile Include="Models\Accounting\Vessel.cs" />
     <Compile Include="Novell\NovellManager.cs" />
-    <Compile Include="Novell\NovellProvider.cs" />
+    <Compile Include="Novell\NovellOrganizationContactPerson.cs" />
     <Compile Include="Novell\NovellEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Providers\RandomPasswordGenerator.cs" />
+    <Compile Include="Providers\TransliterationProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Security\Security.cs" />
     <Compile Include="Startup.cs" />
@@ -565,7 +565,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

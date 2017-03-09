@@ -151,7 +151,6 @@ namespace GTIWebAPI.Controllers
                        .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
                        .Include(d => d.ContactType)
                        .ToList();
-
                 }
             }
             catch (Exception e)
@@ -208,7 +207,6 @@ namespace GTIWebAPI.Controllers
                         }
                     }
 
-
                     try
                     {
                         db.SaveChanges();
@@ -229,7 +227,6 @@ namespace GTIWebAPI.Controllers
                     organizationContactPersonView.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
                        .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id)
                        .ToList();
-
                     dto = organizationContactPersonView.ToDTO();
                 }
             }
@@ -253,7 +250,6 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult DeleteOrganizationContactPerson(int id)
         {
             OrganizationContactPerson organizationContactPerson = new OrganizationContactPerson();
-
             try
             {
                 using (DbMain db = new DbMain(User))
@@ -288,7 +284,6 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             OrganizationContactPersonDTO dto = organizationContactPerson.ToDTO();
             return Ok(dto);
         }

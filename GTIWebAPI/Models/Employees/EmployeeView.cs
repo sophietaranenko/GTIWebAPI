@@ -95,8 +95,8 @@ namespace GTIWebAPI.Models.Employees
                 {
                     if (Position != "")
                     {
-                        Position.Substring(Position.Length - 2, 1);
-                        mas = Position.Split('|');
+                        string s = Position.Substring(0, Position.Length - 1);
+                        mas = s.Split('|');
                     }
                     else
                     {
@@ -110,6 +110,9 @@ namespace GTIWebAPI.Models.Employees
                 return mas;
             }
         }
+
+        [NotMapped]
+        public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
 
         public EmployeeViewDTO ToDTO()
         {
@@ -126,7 +129,8 @@ namespace GTIWebAPI.Models.Employees
                 SecondName = this.SecondName,
                 ShortAddress = this.ShortAddress,
                 Surname = this.Surname,
-                UserName = this.UserName
+                UserName = this.UserName,
+                EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts
             };
             return dto;
         }
@@ -198,6 +202,8 @@ namespace GTIWebAPI.Models.Employees
         /// Коллекция строк, каждая из которых содержит в себе только одну должность в формате Должность Отдел Офис из всех должностей сотрудника
         /// </summary>
         public IEnumerable<String> PositionLines { get; set; }
+
+        public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
 
     }
 }

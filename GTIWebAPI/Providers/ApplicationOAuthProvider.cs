@@ -14,6 +14,7 @@ using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Context;
 using Microsoft.Owin;
 using System.Net;
+using GTIWebAPI.Models.Security;
 
 namespace GTIWebAPI.Providers
 {
@@ -64,9 +65,7 @@ namespace GTIWebAPI.Providers
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-
             ApplicationUser user = null;
-
             if (NovellManager.CredentialsCorrect(context.UserName, context.Password))
             {
                 user = userManager.Find(context.UserName, context.Password);
@@ -74,50 +73,50 @@ namespace GTIWebAPI.Providers
                 //but in database to local users only DBA can grant rights 
                 if (user == null)
                 {
-                    user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
-                    userManager.AddToRole(user.Id, "Personnel");
-                    userManager.AddClaim(user.Id, new Claim(ClaimTypes.Role, "Personnel"));
+                    bool dbResult = false;
+                    using (ApplicationDbContext db = new ApplicationDbContext())
+                    {
+                        dbResult = db.CreateHoldingUser(context.UserName, context.Password);
+                    }
+                    if(dbResult == true)
+                    {
+                        user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
+                        userManager.AddToRole(user.Id, "Personnel");
+
+                        bool rightsResult = UserRightsManager.GrantStandardPersonnelRights(user.Id);
+                    }
                 }
             }
             else
             {
                 user = null;
             }
-
-
-
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;
             }
-
-
-            
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
-            
             AuthenticationProperties properties = CreateProperties(user.UserName);
-
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
-
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
 
         }
 
-        private ApplicationUser CreateEmployeeApplicationUser(string email, string password, ApplicationUserManager userManager)
+        private ApplicationUser CreateEmployeeApplicationUser(string username, string password, ApplicationUserManager userManager)
         {
             int employeeId = CreateEmployee();
             if (employeeId != 0)
             {
                 ApplicationUser newUser = new ApplicationUser
                 {
-                    UserName = email,
-                    Email = email,
+                    UserName = username,
+                    Email = NovellManager.FindEmail(username),
                     TableName = "Employee",
                     TableId = employeeId
                 };
