@@ -130,7 +130,7 @@ namespace GTIWebAPI.Providers
         {
             int employeeId = 0;
 
-            using (DbSecureEmployeeCreator db = new DbSecureEmployeeCreator())
+            using (SecureEmployeeCreatorDbContext db = new SecureEmployeeCreatorDbContext())
             {
                 employeeId = db.CreateEmployee();
             }

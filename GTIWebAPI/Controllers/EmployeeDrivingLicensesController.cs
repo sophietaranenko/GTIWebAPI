@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
             IEnumerable<EmployeeDrivingLicenseDTO> dtos = new List<EmployeeDrivingLicenseDTO>();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeDrivingLicenses.Where(p => p.Deleted != true).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -59,7 +59,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeDrivingLicenses.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -88,7 +88,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
                 }
@@ -133,7 +133,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeDrivingLicense).State = EntityState.Modified;
                     try
@@ -183,7 +183,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeDrivingLicense.Id = employeeDrivingLicense.NewId(db);
                     db.EmployeeDrivingLicenses.Add(employeeDrivingLicense);
@@ -229,7 +229,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeDrivingLicense = db.EmployeeDrivingLicenses.Find(id);
                     if (employeeDrivingLicense == null)
@@ -275,7 +275,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeDrivingLicenseExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeDrivingLicenses.Count(e => e.Id == id) > 0;
             }

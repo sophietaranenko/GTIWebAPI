@@ -13,6 +13,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -22,6 +23,17 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeFoundationDocuments")]
     public class EmployeeFoundationDocumentsController : ApiController
     {
+        private IRepository<EmployeeFoundationDocument> repo;
+
+        public EmployeeFoundationDocumentsController()
+        {
+            repo = new EmployeeFoundationDocumentsRepository();
+        }
+
+        public EmployeeFoundationDocumentsController(IRepository<EmployeeFoundationDocument> repo)
+        {
+            this.repo = repo;
+        }
         /// <summary>
         /// All foundation documents 
         /// </summary>
@@ -32,22 +44,19 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentAll()
         {
-            IEnumerable<EmployeeFoundationDocumentDTO> dtos = new List<EmployeeFoundationDocumentDTO>();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    dtos = db.EmployeeFoundationDocuments.Where(p => p.Deleted != true).Include(d=> d.FoundationDocument).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeFoundationDocumentDTO> dtos =
+                    repo.GetAll()
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
+
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
         /// <summary>
@@ -61,22 +70,18 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeFoundationDocumentDTO> dtos = new List<EmployeeFoundationDocumentDTO>();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    dtos = db.EmployeeFoundationDocuments.Where(p => p.Deleted != true && p.EmployeeId == employeeId).Include(d => d.FoundationDocument).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeFoundationDocumentDTO> dtos =
+                    repo.GetByEmployeeId(employeeId)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
         /// <summary>
@@ -90,32 +95,17 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
         public IHttpActionResult GetEmployeeFoundationDocument(int id)
         {
-            EmployeeFoundationDocument foundationDoc = new EmployeeFoundationDocument();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    foundationDoc = db.EmployeeFoundationDocuments.Find(id);
-                    if (foundationDoc != null)
-                    {
-                        db.Entry(foundationDoc).Reference(d => d.FoundationDocument).Load();
-                    }
-                }
+                EmployeeFoundationDocumentDTO foundationDoc = 
+                    repo.Get(id)
+                    .ToDTO();
+                return Ok(foundationDoc);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            if (foundationDoc == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeFoundationDocumentDTO dto = foundationDoc.ToDTO();
-
-            return Ok(dto);
         }
 
         /// <summary>
@@ -130,11 +120,7 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeFoundationDocument(int id, EmployeeFoundationDocument employeeFoundationDoc)
         {
-            if (employeeFoundationDoc == null)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
+            if (employeeFoundationDoc == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -142,37 +128,19 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    db.Entry(employeeFoundationDoc).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeFoundationDocumentExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    employeeFoundationDoc.FoundationDocument = db.FoundationDocuments.Find(employeeFoundationDoc.FoundationDocumentId);
-                }
+
+                EmployeeFoundationDocumentDTO dto =
+                    repo.Edit(employeeFoundationDoc)
+                    .ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
 
-            EmployeeFoundationDocumentDTO dto = employeeFoundationDoc.ToDTO();
-            return Ok(dto);
         }
 
         /// <summary>
@@ -197,36 +165,15 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeFoundationDoc.Id = employeeFoundationDoc.NewId(db);
-                    db.EmployeeFoundationDocuments.Add(employeeFoundationDoc);
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (EmployeeFoundationDocumentExists(employeeFoundationDoc.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    employeeFoundationDoc.FoundationDocument = db.FoundationDocuments.Find(employeeFoundationDoc.FoundationDocumentId);
-                }
+                EmployeeFoundationDocumentDTO dto = 
+                    repo.Add(employeeFoundationDoc)
+                    .ToDTO();
+                return CreatedAtRoute("GetEmployeeFoundationDocument", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            
-            EmployeeFoundationDocumentDTO dto = employeeFoundationDoc.ToDTO();
-            return CreatedAtRoute("GetEmployeeFoundationDocument", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -240,58 +187,21 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeFoundationDocument))]
         public IHttpActionResult DeleteEmployeeFoundationDocument(int id)
         {
-            EmployeeFoundationDocument employeeFoundationDoc = new EmployeeFoundationDocument();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeFoundationDoc = db.EmployeeFoundationDocuments.Find(id);
-                    if (employeeFoundationDoc == null)
-                    {
-                        return NotFound();
-                    }
-                    db.Entry(employeeFoundationDoc).Reference(d => d.FoundationDocument).Load();
-
-                    employeeFoundationDoc.Deleted = true;
-                    db.Entry(employeeFoundationDoc).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeFoundationDocumentExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeFoundationDocumentDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
-            EmployeeFoundationDocumentDTO dto = employeeFoundationDoc.ToDTO();
-            return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool EmployeeFoundationDocumentExists(int id)
-        {
-            using (DbMain db = new DbMain(User))
-            {
-                return db.EmployeeFoundationDocuments.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }

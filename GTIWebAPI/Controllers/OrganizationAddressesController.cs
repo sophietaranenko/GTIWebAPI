@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     addresses = db.OrganizationAddresses
                         .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
@@ -70,7 +70,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationAddress = db.OrganizationAddresses.Find(id);
                     if (organizationAddress != null)
@@ -129,7 +129,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(organizationAddress.Address).State = EntityState.Modified;
                     db.Entry(organizationAddress).State = EntityState.Modified;
@@ -189,7 +189,7 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 organizationAddress.Id = organizationAddress.NewId(db);
                 organizationAddress.Address.Id = organizationAddress.Address.NewId(db);
@@ -248,7 +248,7 @@ namespace GTIWebAPI.Controllers
         {
             OrganizationAddress organizationAddress = new OrganizationAddress();
 
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 organizationAddress = db.OrganizationAddresses.Find(id);
                 if (organizationAddress == null)
@@ -299,7 +299,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationAddressExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationAddresses.Count(e => e.Id == id) > 0;
             }

@@ -37,7 +37,7 @@ namespace GTIWebAPI.Controllers
             var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count == 1)
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     int uploadedScanId = 0;
                     foreach (string file in httpRequest.Files)
@@ -77,7 +77,7 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     List<int> scans = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
                     List<EmployeeDocumentScan> newScans = new List<EmployeeDocumentScan>();
@@ -130,7 +130,7 @@ namespace GTIWebAPI.Controllers
             List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     scanList = db.EmployeeDocumentScans
                     .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
@@ -161,7 +161,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     scanList = db.EmployeeAllDocumentScans(employeeId).ToList();
                 }
@@ -188,7 +188,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     scan = db.EmployeeDocumentScans.Find(id);
                 }
@@ -222,7 +222,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     scan = db.EmployeeDocumentScans.Find(id);
                     if (scan != null)
@@ -270,7 +270,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeDocumentScanExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeDocumentScans.Count(e => e.Id == id) > 0;
             }

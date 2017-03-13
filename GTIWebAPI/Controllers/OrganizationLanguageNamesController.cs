@@ -32,7 +32,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     languageNames = db.OrganizationLanguageNames
                     .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     languageName = db.OrganizationLanguageNames.Find(id);
                     if (languageName != null)
@@ -114,7 +114,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(organizationLanguageName).State = EntityState.Modified;
                     try
@@ -163,7 +163,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationLanguageName.Id = organizationLanguageName.NewId(db);
 
@@ -217,7 +217,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationLanguageName = db.OrganizationLanguageNames.Find(id);
                     if (organizationLanguageName == null)
@@ -267,7 +267,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationLanguageNameExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationLanguageNames.Count(e => e.Id == id) > 0;
             }

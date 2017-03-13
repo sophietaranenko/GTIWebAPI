@@ -8,19 +8,16 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Context
 {
-    class DbSecureEmployeeCreator : DbContext
+    class SecureEmployeeCreatorDbContext : DbContext
     {
 
-        public DbSecureEmployeeCreator() : base("name=DbSecureEmployeeCreator")
+        public SecureEmployeeCreatorDbContext() : base("name=DbSecureEmployeeCreator")
         {
         }
 
         public int CreateEmployee()
         {
-
-
             int methodResult = 0;
-
             try
             {
                 var result = Database.SqlQuery<int>("exec CreateEmployee").FirstOrDefault();

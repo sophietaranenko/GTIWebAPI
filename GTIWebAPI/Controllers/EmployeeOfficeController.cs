@@ -37,7 +37,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeOffices.Where(e => e.Deleted != true)
                         .Include(d => d.Profession)
@@ -71,7 +71,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId)
                         .Include(d => d.Profession)
@@ -107,7 +107,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeOffice = db.EmployeeOffices.Find(id);
                     if (employeeOffice != null)
@@ -155,7 +155,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeOffice).State = EntityState.Modified;
                     try
@@ -200,7 +200,7 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeOffice.Id = employeeOffice.NewId(db);
                     if (!ModelState.IsValid)
@@ -252,7 +252,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeOffice = db.EmployeeOffices.Find(id);
 
@@ -300,7 +300,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeOfficeExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeOffices.Count(e => e.Id == id) > 0;
             }

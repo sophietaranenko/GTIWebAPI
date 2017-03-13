@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
             IEnumerable<EmployeeInternationalPassportDTO> dtos = new List<EmployeeInternationalPassportDTO>();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList()
                             .Select(e => e.ToDTO()).ToList();
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos =
                      db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
@@ -91,7 +91,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     internationalPassport = db.EmployeeInternationalPassports.Find(id);
                 }
@@ -136,7 +136,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeInternationalPassport).State = EntityState.Modified;
                     try
@@ -187,7 +187,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeInternationalPassport.Id = employeeInternationalPassport.NewId(db);
                     db.EmployeeInternationalPassports.Add(employeeInternationalPassport);
@@ -233,7 +233,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
                     if (employeeInternationalPassport == null)
@@ -279,7 +279,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeInternationalPassportExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeInternationalPassports.Count(e => e.Id == id) > 0;
             }

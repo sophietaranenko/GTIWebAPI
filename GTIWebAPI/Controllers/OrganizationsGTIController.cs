@@ -29,7 +29,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
                     foreach (var item in orgs)

@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
             OrganizationLegalForm form = new OrganizationLegalForm();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     form = db.OrganizationLegalForms.Find(id);
                 }
@@ -71,7 +71,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     form.Id = form.NewId(db);
                     db.OrganizationLegalForms.Add(form);
@@ -104,7 +104,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationLegalFormExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             { 
                 return db.OrganizationLegalForms.Count(e => e.Id == id) > 0;
             }

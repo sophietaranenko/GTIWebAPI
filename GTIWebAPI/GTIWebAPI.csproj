@@ -428,12 +428,18 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
-    <Compile Include="Models\Context\DbContextExtensions.cs" />
-    <Compile Include="Models\Context\DbRights.cs" />
-    <Compile Include="Models\Context\DbSecureEmployeeCreator.cs" />
+    <Compile Include="Models\Context\AppDbContextFactory.cs" />
+    <Compile Include="Models\Context\DbContextFactory.cs" />
+    <Compile Include="Models\Context\IAppDbContext.cs" />
+    <Compile Include="Models\Context\IDbContextFactory.cs" />
+    <Compile Include="Models\Context\IPrincipalProvider.cs" />
+    <Compile Include="Models\Context\IServiceDbContext.cs" />
+    <Compile Include="Models\Context\RightsDbContext.cs" />
+    <Compile Include="Models\Context\SecureEmployeeCreatorDbContext.cs" />
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
+    <Compile Include="Models\Repository\EmployeeCarsRepository.cs" />
     <Compile Include="Models\Organizations\OrganizationContactPersonView.cs" />
     <Compile Include="Models\Organizations\OrganizationLanguageName.cs" />
     <Compile Include="Models\Organizations\OrganizationList.cs" />
@@ -461,6 +467,13 @@
     <Compile Include="Models\Organizations\Organization.cs" />
     <Compile Include="Models\Organizations\OrganizationGTILink.cs" />
     <Compile Include="Models\Employees\EmployeeList.cs" />
+    <Compile Include="Models\Repository\EmployeeContactsRepository.cs" />
+    <Compile Include="Models\Repository\EmployeeFoundationDocumentsRepository.cs" />
+    <Compile Include="Models\Repository\EmployeePassportsRepository.cs" />
+    <Compile Include="Models\Repository\IEmployeeCarsRepository.cs" />
+    <Compile Include="Models\Repository\IEmployeeContactsRepository.cs" />
+    <Compile Include="Models\Repository\IEmployeePassportsRepository.cs" />
+    <Compile Include="Models\Repository\IRepository.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightsManager.cs" />
     <Compile Include="Models\Service\GTITable.cs" />
@@ -471,8 +484,8 @@
     <Compile Include="Models\Account\ApplicationRole.cs" />
     <Compile Include="Models\Account\ApplicationRoleManager.cs" />
     <Compile Include="Models\Organizations\OrganizationGTI.cs" />
-    <Compile Include="Models\Personnel\ContactType.cs" />
-    <Compile Include="Models\Context\DbMain.cs" />
+    <Compile Include="Models\Dictionary\ContactType.cs" />
+    <Compile Include="Models\Context\MainDbContext.cs" />
     <Compile Include="Models\Accounting\Deal.cs" />
     <Compile Include="Models\Accounting\DealType.cs" />
     <Compile Include="Models\Personnel\Department.cs" />
@@ -595,6 +608,9 @@
     </Content>
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

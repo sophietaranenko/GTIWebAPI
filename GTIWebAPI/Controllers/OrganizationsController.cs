@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationList = db.SearchOrganization(countryId, registrationNumber);
                     foreach (var item in organizationList)
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationList = db.GetOrganizationsByOffices(OfficeIds);
                 }
@@ -93,7 +93,7 @@ namespace GTIWebAPI.Controllers
             OrganizationDTO dto = new OrganizationDTO();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     Organization organization = db.Organizations.Find(id);
                     dto = organization.MapToDTO();
@@ -209,7 +209,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organization = db.Organizations.Find(id);
                     if (organization != null)
@@ -245,7 +245,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(organization).State = EntityState.Modified;
 
@@ -294,7 +294,7 @@ namespace GTIWebAPI.Controllers
 
                 try
                 {
-                    using (DbMain db = new DbMain(User))
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
                         organization.Id = organization.NewId(db);
 
@@ -351,7 +351,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organization = db.Organizations.Find(id);
 
@@ -387,7 +387,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     list = OrganizationList.CreateOrganizationList(db);
                 }
@@ -411,7 +411,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.Organizations.Count(e => e.Id == id) > 0;
             }

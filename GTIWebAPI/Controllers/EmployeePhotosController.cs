@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
             {
                 try
                 {
-                    using (DbMain db = new DbMain(User))
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
                         int photoId = 0;
                         foreach (string file in httpRequest.Files)
@@ -82,7 +82,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     photos = db.EmployeePhotos.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
                     List<EmployeePhoto> newPhotos = new List<EmployeePhoto>();
@@ -132,7 +132,7 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     List<EmployeePhoto> photoList = db.EmployeePhotos
                     .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
@@ -162,7 +162,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     photo = db.EmployeePhotos.Find(id);
                 }
@@ -196,7 +196,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     photo = db.EmployeePhotos.Find(id);
                     if (photo != null)
@@ -230,7 +230,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeePhotoExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeePhotos.Count(e => e.Id == id) > 0;
             }

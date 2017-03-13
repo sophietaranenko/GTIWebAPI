@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using System;
 using System.Net;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -19,120 +20,82 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeContacts")]
     public class EmployeeContactsController : ApiController
     {
-        /// <summary>
-        /// To get all not deleted contacts 
-        /// </summary>
-        /// <returns></returns>
+        private IEmployeeContactsRepository repo;
+
+        public EmployeeContactsController()
+        {
+            repo = new EmployeeContactsRepository();
+        }
+
+        public EmployeeContactsController(IEmployeeContactsRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
         public IHttpActionResult GetEmployeeContactAll()
         {
-            IEnumerable<EmployeeContactDTO> dtos = new List<EmployeeContactDTO>();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    dtos = db.EmployeeContacts.Where(p => p.Deleted != true).Include(b => b.ContactType).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeContactDTO> dtos =
+                    repo.GetAll()
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get currenct employee contacts by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
         public IHttpActionResult GetEmployeeContactByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeContactDTO> dtos = new List<EmployeeContactDTO>();
-
             try
             {
-               using (DbMain db = new DbMain(User))
-               {
-                    dtos = db.EmployeeContacts.Where(p => p.Deleted != true && p.EmployeeId == employeeId).Include(c => c.ContactType).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeContactDTO> dtos =
+                    repo.GetByEmployeeId(employeeId)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
-
-        /// <summary>
-        /// Get one contact for edit by contact id
-        /// </summary>
-        /// <param name="id">EmployeeContact id</param>
-        /// <returns>EmployeeContactEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeContact")]
         [ResponseType(typeof(EmployeeContactDTO))]
         public IHttpActionResult GetEmployeeContact(int id)
         {
-            EmployeeContact employeeContact = new EmployeeContact();
-            
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeContact = db.EmployeeContacts.Find(id);
-                    if (employeeContact != null)
-                    {
-                        db.Entry(employeeContact).Reference(d => d.ContactType).Load();
-                    }      
-                }
+                EmployeeContactDTO employeeContact = repo.Get(id).ToDTO();
+                return Ok(employeeContact);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            if (employeeContact == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeContactDTO dto = employeeContact.ToDTO();
-
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Update employee contact
-        /// </summary>
-        /// <param name="id">Contact id</param>
-        /// <param name="employeeContact">EmployeeContact object</param>
-        /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeContact(int id, EmployeeContact employeeContact)
         {
-            if (employeeContact == null)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
+            if (employeeContact == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -142,142 +105,56 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    db.Entry(employeeContact).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeContactExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    employeeContact = db.EmployeeContacts.Find(employeeContact.Id);
-                    employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
-                 }
-
+                EmployeeContactDTO dto = repo.Edit(employeeContact).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-            EmployeeContactDTO dto = employeeContact.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Add employee contact 
-        /// </summary>
-        /// <param name="employeeContact">EmployeeContact object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeContactDTO))]
         public IHttpActionResult PostEmployeeContact(EmployeeContact employeeContact)
         {
-            if (employeeContact == null)
+            if (employeeContact == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeContact.Id = employeeContact.NewId(db);
-                    db.EmployeeContacts.Add(employeeContact);
-                    db.SaveChanges();
-                    employeeContact.ContactType = db.ContactTypes.Find(employeeContact.ContactTypeId);
-                }
+                EmployeeContactDTO dto = repo.Add(employeeContact).ToDTO();
+                return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest("Troubles with database connection");
             }
-
-            EmployeeContactDTO dto = employeeContact.ToDTO();
-            return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
         }
 
-        /// <summary>
-        /// Delete contact
-        /// </summary>
-        /// <param name="id">Contact Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeContact))]
         public IHttpActionResult DeleteEmployeeContact(int id)
         {
-            EmployeeContact employeeContact = new EmployeeContact();
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeContact = db.EmployeeContacts.Find(id);
-                    if (employeeContact == null)
-                    {
-                        return NotFound();
-                    }
-                    db.Entry(employeeContact).Reference(d => d.ContactType).Load();
-
-                    employeeContact.Deleted = true;
-                    db.Entry(employeeContact).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeContactExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeContactDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            EmployeeContactDTO dto = employeeContact.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool EmployeeContactExists(int id)
-        {
-            using (DbMain db = new DbMain(User))
-            {
-                return db.EmployeeContacts.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }

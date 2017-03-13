@@ -13,56 +13,28 @@ using System.Security.Principal;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Accounting;
 using System.Security.Claims;
+using System.Web;
 
 namespace GTIWebAPI.Models.Context
 {
     /// <summary>
     /// Context for working with Employees 
     /// </summary>
-    public class DbMain : DbContext, IDbContextAddress, IDbContextEmployeeLanguage, IDbContextOrganization
+    internal class MainDbContext : DbContext, IAppDbContext //, IPrincipalProvider
     {
-
-        /// <summary>
-        /// Connect to database only within username
-        /// </summary>
-        /// <param name="user"></param>
-        public DbMain(IPrincipal user) : base(CreateConnectionString(user))
+        public MainDbContext() : base("name=DbPersonnel")
         {
             this.Configuration.LazyLoadingEnabled = false;
         }
 
-        /// <summary>
-        /// Construct connection string for current user 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        public static string CreateConnectionString(IPrincipal user)
+        public MainDbContext(string connectionString) : base(connectionString)
         {
-            string userName = user.Identity.Name;
-            string originalString = "";
+            this.Configuration.LazyLoadingEnabled = false;
+        }
 
-            //var roles = ((ClaimsIdentity)user.Identity).Claims
-            //    .Where(c => c.Type == ClaimTypes.Role)
-            //    .Select(c => c.Value);
-
-            if (user.IsInRole("Personnel"))
-            {
-                originalString = ConfigurationManager.ConnectionStrings["DbPersonnel"].ConnectionString;
-            }
-            else
-            {
-                originalString = ConfigurationManager.ConnectionStrings["DbOrganization"].ConnectionString;
-            }
-
-
-            if (userName == null)
-            {
-                userName = "UserIsNotAllowed"; 
-            }
-
-            originalString = originalString.Replace("somefakelogin", userName);
-
-            return originalString;
+        public void MarkAsModified(object entity)
+        {
+            this.Entry(entity).State = EntityState.Modified;
         }
 
         /// <summary>
@@ -178,7 +150,7 @@ namespace GTIWebAPI.Models.Context
 
 
 
-        public bool IsEmployeeInformationFilled(int employeeId)
+        public virtual bool IsEmployeeInformationFilled(int employeeId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -323,8 +295,20 @@ namespace GTIWebAPI.Models.Context
 
 
 
-
-
+        public virtual int NewTableId(string tableName)
+        {
+            int result = 0;
+            SqlParameter table = new SqlParameter("@TableName", tableName);
+            try
+            {
+                result = Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            return result;
+        }
         //Organizations - for woth with new Organization table and OrganizationGTI - synonym of klient
         /// <summary>
         /// Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
@@ -357,7 +341,7 @@ namespace GTIWebAPI.Models.Context
             return organizationList;
         }
 
-        public IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds)
+        public virtual IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds)
         {
             DataTable dataTable = new DataTable();
             dataTable.Clear();
@@ -392,7 +376,7 @@ namespace GTIWebAPI.Models.Context
             return organizationList;
         }
 
-        public IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber)
+        public virtual IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber)
         {
             DataTable dataTable = new DataTable();
             dataTable.Clear();
@@ -437,7 +421,7 @@ namespace GTIWebAPI.Models.Context
             return gtis;
         }
 
-        public IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
+        public virtual IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
         {
             SqlParameter pCountryId = new SqlParameter
             {
@@ -474,7 +458,7 @@ namespace GTIWebAPI.Models.Context
 
 
         //Deals - for work with DealGTI - synonym of booking
-        public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -533,7 +517,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>Deal info</returns>
-        public DealFullViewDTO GetDealCardInfo(Guid dealId)
+        public virtual DealFullViewDTO GetDealCardInfo(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -563,7 +547,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>List of containers</returns>
-        public IEnumerable<DealContainerViewDTO> GetContainersByDeal(Guid dealId)
+        public virtual IEnumerable<DealContainerViewDTO> GetContainersByDeal(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -594,7 +578,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="dealId"></param>
         /// <returns>list of invoices</returns>
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
+        public virtual IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -630,7 +614,7 @@ namespace GTIWebAPI.Models.Context
         /// <param name="dateBegin"></param>
         /// <param name="dateEnd"></param>
         /// <returns>List of invoices</returns>
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -683,7 +667,7 @@ namespace GTIWebAPI.Models.Context
             return invoiceList;
         }
 
-        public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
+        public virtual InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -713,7 +697,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="invoiceId">Invoice Id</param>
         /// <returns>List of invoice lines</returns>
-        public IEnumerable<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
+        public virtual IEnumerable<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -737,7 +721,7 @@ namespace GTIWebAPI.Models.Context
             return dto;
         }
 
-        public IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
+        public virtual IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
         {
             SqlParameter parameter = new SqlParameter
             {
@@ -765,7 +749,7 @@ namespace GTIWebAPI.Models.Context
 
 
         //Containers - for work with ContainerGTI - synonym of book_cntr
-        public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -818,7 +802,7 @@ namespace GTIWebAPI.Models.Context
             return containersList;
         }
 
-        public DealContainerViewDTO GetContainer(Guid id)
+        public virtual DealContainerViewDTO GetContainer(Guid id)
         {
             SqlParameter parId = new SqlParameter
             {
@@ -846,7 +830,7 @@ namespace GTIWebAPI.Models.Context
 
 
         //DealDocumentScans - for work with DocumentScanGTI - synonym of doc table
-        public IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
+        public virtual IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
         {
             IEnumerable<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
 
@@ -863,7 +847,7 @@ namespace GTIWebAPI.Models.Context
             return dtos;
         }
 
-        public IEnumerable<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
+        public virtual IEnumerable<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
         {
             IEnumerable<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
 
@@ -890,7 +874,7 @@ namespace GTIWebAPI.Models.Context
             return dtos;
         }
 
-        public IEnumerable<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId)
+        public virtual IEnumerable<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId)
         {
             IEnumerable<OrganizationGTIShortDTO> dtos = new List<OrganizationGTIShortDTO>();
 
@@ -917,7 +901,7 @@ namespace GTIWebAPI.Models.Context
             return dtos;
         }
 
-        public Guid InsertDealDocumentScan(Guid dealId, byte[] fileContent, string fileName, string email, int documentScanTypeId)
+        public virtual Guid InsertDealDocumentScan(Guid dealId, byte[] fileContent, string fileName, string email, int documentScanTypeId)
         {
 
 
@@ -988,7 +972,7 @@ namespace GTIWebAPI.Models.Context
             return scanId;
         }
 
-        public DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId)
+        public virtual DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId)
         {
             SqlParameter pScanId = new SqlParameter
             {
@@ -1024,7 +1008,7 @@ namespace GTIWebAPI.Models.Context
         }
 
 
-        public bool DeleteDocumentScan(Guid scanId)
+        public virtual bool DeleteDocumentScan(Guid scanId)
         {
             SqlParameter pScanId = new SqlParameter
             {
@@ -1050,7 +1034,7 @@ namespace GTIWebAPI.Models.Context
             return methodResult;
         }
 
-        public DocumentScanDTO GetDealDocumentScanById(Guid scanId)
+        public virtual DocumentScanDTO GetDealDocumentScanById(Guid scanId)
         {
             SqlParameter pScanId = new SqlParameter
             {

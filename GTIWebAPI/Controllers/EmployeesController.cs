@@ -48,7 +48,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeList = db.EmployeeByOffices(OfficeIds);
                     if (employeeList != null)
@@ -90,7 +90,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     Employee employee = db.Employees.Find(id);
 
@@ -214,7 +214,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employee = db.Employees.Find(id);
                     if (employee == null)
@@ -273,7 +273,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employee.Address).State = EntityState.Modified;
                     db.Entry(employee).State = EntityState.Modified;
@@ -326,7 +326,7 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employee.Id = employee.NewId(db);
                     employee.Address.Id = employee.Address.NewId(db);
@@ -388,7 +388,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employee = db.Employees.Find(id);
                     if (employee == null)
@@ -461,7 +461,7 @@ namespace GTIWebAPI.Controllers
             EmployeeList list = new EmployeeList();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     list.AddressList = AddressList.CreateAddressList(db);
                     list.EmployeeLanguageList = EmployeeLanguageList.CreateEmployeeLanguageList(db);
@@ -531,7 +531,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.Employees.Count(e => e.Id == id) > 0;
             }

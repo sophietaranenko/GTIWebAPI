@@ -33,7 +33,7 @@ namespace GTIWebAPI.Controllers
             List<OrganizationContactPersonView> persons = new List<OrganizationContactPersonView>();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     persons = db.OrganizationContactPersonViews
                     .Where(p => p.Deleted != true && p.OrganizationId == organizationId).ToList();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationContactPersonView = db.OrganizationContactPersonViews.Find(id);
                     if (organizationContactPersonView != null)
@@ -126,7 +126,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(organizationContactPerson).State = EntityState.Modified;
 
@@ -183,7 +183,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationContactPerson.Id = organizationContactPerson.NewId(db);
                     if (!ModelState.IsValid)
@@ -252,7 +252,7 @@ namespace GTIWebAPI.Controllers
             OrganizationContactPerson organizationContactPerson = new OrganizationContactPerson();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationContactPerson = db.OrganizationContactPersons.Find(id);
                     if (organizationContactPerson == null)
@@ -299,7 +299,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationContactPersonExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationContactPersons.Count(e => e.Id == id) > 0;
             }    

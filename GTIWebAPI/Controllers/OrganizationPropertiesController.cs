@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     properties = db.OrganizationProperties
                     .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationProperty = db.OrganizationProperties.Find(id);
                     if (organizationProperty != null)
@@ -118,7 +118,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
 
                     OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
@@ -185,7 +185,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
                     int? propertyCountryId = propertyType.CountryId;
@@ -258,7 +258,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     foreach (var item in properties)
                     {
@@ -319,7 +319,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationProperty = db.OrganizationProperties.Find(id);
                     if (organizationProperty == null)
@@ -372,7 +372,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationPropertyExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationProperties.Count(e => e.Id == id) > 0;
             }

@@ -38,7 +38,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeLanguages.Where(p => p.Deleted != true).Include(d => d.EmployeeLanguageType).Include(d => d.Language).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -67,7 +67,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeLanguages.Where(p => p.Deleted != true && p.EmployeeId == employeeId).Include(d => d.EmployeeLanguageType).Include(d => d.Language).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -96,7 +96,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeLanguage = db.EmployeeLanguages.Find(id);
                     if (employeeLanguage != null)
@@ -147,7 +147,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeLanguage).State = EntityState.Modified;
                     try
@@ -206,7 +206,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeLanguage.Id = employeeLanguage.NewId(db);
                     db.EmployeeLanguages.Add(employeeLanguage);
@@ -259,7 +259,7 @@ namespace GTIWebAPI.Controllers
             EmployeeLanguage employeeLanguage = new EmployeeLanguage();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeLanguage = db.EmployeeLanguages.Find(id);
                     if (employeeLanguage == null)
@@ -308,7 +308,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeLanguageExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeLanguages.Count(e => e.Id == id) > 0;
             }

@@ -31,11 +31,11 @@ namespace GTIWebAPI.Models.Security
 
         protected class UserRightsProvider : IDisposable
         {
-            DbRights db;
+            RightsDbContext db;
 
             public UserRightsProvider()
             {
-                db = new DbRights();
+                db = new RightsDbContext();
             }
 
             public void GrantOrganization(string userId)

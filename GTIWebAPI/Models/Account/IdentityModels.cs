@@ -17,6 +17,7 @@ using System.Net.Mime;
 using System.Web;
 using System.Data.SqlClient;
 using System.Data;
+using GTIWebAPI.Models.Context;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -111,7 +112,7 @@ namespace GTIWebAPI.Models.Account
     /// <summary>
     /// Context for ApplicationUser
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> , IServiceDbContext
     {
         /// <summary>
         /// Ctor
@@ -138,6 +139,22 @@ namespace GTIWebAPI.Models.Account
 
         public object Address { get; internal set; }
 
+
+
+        public virtual int NewTableId(string tableName)
+        {
+            int result = 0;
+            SqlParameter table = new SqlParameter("@TableName", tableName);
+            try
+            {
+                result = Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            return result;
+        }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

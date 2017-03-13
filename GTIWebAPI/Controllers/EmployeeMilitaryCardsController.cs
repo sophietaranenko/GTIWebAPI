@@ -32,7 +32,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeMilitaryCards.Where(p => p.Deleted != true).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -61,7 +61,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeMilitaryCards.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -90,7 +90,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     militaryCard = db.EmployeeMilitaryCards.Find(id);
                 }
@@ -137,7 +137,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeMilitaryCard).State = EntityState.Modified;
                     try
@@ -188,7 +188,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeMilitaryCard.Id = employeeMilitaryCard.NewId(db);
                     db.EmployeeMilitaryCards.Add(employeeMilitaryCard);
@@ -235,7 +235,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeMilitaryCard = db.EmployeeMilitaryCards.Find(id);
                     if (employeeMilitaryCard == null)
@@ -281,7 +281,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeMilitaryCardExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeMilitaryCards.Count(e => e.Id == id) > 0;
             }

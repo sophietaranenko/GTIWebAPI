@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeGun.Where(p => p.Deleted != true).ToList()
                         .Select(g => g.ToDTO()).ToList();
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeGun.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -93,7 +93,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     gun = db.EmployeeGun.Find(id);
                 }
@@ -141,7 +141,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeGun).State = EntityState.Modified;
                     try
@@ -192,7 +192,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeGun.Id = employeeGun.NewId(db);
                     db.EmployeeGun.Add(employeeGun);
@@ -238,7 +238,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeGun = db.EmployeeGun.Find(id);
                     if (employeeGun == null)
@@ -284,7 +284,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeGunExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeGun.Count(e => e.Id == id) > 0;
             }

@@ -8,10 +8,10 @@ using System.Web;
 
 namespace GTIWebAPI.Models.Context
 {
-    public class DbRights : DbContext
+    public class RightsDbContext : DbContext
     {
 
-        public DbRights() : base("name=DbRights")
+        public RightsDbContext() : base("name=DbRights")
         {
         }
 

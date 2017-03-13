@@ -44,6 +44,8 @@ namespace GTIWebAPI.Models.Account
         public string ProfilePicturePath { get; set; }
 
         public bool EmployeeInformation { get; set; }
+
+        public int OrganizationId { get; set; }
     }
 
     public class UserLoginInfoViewModel

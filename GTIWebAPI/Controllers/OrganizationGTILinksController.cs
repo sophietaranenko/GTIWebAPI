@@ -36,7 +36,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     links = db.OrganizationGTILinks
                     .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
@@ -82,7 +82,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     link = db.OrganizationGTILinks.Find(id);
 
@@ -136,7 +136,7 @@ namespace GTIWebAPI.Controllers
 
                 try
                 {
-                    using (DbMain db = new DbMain(User))
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
                         organizationGTILink.EmployeeId = EmployeeId;
                         organizationGTILink.Id = organizationGTILink.NewId(db);
@@ -217,7 +217,7 @@ namespace GTIWebAPI.Controllers
 
                 try
                 {
-                    using (DbMain db = new DbMain(User))
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
                         foreach (var item in links.OrganizationGTIIds)
                         {
@@ -265,7 +265,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationGTILink = db.OrganizationGTILinks.Find(id);
                     if (organizationGTILink == null)
@@ -319,7 +319,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationGTILinkExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationGTILinks.Count(e => e.Id == id) > 0;
             }

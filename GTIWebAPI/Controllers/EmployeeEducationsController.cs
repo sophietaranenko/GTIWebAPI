@@ -33,7 +33,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeEducations.Where(e => e.Deleted != true).Include(d => d.EducationStudyForm).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -62,7 +62,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.EmployeeEducations.Where(e => e.Deleted != true && e.EmployeeId == employeeId).Include(d => d.EducationStudyForm).ToList()
                         .Select(d => d.ToDTO()).ToList();
@@ -91,7 +91,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeEducation = db.EmployeeEducations.Find(id);
                     if (employeeEducation != null)
@@ -139,7 +139,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(employeeEducation).State = EntityState.Modified;
                     try
@@ -186,7 +186,7 @@ namespace GTIWebAPI.Controllers
             EmployeeEducationDTO dto = null;
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeEducation.Id = employeeEducation.NewId(db);
                     if (!ModelState.IsValid)
@@ -241,7 +241,7 @@ namespace GTIWebAPI.Controllers
             EmployeeEducation employeeEducation = null;
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     employeeEducation = db.EmployeeEducations.Find(id);
                     if (employeeEducation == null)
@@ -285,7 +285,7 @@ namespace GTIWebAPI.Controllers
 
         private bool EmployeeEducationExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.EmployeeEducations.Count(e => e.Id == id) > 0;
             }

@@ -32,7 +32,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     addresses = db.OrganizationTaxAddresses
                     .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationTaxAddress = db.OrganizationTaxAddresses.Find(id);
                     if (organizationTaxAddress != null)
@@ -128,7 +128,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     db.Entry(organizationTaxAddress.Address).State = EntityState.Modified;
                     db.Entry(organizationTaxAddress).State = EntityState.Modified;
@@ -191,7 +191,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationTaxAddress.Id = organizationTaxAddress.NewId(db);
                     organizationTaxAddress.Address.Id = organizationTaxAddress.Address.NewId(db);
@@ -256,7 +256,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     organizationTaxAddress = db.OrganizationTaxAddresses.Find(id);
                     if (organizationTaxAddress == null)
@@ -312,7 +312,7 @@ namespace GTIWebAPI.Controllers
 
         private bool OrganizationTaxAddressExists(int id)
         {
-            using (DbMain db = new DbMain(User))
+            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
             {
                 return db.OrganizationTaxAddresses.Count(e => e.Id == id) > 0;
             }

@@ -37,7 +37,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.GetDocumentScanTypes();
                 }
@@ -65,7 +65,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.GetDocumentScanByDeal(dealId);
                 }
@@ -94,7 +94,7 @@ namespace GTIWebAPI.Controllers
             //everything must be all right when return into using (Stackoverflow told me!) 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dto = db.GetDealDocumentScanById(scanId);
                     if (dto != null)
@@ -171,7 +171,7 @@ namespace GTIWebAPI.Controllers
                     fileName = postedFile.FileName;
                     try
                     {
-                        using (DbMain db = new DbMain(User))
+                        using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                         {
                             Guid scanId = db.InsertDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
                             dto = db.GetDealDocumentScanById(scanId);
@@ -202,7 +202,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
 
                     db.GetDealDocumentScanById(id);

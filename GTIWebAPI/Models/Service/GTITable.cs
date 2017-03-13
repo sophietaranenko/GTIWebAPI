@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.Models.Context;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -12,11 +13,9 @@ namespace GTIWebAPI.Models.Service
     {
         protected virtual string TableName { get; }
 
-        public int NewId(DbContext context)
+        public int NewId(IServiceDbContext context)
         {
-            SqlParameter table = new SqlParameter("@TableName", TableName);
-            int result = context.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
-            return result;
+            return context.NewTableId(TableName);
         }
     }
 }

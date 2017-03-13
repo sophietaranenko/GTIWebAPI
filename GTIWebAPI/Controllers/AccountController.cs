@@ -110,9 +110,16 @@ namespace GTIWebAPI.Controllers
 
                 if (user.TableName == "Employee")
                 {
-                    using (DbMain db = new DbMain(User))
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
                         employeeInformation = db.IsEmployeeInformationFilled(user.TableId);
+                    }
+                }
+                if (user.TableName == "OrganizationContactPerson")
+                {
+                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    {
+                        model.OrganizationId = db.OrganizationContactPersons.Where(d => d.Id == user.TableId).Select(d => d.OrganizationId).FirstOrDefault().GetValueOrDefault();
                     }
                 }
 
@@ -313,7 +320,7 @@ namespace GTIWebAPI.Controllers
             if (organizationContactPersonId != 0)
             {
                 OrganizationContactPersonView person = null;
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     person = db.OrganizationContactPersonViews.Find(organizationContactPersonId);
                 }

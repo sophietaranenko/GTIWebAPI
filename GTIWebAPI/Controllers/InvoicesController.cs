@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.GetInvoicesList(organizationId, dateBegin, dateEnd);
                 }
@@ -58,7 +58,7 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dto = db.GetInvoiceCardInfo(id);
                     if (dto != null)

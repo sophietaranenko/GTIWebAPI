@@ -44,7 +44,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dtos = db.GetDealsFiltered(organizationId, dateBegin, dateEnd);
                 }
@@ -78,7 +78,7 @@ namespace GTIWebAPI.Controllers
             DealFullViewDTO dto = new DealFullViewDTO();
             try
             {
-                using (DbMain db = new DbMain(User))
+                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
                     dto = db.GetDealCardInfo(id);
 

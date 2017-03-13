@@ -9,6 +9,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using System;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -18,61 +19,50 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
     {
-        /// <summary>
-        /// All the cars
-        /// </summary>
-        /// <returns></returns>
+        private IEmployeeCarsRepository repo;
+
+        public EmployeeCarsController()
+        {
+            repo = new EmployeeCarsRepository();
+        }
+
+        public EmployeeCarsController(IEmployeeCarsRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
         public IHttpActionResult GetEmplyeeCarAll()
         {
-            IEnumerable<EmployeeCarDTO> dtos = new List<EmployeeCarDTO>();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    dtos = db.EmployeeCars.Where(p => p.Deleted != true).ToList()
-                        .Select(p => p.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeCarDTO> dtos = repo.GetAll().Select(p => p.ToDTO()).ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
-            }
-
-            return Ok(dtos);
+                return BadRequest(e.Message);
+            }  
         }
 
-        /// <summary>
-        /// Get employee car by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of EmployeeCarDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
         public IHttpActionResult GetEmployeeCarByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeCarDTO> dtos = new List<EmployeeCarDTO>();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    dtos = db.EmployeeCars.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
-                        .Select(c => c.ToDTO()).ToList();
-                }
+                IEnumerable<EmployeeCarDTO> dtos = repo.GetByEmployeeId(employeeId).Select(d => d.ToDTO()).ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             } 
-
-            return Ok(dtos);
         }
 
         /// <summary>
@@ -86,26 +76,21 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult GetEmployeeCar(int id)
         {
-            EmployeeCar employeeCar = new EmployeeCar();
-
             try
             {
-                using (DbMain db = new DbMain(User))
+                EmployeeCar employeeCar = repo.Get(id);
+                if (employeeCar == null)
                 {
-                    employeeCar = db.EmployeeCars.Find(id);
+                    return NotFound();
                 }
+                EmployeeCarDTO dto = employeeCar.ToDTO();
+                return Ok(dto);
             }
-            catch (Exception e)
+            catch (DataException e)
             {
-                return BadRequest("Troubles with database connection");
-            }
-            if (employeeCar == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeCarDTO dto = employeeCar.ToDTO();
-            return Ok(dto);
+                //log
+                return BadRequest(e.Message);
+            }         
         }
 
         /// <summary>
@@ -120,11 +105,7 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeCar(int id, EmployeeCar employeeCar)
         {
-            if (employeeCar == null)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
+            if (employeeCar == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -132,36 +113,17 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    db.Entry(employeeCar).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeCarExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                employeeCar = repo.Edit(employeeCar);
+                EmployeeCarDTO dto = employeeCar.ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                //log
+                return BadRequest(e.Message);
             }
-
-            EmployeeCarDTO dto = employeeCar.ToDTO(); 
-            return Ok(dto);
         }
 
         /// <summary>
@@ -175,46 +137,21 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeCarDTO))]
         public IHttpActionResult PostEmployeeCar(EmployeeCar employeeCar)
         {
-            if (employeeCar == null)
+            if (employeeCar == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeCar.Id = employeeCar.NewId(db);
-                    db.EmployeeCars.Add(employeeCar);
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (EmployeeCarExists(employeeCar.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                employeeCar = repo.Add(employeeCar);
+                EmployeeCarDTO dto = employeeCar.ToDTO();
+                return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                //log
+                return BadRequest(e.Message);
             }
-
-            EmployeeCarDTO dto = employeeCar.ToDTO();
-            return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -228,43 +165,17 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(EmployeeCar))]
         public IHttpActionResult DeleteEmployeeCar(int id)
         {
-            EmployeeCar employeeCar = new EmployeeCar();
-
             try
             {
-                using (DbMain db = new DbMain(User))
-                {
-                    employeeCar = db.EmployeeCars.Find(id);
-                    if (employeeCar == null)
-                    {
-                        return NotFound();
-                    }
-                    employeeCar.Deleted = true;
-                    db.Entry(employeeCar).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeCarExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeCar employeeCar = repo.Delete(id);
+                EmployeeCarDTO dto = employeeCar.ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                //log
+                return BadRequest(e.Message);
             }
-
-            EmployeeCarDTO dto = employeeCar.ToDTO();
-            return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)
@@ -272,12 +183,5 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool EmployeeCarExists(int id)
-        {
-            using (DbMain db = new DbMain(User))
-            {
-                return db.EmployeeCars.Count(e => e.Id == id) > 0;
-            }
-        }
     }
 }
