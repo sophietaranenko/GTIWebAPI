@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
@@ -20,7 +21,18 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeDocumentScans")]
     public class EmployeeDocumentScansController : ApiController
     {
-        //private DbPersonnel db = new DbPersonnel();
+
+        private IEmployeeDocumentScansRepository repo;
+
+        public EmployeeDocumentScansController()
+        {
+            repo = new EmployeeDocumentScansRepository();
+        }
+
+        public EmployeeDocumentScansController(IEmployeeDocumentScansRepository repo)
+        {
+            this.repo = repo;
+        }
 
         /// <summary>
         /// Method fo file upload
@@ -31,39 +43,46 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("UploadFile")]
-        public HttpResponseMessage UploadEmployeeDocumentScan(string tableName, int tableId)
+        [ResponseType(typeof(EmployeeDocumentScan))]
+        public IHttpActionResult UploadEmployeeDocumentScan(string tableName, int tableId)
         {
-            HttpResponseMessage result = null;
-            var httpRequest = HttpContext.Current.Request;
-            if (httpRequest.Files.Count == 1)
+            try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                HttpRequest request = null;
+                if (HttpContext.Current != null)
                 {
-                    int uploadedScanId = 0;
-                    foreach (string file in httpRequest.Files)
-                    {
-                        EmployeeDocumentScan scan = new EmployeeDocumentScan();
-                        scan.Id = scan.NewId(db);
-                        scan.TableId = tableId;
-                        scan.ScanTableName = tableName;
-                        var postedFile = httpRequest.Files[file];
-                        var filePath = HttpContext.Current.Server.MapPath(
-                            "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-                        postedFile.SaveAs(filePath);
-                        scan.ScanName = filePath;
-                        db.EmployeeDocumentScans.Add(scan);
-                        db.SaveChanges();
-                        uploadedScanId = scan.Id;
-                    }
-                    EmployeeDocumentScan uploadedScan = db.EmployeeDocumentScans.Find(uploadedScanId);
-                    result = Request.CreateResponse(HttpStatusCode.Created, uploadedScan);
+                    request = HttpContext.Current.Request;
                 }
+                else
+                {
+                    throw new ArgumentException("No HttpContext found!");
+                }
+
+                HttpPostedFile postedFile = null;
+
+                List<EmployeeDocumentScan> scans = new List<EmployeeDocumentScan>();
+
+                foreach (string file in request.Files)
+                {
+                    postedFile = request.Files[file];
+                    if (postedFile != null)
+                    { 
+                    EmployeeDocumentScan scan = new EmployeeDocumentScan()
+                    {
+                        TableId = tableId,
+                        ScanTableName = tableName,
+                        ScanName = repo.SaveFile(postedFile)
+                    };
+                    scan = repo.Add(scan);
+                        scans.Add(scan);
+                    }
+                }
+                return CreatedAtRoute("GetScanListByDocumentId", new { tableName = tableName, tableId = tableId }, scans);
             }
-            else
+            catch (Exception e)
             {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                return BadRequest(e.Message);
             }
-            return result;
         }
 
         /// <summary>
@@ -73,45 +92,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("PutDbFilesToFilesystem")]
-        public HttpResponseMessage PutDbFilesToFilesystem()
+        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
+        public IHttpActionResult PutDbFilesToFilesystem()
         {
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    List<int> scans = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
-                    List<EmployeeDocumentScan> newScans = new List<EmployeeDocumentScan>();
-                    foreach (var item in scans)
-                    {
-                        EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
-                        if (scan.Scan != null)
-                        {
-                            try
-                            {
-                                WebImage image = new WebImage(scan.Scan);
-                                var formatString = image.ImageFormat.ToString();
-                                var filePath = HttpContext.Current.Server.MapPath(
-           "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                                image.Save(filePath);
-                                scan.ScanName = filePath;
-                                db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                            catch
-                            {
-                                continue;
-                            }
-                        }
-                    }
-
-                    var result = Request.CreateResponse(HttpStatusCode.Created, newScans.Select(a => new { a.Id, a.ScanName }));
-                    return result;
-                }
+                List<EmployeeDocumentScan> scanList = repo.FromByteArrayToString();
+                return Ok(scanList);
             }
             catch (Exception e)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-            } 
+                return BadRequest(e.Message);
+            }
         }
 
         /// <summary>
@@ -122,27 +114,19 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpGet]
-        [Route("GetByDocumentId")]
+        [Route("GetByDocumentId", Name = "GetScanListByDocumentId")]
         [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
         public IHttpActionResult GetEmployeeDocumentScanByDocumentId(string tableName, int tableId)
         {
-
-            List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    scanList = db.EmployeeDocumentScans
-                    .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
-                    .ToList();
-                }
+                List<EmployeeDocumentScan> scans = repo.GetByDocumentId(tableName, tableId);
+                return Ok(scans);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            return Ok(scanList);
         }
 
         /// <summary>
@@ -154,24 +138,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeDocumentScanDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
         public IHttpActionResult GetEmployeeDocumentScanByEmployeeId(int employeeId)
         {
-            IEnumerable<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    scanList = db.EmployeeAllDocumentScans(employeeId).ToList();
-                }
+                IEnumerable<EmployeeDocumentScan> scanList = repo.GetByEmployeeId(employeeId);
+                return Ok(scanList);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
-
-            return Ok(scanList);
         }
 
         /// <summary>
@@ -182,29 +160,17 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
+        [ResponseType(typeof(EmployeeDocumentScan))]
         public IHttpActionResult GetEmployeeDocumentScan(int id)
         {
-            EmployeeDocumentScan scan = new EmployeeDocumentScan();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    scan = db.EmployeeDocumentScans.Find(id);
-                }
+                EmployeeDocumentScan scan = repo.Get(id);
+                return Ok(scan);
             }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
-            }
-
-            if (scan != null)
-            { 
-                return Ok(scan);
-            }
-            else
-            {
-                return NotFound();
+                return BadRequest(e.Message);
             }
         }
 
@@ -216,47 +182,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
+        [ResponseType(typeof(EmployeeDocumentScan))]
         public IHttpActionResult DeleteEmployeeDocumentScan(int id)
         {
-            EmployeeDocumentScan scan = new EmployeeDocumentScan();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    scan = db.EmployeeDocumentScans.Find(id);
-                    if (scan != null)
-                    {
-                        scan.Deleted = true;
-                        db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-
-                        bool saveFailed = false;
-                        do
-
-                        {
-                            try
-                            {
-                                db.SaveChanges();
-                            }
-                            catch (DbUpdateConcurrencyException ex)
-                            {
-                                saveFailed = true;
-
-                                // Update the values of the entity that failed to save from the store 
-                                ex.Entries.Single().Reload();
-                            }
-                        } while (saveFailed);
-
-                        //db.SaveChanges();
-                    }
-                }
+                EmployeeDocumentScan scan = repo.Delete(id);
+                return Ok(scan);
             }
             catch (Exception e)
             {
                 return BadRequest("Troubles with database connection");
             }
-
-            return Ok(scan);
         }
 
         /// <summary>
@@ -268,13 +205,6 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool EmployeeDocumentScanExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.EmployeeDocumentScans.Count(e => e.Id == id) > 0;
-            }
-        }
     }
 
 }

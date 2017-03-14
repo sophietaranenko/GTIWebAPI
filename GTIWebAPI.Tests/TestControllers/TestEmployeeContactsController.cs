@@ -18,7 +18,7 @@ namespace GTIWebAPI.Tests.TestControllers
     public class TestEmployeeContactsController
     {
         private IDbContextFactory factory;
-        private IEmployeeContactsRepository repo;
+        private IRepository<EmployeeContact> repo;
 
         public TestEmployeeContactsController()
         {
@@ -91,7 +91,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void PostProduct_ShouldReturnSameProduct()
+        public void PostContact_ShouldReturnSameContact()
         {
             var controller = new EmployeeContactsController(repo);
             var item = GetDemo();

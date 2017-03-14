@@ -12,277 +12,144 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
     [RoutePrefix("api/EmployeeInternationalPassports")]
     public class EmployeeInternationalPassportsController : ApiController
     {
-        /// <summary>
-        /// All internationalPassports
-        /// </summary>
-        /// <returns></returns>
+        private IRepository<EmployeeInternationalPassport> repo;
+
+        public EmployeeInternationalPassportsController()
+        {
+            repo = new EmployeeInternationalPassportsRepository();
+        }
+
+        public EmployeeInternationalPassportsController(IRepository<EmployeeInternationalPassport> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
         public IHttpActionResult GetEmployeeInternationalPassportAll()
         {
-            IEnumerable<EmployeeInternationalPassportDTO> dtos = new List<EmployeeInternationalPassportDTO>();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList()
-                            .Select(e => e.ToDTO()).ToList();
-                }
+                List<EmployeeInternationalPassportDTO> dtos =
+                    repo.GetAll()
+                    .Select(e => e.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get employee internationalPassport by employee id for VIEW
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of EmployeeInternationalPassportDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
         public IHttpActionResult GetEmployeeInternationalPassportByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeInternationalPassportDTO> dtos = new List<EmployeeInternationalPassportDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos =
-                     db.EmployeeInternationalPassports.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
-                     .Select(d => d.ToDTO()).ToList();
-                }
+                List<EmployeeInternationalPassportDTO> dtos =
+                    repo.GetByEmployeeId(employeeId)
+                    .Select(e => e.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dtos);
         }
 
-
-        /// <summary>
-        /// Get one internationalPassport for edit by internationalPassport id
-        /// </summary>
-        /// <param name="id">EmployeeInternationalPassport id</param>
-        /// <returns>EmployeeInternationalPassportEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeInternationalPassport")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
         public IHttpActionResult GetEmployeeInternationalPassport(int id)
         {
-            EmployeeInternationalPassport internationalPassport = new EmployeeInternationalPassport();
-
-            try
+           try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    internationalPassport = db.EmployeeInternationalPassports.Find(id);
-                }
+                EmployeeInternationalPassportDTO internationalPassport = repo.Get(id).ToDTO();
+                return Ok(internationalPassport);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            if (internationalPassport == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeInternationalPassportDTO dto = internationalPassport.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Update employee internationalPassport
-        /// </summary>
-        /// <param name="id">InternationalPassport id</param>
-        /// <param name="employeeInternationalPassport">EmployeeInternationalPassport object</param>
-        /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeInternationalPassport(int id, EmployeeInternationalPassport employeeInternationalPassport)
         {
-            if (employeeInternationalPassport == null)
+            if (employeeInternationalPassport == null || !ModelState.IsValid || id != employeeInternationalPassport.Id)
             {
                 return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (id != employeeInternationalPassport.Id)
-            {
-                return BadRequest();
             }
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(employeeInternationalPassport).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeInternationalPassportExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeInternationalPassportDTO passport = repo.Edit(employeeInternationalPassport).ToDTO();
+                return Ok(passport);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new employee internationalPassport
-        /// </summary>
-        /// <param name="employeeInternationalPassport">EmployeeInternationalPassport object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
         public IHttpActionResult PostEmployeeInternationalPassport(EmployeeInternationalPassport employeeInternationalPassport)
         {
-            if (employeeInternationalPassport == null)
+            if (employeeInternationalPassport == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeInternationalPassport.Id = employeeInternationalPassport.NewId(db);
-                    db.EmployeeInternationalPassports.Add(employeeInternationalPassport);
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (EmployeeInternationalPassportExists(employeeInternationalPassport.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeInternationalPassportDTO dto = repo.Add(employeeInternationalPassport).ToDTO();
+                return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
-            return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
         }
 
-        /// <summary>
-        /// Delete internationalPassport
-        /// </summary>
-        /// <param name="id">InternationalPassport Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeInternationalPassport))]
         public IHttpActionResult DeleteEmployeeInternationalPassport(int id)
         {
-            EmployeeInternationalPassport employeeInternationalPassport = null;
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
-                    if (employeeInternationalPassport == null)
-                    {
-                        return NotFound();
-                    }
-                    employeeInternationalPassport.Deleted = true;
-                    db.Entry(employeeInternationalPassport).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeInternationalPassportExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeInternationalPassportDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool EmployeeInternationalPassportExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.EmployeeInternationalPassports.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }

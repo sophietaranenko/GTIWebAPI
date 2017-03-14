@@ -20,14 +20,14 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeContacts")]
     public class EmployeeContactsController : ApiController
     {
-        private IEmployeeContactsRepository repo;
+        private IRepository<EmployeeContact> repo;
 
         public EmployeeContactsController()
         {
             repo = new EmployeeContactsRepository();
         }
 
-        public EmployeeContactsController(IEmployeeContactsRepository repo)
+        public EmployeeContactsController(IRepository<EmployeeContact> repo)
         {
             this.repo = repo;
         }

@@ -10,7 +10,7 @@ using System.Data.Entity.Infrastructure;
 
 namespace GTIWebAPI.Models.Repository
 {
-    public class EmployeePassportsRepository : IEmployeePassportsRepository
+    public class EmployeePassportsRepository : IRepository<EmployeePassport>
     {
         private IDbContextFactory factory;
         public EmployeePassportsRepository()

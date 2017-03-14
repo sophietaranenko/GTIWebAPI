@@ -263,7 +263,7 @@ namespace GTIWebAPI.Models.Context
         /// </summary>
         /// <param name="myFilter"></param>
         /// <returns></returns>
-        public virtual IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId)
+        public virtual IEnumerable<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId)
         {
 
             SqlParameter parameter = new SqlParameter
@@ -275,10 +275,10 @@ namespace GTIWebAPI.Models.Context
                 Value = employeeId
             };
 
-            List<EmployeeDocumentScanDTO> scanList = new List<EmployeeDocumentScanDTO>();
+            List<EmployeeDocumentScan> scanList = new List<EmployeeDocumentScan>();
             try
             {
-                var result = Database.SqlQuery<EmployeeDocumentScanDTO>("exec EmployeeDocumentScanValid @EmployeeId", parameter).ToList();
+                var result = Database.SqlQuery<EmployeeDocumentScan>("exec EmployeeDocumentScanValid @EmployeeId", parameter).ToList();
                 scanList = result;
             }
             catch (Exception e)

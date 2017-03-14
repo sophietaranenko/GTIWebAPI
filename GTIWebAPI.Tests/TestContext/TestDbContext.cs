@@ -206,23 +206,12 @@ namespace GTIWebAPI.Tests.TestContext
             return true;
         }
 
-        public IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId)
+        public IEnumerable<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId)
         {
-            List<EmployeeDocumentScanDTO> list = new List<EmployeeDocumentScanDTO>();
-            list.Add(new EmployeeDocumentScanDTO()
-            {
-                Id = 1,
-                ScanName = "some path",
-                TableId = 1,
-                TableName = "EmployeePassport"
-            });
-            list.Add(new EmployeeDocumentScanDTO()
-            {
-                Id = 2,
-                ScanName = "some path",
-                TableId = 1,
-                TableName = "EmployeePassport"
-            });
+            //переписать
+            //нет времени мОчить IDatabase 
+            List<EmployeeDocumentScan> list =
+                this.EmployeeDocumentScans.ToList();            
             return list;
         }
 

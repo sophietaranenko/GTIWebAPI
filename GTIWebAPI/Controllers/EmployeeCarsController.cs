@@ -19,14 +19,14 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
     {
-        private IEmployeeCarsRepository repo;
+        private IRepository<EmployeeCar> repo;
 
         public EmployeeCarsController()
         {
-            repo = new EmployeeCarsRepository();
+            repo = new EmployeeFoundationDocumentRepository();
         }
 
-        public EmployeeCarsController(IEmployeeCarsRepository repo)
+        public EmployeeCarsController(IRepository<EmployeeCar> repo)
         {
             this.repo = repo;
         }

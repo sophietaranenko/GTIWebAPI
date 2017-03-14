@@ -23,14 +23,14 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeePassports")]
     public class EmployeePassportsController : ApiController
     {
-        private IEmployeePassportsRepository repo;
+        private IRepository<EmployeePassport> repo;
 
         public EmployeePassportsController()
         {
             repo = new EmployeePassportsRepository();
         }
 
-        public EmployeePassportsController(IEmployeePassportsRepository repo)
+        public EmployeePassportsController(IRepository<EmployeePassport> repo)
         {
             this.repo = repo;
         }

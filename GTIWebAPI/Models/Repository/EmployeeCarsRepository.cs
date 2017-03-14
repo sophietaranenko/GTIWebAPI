@@ -11,15 +11,15 @@ using System.Data.Entity;
 
 namespace GTIWebAPI.Models.Repository
 {
-    public class EmployeeCarsRepository : IEmployeeCarsRepository
+    public class EmployeeFoundationDocumentRepository : IRepository<EmployeeCar>
     {
         private IDbContextFactory factory;
-        public EmployeeCarsRepository()
+        public EmployeeFoundationDocumentRepository()
         {
             factory = new DbContextFactory();
         }
 
-        public EmployeeCarsRepository(IDbContextFactory factory)
+        public EmployeeFoundationDocumentRepository(IDbContextFactory factory)
         {
             this.factory = factory;
         }

@@ -14,9 +14,9 @@ namespace GTIWebAPI.Models.Repository
 
         T Get(int id);
 
-        T Add(T contact);
+        T Add(T item);
 
-        T Edit(T contact);
+        T Edit(T item);
 
         T Delete(int id);
     }

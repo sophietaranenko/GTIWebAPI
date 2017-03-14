@@ -78,6 +78,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestControllers\TestEmployeeCarsController.cs" />
     <Compile Include="TestControllers\TestEmployeeContactsController.cs" />
+    <Compile Include="TestControllers\TestEmployeeDocumentScansController.cs" />
+    <Compile Include="TestControllers\TestEmployeeFoundationDocumentsController.cs" />
     <Compile Include="TestDbSets\TestDbSet.cs" />
     <Compile Include="TestDbSets\TestEmployeeAddressDbSet.cs" />
     <Compile Include="TestControllers\TestEmployeePassportController.cs" />

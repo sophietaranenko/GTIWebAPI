@@ -58,14 +58,14 @@ namespace GTIWebAPI.Models.Employees
         }
     }
 
-    public class EmployeeDocumentScanDTO
-    {
-        public int Id { get; set; }
+    //public class EmployeeDocumentScanDTO
+    //{
+    //    public int Id { get; set; }
 
-        public int TableId { get; set; }
+    //    public int TableId { get; set; }
 
-        public string TableName { get; set; }
+    //    public string TableName { get; set; }
 
-        public string ScanName { get; set; }
-    }
+    //    public string ScanName { get; set; }
+    //}
 }

@@ -20,7 +20,7 @@ namespace GTIWebAPI.Tests
     public class TestEmployeePassportsController
     {
         private IDbContextFactory factory;
-        private IEmployeePassportsRepository repo;
+        private IRepository<EmployeePassport> repo;
 
         public TestEmployeePassportsController()
         {
@@ -93,7 +93,7 @@ namespace GTIWebAPI.Tests
         }
 
         [TestMethod]
-        public void PostProduct_ShouldReturnSameProduct()
+        public void PostPassport_ShouldReturnSamePassport()
         {
             var controller = new EmployeePassportsController(repo);
             var item = GetDemo();

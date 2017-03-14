@@ -11,7 +11,7 @@ using System.Data.Entity;
 
 namespace GTIWebAPI.Models.Repository
 {
-    public class EmployeeContactsRepository : IEmployeeContactsRepository
+    public class EmployeeContactsRepository : IRepository<EmployeeContact>
     {
         private IDbContextFactory factory;
         public EmployeeContactsRepository()

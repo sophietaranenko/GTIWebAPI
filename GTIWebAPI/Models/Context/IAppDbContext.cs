@@ -124,7 +124,7 @@ namespace GTIWebAPI.Models.Context
 
         IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds);
 
-        IEnumerable<EmployeeDocumentScanDTO> EmployeeAllDocumentScans(int employeeId);
+        IEnumerable<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId);
 
         IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter);
 

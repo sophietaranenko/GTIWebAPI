@@ -13,6 +13,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
 using GTIWebAPI.Models.Dictionary;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -22,12 +23,18 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeLanguages")]
     public class EmployeeLanguagesController : ApiController
     {
-        //private DbPersonnel db = new DbPersonnel();
+        private IRepository<EmployeeLanguage> repo;
 
-        /// <summary>
-        /// All languages
-        /// </summary>
-        /// <returns></returns>
+        public EmployeeLanguagesController()
+        {
+            repo = new EmployeeLanguagesRepository();
+        }
+
+        public EmployeeLanguagesController(IRepository<EmployeeLanguage> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]

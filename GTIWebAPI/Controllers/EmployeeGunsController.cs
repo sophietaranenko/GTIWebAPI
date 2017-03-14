@@ -12,6 +12,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -21,10 +22,18 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeGuns")]
     public class EmployeeGunsController : ApiController
     {
-        /// <summary>
-        /// All guns
-        /// </summary>
-        /// <returns></returns>
+        private IRepository<EmployeeGun> repo;
+
+        public EmployeeGunsController()
+        {
+            repo = new EmployeeGunsRepository();
+        }
+
+        public EmployeeGunsController(IRepository<EmployeeGun> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
@@ -35,259 +44,118 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeGun.Where(p => p.Deleted != true).ToList()
-                        .Select(g => g.ToDTO()).ToList();
-                }
+                List<EmployeeGunDTO> guns = 
+                    repo.GetAll()
+                    .Select(g => g.ToDTO())
+                    .ToList();
+                return Ok(repo);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get employee gun by employee id for VIEW
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of EmployeeGunDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
         public IHttpActionResult GetEmployeeGunByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeGunDTO> dtos = null;
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeGun.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                List<EmployeeGunDTO> guns = 
+                    repo.GetByEmployeeId(employeeId)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(guns);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get one gun permission for view by gun id
-        /// </summary>
-        /// <param name="id">EmployeeGun id</param>
-        /// <returns>EmployeeGunEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeGun")]
         [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult GetEmployeeGun(int id)
         {
-            EmployeeGun gun = new EmployeeGun();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    gun = db.EmployeeGun.Find(id);
-                }
+                EmployeeGunDTO gun = repo.Get(id).ToDTO();
+                return Ok(gun);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            if (gun == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeGunDTO dto = gun.ToDTO();
-
-            return Ok(dto);
         }
 
 
-        /// <summary>
-        /// Update employee gun
-        /// </summary>
-        /// <param name="id">Gun id</param>
-        /// <param name="employeeGun">EmployeeGun object</param>
-        /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeGun(int id, EmployeeGun employeeGun)
         {
-            if (employeeGun == null)
+            if (employeeGun == null || !ModelState.IsValid || id != employeeGun.Id)
             {
                 return BadRequest(ModelState);
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (id != employeeGun.Id)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(employeeGun).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeGunExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeGunDTO gun = repo.Edit(employeeGun).ToDTO();
+                return Ok(gun);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            EmployeeGunDTO dto = employeeGun.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new employee gun
-        /// </summary>
-        /// <param name="employeeGun">EmployeeGun object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult PostEmployeeGun(EmployeeGun employeeGun)
         {
-            if (employeeGun == null)
+            if (employeeGun == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeGun.Id = employeeGun.NewId(db);
-                    db.EmployeeGun.Add(employeeGun);
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (EmployeeGunExists(employeeGun.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeGunDTO gun = repo.Add(employeeGun).ToDTO();
+                return CreatedAtRoute("GetEmployeeGun", new { id = gun.Id }, gun);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            EmployeeGunDTO dto = employeeGun.ToDTO();
-            return CreatedAtRoute("GetEmployeeGun", new { id = dto.Id }, dto);
         }
 
-        /// <summary>
-        /// Delete gun
-        /// </summary>
-        /// <param name="id">Gun Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeGun))]
         public IHttpActionResult DeleteEmployeeGun(int id)
         {
-            EmployeeGun employeeGun = new EmployeeGun();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeGun = db.EmployeeGun.Find(id);
-                    if (employeeGun == null)
-                    {
-                        return NotFound();
-                    }
-                    employeeGun.Deleted = true;
-                    db.Entry(employeeGun).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeGunExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeGunDTO gun = repo.Delete(id).ToDTO();
+                return Ok(gun);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeGunDTO dto = employeeGun.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool EmployeeGunExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.EmployeeGun.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }
