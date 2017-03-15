@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
+using GTIWebAPI.Models.Repository.Organization;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,83 +17,55 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationLanguageNames")]
     public class OrganizationLanguageNamesController : ApiController
     {
+        private IOrganizationRepository<OrganizationLanguageName> repo;
 
-        /// <summary>
-        /// Get employee languageNames by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of OrganizationLanguageNameDTO</returns>
+        public OrganizationLanguageNamesController()
+        {
+            repo = new OrganizationLanguageNamesRepository();
+        }
+
+        public OrganizationLanguageNamesController(IOrganizationRepository<OrganizationLanguageName> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
         [ResponseType(typeof(IEnumerable<OrganizationLanguageNameDTO>))]
         public IHttpActionResult GetOrganizationLanguageNameByOrganizationId(int organizationId)
         {
-            List<OrganizationLanguageName> languageNames = new List<OrganizationLanguageName>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    languageNames = db.OrganizationLanguageNames
-                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
-                    .Include(d => d.Language)
+                List<OrganizationLanguageNameDTO> dtos = 
+                    repo.GetByOrganizationId(organizationId)
+                    .Select(p => p.ToDTO())
                     .ToList();
-                }
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            List<OrganizationLanguageNameDTO> dtos = languageNames.Select(p => p.ToDTO()).ToList();
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get one languageName by languageName id
-        /// </summary>
-        /// <param name="id">OrganizationLanguageName id</param>
-        /// <returns>OrganizationLanguageNameEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetOrganizationLanguageName")]
         [ResponseType(typeof(OrganizationLanguageNameDTO))]
         public IHttpActionResult GetOrganizationLanguageName(int id)
         {
-            OrganizationLanguageName languageName = new OrganizationLanguageName();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    languageName = db.OrganizationLanguageNames.Find(id);
-                    if (languageName != null)
-                    {
-                        db.Entry(languageName).Reference(d => d.Language).Load();
-                    }
-                }
+                OrganizationLanguageNameDTO dto = repo.Get(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            if (languageName == null)
-            {
-                return NotFound();
-            }
-
-            OrganizationLanguageNameDTO dto = languageName.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Update employee languageName
-        /// </summary>
-        /// <param name="id">Passport id</param>
-        /// <param name="organizationLanguageName">OrganizationLanguageName object</param>
-        /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
@@ -111,45 +84,17 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(organizationLanguageName).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationLanguageNameExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
-                }
+                OrganizationLanguageNameDTO dto = repo.Edit(organizationLanguageName).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
-
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new employee languageName
-        /// </summary>
-        /// <param name="organizationLanguageName">OrganizationLanguageName object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
@@ -160,117 +105,37 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationLanguageName.Id = organizationLanguageName.NewId(db);
-
-                    if (!ModelState.IsValid)
-                    {
-                        return BadRequest(ModelState);
-                    }
-                    db.OrganizationLanguageNames.Add(organizationLanguageName);
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (OrganizationLanguageNameExists(organizationLanguageName.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-
-                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
-                }
+                OrganizationLanguageNameDTO dto = repo.Add(organizationLanguageName).ToDTO();
+                return CreatedAtRoute("GetOrganizationLanguageName", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-
-            OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
-            return CreatedAtRoute("GetOrganizationLanguageName", new { id = dto.Id }, dto);
         }
 
-        /// <summary>
-        /// Delete languageName
-        /// </summary>
-        /// <param name="id">Passport Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(OrganizationLanguageName))]
         public IHttpActionResult DeleteOrganizationLanguageName(int id)
         {
-            OrganizationLanguageName organizationLanguageName = new OrganizationLanguageName();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationLanguageName = db.OrganizationLanguageNames.Find(id);
-                    if (organizationLanguageName == null)
-                    {
-                        return NotFound();
-
-                    }
-                    db.Entry(organizationLanguageName).Reference(d => d.Language).Load();
-
-                    organizationLanguageName.Deleted = true;
-                    db.Entry(organizationLanguageName).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationLanguageNameExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                OrganizationLanguageNameDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-
-            OrganizationLanguageNameDTO dto = organizationLanguageName.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool OrganizationLanguageNameExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.OrganizationLanguageNames.Count(e => e.Id == id) > 0;
-            }
         }
 
     }

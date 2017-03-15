@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
+using GTIWebAPI.Models.Repository.Organization;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -19,36 +20,36 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationContactPersonContacts")]
     public class OrganizationContactPersonContactsController : ApiController
     {
-        /// <summary>
-        /// Get employee contacts by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of OrganizationContactPersonContactDTO</returns>
+        IOrganizationContactPersonContactsRepository repo;
+
+        public OrganizationContactPersonContactsController()
+        {
+            repo = new OrganizationContactPersonContactsRepository();
+        }
+
+        public OrganizationContactPersonContactsController(IOrganizationContactPersonContactsRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationContactPersonId")]
         [ResponseType(typeof(IEnumerable<OrganizationContactPersonContactDTO>))]
         public IHttpActionResult GetOrganizationContactPersonContactByOrganizationContactPersonId(int organizationContactPersonId)
         {
-            List<OrganizationContactPersonContact> organizationContactPersonContacts = new List<OrganizationContactPersonContact>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationContactPersonContacts = db.OrganizationContactPersonContacts
-                .Where(p => p.Deleted != true && p.OrganizationContactPersonId == organizationContactPersonId)
-                .Include(d => d.ContactType)
-                .ToList();
-                }
+                List<OrganizationContactPersonContactDTO> dtos = 
+                    repo.GetByOrganizationContactPersonId(organizationContactPersonId)
+                    .Select(p => p.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            List<OrganizationContactPersonContactDTO> dtos = organizationContactPersonContacts.Select(p => p.ToDTO()).ToList();
-            return Ok(dtos);
         }
 
         /// <summary>
@@ -62,31 +63,17 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationContactPersonContactDTO))]
         public IHttpActionResult GetOrganizationContactPersonContact(int id)
         {
-            OrganizationContactPersonContact organizationContactPersonContact = new OrganizationContactPersonContact();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationContactPersonContact = db.OrganizationContactPersonContacts.Find(id);
-                    if (organizationContactPersonContact != null)
-                    {
-                        db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
-                    }
-                }
+                OrganizationContactPersonContactDTO dto = 
+                    repo.Get(id)
+                    .ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            if (organizationContactPersonContact == null)
-            {
-                return NotFound();
-            }
-
-            OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
-            return Ok(dto);
         }
 
         /// <summary>
@@ -101,11 +88,7 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutOrganizationContactPersonContact(int id, OrganizationContactPersonContact organizationContactPersonContact)
         {
-            if (organizationContactPersonContact == null)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
+            if (organizationContactPersonContact == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -115,33 +98,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(organizationContactPersonContact).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationContactPersonContactExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
-                }
+                OrganizationContactPersonContactDTO dto = repo.Edit(organizationContactPersonContact).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-            OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
-            return Ok(dto);
         }
 
         /// <summary>
@@ -161,43 +124,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-
-                    organizationContactPersonContact.Id = organizationContactPersonContact.NewId(db);
-                    if (!ModelState.IsValid)
-                    {
-                        return BadRequest(ModelState);
-                    }
-
-
-                    db.OrganizationContactPersonContacts.Add(organizationContactPersonContact);
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (OrganizationContactPersonContactExists(organizationContactPersonContact.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
-                }
-
+                OrganizationContactPersonContactDTO dto = repo.Add(organizationContactPersonContact).ToDTO();
+                return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
-            return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
         }
 
         /// <summary>
@@ -211,47 +144,15 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationContactPersonContact))]
         public IHttpActionResult DeleteOrganizationContactPersonContact(int id)
         {
-            OrganizationContactPersonContact organizationContactPersonContact = new OrganizationContactPersonContact();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationContactPersonContact = db.OrganizationContactPersonContacts.Find(id);
-                    if (organizationContactPersonContact == null)
-                    {
-                        return NotFound();
-                    }
-                    db.Entry(organizationContactPersonContact).Reference(d => d.ContactType).Load();
-
-                    organizationContactPersonContact.Deleted = true;
-
-
-                    db.Entry(organizationContactPersonContact).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationContactPersonContactExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-
-                }
-
+                OrganizationContactPersonContactDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-            OrganizationContactPersonContactDTO dto = organizationContactPersonContact.ToDTO();
-            return Ok(dto);
         }
 
         /// <summary>
@@ -261,14 +162,6 @@ namespace GTIWebAPI.Controllers
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool OrganizationContactPersonContactExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.OrganizationContactPersonContacts.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }

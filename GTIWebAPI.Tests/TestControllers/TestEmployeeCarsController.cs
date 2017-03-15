@@ -25,7 +25,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public TestEmployeeCarsController()
         {
             factory = new TestDbContextFactory();
-            repo = new EmployeeFoundationDocumentRepository(factory);
+            repo = new EmployeeCarRepository(factory);
             GetFewDemo();
         }
 

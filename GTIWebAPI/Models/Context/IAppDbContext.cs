@@ -134,7 +134,7 @@ namespace GTIWebAPI.Models.Context
 
         IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber);
 
-        IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd);
+        IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         DealFullViewDTO GetDealCardInfo(Guid dealId);
 
@@ -142,7 +142,7 @@ namespace GTIWebAPI.Models.Context
 
         IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId);
 
-        IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd);
+        IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId);
 
@@ -150,7 +150,7 @@ namespace GTIWebAPI.Models.Context
 
         IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId);
 
-        IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd);
+        IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         DealContainerViewDTO GetContainer(Guid id);
 

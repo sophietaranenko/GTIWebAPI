@@ -23,7 +23,7 @@ namespace GTIWebAPI.Controllers
 
         public EmployeeCarsController()
         {
-            repo = new EmployeeFoundationDocumentRepository();
+            repo = new EmployeeCarRepository();
         }
 
         public EmployeeCarsController(IRepository<EmployeeCar> repo)

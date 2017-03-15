@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,18 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Containers")]
     public class ContainersController : ApiController
     {
+        IContainersRepository repo;
+
+        public ContainersController()
+        {
+            repo = new ContainersRepository();
+        }
+
+        public ContainersController(IContainersRepository repo)
+        {
+            this.repo = repo;
+        }
+
         /// <summary>
         /// All containers by organization and dates (date of deal, to change - look into database) 
         /// </summary>
@@ -29,12 +42,10 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<DealContainerViewDTO>))]
         public IHttpActionResult GetContainers(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
-            IEnumerable<DealContainerViewDTO> list = new List<DealContainerViewDTO>();
             if (organizationId == 0)
             {
-                return Ok(list);
+                return BadRequest("Empty organization");
             }
-
             if (dateBegin == null)
             {
                 dateBegin = new DateTime(1900, 1, 1);
@@ -43,21 +54,17 @@ namespace GTIWebAPI.Controllers
             {
                 dateEnd = new DateTime(2200, 1, 1);
             }
-            
-
+            DateTime modDateBegin = dateBegin.GetValueOrDefault();
+            DateTime modeDateEnd = dateEnd.GetValueOrDefault();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    list = db.GetContainersFiltered(organizationId, dateBegin, dateEnd);
-                }
+                List<DealContainerViewDTO> list = repo.GetAll(organizationId, modDateBegin, modeDateEnd);
+                return Ok(list);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(list);
         }
 
         /// <summary>
@@ -72,7 +79,6 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult GetContainer(Guid id)
         {
             DealContainerViewDTO container = new DealContainerViewDTO();
-
             try
             {
                 using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
@@ -84,7 +90,6 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             return Ok(container);
         }
 

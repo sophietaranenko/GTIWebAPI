@@ -743,12 +743,10 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.GetOrganizationAddressByOrganizationId(System.Int32)">
+        <member name="T:GTIWebAPI.Controllers.OrganizationAddressesController">
             <summary>
-            Get employee addresss by employee id 
+            Physic addresses of organization 
             </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationAddressDTO</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationAddressesController.GetOrganizationAddress(System.Int32)">
             <summary>
@@ -790,13 +788,6 @@
             Persons with whom our company has business  
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonContactsController.GetOrganizationContactPersonContactByOrganizationContactPersonId(System.Int32)">
-            <summary>
-            Get employee contacts by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationContactPersonContactDTO</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonContactsController.GetOrganizationContactPersonContact(System.Int32)">
             <summary>
             Get one contact by contact id
@@ -836,131 +827,6 @@
             <summary>
             Contact persons are pepople we contact to 
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.GetOrganizationContactPersonByOrganizationId(System.Int32)">
-            <summary>
-            Get employee propertys by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationContactPersonDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.GetOrganizationContactPerson(System.Int32)">
-            <summary>
-            Get one property by property id
-            </summary>
-            <param name="id">OrganizationContactPerson id</param>
-            <returns>OrganizationContactPersonEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.PutOrganizationContactPerson(System.Int32,GTIWebAPI.Models.Organizations.OrganizationContactPerson)">
-            <summary>
-            Update employee property
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationContactPerson">OrganizationContactPerson object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.PostOrganizationContactPerson(GTIWebAPI.Models.Organizations.OrganizationContactPerson)">
-            <summary>
-            Insert new employee property
-            </summary>
-            <param name="organizationContactPerson">OrganizationContactPerson object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.DeleteOrganizationContactPerson(System.Int32)">
-            <summary>
-            Delete property
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationContactPersonsController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetOrganizationGTILinkByOrganizationId(System.Int32)">
-            <summary>
-            Get employee links by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationGTILinkDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.GetOrganizationGTILink(System.Int32)">
-            <summary>
-            Get one link by link id
-            </summary>
-            <param name="id">OrganizationGTILink id</param>
-            <returns>OrganizationGTILinkEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostOrganizationGTILink(GTIWebAPI.Models.Organizations.OrganizationGTILink)">
-            <summary>
-            Insert new organizationGTI link (with EmployeeId as creator) 
-            </summary>
-            <param name="organizationGTILink">OrganizationGTILink object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.PostOrganizationGTICreateLink(GTIWebAPI.Models.Organizations.OrganizationGTICreateLinkDTO)">
-            <summary>
-            Insert new organizationGTI link (with EmployeeId as creator) 
-            </summary>
-            <param name="organizationGTILink">OrganizationGTILink object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.DeleteOrganizationGTILink(System.Int32)">
-            <summary>
-            Delete link
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationGTILinksController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.GetOrganizationLanguageNameByOrganizationId(System.Int32)">
-            <summary>
-            Get employee languageNames by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationLanguageNameDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.GetOrganizationLanguageName(System.Int32)">
-            <summary>
-            Get one languageName by languageName id
-            </summary>
-            <param name="id">OrganizationLanguageName id</param>
-            <returns>OrganizationLanguageNameEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.PutOrganizationLanguageName(System.Int32,GTIWebAPI.Models.Organizations.OrganizationLanguageName)">
-            <summary>
-            Update employee languageName
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationLanguageName">OrganizationLanguageName object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.PostOrganizationLanguageName(GTIWebAPI.Models.Organizations.OrganizationLanguageName)">
-            <summary>
-            Insert new employee languageName
-            </summary>
-            <param name="organizationLanguageName">OrganizationLanguageName object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.DeleteOrganizationLanguageName(System.Int32)">
-            <summary>
-            Delete languageName
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLanguageNamesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetOrganizationLegalForm(System.Int32)">
             <summary>
@@ -1050,7 +916,7 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.DealsController.GetDeals(System.Int32,System.DateTime,System.DateTime)">
+        <member name="M:GTIWebAPI.Controllers.DealsController.GetDeals(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Get short info about deals 
             </summary>
@@ -1222,142 +1088,10 @@
             Languages employee knows anf documents that confirm that fact 
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetEmployeeLanguageByEmployee(System.Int32)">
-            <summary>
-            Get employee language by employee id for VIEW
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of EmployeeLanguageDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.GetEmployeeLanguage(System.Int32)">
-            <summary>
-            Get one language for view by language id
-            </summary>
-            <param name="id">EmployeeLanguage id</param>
-            <returns>EmployeeLanguageEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.PutEmployeeLanguage(System.Int32,GTIWebAPI.Models.Employees.EmployeeLanguage)">
-            <summary>
-            Update employee language
-            </summary>
-            <param name="id">Language id</param>
-            <param name="employeeLanguage">EmployeeLanguage object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.PostEmployeeLanguage(GTIWebAPI.Models.Employees.EmployeeLanguage)">
-            <summary>
-            Insert new employee language
-            </summary>
-            <param name="employeeLanguage">EmployeeLanguage object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.DeleteEmployeeLanguage(System.Int32)">
-            <summary>
-            Delete language
-            </summary>
-            <param name="id">Language Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeLanguagesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetEmployeeMilitaryCardAll">
-            <summary>
-            All militaryCards
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetEmployeeMilitaryCardByEmployee(System.Int32)">
-            <summary>
-            Get employee militaryCard by employee id for VIEW
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of EmployeeMilitaryCardDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.GetEmployeeMilitaryCardView(System.Int32)">
-            <summary>
-            Get one militaryCard for view by militaryCard id
-            </summary>
-            <param name="id">EmployeeMilitaryCard id</param>
-            <returns>EmployeeMilitaryCardEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.PutEmployeeMilitaryCard(System.Int32,GTIWebAPI.Models.Employees.EmployeeMilitaryCard)">
-            <summary>
-            Update employee militaryCard
-            </summary>
-            <param name="id">MilitaryCard id</param>
-            <param name="employeeMilitaryCard">EmployeeMilitaryCard object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.PostEmployeeMilitaryCard(GTIWebAPI.Models.Employees.EmployeeMilitaryCard)">
-            <summary>
-            Insert new employee militaryCard
-            </summary>
-            <param name="employeeMilitaryCard">EmployeeMilitaryCard object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.DeleteEmployeeMilitaryCard(System.Int32)">
-            <summary>
-            Delete militaryCard
-            </summary>
-            <param name="id">MilitaryCard Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeMilitaryCardsController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="T:GTIWebAPI.Controllers.EmployeeOfficeController">
+        <member name="T:GTIWebAPI.Controllers.EmployeeOfficesController">
             <summary>
             Employee's positions in departments of offices 
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOfficeAll">
-            <summary>
-            Get all positions
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOfficeByEmployeeId(System.Int32)">
-            <summary>
-            Get positions of current employee
-            </summary>
-            <param name="employeeId">Employee id</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.GetEmployeeOffice(System.Int32)">
-            <summary>
-            Get position View
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.PutEmployeeOffice(System.Int32,GTIWebAPI.Models.Employees.EmployeeOffice)">
-            <summary>
-            Update employee position
-            </summary>
-            <param name="id">id of position</param>
-            <param name="employeeOffice">EmployeeOffice</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.PostEmployeeOffice(GTIWebAPI.Models.Employees.EmployeeOffice)">
-            <summary>
-            Insert new employee education document
-            </summary>
-            <param name="employeeOffice">EmployeeOffice object contains id = 0</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeOfficeController.DeleteEmployeeOffice(System.Int32)">
-            <summary>
-            Dleete education document
-            </summary>
-            <param name="id">id of document</param>
-            <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Controllers.EmployeePassportsController">
             <summary>
@@ -1369,31 +1103,10 @@
             Controller for storing and showing Employee photos
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.UploadEmployeePhoto(System.Int32)">
-            <summary>
-            Method fo file upload
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.PutDbFilesToFilesystem">
             <summary>
             Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с новой базой данных)
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.GetEmployeePhotoByEmployeeId(System.Int32)">
-            <summary>
-            Get all photos by employee Id 
-            </summary>
-            <param name="employeeId">Id of employee</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.GetEmployeePhoto(System.Int32)">
-            <summary>
-            Get photo by its id
-            </summary>
-            <param name="id">photo id</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.DeleteEmployeePhoto(System.Int32)">
@@ -1414,61 +1127,19 @@
             Controller manipulating employees
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeAll(System.String)">
-            <summary>
-            </summary>
-            <param name="filter">
-            "filter" is a one string contains different number of filters f.e., "Formag Администрация", "Софья Тараненко", "Тараненко Софья Verdeco"
-            </param>
-            <returns>a collection on EmployeeViewDTO objects</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeView(System.Int32)">
             <summary>
-            Get employee for VIEW by id (without Mapper using, faster then with Mapper ~ 150 ms)
+            Get employee full information (with driving licenses, passports, etc.) 
             </summary>
-            <param name="id">id of Employee</param>
-            <returns>EmployeeDTO</returns>
+            <param name="id">Employee Id</param>
+            <returns>EmployeDTO object</returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeEdit(System.Int32)">
             <summary>
-            Get employee for EDIT
+            Get employee for edit (contains only employees data) 
             </summary>
             <param name="id">Employee Id</param>
-            <returns>EmployeeEditDTO, contains only info about Employee</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.PutEmployee(System.Int32,GTIWebAPI.Models.Employees.Employee)">
-            <summary>
-            Update employee
-            </summary>
-            <param name="id">Employee Id</param>
-            <param name="employee">Json employee object</param>
-            <returns>204 (HttpStatusCode.NoContent)</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.PostEmployee(GTIWebAPI.Models.Employees.Employee)">
-            <summary>
-            Insert new Employee
-            </summary>
-            <param name="employee">Employee data with Id = 0</param>
-            <returns>route api/employees/{id}</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.DeleteEmployee(System.Int32)">
-            <summary>
-            Delete employee by id
-            </summary>
-            <param name="id">Employee Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.GetEmployeeLists">
-            <summary>
-            List of Text and Value of enum Sex
-            </summary>
-            <returns>Collection of Json objects</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose Conroller (to destroy DbContect connection)
-            </summary>
-            <param name="disposing"></param>
+            <returns>EmployeeEditDTO object</returns>
         </member>
         <member name="T:GTIWebAPI.Controllers.InvoicesController">
             <summary>
@@ -1480,48 +1151,6 @@
             List of Text and Value of enum Sex
             </summary>
             <returns>Collection of Json objects</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.GetOrganizationTaxAddressByOrganizationId(System.Int32)">
-            <summary>
-            Get employee addresss by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationTaxAddressDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.GetOrganizationTaxAddress(System.Int32)">
-            <summary>
-            Get one address by address id
-            </summary>
-            <param name="id">OrganizationTaxAddress id</param>
-            <returns>OrganizationTaxAddressEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.PutOrganizationTaxAddress(System.Int32,GTIWebAPI.Models.Organizations.OrganizationTaxAddress)">
-            <summary>
-            Update employee address
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationTaxAddress">OrganizationTaxAddress object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.PostOrganizationTaxAddress(GTIWebAPI.Models.Organizations.OrganizationTaxAddress)">
-            <summary>
-            Insert new employee address
-            </summary>
-            <param name="organizationTaxAddress">OrganizationTaxAddress object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.DeleteOrganizationTaxAddress(System.Int32)">
-            <summary>
-            Delete address
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationTaxAddressesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="T:GTIWebAPI.Controllers.UserRightsController">
             <summary>
@@ -1674,7 +1303,7 @@
             <param name="dealId"></param>
             <returns>list of invoices</returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetInvoicesList(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetInvoicesList(System.Int32,System.DateTime,System.DateTime)">
             <summary>
             Stored procedure call to return invoice list selected by organization and dates 
             </summary>
@@ -1769,166 +1398,6 @@
         <member name="T:GTIWebAPI.Models.Dictionary.Language">
             <summary>
             Languages that employee can have
-            </summary>
-        </member>
-        <member name="T:GTIWebAPI.Models.Employees.Employee">
-            <summary>
-            Class for Employee table
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Id">
-            <summary>
-            Id of Employee
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Sex">
-            <summary>
-            short value of Employee Sex (can be 1 or 2) 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.IdentityCode">
-            <summary>
-            Employee identity code
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.DateOfBirth">
-            <summary>
-            Employee's date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.AddressId">
-            <summary>
-            Id of Employee's Address of permanent residence in Address table 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Deleted">
-            <summary>
-            Deleted mark
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.Age">
-            <summary>
-            Age, counted from date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.Employee.SexString">
-            <summary>
-            String value of Employee Sex
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Id">
-            <summary>
-            Employee Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Sex">
-            <summary>
-            Employee Sex in int
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.IdentityCode">
-            <summary>
-            Employee identity code
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.DateOfBirth">
-            <summary>
-            Employee date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.AddressId">
-            <summary>
-            Employee address of permanent residense Id from Address table 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Address">
-            <summary>
-            AddressDTO of employee address of permanent residense 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.Age">
-            <summary>
-            Employee age in string
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeePassport">
-            <summary>
-            Collection of employee Passports
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeContact">
-            <summary>
-            Collection of employee contacts
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeOffice">
-            <summary>
-            Collection of employee positions
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeEducation">
-            <summary>
-            Collection of employee educations
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeLanguage">
-            <summary>
-            Collection of employee languages
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeFoundationDoc">
-            <summary>
-            Collection of employee foundation documents 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeInternationalPassport">
-            <summary>
-            Collection of employee international passports
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeCar">
-            <summary>
-            Collection of employee cars
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeDrivingLicense">
-            <summary>
-            Collection of employee driving licenses
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeGun">
-            <summary>
-            Collection of employee gun store permissions
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.EmployeeMilitaryCard">
-            <summary>
-            Collection of employee military cards
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.Id">
-            <summary>
-            Employee Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.Sex">
-            <summary>
-            Employee Sex in Int
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.IdentityCode">
-            <summary>
-            Employee identity code
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.DateOfBirth">
-            <summary>
-            Employee date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeEditDTO.AddressId">
-            <summary>
-            Employee Address Id
             </summary>
         </member>
         <member name="T:GTIWebAPI.Models.Employees.EmployeeCar">

@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,17 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Deals")]
     public class DealsController : ApiController
     {
+        private IDealsRepository repo;
+
+        public DealsController()
+        {
+            repo = new DealsRepository();
+        }
+
+        public DealsController(IDealsRepository repo)
+        {
+            this.repo = repo;
+        }
         /// <summary>
         /// Get short info about deals 
         /// </summary>
@@ -25,15 +37,12 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<DealViewDTO>))]
-        public IHttpActionResult GetDeals(int organizationId, DateTime dateBegin, DateTime dateEnd)
+        public IHttpActionResult GetDeals(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
-            IEnumerable<DealViewDTO> dtos = new List<DealViewDTO>();
-
             if (organizationId == 0)
             {
-                return Ok(dtos);
+                return BadRequest("Empty organizationId");
             }
-
             if (dateBegin == null)
             {
                 dateBegin = new DateTime(1900, 1, 1);
@@ -42,19 +51,18 @@ namespace GTIWebAPI.Controllers
             {
                 dateEnd = new DateTime(2200, 1, 1);
             }
+
+            DateTime modDateBegin = dateBegin.GetValueOrDefault();
+            DateTime modDateEnd = dateEnd.GetValueOrDefault();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.GetDealsFiltered(organizationId, dateBegin, dateEnd);
-                }
+                List<DealViewDTO> dtos = repo.GetAll(organizationId, modDateBegin, modDateEnd);
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(dtos);
         }
 
 
@@ -75,28 +83,15 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            DealFullViewDTO dto = new DealFullViewDTO();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dto = db.GetDealCardInfo(id);
-
-                    if (dto == null)
-                    {
-                        return NotFound();
-                    }
-
-                    dto.Containers = db.GetContainersByDeal(id);
-                    dto.Invoices = db.GetInvoicesByDeal(id);
-                }
+                DealFullViewDTO dto = repo.Get(id);
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dto);
         }
     }
 }

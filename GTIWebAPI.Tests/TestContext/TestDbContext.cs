@@ -290,7 +290,7 @@ namespace GTIWebAPI.Tests.TestContext
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
             throw new NotImplementedException();
         }
@@ -305,7 +305,7 @@ namespace GTIWebAPI.Tests.TestContext
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
             throw new NotImplementedException();
         }
@@ -335,7 +335,7 @@ namespace GTIWebAPI.Tests.TestContext
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
             throw new NotImplementedException();
         }

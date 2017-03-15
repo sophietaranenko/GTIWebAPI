@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -20,277 +21,133 @@ namespace GTIWebAPI.Controllers
     /// Employee's positions in departments of offices 
     /// </summary>
     [RoutePrefix("api/EmployeeOffices")]
-    public class EmployeeOfficeController : ApiController
+    public class EmployeeOfficesController : ApiController
     {
+        private IRepository<EmployeeOffice> repo;
 
-        /// <summary>
-        /// Get all positions
-        /// </summary>
-        /// <returns></returns>
+        public EmployeeOfficesController()
+        {
+            this.repo = new EmployeeOfficesRepository();
+        }
+
+        public EmployeeOfficesController(IRepository<EmployeeOffice> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
         public IHttpActionResult GetEmployeeOfficeAll()
         {
-            IEnumerable<EmployeeOfficeDTO> dtos = new List<EmployeeOfficeDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeOffices.Where(e => e.Deleted != true)
-                        .Include(d => d.Profession)
-                        .Include(d => d.Office)
-                        .Include(d => d.Department)
-                        .ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                List<EmployeeOfficeDTO> list =
+                    repo.GetAll()
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(list);
             }
             catch (Exception e)
             {
                 return BadRequest();
             } 
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get positions of current employee
-        /// </summary>
-        /// <param name="employeeId">Employee id</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
         [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
         public IHttpActionResult GetEmployeeOfficeByEmployeeId(int employeeId)
         {
-
-            IEnumerable<EmployeeOfficeDTO> dtos = new List<EmployeeOfficeDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId)
-                        .Include(d => d.Profession)
-                        .Include(d => d.Office)
-                        .Include(d => d.Department)
-                        .ToList()
-                        .Select(d => d.ToDTO()).ToList();
-
-                    //offices = db.EmployeeOffices.Where(e => e.Deleted != true && e.EmployeeId == employeeId).ToList();
-
-                }
+                List<EmployeeOfficeDTO> dtos = repo.GetByEmployeeId(employeeId)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get position View
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetEmployeeOffice")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult GetEmployeeOffice(int id)
         {
-            EmployeeOffice employeeOffice = new EmployeeOffice();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeOffice = db.EmployeeOffices.Find(id);
-                    if (employeeOffice != null)
-                    {
-                        db.Entry(employeeOffice).Reference(d => d.Department).Load();
-                        db.Entry(employeeOffice).Reference(d => d.Office).Load();
-                        db.Entry(employeeOffice).Reference(d => d.Profession).Load();
-                    }
-                }
+                EmployeeOfficeDTO dto = repo.Get(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            if (employeeOffice == null)
-            {
-                return NotFound();
-            }
-
-            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Update employee position
-        /// </summary>
-        /// <param name="id">id of position</param>
-        /// <param name="employeeOffice">EmployeeOffice</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeOffice(int id, EmployeeOffice employeeOffice)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || id != employeeOffice.Id)
             {
                 return BadRequest(ModelState);
             }
-            if (id != employeeOffice.Id)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(employeeOffice).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeOfficeExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
-                    employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-                    employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
-                }
+                EmployeeOfficeDTO dto = repo.Edit(employeeOffice).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new employee education document
-        /// </summary>
-        /// <param name="employeeOffice">EmployeeOffice object contains id = 0</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult PostEmployeeOffice(EmployeeOffice employeeOffice)
         {
+            if (employeeOffice == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeOffice.Id = employeeOffice.NewId(db);
-                    if (!ModelState.IsValid)
-                    {
-                        return BadRequest(ModelState);
-                    }
-                    db.EmployeeOffices.Add(employeeOffice);
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (EmployeeOfficeExists(employeeOffice.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    employeeOffice.Department = db.Departments.Find(employeeOffice.DepartmentId);
-                    employeeOffice.Office = db.Offices.Find(employeeOffice.OfficeId);
-                    employeeOffice.Profession = db.Professions.Find(employeeOffice.ProfessionId);
-                }
+                EmployeeOfficeDTO dto = repo.Add(employeeOffice).ToDTO();
+                return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
-            return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
         }
 
-        /// <summary>
-        /// Dleete education document
-        /// </summary>
-        /// <param name="id">id of document</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
         public IHttpActionResult DeleteEmployeeOffice(int id)
         {
-            EmployeeOffice employeeOffice = new EmployeeOffice();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    employeeOffice = db.EmployeeOffices.Find(id);
-
-                    if (employeeOffice == null)
-                    {
-                        return NotFound();
-                    }
-                    db.Entry(employeeOffice).Reference(d => d.Department).Load();
-                    db.Entry(employeeOffice).Reference(d => d.Office).Load();
-                    db.Entry(employeeOffice).Reference(d => d.Profession).Load();
-
-                    employeeOffice.Deleted = true;
-                    db.Entry(employeeOffice).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EmployeeOfficeExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmployeeOfficeDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            EmployeeOfficeDTO dto = employeeOffice.ToDTO();
-
-            return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)

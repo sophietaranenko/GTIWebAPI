@@ -81,7 +81,6 @@
     <Compile Include="TestControllers\TestEmployeeDocumentScansController.cs" />
     <Compile Include="TestControllers\TestEmployeeFoundationDocumentsController.cs" />
     <Compile Include="TestDbSets\TestDbSet.cs" />
-    <Compile Include="TestDbSets\TestEmployeeAddressDbSet.cs" />
     <Compile Include="TestControllers\TestEmployeePassportController.cs" />
   </ItemGroup>
   <ItemGroup>

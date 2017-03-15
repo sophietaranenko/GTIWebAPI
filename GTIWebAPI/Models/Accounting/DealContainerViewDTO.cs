@@ -54,5 +54,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public string DealCargo { get; set; }
 
+        public string DealNumber { get; set; }
+
     }
 }

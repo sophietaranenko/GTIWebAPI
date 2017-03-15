@@ -119,7 +119,12 @@ namespace GTIWebAPI.Controllers
                 {
                     using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                     {
-                        model.OrganizationId = db.OrganizationContactPersons.Where(d => d.Id == user.TableId).Select(d => d.OrganizationId).FirstOrDefault().GetValueOrDefault();
+                        model.OrganizationId = 
+                            db.OrganizationContactPersons
+                            .Where(d => d.Id == user.TableId)
+                            .Select(d => d.OrganizationId)
+                            .FirstOrDefault()
+                            .GetValueOrDefault();
                     }
                 }
 
@@ -158,7 +163,10 @@ namespace GTIWebAPI.Controllers
                         "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
                     postedFile.SaveAs(filePath);
 
-                    UserImage image = db.UserImage.Where(i => i.UserId == userId).FirstOrDefault();
+                    UserImage image = 
+                        db.UserImage
+                        .Where(i => i.UserId == userId)
+                        .FirstOrDefault();
                     if (image == null)
                     {
                         image = new UserImage();
@@ -175,7 +183,11 @@ namespace GTIWebAPI.Controllers
                     db.SaveChanges();
                 }
 
-                UserImage newImage = db.UserImage.Where(i => i.UserId == userId).FirstOrDefault();
+                UserImage newImage = 
+                    db.UserImage
+                    .Where(i => i.UserId == userId)
+                    .FirstOrDefault();
+
                 if (newImage != null)
                 {
                     result = Request.CreateResponse(HttpStatusCode.Created, newImage);
@@ -337,8 +349,6 @@ namespace GTIWebAPI.Controllers
                 {
                     return BadRequest("Organization contact person email is empty");
                 }
-
-
                 NovellOrganizationContactPerson novellPerson;
                 try
                 {

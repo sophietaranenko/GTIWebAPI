@@ -21,11 +21,6 @@ namespace GTIWebAPI.Controllers
     public class OrganizationGTILinksController : ApiController
     {
 
-        /// <summary>
-        /// Get employee links by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of OrganizationGTILinkDTO</returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
@@ -33,7 +28,6 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult GetOrganizationGTILinkByOrganizationId(int organizationId)
         {
             List<OrganizationGTILink> links = new List<OrganizationGTILink>();
-
             try
             {
                 using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
@@ -53,25 +47,16 @@ namespace GTIWebAPI.Controllers
                             }
                         }
                     }
-
                 }
-
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-
             List<OrganizationGTILinkDTO> dtos = links.Select(p => p.ToDTO()).ToList();
             return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get one link by link id
-        /// </summary>
-        /// <param name="id">OrganizationGTILink id</param>
-        /// <returns>OrganizationGTILinkEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetOrganizationGTILink")]
@@ -111,11 +96,6 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new organizationGTI link (with EmployeeId as creator) 
-        /// </summary>
-        /// <param name="organizationGTILink">OrganizationGTILink object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
@@ -186,11 +166,6 @@ namespace GTIWebAPI.Controllers
             return BadRequest();
         }
 
-        /// <summary>
-        /// Insert new organizationGTI link (with EmployeeId as creator) 
-        /// </summary>
-        /// <param name="organizationGTILink">OrganizationGTILink object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("SeveralLinksPost")]
@@ -250,11 +225,6 @@ namespace GTIWebAPI.Controllers
             return BadRequest();
         }
 
-        /// <summary>
-        /// Delete link
-        /// </summary>
-        /// <param name="id">Passport Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
@@ -308,10 +278,6 @@ namespace GTIWebAPI.Controllers
             return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);

@@ -10,55 +10,54 @@
     using System.Linq;
     using System.Web.Mvc;
 
-    /// <summary>
-    /// Class for Employee table
-    /// </summary>
     [Table("Employee")]
     public partial class Employee : GTITable
     {
-        /// <summary>
-        /// Id of Employee
-        /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        /// <summary>
-        /// short value of Employee Sex (can be 1 or 2) 
-        /// </summary>
         public short? Sex { get; set; }
 
-        /// <summary>
-        /// Employee identity code
-        /// </summary>
         [Column("IdentityCode")]
         [StringLength(20)]
         public string IdentityCode { get; set; }
 
-        /// <summary>
-        /// Employee's date of birth
-        /// </summary>
         [Column(TypeName = "date")]
         public DateTime? DateOfBirth { get; set; }
 
         public Address Address { get; set; }
 
-        /// <summary>
-        /// Id of Employee's Address of permanent residence in Address table 
-        /// </summary>
         public int? AddressId { get; set; }
 
-        /// <summary>
-        /// Deleted mark
-        /// </summary>
         public bool? Deleted { get; set; }
 
-        /// <summary>
-        /// Age, counted from date of birth
-        /// </summary>
         public Age Age
         {
             get { return new Age(DateOfBirth); }
         }
+
+        public virtual ICollection<EmployeeOffice> EmployeeOffices { get; set; }
+
+        public virtual ICollection<EmployeePassport> EmployeePassports { get; set; }
+
+        public virtual ICollection<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
+
+        public virtual ICollection<EmployeeLanguage> EmployeeLanguages { get; set; }
+
+        public virtual ICollection<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
+
+        public virtual ICollection<EmployeeGun> EmployeeGuns { get; set; }
+
+        public virtual ICollection<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
+
+        public virtual ICollection<EmployeeEducation> EmployeeEducations { get; set; }
+
+        public virtual ICollection<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
+
+        public virtual ICollection<EmployeeContact> EmployeeContacts { get; set; }
+
+        public virtual ICollection<EmployeeCar> EmployeeCars { get; set; }
+
 
         protected override string TableName
         {
@@ -78,7 +77,19 @@
                 Id = this.Id,
                 IdentityCode = this.IdentityCode,
                 Address = this.Address == null ? null : this.Address.ToDTO(),
-                Age = this.Age.ToString()
+                Age = this.Age.ToString(),
+                EmployeeCars = this.EmployeeCars == null ? null : this.EmployeeCars.Select(d => d.ToDTO()).ToList(),
+                EmployeePassports = this.EmployeePassports == null ? null : this.EmployeePassports.Select(d => d.ToDTO()).ToList(),
+                EmployeeOffices = this.EmployeeOffices == null ? null : this.EmployeeOffices.Select(d => d.ToDTO()).ToList(),
+                EmployeeMilitaryCards = this.EmployeeMilitaryCards == null ? null : this.EmployeeMilitaryCards.Select(d => d.ToDTO()).ToList(),
+                EmployeeLanguages = this.EmployeeLanguages == null ? null : this.EmployeeLanguages.Select(d => d.ToDTO()).ToList(),
+                EmployeeInternationalPassports = this.EmployeeInternationalPassports == null ? null : this.EmployeeInternationalPassports.Select(d => d.ToDTO()).ToList(),
+                EmployeeGuns = this.EmployeeGuns == null ? null : this.EmployeeGuns.Select(d => d.ToDTO()).ToList(),
+                EmployeeFoundationDocuments = this.EmployeeFoundationDocuments == null ? null : this.EmployeeFoundationDocuments.Select(d => d.ToDTO()).ToList(),
+                EmployeeEducations = this.EmployeeEducations == null ? null : this.EmployeeEducations.Select(d => d.ToDTO()).ToList(),
+                EmployeeDrivingLicenses = this.EmployeeDrivingLicenses == null ? null : this.EmployeeDrivingLicenses.Select(d => d.ToDTO()).ToList(),
+                EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts.Select(d => d.ToDTO()).ToList(),
+
             };
             return dto;
         }
@@ -98,9 +109,6 @@
             return dto;
         }
 
-        /// <summary>
-        /// String value of Employee Sex
-        /// </summary>
         public string SexString
         {
             get
@@ -111,127 +119,58 @@
                 }
                 return "";
             }
-        } 
+        }
     }
 
     public class EmployeeDTO
     {
-        /// <summary>
-        /// Employee Id
-        /// </summary>
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee Sex in int
-        /// </summary>
         public short? Sex { get; set; }
 
-        /// <summary>
-        /// Employee identity code
-        /// </summary>
         public string IdentityCode { get; set; }
 
-        /// <summary>
-        /// Employee date of birth
-        /// </summary>
         public DateTime? DateOfBirth { get; set; }
 
-        /// <summary>
-        /// Employee address of permanent residense Id from Address table 
-        /// </summary>
         public int? AddressId { get; set; }
 
-        /// <summary>
-        /// AddressDTO of employee address of permanent residense 
-        /// </summary>
         public AddressDTO Address { get; set; }
 
-        /// <summary>
-        /// Employee age in string
-        /// </summary>
         public string Age { get; set; }
 
-        /// <summary>
-        /// Collection of employee Passports
-        /// </summary>
-        public IEnumerable<EmployeePassportDTO> EmployeePassport { get; set; }
+        public IEnumerable<EmployeePassportDTO> EmployeePassports { get; set; }
 
-        /// <summary>
-        /// Collection of employee contacts
-        /// </summary>
-        public IEnumerable<EmployeeContactDTO> EmployeeContact { get; set; }
+        public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
 
-        /// <summary>
-        /// Collection of employee positions
-        /// </summary>
-        public IEnumerable<EmployeeOfficeDTO> EmployeeOffice { get; set; }
+        public IEnumerable<EmployeeOfficeDTO> EmployeeOffices { get; set; }
 
-        /// <summary>
-        /// Collection of employee educations
-        /// </summary>
-        public IEnumerable<EmployeeEducationDTO> EmployeeEducation { get; set; }
+        public IEnumerable<EmployeeEducationDTO> EmployeeEducations { get; set; }
 
-        /// <summary>
-        /// Collection of employee languages
-        /// </summary>
-        public IEnumerable<EmployeeLanguageDTO> EmployeeLanguage { get; set; }
+        public IEnumerable<EmployeeLanguageDTO> EmployeeLanguages { get; set; }
 
-        /// <summary>
-        /// Collection of employee foundation documents 
-        /// </summary>
-        public IEnumerable<EmployeeFoundationDocumentDTO> EmployeeFoundationDoc { get; set; }
+        public IEnumerable<EmployeeFoundationDocumentDTO> EmployeeFoundationDocuments { get; set; }
 
-        /// <summary>
-        /// Collection of employee international passports
-        /// </summary>
-        public IEnumerable<EmployeeInternationalPassportDTO> EmployeeInternationalPassport { get; set; }
+        public IEnumerable<EmployeeInternationalPassportDTO> EmployeeInternationalPassports { get; set; }
 
-        /// <summary>
-        /// Collection of employee cars
-        /// </summary>
-        public IEnumerable<EmployeeCarDTO> EmployeeCar { get; set; }
+        public IEnumerable<EmployeeCarDTO> EmployeeCars { get; set; }
 
-        /// <summary>
-        /// Collection of employee driving licenses
-        /// </summary>
-        public IEnumerable<EmployeeDrivingLicenseDTO> EmployeeDrivingLicense { get; set; }
+        public IEnumerable<EmployeeDrivingLicenseDTO> EmployeeDrivingLicenses { get; set; }
 
-        /// <summary>
-        /// Collection of employee gun store permissions
-        /// </summary>
-        public IEnumerable<EmployeeGunDTO> EmployeeGun { get; set; }
+        public IEnumerable<EmployeeGunDTO> EmployeeGuns { get; set; }
 
-        /// <summary>
-        /// Collection of employee military cards
-        /// </summary>
-        public IEnumerable<EmployeeMilitaryCardDTO> EmployeeMilitaryCard { get; set; }
+        public IEnumerable<EmployeeMilitaryCardDTO> EmployeeMilitaryCards { get; set; }
     }
 
     public class EmployeeEditDTO
     {
-        /// <summary>
-        /// Employee Id
-        /// </summary>
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee Sex in Int
-        /// </summary>
         public short? Sex { get; set; }
 
-        /// <summary>
-        /// Employee identity code
-        /// </summary>
         public string IdentityCode { get; set; }
 
-        /// <summary>
-        /// Employee date of birth
-        /// </summary>
         public DateTime? DateOfBirth { get; set; }
 
-        /// <summary>
-        /// Employee Address Id
-        /// </summary>
         public int? AddressId { get; set; }
 
         public AddressDTO Address { get; set; }

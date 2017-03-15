@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,53 +20,56 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeePhotos")]
     public class EmployeePhotosController : ApiController
     {
-        /// <summary>
-        /// Method fo file upload
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns></returns>
+
+        private IEmployeePhotosRepository repo;
+
+        public EmployeePhotosController()
+        {
+            repo = new EmployeePhotosRepository();
+        }
+
+        public EmployeePhotosController(IEmployeePhotosRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpPost]
         [Route("UploadFile")]
-        public HttpResponseMessage UploadEmployeePhoto(int employeeId)
+        public IHttpActionResult UploadEmployeePhoto(int employeeId)
         {
-            HttpResponseMessage result = null;
+            if (HttpContext.Current == null)
+            {
+                return BadRequest("No context found");
+            }
             var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count > 0)
             {
                 try
                 {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    List<EmployeePhoto> photos = new List<EmployeePhoto>();
+                    foreach (string file in httpRequest.Files)
                     {
-                        int photoId = 0;
-                        foreach (string file in httpRequest.Files)
+                        var postedFile = httpRequest.Files[file];
+                        EmployeePhoto photo = new EmployeePhoto
                         {
-                            EmployeePhoto photo = new EmployeePhoto();
-                            photo.Id = photo.NewId(db);
-                            photo.EmployeeId = employeeId;
-                            var postedFile = httpRequest.Files[file];
-                            var filePath = HttpContext.Current.Server.MapPath(
-                                "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-                            postedFile.SaveAs(filePath);
-                            photo.PhotoName = filePath;
-                            db.EmployeePhotos.Add(photo);
-                            db.SaveChanges();
-                            photoId = photo.Id;
-                        }
-                        EmployeePhoto uploadedPhoto = db.EmployeePhotos.Find(photoId);
-                        result = Request.CreateResponse(HttpStatusCode.Created, uploadedPhoto);
+                            EmployeeId = employeeId,
+                            PhotoName = repo.SaveFile(postedFile)
+                        };
+                        photo = repo.Add(photo);
+                        photos.Add(photo);
                     }
+                    return CreatedAtRoute("GetByEmployeeId", new { employeeId = employeeId }, photos);
                 }
                 catch (Exception e)
                 {
-                    result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    return BadRequest(e.Message);
                 }
             }
             else
             {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                return BadRequest("No photos found");
             }
-            return result;
         }
 
         /// <summary>
@@ -75,55 +79,19 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("PutDbFilesToFilesystem")]
-        public HttpResponseMessage PutDbFilesToFilesystem()
+        public IHttpActionResult PutDbFilesToFilesystem()
         {
-            List<int> photos = null;
-            var result = Request.CreateResponse(HttpStatusCode.BadRequest);
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    photos = db.EmployeePhotos.Where(s => s.PhotoName == null).Select(s => s.Id).ToList();
-                    List<EmployeePhoto> newPhotos = new List<EmployeePhoto>();
-                    foreach (var item in photos)
-                    {
-                        EmployeePhoto photo = db.EmployeePhotos.Find(item);
-                        if (photo.Photo != null)
-                        {
-                            try
-                            {
-                                WebImage image = new WebImage(photo.Photo);
-                                var formatString = image.ImageFormat.ToString();
-                                var filePath = HttpContext.Current.Server.MapPath(
-           "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                                image.Save(filePath);
-                                photo.PhotoName = filePath;
-                                db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                            catch
-                            {
-                                continue;
-                            }
-                        }
-                    }
-
-                    result = Request.CreateResponse(HttpStatusCode.Created, newPhotos.Select(a => new { a.Id, a.PhotoName }));
-                }
+                List<EmployeePhoto> photos = repo.PutDbFilesToFilesystem();
+                return Ok(photos);
             }
             catch (Exception e)
             {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                return BadRequest(e.Message);
             }
-            return result;
         }
 
-        /// <summary>
-        /// Get all photos by employee Id 
-        /// </summary>
-        /// <param name="employeeId">Id of employee</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
@@ -132,15 +100,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    List<EmployeePhoto> photoList = db.EmployeePhotos
-                    .Where(e => e.Deleted != true && e.EmployeeId == employeeId)
-                    .ToList();
-                    return Ok(photoList);
-
-                }
-
+                List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
+                return Ok(list);
             }
             catch (Exception e)
             {
@@ -148,38 +109,22 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Get photo by its id
-        /// </summary>
-        /// <param name="id">photo id</param>
-        /// <returns></returns>
+
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
         public IHttpActionResult GetEmployeePhoto(int id)
         {
-            EmployeePhoto photo = new EmployeePhoto();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    photo = db.EmployeePhotos.Find(id);
-                }
+                EmployeePhoto photo = repo.Get(id);
+                return Ok(photo);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            if (photo != null)
-            {
-                return Ok(photo);
-            }
-            else
-            {
-                return NotFound();
-            }
+            
         }
 
         /// <summary>

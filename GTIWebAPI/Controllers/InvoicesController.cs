@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,17 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Invoices")]
     public class InvoicesController : ApiController
     {
+        private IInvoicesRepository repo;
+
+        public InvoicesController()
+        {
+            repo = new InvoicesRepository();
+        }
+
+        public InvoicesController(IInvoicesRepository repo)
+        {
+            this.repo = repo;
+        }
 
         [GTIFilter]
         [HttpGet]
@@ -24,23 +36,28 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<DealInvoiceViewDTO>))]
         public IHttpActionResult GetInvoiceAll(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
-            IEnumerable<DealInvoiceViewDTO> dtos = new List<DealInvoiceViewDTO>();
-            if (organizationId == 0)
+            if (dateBegin == null)
             {
-                return Ok(dtos);
+                dateBegin = new DateTime(1900, 1, 1);
             }
+            if (dateEnd == null)
+            {
+                dateEnd = new DateTime(2200, 1, 1);
+            }
+
+            DateTime modDateBegin = dateBegin.GetValueOrDefault();
+            DateTime modDateEnd = dateBegin.GetValueOrDefault();
+
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.GetInvoicesList(organizationId, dateBegin, dateEnd);
-                }
+                List<DealInvoiceViewDTO> dtos = repo.GetAll(organizationId, modDateBegin, modDateEnd);
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            return Ok(dtos);
+            
         }
 
 
@@ -54,25 +71,15 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-            InvoiceFullViewDTO dto = new InvoiceFullViewDTO();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dto = db.GetInvoiceCardInfo(id);
-                    if (dto != null)
-                    {
-                        dto.Containers = db.GetContainersByInvoiceId(id);
-                        dto.Lines = db.GetInvoiceLinesByInvoice(id);
-                    }
-                }
+                InvoiceFullViewDTO dto = repo.Get(id);
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            return Ok(dto);
         }
     }
 }

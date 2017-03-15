@@ -458,19 +458,8 @@ namespace GTIWebAPI.Models.Context
 
 
         //Deals - for work with DealGTI - synonym of booking
-        public virtual IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            if (dateBegin == null)
-            {
-                dateBegin = new DateTime(1900, 1, 1);
-            }
-            if (dateEnd == null)
-            {
-                dateEnd = new DateTime(2200, 1, 1);
-            }
-            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
-
             SqlParameter parClient = new SqlParameter
             {
                 ParameterName = "@OrganizationId",
@@ -486,7 +475,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateBeginParameter
+                Value = dateBegin
             };
 
             SqlParameter parEnd = new SqlParameter
@@ -495,7 +484,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateEndParameter
+                Value = dateEnd
             };
 
             IEnumerable<DealViewDTO> dealList = new List<DealViewDTO>();
@@ -614,19 +603,8 @@ namespace GTIWebAPI.Models.Context
         /// <param name="dateBegin"></param>
         /// <param name="dateEnd"></param>
         /// <returns>List of invoices</returns>
-        public virtual IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            if (dateBegin == null)
-            {
-                dateBegin = new DateTime(1900, 1, 1);
-            }
-            if (dateEnd == null)
-            {
-                dateEnd = new DateTime(2200, 1, 1);
-            }
-            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
-
             SqlParameter parClient = new SqlParameter
             {
                 ParameterName = "@OrganizationId",
@@ -642,7 +620,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateBeginParameter
+                Value = dateBegin
             };
 
             SqlParameter parEnd = new SqlParameter
@@ -651,7 +629,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateEndParameter
+                Value = dateEnd
             };
 
             IEnumerable<DealInvoiceViewDTO> invoiceList = new List<DealInvoiceViewDTO>();
@@ -749,19 +727,8 @@ namespace GTIWebAPI.Models.Context
 
 
         //Containers - for work with ContainerGTI - synonym of book_cntr
-        public virtual IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
+        public virtual IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            if (dateBegin == null)
-            {
-                dateBegin = new DateTime(1900, 1, 1);
-            }
-            if (dateEnd == null)
-            {
-                dateEnd = new DateTime(2200, 1, 1);
-            }
-            DateTime dateBeginParameter = dateBegin.GetValueOrDefault();
-            DateTime dateEndParameter = dateEnd.GetValueOrDefault();
-
             SqlParameter parClient = new SqlParameter
             {
                 ParameterName = "@OrganizationId",
@@ -777,7 +744,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateBeginParameter
+                Value = dateBegin
             };
 
             SqlParameter parEnd = new SqlParameter
@@ -786,7 +753,7 @@ namespace GTIWebAPI.Models.Context
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
                 DbType = DbType.DateTime,
-                Value = dateEndParameter
+                Value = dateEnd
             };
 
             IEnumerable<DealContainerViewDTO> containersList = new List<DealContainerViewDTO>();
@@ -1058,9 +1025,6 @@ namespace GTIWebAPI.Models.Context
             }
             return dto;
         }
-
-
-
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
