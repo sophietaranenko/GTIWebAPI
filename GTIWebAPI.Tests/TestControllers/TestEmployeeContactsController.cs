@@ -31,7 +31,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public void GetAllContacts_ShouldReturnNotDeleted()
         {
             var controller = new GTIWebAPI.Controllers.EmployeeContactsController(repo);
-            var result = controller.GetEmployeeContactAll() as OkNegotiatedContentResult<IEnumerable<EmployeeContactDTO>>;
+            var result = controller.GetEmployeeContactAll() as OkNegotiatedContentResult<List<EmployeeContactDTO>>;
             Assert.AreEqual(3, result.Content.Count());
         }
 
@@ -39,7 +39,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public void GetContactsByEmployeeId_ShouldReturnNotDeletedEmployeesContact()
         {
             var controller = new GTIWebAPI.Controllers.EmployeeContactsController(repo);
-            var result = controller.GetEmployeeContactByEmployee(1) as OkNegotiatedContentResult<IEnumerable<EmployeeContactDTO>>;
+            var result = controller.GetEmployeeContactByEmployee(1) as OkNegotiatedContentResult<List<EmployeeContactDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public void GetContactsByEmployeeId_ShouldReturnZeroCount()
         {
             var controller = new GTIWebAPI.Controllers.EmployeeContactsController(repo);
-            var badResult = controller.GetEmployeeContactByEmployee(999) as OkNegotiatedContentResult<IEnumerable<EmployeeContactDTO>>;
+            var badResult = controller.GetEmployeeContactByEmployee(999) as OkNegotiatedContentResult<List<EmployeeContactDTO>>;
             Assert.AreEqual(0, badResult.Content.Count());
         }
 

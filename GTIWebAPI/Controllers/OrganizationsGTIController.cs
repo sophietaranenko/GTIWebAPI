@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
+using GTIWebAPI.Models.Repository.Organization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,37 +15,40 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationsGTI")]
     public class OrganizationsGTIController : ApiController
     {
-        /// <summary>
-        /// List of Text and Value of enum Sex
-        /// </summary>
-        /// <returns>Collection of Json objects</returns>
+
+        IOrganizationsGTIRepository repo;
+
+        public OrganizationsGTIController()
+        {
+            repo = new OrganizationsGTIRepository();
+        }
+
+        public OrganizationsGTIController(IOrganizationsGTIRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIOfficeFilter]
         [HttpGet]
         [Route("SearchOrganizationsGTI")]
         [ResponseType(typeof(IEnumerable<OrganizationGTIDTO>))]
         public IHttpActionResult SearchOrganizationsGTI(string officeIds, string registrationNumber = "")
         {
-            IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
+            List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             IEnumerable<OrganizationGTI> orgs = new List<OrganizationGTI>();
 
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    orgs = db.SearchOrganizationGTI(OfficeIds, registrationNumber);
-                    foreach (var item in orgs)
-                    {
-                        item.Office = db.Offices.Find(item.OfficeId);
-                    }
-                }
+                List<OrganizationGTIDTO> dtos =
+                    repo.Search(OfficeIds, registrationNumber)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            IEnumerable<OrganizationGTIDTO> dtos = orgs.Select(c => c.ToDTO()).ToList();
-            return Ok(dtos);
         }
     }
 }

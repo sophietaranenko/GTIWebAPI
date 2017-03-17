@@ -58,7 +58,7 @@ namespace GTIWebAPI.Models.Repository
             {
                 employeeInternationalPassport = 
                     db.EmployeeInternationalPassports
-                    .Where(d => d.Id == employeeInternationalPassport.Id)
+                    .Where(d => d.Id == id)
                     .FirstOrDefault();
                 if (employeeInternationalPassport == null)
                 {
@@ -118,7 +118,10 @@ namespace GTIWebAPI.Models.Repository
             EmployeeInternationalPassport employeeInternationalPassport = new EmployeeInternationalPassport();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                employeeInternationalPassport = db.EmployeeInternationalPassports.Find(id);
+                employeeInternationalPassport = 
+                    db.EmployeeInternationalPassports
+                    .Where(d => d.Id == id)
+                    .FirstOrDefault();
             }
             return employeeInternationalPassport;
         }

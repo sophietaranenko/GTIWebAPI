@@ -34,7 +34,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
+        [ResponseType(typeof(List<EmployeeDrivingLicenseDTO>))]
         public IHttpActionResult GetEmployeeDrivingLicenseAll()
         {
             try
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
+        [ResponseType(typeof(List<EmployeeDrivingLicenseDTO>))]
         public IHttpActionResult GetEmployeeDrivingLicenseByEmployee(int employeeId)
         {
             try

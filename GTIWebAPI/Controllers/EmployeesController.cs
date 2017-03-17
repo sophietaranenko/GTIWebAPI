@@ -43,11 +43,11 @@ namespace GTIWebAPI.Controllers
         [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeViewDTO>))]
+        [ResponseType(typeof(List<EmployeeViewDTO>))]
         public IHttpActionResult GetEmployeeAll(string officeIds)
         {
             List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
-            IEnumerable<EmployeeView> employeeList = new List<EmployeeView>();
+            List<EmployeeView> employeeList = new List<EmployeeView>();
             try
             {
                 List<EmployeeViewDTO> dtos = 
@@ -109,12 +109,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(EmployeeEditDTO))]
         public IHttpActionResult PutEmployee(int id, Employee employee)
         {
-            if (!ModelState.IsValid || id != employee.Id)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != employee.Id)
+            {
+                return BadRequest();
             }
             try
             {
@@ -131,7 +135,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
-        [ResponseType(typeof(EmployeeDTO))]
+        [ResponseType(typeof(EmployeeEditDTO))]
         public IHttpActionResult PostEmployee(Employee employee)
         {
             if (employee == null || !ModelState.IsValid)
@@ -152,7 +156,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(EmployeeDTO))]
+        [ResponseType(typeof(EmployeeEditDTO))]
         public IHttpActionResult DeleteEmployee(int id)
         {
             try

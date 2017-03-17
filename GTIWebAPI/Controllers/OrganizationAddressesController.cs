@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(IEnumerable<OrganizationAddressDTO>))]
+        [ResponseType(typeof(List<OrganizationAddressDTO>))]
         public IHttpActionResult GetOrganizationAddressByOrganizationId(int organizationId)
         {
             try
@@ -83,12 +83,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(OrganizationAddressDTO))]
         public IHttpActionResult PutOrganizationAddress(int id, OrganizationAddress organizationAddress)
         {
-            if (organizationAddress == null || !ModelState.IsValid || id != organizationAddress.Id)
+            if (organizationAddress == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != organizationAddress.Id)
+            {
+                return BadRequest();
             }
             try
             {
@@ -135,7 +139,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationAddress))]
+        [ResponseType(typeof(OrganizationAddressDTO))]
         public IHttpActionResult DeleteOrganizationAddress(int id)
         {
             try

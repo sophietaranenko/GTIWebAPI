@@ -19,7 +19,7 @@ namespace GTIWebAPI.Models.Organizations
         public Organization()
         {
             OrganizationAddresses = new HashSet<OrganizationAddress>();
-            OrganizationContactPersons = new HashSet<OrganizationContactPerson>();
+            OrganizationContactPersonViews = new HashSet<OrganizationContactPersonView>();
             OrganizationGTILinks = new HashSet<OrganizationGTILink>();
             OrganizationProperties = new HashSet<OrganizationProperty>();
             OrganizationTaxAddresses = new HashSet<OrganizationTaxAddress>();
@@ -70,7 +70,7 @@ namespace GTIWebAPI.Models.Organizations
         public virtual ICollection<OrganizationAddress> OrganizationAddresses { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrganizationContactPerson> OrganizationContactPersons { get; set; }
+        public virtual ICollection<OrganizationContactPersonView> OrganizationContactPersonViews { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationGTILink> OrganizationGTILinks { get; set; }

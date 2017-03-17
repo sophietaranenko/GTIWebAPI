@@ -31,7 +31,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
+        [ResponseType(typeof(List<EmployeeEducationDTO>))]
         public IHttpActionResult GetEmployeeEducation()
         {
             try
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
+        [ResponseType(typeof(List<EmployeeEducationDTO>))]
         public IHttpActionResult GetEmployeeEducationByEmployeeId(int employeeId)
         {
             try
@@ -92,9 +92,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeEducation(int id, EmployeeEducation employeeEducation)
         {
-            if (!ModelState.IsValid || id != employeeEducation.Id)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != employeeEducation.Id)
+            {
+                return BadRequest();
             }
             try
             {

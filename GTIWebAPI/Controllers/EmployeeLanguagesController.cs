@@ -38,49 +38,42 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
+        [ResponseType(typeof(List<EmployeeLanguageDTO>))]
         public IHttpActionResult GetEmployeeLanguageAll()
         {
-            IEnumerable<EmployeeLanguageDTO> dtos = new List<EmployeeLanguageDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeLanguages.Where(p => p.Deleted != true).Include(d => d.EmployeeLanguageType).Include(d => d.Language).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
+                List<EmployeeLanguageDTO> dtos = repo.GetAll()
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dtos);
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
+        [ResponseType(typeof(List<EmployeeLanguageDTO>))]
         public IHttpActionResult GetEmployeeLanguageByEmployee(int employeeId)
         {
-            IEnumerable<EmployeeLanguageDTO> dtos = new List<EmployeeLanguageDTO>();
+            try {
+                List<EmployeeLanguageDTO> dtos = 
+                    repo.GetByEmployeeId(employeeId)
+                    .Select(d => d.ToDTO())
+                    .ToList();
+                return Ok(dtos);
 
-            try
-            {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.EmployeeLanguages.Where(p => p.Deleted != true && p.EmployeeId == employeeId).Include(d => d.EmployeeLanguageType).Include(d => d.Language).ToList()
-                        .Select(d => d.ToDTO()).ToList();
-                }
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
 
-            return Ok(dtos);
+            
         }
 
         [GTIFilter]
@@ -106,11 +99,14 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeLanguage(int id, EmployeeLanguage employeeLanguage)
         {
-            if (employeeLanguage == null || !ModelState.IsValid || id != employeeLanguage.Id)
+            if (employeeLanguage == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            if (id != employeeLanguage.Id)
+            {
+                return BadRequest();
+            }
             try
             {
                 EmployeeLanguageDTO dto = repo.Edit(employeeLanguage).ToDTO();

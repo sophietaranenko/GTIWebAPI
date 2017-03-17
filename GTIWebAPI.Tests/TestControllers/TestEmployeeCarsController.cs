@@ -32,23 +32,23 @@ namespace GTIWebAPI.Tests.TestControllers
         [TestMethod]
         public void GetAll_ShouldReturnNotDeleted()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeeCarsController(repo);
-            var result = controller.GetEmplyeeCarAll() as OkNegotiatedContentResult<IEnumerable<EmployeeCarDTO>>;
+            var controller = new EmployeeCarsController(repo);
+            var result = controller.GetEmplyeeCarAll() as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
             Assert.AreEqual(3, result.Content.Count());
         }
 
         [TestMethod]
         public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeeCarsController(repo);
-            var result = controller.GetEmployeeCarByEmployee(1) as OkNegotiatedContentResult<IEnumerable<EmployeeCarDTO>>;
+            var controller = new EmployeeCarsController(repo);
+            var result = controller.GetEmployeeCarByEmployee(1) as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
         public void GetById_ShouldReturnObjectWithSameId()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeeCarsController(repo);
+            var controller = new EmployeeCarsController(repo);
             var result = controller.GetEmployeeCar(1) as OkNegotiatedContentResult<EmployeeCarDTO>;
             Assert.AreEqual(result.Content.Id, 1);
         }
@@ -56,7 +56,7 @@ namespace GTIWebAPI.Tests.TestControllers
         [TestMethod]
         public void Put_ShouldReturnOk()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeeCarsController(repo);
+            var controller = new EmployeeCarsController(repo);
             EmployeeCar car = GetDemo();
             var result = controller.PutEmployeeCar(car.Id, car) as OkNegotiatedContentResult<EmployeeCarDTO>;
             Assert.IsNotNull(result);

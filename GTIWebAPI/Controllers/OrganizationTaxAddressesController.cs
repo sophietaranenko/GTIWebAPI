@@ -70,12 +70,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(OrganizationTaxAddressDTO))]
         public IHttpActionResult PutOrganizationTaxAddress(int id, OrganizationTaxAddress organizationTaxAddress)
         {
-            if (organizationTaxAddress == null || !ModelState.IsValid || id != organizationTaxAddress.Id)
+            if (organizationTaxAddress == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != organizationTaxAddress.Id)
+            {
+                return BadRequest();
             }
             try
             {
@@ -112,7 +116,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationTaxAddress))]
+        [ResponseType(typeof(OrganizationTaxAddressDTO))]
         public IHttpActionResult DeleteOrganizationTaxAddress(int id)
         {
             try

@@ -69,7 +69,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(OrganizationLanguageNameDTO))]
         public IHttpActionResult PutOrganizationLanguageName(int id, OrganizationLanguageName organizationLanguageName)
         {
             if (organizationLanguageName == null)
@@ -119,7 +119,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationLanguageName))]
+        [ResponseType(typeof(OrganizationLanguageNameDTO))]
         public IHttpActionResult DeleteOrganizationLanguageName(int id)
         {
             try

@@ -38,12 +38,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
+        [ResponseType(typeof(List<EmployeePassportDTO>))]
         public IHttpActionResult GetEmployeePassportAll()
         {
             try
             {
-                IEnumerable<EmployeePassportDTO> passports = 
+                List<EmployeePassportDTO> passports = 
                     repo.GetAll()
                     .Select(d => d.ToDTO())
                     .ToList();
@@ -58,12 +58,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
+        [ResponseType(typeof(List<EmployeePassportDTO>))]
         public IHttpActionResult GetEmployeePassportByEmployee(int employeeId)
         {
             try
             {
-                IEnumerable<EmployeePassportDTO> passports = 
+                List<EmployeePassportDTO> passports = 
                     repo.GetByEmployeeId(employeeId)
                     .Select(d => d.ToDTO())
                     .ToList();

@@ -41,12 +41,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
+        [ResponseType(typeof(List<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentAll()
         {
             try
             {
-                IEnumerable<EmployeeFoundationDocumentDTO> dtos =
+                List<EmployeeFoundationDocumentDTO> dtos =
                     repo.GetAll()
                     .Select(d => d.ToDTO())
                     .ToList();
@@ -67,12 +67,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
+        [ResponseType(typeof(List<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentByEmployee(int employeeId)
         {
             try
             {
-                IEnumerable<EmployeeFoundationDocumentDTO> dtos =
+                List<EmployeeFoundationDocumentDTO> dtos =
                     repo.GetByEmployeeId(employeeId)
                     .Select(d => d.ToDTO())
                     .ToList();

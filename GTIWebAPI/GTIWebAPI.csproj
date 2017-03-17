@@ -448,10 +448,16 @@
     <Compile Include="Models\Repository\Organization\IOrganizationContactPersonContactsRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationContactPersonsRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationRepository.cs" />
+    <Compile Include="Models\Repository\Organization\IOrganizationsGTIRepository.cs" />
+    <Compile Include="Models\Repository\Organization\IOrganizationsRepository.cs" />
     <Compile Include="Models\Repository\Organization\OrganizationAddressesRepository.cs" />
     <Compile Include="Models\Repository\Organization\OrganizationContactPersonContactsRepository.cs" />
     <Compile Include="Models\Repository\Organization\OrganizationContactPersonsRepository.cs" />
+    <Compile Include="Models\Repository\Organization\OrganizationGTILinksRepository.cs" />
     <Compile Include="Models\Repository\Organization\OrganizationLanguageNamesRepository.cs" />
+    <Compile Include="Models\Repository\Organization\OrganizationPropertiesRepository.cs" />
+    <Compile Include="Models\Repository\Organization\OrganizationsGTIRepository.cs" />
+    <Compile Include="Models\Repository\Organization\OrganizationsRepository.cs" />
     <Compile Include="Models\Repository\Organization\OrganizationTaxAddressesRepository.cs" />
     <Compile Include="Models\Repository\Personnel\EmployeeCarsRepository.cs" />
     <Compile Include="Models\Organizations\OrganizationContactPersonView.cs" />

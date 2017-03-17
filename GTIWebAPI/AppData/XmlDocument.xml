@@ -686,22 +686,6 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:GTIWebAPI.Controllers.ContainersController.GetContainers(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            All containers by organization and dates (date of deal, to change - look into database) 
-            </summary>
-            <param name="organizationId"></param>
-            <param name="dateBegin"></param>
-            <param name="dateEnd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.ContainersController.GetContainer(System.Guid)">
-            <summary>
-            One container by its id 
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="T:GTIWebAPI.Controllers.DealDocumentScansController">
             <summary>
             Document scans that person attaches to deal 
@@ -842,48 +826,6 @@
             <param name="form">EmployeeContact object</param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.GetOrganizationPropertyByOrganizationId(System.Int32)">
-            <summary>
-            Get employee propertys by employee id 
-            </summary>
-            <param name="employeeId">Employee Id</param>
-            <returns>Collection of OrganizationPropertyDTO</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.GetOrganizationProperty(System.Int32)">
-            <summary>
-            Get one property by property id
-            </summary>
-            <param name="id">OrganizationProperty id</param>
-            <returns>OrganizationPropertyEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.PutOrganizationProperty(System.Int32,GTIWebAPI.Models.Organizations.OrganizationProperty)">
-            <summary>
-            Update employee property
-            </summary>
-            <param name="id">Passport id</param>
-            <param name="organizationProperty">OrganizationProperty object</param>
-            <returns>204 - No content</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.PostOrganizationProperty(GTIWebAPI.Models.Organizations.OrganizationProperty)">
-            <summary>
-            Insert new employee property
-            </summary>
-            <param name="organizationProperty">OrganizationProperty object</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.DeleteOrganizationProperty(System.Int32)">
-            <summary>
-            Delete property
-            </summary>
-            <param name="id">Passport Id</param>
-            <returns>200</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationPropertiesController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="T:GTIWebAPI.Controllers.OrganizationsController">
             <summary>
             Controller for organizations
@@ -896,25 +838,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.GetOrganizationEdit(System.Int32)">
-            <summary>
-            Get one organization by organization Id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.OrganizationsController.DeleteOrganization(System.Int32)">
             <summary>
             Delete organization
             </summary>
             <param name="id">organization id</param>
             <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="M:GTIWebAPI.Controllers.DealsController.GetDeals(System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
@@ -1145,12 +1074,6 @@
             <summary>
             To show invoices by organization
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationsGTIController.SearchOrganizationsGTI(System.String,System.String)">
-            <summary>
-            List of Text and Value of enum Sex
-            </summary>
-            <returns>Collection of Json objects</returns>
         </member>
         <member name="T:GTIWebAPI.Controllers.UserRightsController">
             <summary>

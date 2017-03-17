@@ -30,10 +30,10 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetDocumentScanTypes")]
-        [ResponseType(typeof(IEnumerable<DocumentScanTypeDTO>))]
+        [ResponseType(typeof(List<DocumentScanTypeDTO>))]
         public IHttpActionResult GetDocumentScanTypes()
         {
-            IEnumerable<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
+            List<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
 
             try
             {
@@ -58,10 +58,10 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByDealId")]
-        [ResponseType(typeof(IEnumerable<DocumentScanDTO>))]
+        [ResponseType(typeof(List<DocumentScanDTO>))]
         public IHttpActionResult GetDocumentScansByDealId(Guid dealId)
         {
-            IEnumerable<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
+            List<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
 
             try
             {
@@ -90,8 +90,6 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult PutDealDocumentScan(Guid scanId, int documentScanTypeId)
         {
             DocumentScanDTO dto = new DocumentScanDTO();
-
-            //everything must be all right when return into using (Stackoverflow told me!) 
             try
             {
                 using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))

@@ -60,7 +60,7 @@ namespace GTIWebAPI.Models.Repository
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 employeeLanguage = db.EmployeeLanguages
-                    .Where(d => d.Id == employeeLanguage.Id)
+                    .Where(d => d.Id == id)
                     .Include(d => d.Language)
                     .Include(d => d.EmployeeLanguageType)
                     .FirstOrDefault();

@@ -33,7 +33,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<DealInvoiceViewDTO>))]
+        [ResponseType(typeof(List<DealInvoiceViewDTO>))]
         public IHttpActionResult GetInvoiceAll(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)

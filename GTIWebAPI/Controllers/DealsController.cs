@@ -36,7 +36,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<DealViewDTO>))]
+        [ResponseType(typeof(List<DealViewDTO>))]
         public IHttpActionResult GetDeals(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (organizationId == 0)

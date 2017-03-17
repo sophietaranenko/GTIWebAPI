@@ -37,18 +37,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
+        [ResponseType(typeof(List<EmployeeGunDTO>))]
         public IHttpActionResult GetEmployeeGunAll()
         {
-            IEnumerable<EmployeeGunDTO> dtos = new List<EmployeeGunDTO>();
-
             try
             {
                 List<EmployeeGunDTO> guns = 
                     repo.GetAll()
                     .Select(g => g.ToDTO())
                     .ToList();
-                return Ok(repo);
+                return Ok(guns);
             }
             catch (Exception e)
             {
@@ -59,7 +57,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
+        [ResponseType(typeof(List<EmployeeGunDTO>))]
         public IHttpActionResult GetEmployeeGunByEmployee(int employeeId)
         {
             try
@@ -100,9 +98,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeGun(int id, EmployeeGun employeeGun)
         {
-            if (employeeGun == null || !ModelState.IsValid || id != employeeGun.Id)
+            if (employeeGun == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != employeeGun.Id)
+            {
+                return BadRequest();
             }
             try
             {

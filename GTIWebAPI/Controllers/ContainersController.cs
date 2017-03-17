@@ -29,17 +29,10 @@ namespace GTIWebAPI.Controllers
             this.repo = repo;
         }
 
-        /// <summary>
-        /// All containers by organization and dates (date of deal, to change - look into database) 
-        /// </summary>
-        /// <param name="organizationId"></param>
-        /// <param name="dateBegin"></param>
-        /// <param name="dateEnd"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<DealContainerViewDTO>))]
+        [ResponseType(typeof(List<DealContainerViewDTO>))]
         public IHttpActionResult GetContainers(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (organizationId == 0)
@@ -67,31 +60,21 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// One container by its id 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [ResponseType(typeof(DealContainerViewDTO))]
         [Route("Get")]
         public IHttpActionResult GetContainer(Guid id)
         {
-            DealContainerViewDTO container = new DealContainerViewDTO();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    container = db.GetContainer(id);
-                }
+                DealContainerViewDTO container = repo.Get(id);
+                return Ok(container);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            return Ok(container);
         }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
+using GTIWebAPI.Models.Repository.Organization;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,98 +17,62 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationProperties")]
     public class OrganizationPropertiesController : ApiController
     {
-        /// <summary>
-        /// Get employee propertys by employee id 
-        /// </summary>
-        /// <param name="employeeId">Employee Id</param>
-        /// <returns>Collection of OrganizationPropertyDTO</returns>
+        private IOrganizationRepository<OrganizationProperty> repo;
+
+        public OrganizationPropertiesController()
+        {
+            repo = new OrganizationPropertiesRepository();
+        }
+
+        public OrganizationPropertiesController(IOrganizationRepository<OrganizationProperty> repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(IEnumerable<OrganizationPropertyDTO>))]
+        [ResponseType(typeof(List<OrganizationPropertyDTO>))]
         public IHttpActionResult GetOrganizationPropertyByOrganizationId(int organizationId)
         {
-            List<OrganizationProperty> properties = new List<OrganizationProperty>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    properties = db.OrganizationProperties
-                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
-                    .Include(d => d.OrganizationPropertyType)
-                    .Include(d => d.OrganizationPropertyType.OrganizationPropertyTypeAlias)
+                List<OrganizationPropertyDTO> dtos =
+                    repo.GetByOrganizationId(organizationId)
+                    .Select(d => d.ToDTO())
                     .ToList();
-                }
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            List<OrganizationPropertyDTO> dtos = properties.Select(p => p.ToDTO()).ToList();
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get one property by property id
-        /// </summary>
-        /// <param name="id">OrganizationProperty id</param>
-        /// <returns>OrganizationPropertyEditDTO object</returns>
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetOrganizationProperty")]
         [ResponseType(typeof(OrganizationPropertyDTO))]
         public IHttpActionResult GetOrganizationProperty(int id)
         {
-            OrganizationProperty organizationProperty = new OrganizationProperty();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationProperty = db.OrganizationProperties.Find(id);
-                    if (organizationProperty != null)
-                    {
-                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
-                        if (organizationProperty.OrganizationPropertyType != null)
-                        {
-                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
-                        }
-                    }
-
-                }
+                OrganizationPropertyDTO dto = repo.Get(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            if (organizationProperty == null)
-            {
-                return NotFound();
-            }
-            OrganizationPropertyDTO dto = organizationProperty.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Update employee property
-        /// </summary>
-        /// <param name="id">Passport id</param>
-        /// <param name="organizationProperty">OrganizationProperty object</param>
-        /// <returns>204 - No content</returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(OrganizationPropertyDTO))]
         public IHttpActionResult PutOrganizationProperty(int id, OrganizationProperty organizationProperty)
         {
-            if (organizationProperty == null)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
+            if (organizationProperty == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -115,63 +80,17 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-
-                    OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
-                    int? propertyCountryId = propertyType.CountryId;
-                    Organization organization = db.Organizations.Find(organizationProperty.OrganizationId);
-                    int? organizationCountryId = organization.CountryId;
-                    if (propertyCountryId != organizationCountryId)
-                    {
-                        return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
-                    }
-
-
-                    db.Entry(organizationProperty).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationPropertyExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    if (organizationProperty != null)
-                    {
-                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
-                        if (organizationProperty.OrganizationPropertyType != null)
-                        {
-                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
-                        }
-                    }
-                }
+                OrganizationPropertyDTO dto = repo.Edit(organizationProperty).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-
-            OrganizationPropertyDTO dto = organizationProperty.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Insert new employee property
-        /// </summary>
-        /// <param name="organizationProperty">OrganizationProperty object</param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPost]
         [Route("Post")]
@@ -182,60 +101,15 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    OrganizationPropertyType propertyType = db.OrganizationPropertyTypes.Find(organizationProperty.OrganizationPropertyTypeId);
-                    int? propertyCountryId = propertyType.CountryId;
-                    Organization organization = db.Organizations.Find(organizationProperty.OrganizationId);
-                    int? organizationCountryId = organization.CountryId;
-                    if (propertyCountryId != organizationCountryId)
-                    {
-                        return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
-                    }
-
-                    organizationProperty.Id = organizationProperty.NewId(db);
-                    if (!ModelState.IsValid)
-                    {
-                        return BadRequest(ModelState);
-                    }
-
-                    db.OrganizationProperties.Add(organizationProperty);
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        if (OrganizationPropertyExists(organizationProperty.Id))
-                        {
-                            return Conflict();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-
-                    if (organizationProperty != null)
-                    {
-                        db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
-                        if (organizationProperty.OrganizationPropertyType != null)
-                        {
-                            db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
-                        }
-                    }
-                }
+                OrganizationPropertyDTO dto = repo.Add(organizationProperty).ToDTO();
+                return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationPropertyDTO dto = organizationProperty.ToDTO();
-            return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
         }
 
         [GTIFilter]
@@ -244,22 +118,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationPropertyDTO))]
         public IHttpActionResult PostArrayOrganizationProperty(IEnumerable<OrganizationPropertyConstant> properties)
         {
-            if (properties == null)
+            if (properties == null || !ModelState.IsValid)
             {
                 return BadRequest();
             }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             List<OrganizationPropertyDTO> propertiesToReturn = new List<OrganizationPropertyDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
                     foreach (var item in properties)
                     {
                         OrganizationProperty organizationProperty = new OrganizationProperty()
@@ -271,31 +136,9 @@ namespace GTIWebAPI.Controllers
                             OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
                             Value = item.Value
                         };
-                        organizationProperty.Id = organizationProperty.NewId(db);
-                        db.OrganizationProperties.Add(organizationProperty);
-
-
-                        if (organizationProperty != null)
-                        {
-                            db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
-                            if (organizationProperty.OrganizationPropertyType != null)
-                            {
-                                db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
-                            }
-                        }
-                        OrganizationPropertyDTO dto = organizationProperty.ToDTO();
+                        OrganizationPropertyDTO dto = repo.Add(organizationProperty).ToDTO();
                         propertiesToReturn.Add(dto);
                     }
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-                        throw;
-                    }
-                }
             }
             catch (Exception e)
             {
@@ -304,78 +147,28 @@ namespace GTIWebAPI.Controllers
             return Ok(propertiesToReturn);
         }
 
-        /// <summary>
-        /// Delete property
-        /// </summary>
-        /// <param name="id">Passport Id</param>
-        /// <returns>200</returns>
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationProperty))]
+        [ResponseType(typeof(OrganizationPropertyDTO))]
         public IHttpActionResult DeleteOrganizationProperty(int id)
         {
-            OrganizationProperty organizationProperty = new OrganizationProperty();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationProperty = db.OrganizationProperties.Find(id);
-                    if (organizationProperty == null)
-                    {
-                        return NotFound();
-                    }
-
-                    db.Entry(organizationProperty).Reference(d => d.OrganizationPropertyType).Load();
-                    if (organizationProperty.OrganizationPropertyType != null)
-                    {
-                        db.Entry(organizationProperty.OrganizationPropertyType).Reference(d => d.OrganizationPropertyTypeAlias).Load();
-                    }
-
-                    organizationProperty.Deleted = true;
-                    db.Entry(organizationProperty).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationPropertyExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
+                OrganizationPropertyDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            OrganizationPropertyDTO dto = organizationProperty.ToDTO();
-            return Ok(dto);
         }
 
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
         }
 
-        private bool OrganizationPropertyExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.OrganizationProperties.Count(e => e.Id == id) > 0;
-            }
-        }
+
     }
 }

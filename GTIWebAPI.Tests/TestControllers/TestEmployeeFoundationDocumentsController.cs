@@ -30,7 +30,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public void GetAll_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
-            var result = controller.GetEmployeeFoundationDocumentAll() as OkNegotiatedContentResult<IEnumerable<EmployeeFoundationDocumentDTO>>;
+            var result = controller.GetEmployeeFoundationDocumentAll() as OkNegotiatedContentResult<List<EmployeeFoundationDocumentDTO>>;
             Assert.AreEqual(3, result.Content.Count());
         }
 
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
-            var result = controller.GetEmployeeFoundationDocumentByEmployee(1) as OkNegotiatedContentResult<IEnumerable<EmployeeFoundationDocumentDTO>>;
+            var result = controller.GetEmployeeFoundationDocumentByEmployee(1) as OkNegotiatedContentResult<List<EmployeeFoundationDocumentDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 

@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
+        [ResponseType(typeof(List<EmployeeMilitaryCardDTO>))]
         public IHttpActionResult GetEmployeeMilitaryCardAll()
         {
             try
@@ -55,7 +55,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
+        [ResponseType(typeof(List<EmployeeMilitaryCardDTO>))]
         public IHttpActionResult GetEmployeeMilitaryCardByEmployee(int employeeId)
         {
             try
@@ -95,9 +95,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeMilitaryCard(int id, EmployeeMilitaryCard employeeMilitaryCard)
         {
-            if (employeeMilitaryCard == null || !ModelState.IsValid || id != employeeMilitaryCard.Id)
+            if (employeeMilitaryCard == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != employeeMilitaryCard.Id)
+            {
+                return BadRequest();
             }
             try
             {

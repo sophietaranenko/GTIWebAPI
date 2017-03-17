@@ -59,7 +59,7 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 organizationContactPersonContact = organizationContactPersonContact = db.OrganizationContactPersonContacts
-                    .Where(p => p.Deleted != true && p.Id == organizationContactPersonContact.Id)
+                    .Where(p => p.Deleted != true && p.Id == id)
                     .Include(d => d.ContactType)
                     .FirstOrDefault();
 
@@ -122,7 +122,7 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 contact = db.OrganizationContactPersonContacts
-                    .Where(p => p.Deleted != true && p.Id == id)
+                    .Where(p => p.Id == id)
                     .Include(d => d.ContactType)
                     .FirstOrDefault();
             }

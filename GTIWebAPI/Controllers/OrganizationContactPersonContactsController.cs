@@ -85,7 +85,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(OrganizationContactPersonContactDTO))]
         public IHttpActionResult PutOrganizationContactPersonContact(int id, OrganizationContactPersonContact organizationContactPersonContact)
         {
             if (organizationContactPersonContact == null || !ModelState.IsValid)
@@ -141,7 +141,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationContactPersonContact))]
+        [ResponseType(typeof(OrganizationContactPersonContactDTO))]
         public IHttpActionResult DeleteOrganizationContactPersonContact(int id)
         {
             try

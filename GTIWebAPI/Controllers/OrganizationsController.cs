@@ -16,6 +16,7 @@ using GTIWebAPI.Models.Account;
 using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
+using GTIWebAPI.Models.Repository.Organization;
 
 namespace GTIWebAPI.Controllers
 {
@@ -25,31 +26,33 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Organizations")]
     public class OrganizationsController : ApiController
     {
+        private IOrganizationsRepository repo;
+
+        public OrganizationsController()
+        {
+            repo = new OrganizationsRepository();
+        }
+
+        public OrganizationsController(IOrganizationsRepository repo)
+        {
+            this.repo = repo;
+        }
+
         [GTIFilter]
         [HttpGet]
         [Route("SearchOrganization")]
         [ResponseType(typeof(IEnumerable<OrganizationSearchDTO>))]
         public IHttpActionResult SearchOrganization(int countryId, string registrationNumber)
         {
-            IEnumerable<OrganizationSearchDTO> organizationList = new List<OrganizationSearchDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationList = db.SearchOrganization(countryId, registrationNumber);
-                    foreach (var item in organizationList)
-                    {
-                        item.OrganizationGTILinks = db.GetOrganizationGTIByOrganization(item.Id);
-                    }
-                }
+                List<OrganizationSearchDTO> list = repo.Search(countryId, registrationNumber);
+                return Ok(list);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(organizationList);
         }
 
         [GTIOfficeFilter]
@@ -58,23 +61,16 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<OrganizationView>))]
         public IHttpActionResult GetOrganizationByOfficeIds(string officeIds)
         {
-            IEnumerable<int> OfficeIds = QueryParser.Parse(officeIds, ',');
-
-            IEnumerable<OrganizationView> organizationList = new List<OrganizationView>();
-
+            List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationList = db.GetOrganizationsByOffices(OfficeIds);
-                }
+                List<OrganizationView> organizationList = repo.GetAll(OfficeIds);
+                return Ok(organizationList);
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            return Ok(organizationList);
         }
 
 
@@ -90,142 +86,55 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationDTO))]
         public IHttpActionResult GetOrganizationView(int id)
         {
-            OrganizationDTO dto = new OrganizationDTO();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                Organization organization = repo.GetView(id);
+                IEnumerable<int> popertyTypeIds = organization
+                .OrganizationProperties
+                .Select(d => d.OrganizationPropertyTypeId)
+                .Distinct();
+
+                //особый вид OrganizationProperties 
+                List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
+                foreach (int value in popertyTypeIds)
                 {
-                    Organization organization = db.Organizations.Find(id);
-                    dto = organization.MapToDTO();
+                    List<OrganizationProperty> propertiesByType =
+                    organization
+                    .OrganizationProperties
+                    .Where(d => d.OrganizationPropertyTypeId == value)
+                    .ToList();
 
-
-                    List<OrganizationAddress> addresses =
-                        db.OrganizationAddresses
-                        .Where(a => a.Deleted != true && a.OrganizationId == id)
-                        .Include(d => d.Address)
-                        .Include(d => d.Address.AddressLocality)
-                        .Include(d => d.Address.AddressPlace)
-                        .Include(d => d.Address.AddressRegion)
-                        .Include(d => d.Address.AddressVillage)
-                        .Include(d => d.Address.Country)
-                        .Include(d => d.OrganizationAddressType)
-                        .ToList();
-                    dto.OrganizationAddresses = addresses.Select(a => a.ToDTO());
-
-
-                    List<OrganizationContactPersonView> contactPersons =
-                        db.OrganizationContactPersonViews
-                        .Where(p => p.Deleted != true && p.OrganizationId == id)
-                        .ToList();
-                    if (contactPersons != null)
+                    propertiesDTO.Add(new OrganizationPropertyTreeView
                     {
-                        foreach (var person in contactPersons)
-                        {
-                            person.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
-                                .Where(d => d.OrganizationContactPersonId == person.Id)
-                                .Include(d => d.ContactType)
-                                .ToList();
-                        }
-                    }
-                    dto.OrganizationContactPersons = contactPersons.Select(c => c.ToDTO());
-
-
-                    List<OrganizationGTILink> links = db.OrganizationGTILinks
-                        .Where(d => d.Deleted != true && d.OrganizationId == id)
-                        .ToList();
-                    foreach (var link in links)
-                    {
-                        if (link.GTIId != null)
-                        {
-                            link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
-                            if (link.OrganizationGTI != null)
-                            {
-                                link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
-                            }
-                        }
-                    }
-                    dto.OrganizationGTILinks = links.Select(c => c.ToDTO());
-
-                    List<OrganizationProperty> properties =
-                        db.OrganizationProperties
-                        .Where(o => o.Deleted != true && o.OrganizationId == id)
-                        .Include(d => d.OrganizationPropertyType)
-                        .Include(d => d.OrganizationPropertyType.OrganizationPropertyTypeAlias)
-                        .ToList();
-
-                    IEnumerable<int> popertyTypeIds = properties.Select(d => d.OrganizationPropertyTypeId).Distinct();
-                    List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
-                    foreach (int value in popertyTypeIds)
-                    {
-                        List<OrganizationProperty> propertiesByType = properties.Where(d => d.OrganizationPropertyTypeId == value).ToList();
-                        propertiesDTO.Add(new OrganizationPropertyTreeView
-                        {
-                            OrganizationPropertyTypeId = value,
-                            PropertiesById = propertiesByType.Select(d => d.ToDTO())
-                        });
-                    }
-                    dto.OrganizationProperties = propertiesDTO;
-
-                    List<OrganizationTaxAddress> taxAddresses =
-                        db.OrganizationTaxAddresses
-                        .Where(o => o.Deleted != true && o.OrganizationId == id)
-                        .Include(d => d.Address)
-                        .Include(d => d.Address.AddressRegion)
-                        .Include(d => d.Address.AddressLocality)
-                        .Include(d => d.Address.AddressPlace)
-                        .Include(d => d.Address.AddressVillage)
-                        .Include(d => d.Address.Country)
-                        .ToList();
-                    dto.OrganizationTaxAddresses = taxAddresses.Select(a => a.ToDTO());
-
-                    List<OrganizationLanguageName> names =
-                        db.OrganizationLanguageNames
-                        .Where(o => o.Deleted != true && o.OrganizationId == id)
-                        .Include(d => d.Language)
-                        .ToList();
-                    dto.OrganizationLanguageNames = names.Select(a => a.ToDTO());
+                        OrganizationPropertyTypeId = value,
+                        PropertiesById = propertiesByType.Select(d => d.ToDTO())
+                    });
                 }
+                OrganizationDTO dto = organization.MapToDTO();
+                dto.OrganizationProperties = propertiesDTO;
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
-            }
-
-            return Ok(dto);
+            }       
         }
 
-        /// <summary>
-        /// Get one organization by organization Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetEdit", Name = "GetOrganizationEdit")]
         [ResponseType(typeof(OrganizationEditDTO))]
         public IHttpActionResult GetOrganizationEdit(int id)
-        {
-            Organization organization = new Organization();
-
+        {        
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organization = db.Organizations.Find(id);
-                    if (organization != null)
-                    {
-                        db.Entry(organization).Reference(d => d.Country).Load();
-                        db.Entry(organization).Reference(d => d.OrganizationLegalForm).Load();
-                    }
-                }
+                OrganizationEditDTO dto = repo.GetEdit(id).MapToEdit();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationEditDTO dto = organization.MapToEdit();
-            return Ok(dto);
         }
 
 
@@ -245,37 +154,13 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    db.Entry(organization).State = EntityState.Modified;
-
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException e)
-                    {
-                        if (!OrganizationExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-
-                    db.Entry(organization).Reference(d => d.Country).Load();
-                    db.Entry(organization).Reference(d => d.OrganizationLegalForm).Load();
-                }
+                OrganizationEditDTO dto = repo.Edit(organization).MapToEdit();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationEditDTO dto = organization.MapToEdit();
-            return Ok(dto);
         }
 
 
@@ -285,55 +170,29 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationEditDTO))]
         public IHttpActionResult PostOrganization(Organization organization)
         {
-            string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-            ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-
-            if (user != null && user.TableName == "Employee")
+            try
             {
-                organization.EmployeeId = user.TableId;
+                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
 
-                try
+                if (user != null && user.TableName == "Employee")
                 {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    organization.EmployeeId = user.TableId;
+                    try
                     {
-                        organization.Id = organization.NewId(db);
-
-                        if (!ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }
-
-                        db.Organizations.Add(organization);
-
-                        try
-                        {
-                            db.SaveChanges();
-                        }
-                        catch (DbUpdateException)
-                        {
-                            if (OrganizationExists(organization.Id))
-                            {
-                                return Conflict();
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                        db.Entry(organization).Reference(d => d.Country).Load();
-                        db.Entry(organization).Reference(d => d.OrganizationLegalForm).Load();
+                        OrganizationEditDTO dto = repo.Add(organization).MapToEdit();
+                        return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest();
                     }
                 }
-                catch (Exception e)
-                {
-                    return BadRequest();
-                }
-
-
-                OrganizationEditDTO dto = organization.MapToEdit();
-                return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
             }
-
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
             return BadRequest();
         }
 
@@ -347,32 +206,15 @@ namespace GTIWebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult DeleteOrganization(int id)
         {
-            Organization organization = new Organization();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organization = db.Organizations.Find(id);
-
-                    if (organization != null)
-                    {
-                        db.Entry(organization).Reference(d => d.Country).Load();
-                        db.Entry(organization).Reference(d => d.OrganizationLegalForm).Load();
-
-                        organization.Deleted = true;
-                        db.Entry(organization).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                }
+                OrganizationEditDTO dto = repo.DeleteOrganization(id).MapToEdit();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationEditDTO dto = organization.MapToEdit();
-            return Ok(dto);
         }
 
 
@@ -383,37 +225,14 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationList))]
         public IHttpActionResult GetOrganizationTypes()
         {
-            OrganizationList list = new OrganizationList();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    list = OrganizationList.CreateOrganizationList(db);
-                }
+                OrganizationList list = repo.GetTypes();
+                return Ok(list);
             }
             catch (Exception e)
             {
                 return BadRequest();
-            }
-
-            return Ok(list);
-        }
-
-        /// <summary>
-        /// Dispose controller
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
-        private bool OrganizationExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.Organizations.Count(e => e.Id == id) > 0;
             }
         }
     }

@@ -65,10 +65,17 @@ namespace GTIWebAPI.Models.Repository.Organization
                     db.OrganizationContactPersonViews
                     .Where(d => d.Id == organizationContactPerson.Id)
                     .FirstOrDefault();
-                organizationContactPersonView.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
-                   .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id && c.Deleted != true)
-                   .ToList();
-                
+                if (organizationContactPersonView != null)
+                {
+                    organizationContactPersonView.OrganizationContactPersonContacts =
+                        db.OrganizationContactPersonContacts
+                        .Where(d => d.Deleted != true && d.OrganizationContactPersonId == organizationContactPerson.Id)
+                        .Include(d => d.ContactType)
+                        .ToList();
+                        
+                }
+
+
             }
             return organizationContactPersonView;
         }
@@ -88,6 +95,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 }
                 organizationContactPerson.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
                    .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id && c.Deleted != true )
+                   .Include(d => d.ContactType)
                    .ToList();
 
                 organizationContactPerson.Deleted = true;
@@ -152,7 +160,7 @@ namespace GTIWebAPI.Models.Repository.Organization
             {
                 organizationContactPersonView =
                         db.OrganizationContactPersonViews
-                        .Where(d => d.Deleted != true && d.Id == id)
+                        .Where(d => d.Id == id)
                         .FirstOrDefault();
                 if (organizationContactPersonView != null)
                 {

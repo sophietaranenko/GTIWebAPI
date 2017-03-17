@@ -117,7 +117,9 @@ namespace GTIWebAPI.Models.Repository
             EmployeeMilitaryCard militaryCard = new EmployeeMilitaryCard();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                militaryCard = db.EmployeeMilitaryCards.Find(id);
+                militaryCard = db.EmployeeMilitaryCards
+                    .Where(d => d.Id == id)
+                    .FirstOrDefault();
             }
             return militaryCard;
         }

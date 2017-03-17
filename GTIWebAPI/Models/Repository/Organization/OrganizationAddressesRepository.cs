@@ -68,7 +68,7 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 organizationAddress = db.OrganizationAddresses
-                    .Where(p => p.Id == organizationAddress.Id)
+                    .Where(p => p.Id == id)
                     .Include(d => d.Address)
                     .Include(d => d.Address.Country)
                     .Include(d => d.OrganizationAddressType)

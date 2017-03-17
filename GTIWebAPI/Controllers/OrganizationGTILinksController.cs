@@ -14,12 +14,24 @@ using System.Web.Http.Description;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
 using GTIWebAPI.Models.Account;
+using GTIWebAPI.Models.Repository.Organization;
 
 namespace GTIWebAPI.Controllers
 {
     [RoutePrefix("api/OrganizationGTILinks")]
     public class OrganizationGTILinksController : ApiController
     {
+        IOrganizationRepository<OrganizationGTILink> repo;
+
+        public OrganizationGTILinksController()
+        {
+            repo = new OrganizationGTILinksRepository();
+        }
+
+        public OrganizationGTILinksController(IOrganizationRepository<OrganizationGTILink> repo)
+        {
+            this.repo = repo;
+        }
 
         [GTIFilter]
         [HttpGet]
@@ -27,34 +39,17 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(IEnumerable<OrganizationGTILinkDTO>))]
         public IHttpActionResult GetOrganizationGTILinkByOrganizationId(int organizationId)
         {
-            List<OrganizationGTILink> links = new List<OrganizationGTILink>();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    links = db.OrganizationGTILinks
-                    .Where(p => p.Deleted != true && p.OrganizationId == organizationId)
+                List<OrganizationGTILinkDTO> dtos = repo.GetByOrganizationId(organizationId)
+                    .Select(d => d.ToDTO())
                     .ToList();
-
-                    foreach (var link in links)
-                    {
-                        if (link.GTIId != null)
-                        {
-                            link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
-                            if (link.OrganizationGTI != null)
-                            {
-                                link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
-                            }
-                        }
-                    }
-                }
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-            List<OrganizationGTILinkDTO> dtos = links.Select(p => p.ToDTO()).ToList();
-            return Ok(dtos);
         }
 
         [GTIFilter]
@@ -63,37 +58,15 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult GetOrganizationGTILink(int id)
         {
-            OrganizationGTILink link = new OrganizationGTILink();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    link = db.OrganizationGTILinks.Find(id);
-
-                    if (link == null)
-                    {
-                        return NotFound();
-                    }
-
-                    if (link.GTIId != null)
-                    {
-                        link.OrganizationGTI = db.GTIOrganizations.Find(link.GTIId);
-                        if (link.OrganizationGTI != null)
-                        {
-                            link.OrganizationGTI.Office = db.Offices.Find(link.OrganizationGTI.OfficeId);
-                        }
-                    }
-
-                }
+                OrganizationGTILinkDTO dto = repo.Get(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationGTILinkDTO dto = link.ToDTO();
-            return Ok(dto);
         }
 
         [GTIFilter]
@@ -102,66 +75,33 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult PostOrganizationGTILink(OrganizationGTILink organizationGTILink)
         {
-            string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-            ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-
-            if (user != null && user.TableName == "Employee")
+            try
             {
-                int EmployeeId = user.TableId;
-
-                if (organizationGTILink == null)
+                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+                if (user != null && user.TableName == "Employee")
                 {
-                    return BadRequest(ModelState);
-                }
+                    int EmployeeId = user.TableId;
 
-                try
-                {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    if (organizationGTILink == null)
                     {
-                        organizationGTILink.EmployeeId = EmployeeId;
-                        organizationGTILink.Id = organizationGTILink.NewId(db);
-
-                        if (!ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }
-
-
-                        db.OrganizationGTILinks.Add(organizationGTILink);
-
-                        try
-                        {
-                            db.SaveChanges();
-                        }
-                        catch (DbUpdateException)
-                        {
-                            if (OrganizationGTILinkExists(organizationGTILink.Id))
-                            {
-                                return Conflict();
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-
-                        if (organizationGTILink.GTIId != null)
-                        {
-                            organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
-                            if (organizationGTILink.OrganizationGTI != null)
-                            {
-                                organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
-                            }
-                        }
+                        return BadRequest(ModelState);
+                    }
+                    organizationGTILink.EmployeeId = EmployeeId;
+                    try
+                    {
+                        OrganizationGTILinkDTO dto = repo.Add(organizationGTILink).ToDTO();
+                        return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest();
                     }
                 }
-                catch (Exception e)
-                {
-                    return BadRequest();
-                }
-
-                OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
-                return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
             return BadRequest();
         }
@@ -180,16 +120,14 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
             ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-
             if (user != null && user.TableName == "Employee")
             {
+                List<OrganizationGTILinkDTO> createdLinks = new List<OrganizationGTILinkDTO>();
+
                 int EmployeeId = user.TableId;
-
                 int OrganzationId = links.OrganizationId;
-
                 try
                 {
                     using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
@@ -201,26 +139,17 @@ namespace GTIWebAPI.Controllers
                             link.OrganizationId = OrganzationId;
                             link.GTIId = OrganizationGTIId;
                             link.EmployeeId = EmployeeId;
-                            link.Id = link.NewId(db);
-                            db.OrganizationGTILinks.Add(link);
-                        }
-
-                        try
-                        {
-                            db.SaveChanges();
-                        }
-                        catch (DbUpdateException)
-                        {
-                            throw;
+                            OrganizationGTILinkDTO dto = repo.Add(link).ToDTO();
+                            createdLinks.Add(dto);
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    return BadRequest();
+                    return BadRequest(e.Message);
                 }
 
-                return Ok();
+                return Ok(createdLinks);
             }
             return BadRequest();
         }
@@ -231,64 +160,20 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILink))]
         public IHttpActionResult DeleteOrganizationGTILink(int id)
         {
-            OrganizationGTILink organizationGTILink = new OrganizationGTILink();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    organizationGTILink = db.OrganizationGTILinks.Find(id);
-                    if (organizationGTILink == null)
-                    {
-                        return NotFound();
-                    }
-                    organizationGTILink.Deleted = true;
-                    db.Entry(organizationGTILink).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!OrganizationGTILinkExists(id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    if (organizationGTILink.GTIId != null)
-                    {
-                        organizationGTILink.OrganizationGTI = db.GTIOrganizations.Find(organizationGTILink.GTIId);
-                        if (organizationGTILink.OrganizationGTI != null)
-                        {
-                            organizationGTILink.OrganizationGTI.Office = db.Offices.Find(organizationGTILink.OrganizationGTI.OfficeId);
-                        }
-                    }
-                }
+                OrganizationGTILinkDTO dto = repo.Delete(id).ToDTO();
+                return Ok(dto);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            OrganizationGTILinkDTO dto = organizationGTILink.ToDTO();
-            return Ok(dto);
         }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool OrganizationGTILinkExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.OrganizationGTILinks.Count(e => e.Id == id) > 0;
-            }
         }
 
 

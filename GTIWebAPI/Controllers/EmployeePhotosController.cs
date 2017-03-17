@@ -95,7 +95,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeePhoto>))]
+        [ResponseType(typeof(List<EmployeePhoto>))]
         public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
         {
             try

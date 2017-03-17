@@ -10,6 +10,11 @@ namespace GTIWebAPI.Models.Organizations
     [Table("OrganizationContactPersonView")]
     public partial class OrganizationContactPersonView
     {
+        //public OrganizationContactPersonView()
+        //{
+        //    OrganizationContactPersonContacts = new HashSet<OrganizationContactPersonContact>();
+        //}
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 

@@ -35,7 +35,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(IEnumerable<OrganizationContactPersonView>))]
+        [ResponseType(typeof(List<OrganizationContactPersonDTO>))]
         public IHttpActionResult GetOrganizationContactPersonByOrganizationId(int organizationId)
         {
             try
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("Get", Name = "GetOrganizationContactPerson")]
-        [ResponseType(typeof(OrganizationContactPersonView))]
+        [ResponseType(typeof(OrganizationContactPersonDTO))]
         public IHttpActionResult GetOrganizationContactPerson(int id)
         {
             try
@@ -74,9 +74,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationContactPersonDTO))]
         public IHttpActionResult PutOrganizationContactPerson(int id, OrganizationContactPerson organizationContactPerson)
         {
-            if (organizationContactPerson == null || !ModelState.IsValid || id != organizationContactPerson.Id)
+            if (organizationContactPerson == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != organizationContactPerson.Id)
+            {
+                return BadRequest();
             }
             try
             {
@@ -114,7 +118,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(OrganizationContactPerson))]
+        [ResponseType(typeof(OrganizationContactPersonDTO))]
         public IHttpActionResult DeleteOrganizationContactPerson(int id)
         {
             OrganizationContactPerson organizationContactPerson = new OrganizationContactPerson();

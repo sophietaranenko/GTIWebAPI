@@ -120,45 +120,45 @@ namespace GTIWebAPI.Models.Context
 
         int NewTableId(string tableName);
 
-        IEnumerable<EmployeeView> EmployeeFilter(string myFilter);
+        List<EmployeeView> EmployeeFilter(string myFilter);
 
-        IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds);
+        List<EmployeeView> EmployeeByOffices(List<int> officeIds);
 
-        IEnumerable<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId);
+        List<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId);
 
-        IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter);
+        List<OrganizationView> GetOrganizationsFilter(string myFilter);
 
-        IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds);
+        List<OrganizationView> GetOrganizationsByOffices(List<int> officeIds);
 
-        IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber);
+        List<OrganizationGTI> SearchOrganizationGTI(List<int> officeIds, string registrationNumber);
 
-        IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber);
+        List<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber);
 
-        IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
+        List<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         DealFullViewDTO GetDealCardInfo(Guid dealId);
 
-        IEnumerable<DealContainerViewDTO> GetContainersByDeal(Guid dealId);
+        List<DealContainerViewDTO> GetContainersByDeal(Guid dealId);
 
-        IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId);
+        List<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId);
 
-        IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd);
+        List<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId);
 
-        IEnumerable<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId);
+        List<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId);
 
-        IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId);
+        List<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId);
 
-        IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
+        List<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
 
         DealContainerViewDTO GetContainer(Guid id);
 
-        IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes();
+        List<DocumentScanTypeDTO> GetDocumentScanTypes();
 
-        IEnumerable<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId);
+        List<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId);
 
-        IEnumerable<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId);
+        List<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId);
 
         Guid InsertDealDocumentScan(Guid dealId, byte[] fileContent, string fileName, string email, int documentScanTypeId);
 

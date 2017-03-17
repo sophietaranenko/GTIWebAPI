@@ -34,7 +34,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
+        [ResponseType(typeof(List<EmployeeInternationalPassportDTO>))]
         public IHttpActionResult GetEmployeeInternationalPassportAll()
         {
             try
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeInternationalPassportDTO>))]
+        [ResponseType(typeof(List<EmployeeInternationalPassportDTO>))]
         public IHttpActionResult GetEmployeeInternationalPassportByEmployee(int employeeId)
         {
             try
@@ -94,9 +94,13 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmployeeInternationalPassport(int id, EmployeeInternationalPassport employeeInternationalPassport)
         {
-            if (employeeInternationalPassport == null || !ModelState.IsValid || id != employeeInternationalPassport.Id)
+            if (employeeInternationalPassport == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (id != employeeInternationalPassport.Id)
+            {
+                return BadRequest();
             }
             try
             {

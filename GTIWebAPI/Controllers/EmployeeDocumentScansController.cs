@@ -92,7 +92,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("PutDbFilesToFilesystem")]
-        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
+        [ResponseType(typeof(List<EmployeeDocumentScan>))]
         public IHttpActionResult PutDbFilesToFilesystem()
         {
             try
@@ -115,7 +115,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByDocumentId", Name = "GetScanListByDocumentId")]
-        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
+        [ResponseType(typeof(List<EmployeeDocumentScan>))]
         public IHttpActionResult GetEmployeeDocumentScanByDocumentId(string tableName, int tableId)
         {
             try
@@ -138,12 +138,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeDocumentScan>))]
+        [ResponseType(typeof(List<EmployeeDocumentScan>))]
         public IHttpActionResult GetEmployeeDocumentScanByEmployeeId(int employeeId)
         {
             try
             {
-                IEnumerable<EmployeeDocumentScan> scanList = repo.GetByEmployeeId(employeeId);
+                List<EmployeeDocumentScan> scanList = repo.GetByEmployeeId(employeeId);
                 return Ok(scanList);
             }
             catch (Exception e)

@@ -62,6 +62,11 @@ namespace GTIWebAPI.Tests.TestContext
             this.Professions = new TestDbSet<Profession>();
             this.Regions = new TestDbSet<AddressRegion>();
             this.Villages = new TestDbSet<AddressVillage>();
+
+            this.Containers = new TestDbSet<DealContainerViewDTO>();
+            this.EmployeeViews = new TestDbSet<EmployeeView>();
+            this.OrganizationsGTI = new TestDbSet<OrganizationGTI>();
+
         }
 
         public void MarkAsModified(object entity)
@@ -115,7 +120,8 @@ namespace GTIWebAPI.Tests.TestContext
 
         public DbSet<Country> Countries { get; set; }
 
-        //public Database Database { get; set; }
+
+
 
 
         public DbSet<Department> Departments { get; set; }
@@ -146,12 +152,23 @@ namespace GTIWebAPI.Tests.TestContext
 
         public DbSet<EmployeeOffice> EmployeeOffices { get; set; }
 
-
         public DbSet<EmployeePassport> EmployeePassports { get; set; }
 
         public DbSet<EmployeePhoto> EmployeePhotos { get; set; }
 
         public DbSet<Employee> Employees { get; set; }
+
+
+
+
+        public TestDbSet<EmployeeView> EmployeeViews { get; set; }
+        public List<EmployeeView> EmployeeByOffices(List<int> officeIds)
+        {
+            return this.EmployeeViews.ToList();
+        }
+
+
+
 
         public DbSet<FoundationDocument> FoundationDocuments { get; set; }
 
@@ -206,7 +223,7 @@ namespace GTIWebAPI.Tests.TestContext
             return true;
         }
 
-        public IEnumerable<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId)
+        public List<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId)
         {
             //переписать
             //нет времени мОчить IDatabase 
@@ -215,7 +232,9 @@ namespace GTIWebAPI.Tests.TestContext
             return list;
         }
 
-        public IEnumerable<EmployeeView> EmployeeByOffices(IEnumerable<int> officeIds)
+
+
+        public List<EmployeeView> EmployeeFilter(string myFilter)
         {
             List<EmployeeView> list = new List<EmployeeView>();
             list.Add(new EmployeeView()
@@ -234,123 +253,69 @@ namespace GTIWebAPI.Tests.TestContext
             });
             return list;
         }
-
-        public IEnumerable<EmployeeView> EmployeeFilter(string myFilter)
-        {
-            List<EmployeeView> list = new List<EmployeeView>();
-            list.Add(new EmployeeView()
-            {
-                DateOfBirth = new DateTime(2012, 2, 1),
-                Email = "someemail@mailemail.rrt",
-                FirstName = "anyway",
-                SecondName = "this are",
-                Surname = "results of procedure"
-            });
-            list.Add(new EmployeeView()
-            {
-                Id = 1,
-                FirstName = "Another",
-                Surname = "sss"
-            });
-            return list;
-        }
-
 
         public int FileNameUnique()
         {
-            return 42;
+            return NewTableId("FileNameUnique");
         }
+
+
+
+
+        //Deal containers
+        public TestDbSet<DealContainerViewDTO> Containers { get; set; }
 
         public DealContainerViewDTO GetContainer(Guid id)
         {
-            return new DealContainerViewDTO()
-            {
-                Seal = "seal",
-                Container = "sssss",
-                Id = id
-            };
+            return Containers.Where(d => d.Id == id).FirstOrDefault();
         }
 
-        public IEnumerable<DealContainerViewDTO> GetContainersByDeal(Guid dealId)
+        public List<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            List<DealContainerViewDTO> list = new List<DealContainerViewDTO>();
-            list.Add(new DealContainerViewDTO()
-            {
-               Seal = "ssss"
-            });
-            list.Add(new DealContainerViewDTO()
-            {
-                Seal = "sss"
-            });
-            return list;
+            return Containers.ToList();
         }
 
-        public IEnumerable<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
+        public List<DealContainerViewDTO> GetContainersByDeal(Guid dealId)
         {
-            throw new NotImplementedException();
+            return Containers.Where(d => d.DealId == dealId).ToList();
         }
 
-        public IEnumerable<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
-        {
-            throw new NotImplementedException();
-        }
 
+
+
+
+
+
+        
+        //Deal
+        public TestDbSet<DealFullViewDTO> Deals { get; set; }
+        public TestDbSet<DealViewDTO> DealsView { get; set; }
         public DealFullViewDTO GetDealCardInfo(Guid dealId)
         {
-            throw new NotImplementedException();
+            return Deals.Where(d => d.Id == dealId).FirstOrDefault();
+        }
+        public List<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
+        {
+            return DealsView.Where(d => d.CreateDate >= dateBegin && d.CreateDate < dateEnd).ToList();
         }
 
+
+
+
+
+
+        //Deal document scans 
         public DocumentScanDTO GetDealDocumentScanById(Guid scanId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd)
+        public List<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<DocumentScanTypeDTO> GetDocumentScanTypes()
-        {
-            throw new NotImplementedException();
-        }
-
-        public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<OrganizationView> GetOrganizationsByOffices(IEnumerable<int> officeIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<OrganizationView> GetOrganizationsFilter(string myFilter)
+        public List<DocumentScanTypeDTO> GetDocumentScanTypes()
         {
             throw new NotImplementedException();
         }
@@ -360,26 +325,83 @@ namespace GTIWebAPI.Tests.TestContext
             throw new NotImplementedException();
         }
 
+        public DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        //Invoices
+        public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+
+
+
+        public List<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TestDbSet<OrganizationGTI> OrganizationsGTI { get; set; }
+        public List<OrganizationGTI> SearchOrganizationGTI(List<int> officeIds, string registrationNumber)
+        {
+            return OrganizationsGTI.Where(d => d.RegistrationNumber == registrationNumber && officeIds.Contains(d.OfficeId)).ToList();
+        }
+
+
+
+
+
+        public List<OrganizationView> GetOrganizationsByOffices(List<int> officeIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<OrganizationView> GetOrganizationsFilter(string myFilter)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
         public bool IsEmployeeInformationFilled(int employeeId)
         {
             throw new NotImplementedException();
         }
 
 
-
-        public IEnumerable<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<OrganizationGTI> SearchOrganizationGTI(IEnumerable<int> officeIds, string registrationNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

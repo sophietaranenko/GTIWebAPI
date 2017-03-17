@@ -33,7 +33,7 @@ namespace GTIWebAPI.Tests
         public void GetAll_ShouldReturnNotDeleted()
         {
             var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
-            var result = controller.GetEmployeePassportAll() as OkNegotiatedContentResult<IEnumerable<EmployeePassportDTO>>;
+            var result = controller.GetEmployeePassportAll() as OkNegotiatedContentResult<List<EmployeePassportDTO>>;
             Assert.AreEqual(3, result.Content.Count());
         }
 
@@ -41,7 +41,7 @@ namespace GTIWebAPI.Tests
         public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
-            var result = controller.GetEmployeePassportByEmployee(1) as OkNegotiatedContentResult<IEnumerable<EmployeePassportDTO>>;
+            var result = controller.GetEmployeePassportByEmployee(1) as OkNegotiatedContentResult<List<EmployeePassportDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
@@ -50,7 +50,7 @@ namespace GTIWebAPI.Tests
         public void GetByEmployeeId_ShouldReturnZeroCount()
         {
             var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
-            var badResult = controller.GetEmployeePassportByEmployee(999) as OkNegotiatedContentResult<IEnumerable<EmployeePassportDTO>>;
+            var badResult = controller.GetEmployeePassportByEmployee(999) as OkNegotiatedContentResult<List<EmployeePassportDTO>>;
             Assert.AreEqual(0, badResult.Content.Count());
         }
 

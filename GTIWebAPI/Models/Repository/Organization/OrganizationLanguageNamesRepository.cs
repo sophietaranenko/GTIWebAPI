@@ -59,7 +59,7 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 organizationLanguageName = db.OrganizationLanguageNames
-                    .Where(p => p.Id == organizationLanguageName.Id)
+                    .Where(p => p.Id == id)
                     .Include(d => d.Language)
                     .FirstOrDefault();
                 if (organizationLanguageName == null)

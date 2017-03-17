@@ -34,12 +34,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
+        [ResponseType(typeof(List<EmployeeCarDTO>))]
         public IHttpActionResult GetEmplyeeCarAll()
         {
             try
             {
-                IEnumerable<EmployeeCarDTO> dtos = repo.GetAll().Select(p => p.ToDTO()).ToList();
+                List<EmployeeCarDTO> dtos = repo.GetAll().Select(p => p.ToDTO()).ToList();
                 return Ok(dtos);
             }
             catch (Exception e)
@@ -51,12 +51,12 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
+        [ResponseType(typeof(List<EmployeeCarDTO>))]
         public IHttpActionResult GetEmployeeCarByEmployee(int employeeId)
         {
             try
             {
-                IEnumerable<EmployeeCarDTO> dtos = repo.GetByEmployeeId(employeeId).Select(d => d.ToDTO()).ToList();
+                List<EmployeeCarDTO> dtos = repo.GetByEmployeeId(employeeId).Select(d => d.ToDTO()).ToList();
                 return Ok(dtos);
             }
             catch (Exception e)

@@ -109,7 +109,9 @@ namespace GTIWebAPI.Models.Repository
             EmployeeDrivingLicense license = new EmployeeDrivingLicense();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                license = db.EmployeeDrivingLicenses.Where(p => p.Id == id).FirstOrDefault();
+                license = db.EmployeeDrivingLicenses
+                    .Where(p => p.Id == id)
+                    .FirstOrDefault();
             }
             return license;
         }
