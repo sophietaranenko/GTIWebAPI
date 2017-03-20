@@ -124,7 +124,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         /// <summary>
@@ -137,31 +137,18 @@ namespace GTIWebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult DeleteEmployeePhoto(int id)
         {
-            EmployeePhoto photo = new EmployeePhoto();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    photo = db.EmployeePhotos.Find(id);
-                    if (photo != null)
-                    {
-                        photo.Deleted = true;
-                        db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        return BadRequest("Not found");
-                    }
-                }
+
+                EmployeePhoto photo = repo.Delete(id);
+                return Ok(photo);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
 
-            return Ok(photo);
+
         }
 
         /// <summary>
@@ -171,14 +158,6 @@ namespace GTIWebAPI.Controllers
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        private bool EmployeePhotoExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.EmployeePhotos.Count(e => e.Id == id) > 0;
-            }
         }
     }
 }

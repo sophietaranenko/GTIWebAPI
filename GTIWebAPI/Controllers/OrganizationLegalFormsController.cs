@@ -17,6 +17,11 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationLegalForms")]
     public class OrganizationLegalFormsController : ApiController
     {
+        private IDbContextFactory factory;
+        public OrganizationLegalFormsController()
+        {
+            factory = new DbContextFactory();
+        }
         /// <summary>
         /// Get one contact for edit by contact id
         /// </summary>
@@ -31,7 +36,7 @@ namespace GTIWebAPI.Controllers
             OrganizationLegalForm form = new OrganizationLegalForm();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                using (IAppDbContext db = factory.CreateDbContext())
                 {
                     form = db.OrganizationLegalForms.Find(id);
                 }
@@ -71,7 +76,7 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                using (IAppDbContext db = factory.CreateDbContext())
                 {
                     form.Id = form.NewId(db);
                     db.OrganizationLegalForms.Add(form);
@@ -82,7 +87,7 @@ namespace GTIWebAPI.Controllers
                     }
                     catch (DbUpdateException)
                     {
-                        if (OrganizationLegalFormExists(form.Id))
+                        if (db.OrganizationLegalForms.Count(e => e.Id == form.Id) > 0)
                         {
                             return Conflict();
                         }
@@ -102,12 +107,5 @@ namespace GTIWebAPI.Controllers
             return CreatedAtRoute("GetOrganizationLegalForm", new { id = dto.Id }, dto);
         }
 
-        private bool OrganizationLegalFormExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            { 
-                return db.OrganizationLegalForms.Count(e => e.Id == id) > 0;
-            }
-        }
     }
 }

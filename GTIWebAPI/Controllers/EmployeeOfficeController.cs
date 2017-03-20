@@ -159,12 +159,5 @@ namespace GTIWebAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool EmployeeOfficeExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.EmployeeOffices.Count(e => e.Id == id) > 0;
-            }
-        }
     }
 }

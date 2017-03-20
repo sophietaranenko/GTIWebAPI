@@ -441,8 +441,10 @@
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
     <Compile Include="Models\Repository\Accounting\ContainersRepository.cs" />
+    <Compile Include="Models\Repository\Accounting\DealDocumentScansRepository.cs" />
     <Compile Include="Models\Repository\Accounting\DealsRepository.cs" />
     <Compile Include="Models\Repository\Accounting\IContainersRepository.cs" />
+    <Compile Include="Models\Repository\Accounting\IDealDocumentScansRepository.cs" />
     <Compile Include="Models\Repository\Accounting\IDealsRepository.cs" />
     <Compile Include="Models\Repository\Accounting\IInvoicesRepository.cs" />
     <Compile Include="Models\Repository\Accounting\InvoicesRepository.cs" />

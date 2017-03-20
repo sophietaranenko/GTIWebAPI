@@ -130,8 +130,6 @@ namespace GTIWebAPI.Controllers
                 int OrganzationId = links.OrganizationId;
                 try
                 {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                    {
                         foreach (var item in links.OrganizationGTIIds)
                         {
                             int OrganizationGTIId = item;
@@ -142,7 +140,6 @@ namespace GTIWebAPI.Controllers
                             OrganizationGTILinkDTO dto = repo.Add(link).ToDTO();
                             createdLinks.Add(dto);
                         }
-                    }
                 }
                 catch (Exception e)
                 {

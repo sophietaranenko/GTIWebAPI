@@ -11,22 +11,22 @@ namespace GTIWebAPI.Tests.Novell
     {
         public bool CreateOrganization(INovellOrganizationContactPerson person)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool CredentialsCorrect(string username, string password)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public string FindEmail(string username)
         {
-            throw new NotImplementedException();
+            return "testemail@testemail.test";
         }
 
         public string GenerateLogin(string login)
         {
-            throw new NotImplementedException();
+            return login.Replace(" ", "");
         }
     }
 }

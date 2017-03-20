@@ -13,8 +13,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-
+using System.Web.Http;
+using System.Web.Http.Results;
 
 namespace GTIWebAPI.Tests.TestControllers
 {
@@ -27,11 +27,15 @@ namespace GTIWebAPI.Tests.TestControllers
 
         private IAccountRepository repo;
 
+        private TestDbContext db;
+
         public TestAccountController()
         {
             novell = new TestNovellManager();
-            factory = new TestDbContextFactory();
+            db = new TestDbContext();
+            factory = new TestDbContextFactory(db);
             repo = new AccountRepository(factory);
+            FillDemo();
         }
 
         [TestMethod]
@@ -47,10 +51,6 @@ namespace GTIWebAPI.Tests.TestControllers
         [TestMethod]
         public void GetUserInfoOrganizationContactPerson_ShouldRerurnUserInfo()
         {
-            TestDbContext db = new TestDbContext();
-            db.OrganizationContactPersons.Add(new Models.Organizations.OrganizationContactPerson { Id = 1, OrganizationId = 222 });
-            TestDbContextFactory factory = new TestDbContextFactory(db);
-
             ApplicationUserManager manager = new ApplicationUserManager(new MockUserStore("OrganizationContactPerson"));
             var controller = new AccountController(repo, novell, manager);
             var result = controller.GetUserInfo() as Task<UserInfoViewModel>;
@@ -61,11 +61,19 @@ namespace GTIWebAPI.Tests.TestControllers
         [TestMethod]
         public void SimpleRegisterUser_ShouldReturnOkWhenRegistered()
         {
+            ApplicationUserManager manager = new ApplicationUserManager(new MockUserStore("Employee"));
+            var controller = new AccountController(repo, novell, manager);
+            var result = controller.SimpleRegisterOrganizationContactPerson(22) as Task<IHttpActionResult>;
+        }
 
+        private void FillDemo()
+        {
+            db.OrganizationContactPersons.Add(new Models.Organizations.OrganizationContactPerson { Id = 1, OrganizationId = 222 });
+            db.OrganizationContactPersonViews.Add(new Models.Organizations.OrganizationContactPersonView { Id = 22, FirstName = "Тестируем транслитерацию", LastName = "Wow, but if it is too long?", Email = "sometestemail@belongstoperson.com" });
         }
     }
 
-    public class MockUserStore : IUserStore<ApplicationUser> 
+    public class MockUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
     {
         private string TableName { get; set; }
         public MockUserStore(string tableName)
@@ -83,6 +91,12 @@ namespace GTIWebAPI.Tests.TestControllers
             return Task.Factory.StartNew(() => true);
         }
 
+        public Task CreateAsync(ApplicationUser user, string password)
+        {
+
+            return Task.Factory.StartNew(() => true);
+        }
+
         public Task DeleteAsync(ApplicationUser user)
         {
             throw new NotImplementedException();
@@ -95,14 +109,27 @@ namespace GTIWebAPI.Tests.TestControllers
 
         public Task<ApplicationUser> FindByIdAsync(string userId)
         {
-            return Task.Factory.StartNew(() => new ApplicationUser { Id = userId, UserName = "sss", TableName = this.TableName, TableId = 1 });
-
+            return Task.Factory.StartNew(() =>
+            new ApplicationUser
+            {
+                Id = userId,
+                UserName = "sss",
+                TableName = this.TableName,
+                TableId = 1
+            });
         }
 
         public Task<ApplicationUser> FindByNameAsync(string userName)
         {
-            throw new NotImplementedException();
-        }
+            return Task.Factory.StartNew(() =>  new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "sss",
+                TableName = this.TableName,
+                TableId = 1
+            });
+        } 
+       
 
         public Task UpdateAsync(ApplicationUser user)
         {
@@ -113,6 +140,21 @@ namespace GTIWebAPI.Tests.TestControllers
         {
             string Message = "";
             return Task.Factory.StartNew(() => Message = "This method imitates sending e-mail");
+        }
+
+        public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash)
+        {
+            return Task.Factory.StartNew(() => "Something happens");
+        }
+
+        public Task<string> GetPasswordHashAsync(ApplicationUser user)
+        {
+            return Task.Factory.StartNew(() => "wow");
+        }
+
+        public Task<bool> HasPasswordAsync(ApplicationUser user)
+        {
+            return Task.Factory.StartNew(() => true);
         }
     }
 }

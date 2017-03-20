@@ -161,13 +161,5 @@ namespace GTIWebAPI.Controllers
         {
             base.Dispose(disposing);
         }
-
-        private bool OrganizationAddressExists(int id)
-        {
-            using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-            {
-                return db.OrganizationAddresses.Count(e => e.Id == id) > 0;
-            }
-        }
     }
 }

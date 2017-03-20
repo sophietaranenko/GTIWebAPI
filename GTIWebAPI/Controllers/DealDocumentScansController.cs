@@ -2,6 +2,7 @@
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository.Accounting;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
@@ -23,6 +24,18 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/DealDocumentScans")]
     public class DealDocumentScansController : ApiController
     {
+        private IDealDocumentScansRepository repo;
+
+        public DealDocumentScansController()
+        {
+            repo = new DealDocumentScansRepository();
+        }
+
+        public DealDocumentScansController(IDealDocumentScansRepository repo)
+        {
+            this.repo = repo;
+        }
+
         /// <summary>
         /// To get all scan types (types of document type we attach - BL, CMR etc.) 
         /// </summary>
@@ -33,91 +46,82 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(List<DocumentScanTypeDTO>))]
         public IHttpActionResult GetDocumentScanTypes()
         {
-            List<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.GetDocumentScanTypes();
-                }
+                List<DocumentScanTypeDTO> dtos = repo.GetDocumentScanTypes();
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// Get one document scan by id of deal it is attached to 
-        /// </summary>
-        /// <param name="dealId"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByDealId")]
         [ResponseType(typeof(List<DocumentScanDTO>))]
         public IHttpActionResult GetDocumentScansByDealId(Guid dealId)
         {
-            List<DocumentScanDTO> dtos = new List<DocumentScanDTO>();
-
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    dtos = db.GetDocumentScanByDeal(dealId);
-                }
+                List<DocumentScanDTO> dtos = repo.GetDocumentScansByDealId(dealId);
+                return Ok(dtos);
             }
             catch (Exception e)
             {
                 return BadRequest();
             }
-
-            return Ok(dtos);
         }
 
-        /// <summary>
-        /// We can update only type of document to deal document scan. Otherwise we need to delete and upload new document scan. 
-        /// </summary>
-        /// <param name="scanId"></param>
-        /// <param name="documentScanTypeId"></param>
-        /// <returns></returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
         public IHttpActionResult PutDealDocumentScan(Guid scanId, int documentScanTypeId)
         {
-            DocumentScanDTO dto = new DocumentScanDTO();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                DocumentScanDTO dto = new DocumentScanDTO();
+                dto = repo.GetDocumentScan(scanId);
+                if (dto != null)
                 {
-                    dto = db.GetDealDocumentScanById(scanId);
-                    if (dto != null)
-                    {
-                        string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                        ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                        if (user != null)
-                        {
-                            string email = user.Email;
+                    string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                    ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
 
-                            if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+                    if (user != null)
+                    {
+                        string email = user.Email;
+                        if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
+                        {
+                            dto = repo.UpdateDealDocumentScan(dto);
+                            if (dto != null)
                             {
-                                dto = db.UpdateDocumentScanType(scanId, documentScanTypeId);
-                                if (dto != null)
-                                {
-                                    return Ok(dto);
-                                }
+                                return Ok(dto);
+                            }
+                            else
+                            {
+                                return BadRequest();
                             }
                         }
+                        else
+                        {
+                            return BadRequest("Invalid arguments");
+                        }
                     }
+                    else
+                    {
+                        return BadRequest("User not found");
+                    }
+                }
+                else
+                {
+                    return NotFound();
                 }
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            return BadRequest();
         }
 
         /// <summary>
@@ -132,11 +136,8 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult UploadDealDocumentScan(int documentScanTypeId, Guid dealId)
         {
             HttpResponseMessage result = Request.CreateResponse(HttpStatusCode.BadRequest);
-
-            DocumentScanDTO dto = new DocumentScanDTO();
-
             var httpRequest = HttpContext.Current.Request;
-
+            DocumentScanDTO dto = new DocumentScanDTO();
             if (httpRequest.Files.Count == 1)
             {
                 string fileName = "";
@@ -146,7 +147,6 @@ namespace GTIWebAPI.Controllers
                 string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
                 ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
                 email = user.Email;
-
                 foreach (string file in httpRequest.Files)
                 {
                     var postedFile = httpRequest.Files[file];
@@ -162,27 +162,19 @@ namespace GTIWebAPI.Controllers
                     {
                         return BadRequest("Error reading file");
                     }
-
                     fileContent = fileData;
                     fileName = postedFile.FileName;
                     try
                     {
-                        using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                        {
-                            Guid scanId = db.InsertDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
-                            dto = db.GetDealDocumentScanById(scanId);
-                        }
+                        dto = repo.UploadDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
                     }
                     catch (Exception e)
                     {
                         return BadRequest();
                     }
                 }
-
             }
             return Ok(dto);
-
-
         }
 
         /// <summary>
@@ -195,14 +187,11 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult DeleteDealDocumentScan(Guid id)
         {
             DocumentScanDTO dto = new DocumentScanDTO();
-
             try
             {
                 using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
                 {
-
                     db.GetDealDocumentScanById(id);
-
                     if (dto != null)
                     {
                         string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
@@ -210,7 +199,6 @@ namespace GTIWebAPI.Controllers
                         if (user != null)
                         {
                             string email = user.Email;
-
                             if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
                             {
                                 bool result = db.DeleteDocumentScan(id);

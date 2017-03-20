@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Net.Http;
-
 using System.Security.Claims;
 using System.Security.Cryptography;
-
 using System.Threading.Tasks;
-
 using System.Web;
 using System.Web.Http;
 
@@ -21,14 +17,10 @@ using Microsoft.Owin.Security.OAuth;
 
 using GTIWebAPI.Providers;
 using GTIWebAPI.Results;
-
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
-using System.Net;
-using System.Linq;
-using GTIWebAPI.Models.Context;
 using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Repository.Identity;
 

@@ -178,11 +178,6 @@ namespace GTIWebAPI.Models.Account
             modelBuilder.Entity<UserRight>()
                    .HasRequired<ApplicationUser>(s => s.ApplicationUser)
                    .WithMany(s => s.UserRights);
-
-
-            //modelBuilder.Entity<ApplicationUser>()
-            //                .HasOptional(s => s.Image)
-            //                .WithRequired(ad => ad.ApplicationUser);
         }
 
         public virtual int FileNameUnique()
