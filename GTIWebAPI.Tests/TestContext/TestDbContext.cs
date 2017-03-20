@@ -73,7 +73,7 @@ namespace GTIWebAPI.Tests.TestContext
             this.InvoiceLines = new TestDbSet<InvoiceLineViewDTO>();
             this.InvoiceContainers = new TestDbSet<InvoiceContainerViewDTO>();
             this.InvoiceFull = new TestDbSet<InvoiceFullViewDTO>();
-
+            this.DealDocumentScans = new TestDbSet<DocumentScanDTO>();
         }
 
         public void MarkAsModified(object entity)
@@ -316,6 +316,7 @@ namespace GTIWebAPI.Tests.TestContext
 
 
         //Deal document scans 
+        public TestDbSet<DocumentScanDTO> DealDocumentScans { get; set; } 
         public DocumentScanDTO GetDealDocumentScanById(Guid scanId)
         {
             throw new NotImplementedException();
@@ -323,7 +324,7 @@ namespace GTIWebAPI.Tests.TestContext
 
         public List<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId)
         {
-            throw new NotImplementedException();
+            return DealDocumentScans.Where(d => d.TableId == dealId).ToList();
         }
 
         public List<DocumentScanTypeDTO> GetDocumentScanTypes()

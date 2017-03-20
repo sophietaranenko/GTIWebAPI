@@ -592,16 +592,6 @@
             <param name="userManager"></param>
             <param name="accessTokenFormat"></param>
         </member>
-        <member name="P:GTIWebAPI.Controllers.AccountController.UserManager">
-            <summary>
-            property UserManager
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Controllers.AccountController.AccessTokenFormat">
-            <summary>
-            AccessTokenFormat
-            </summary>
-        </member>
         <member name="M:GTIWebAPI.Controllers.AccountController.UploadProfilePicture(System.String,System.Int32)">
             <summary>
             Method for profile picture upload

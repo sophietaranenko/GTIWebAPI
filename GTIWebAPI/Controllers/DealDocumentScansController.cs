@@ -34,7 +34,6 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult GetDocumentScanTypes()
         {
             List<DocumentScanTypeDTO> dtos = new List<DocumentScanTypeDTO>();
-
             try
             {
                 using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
@@ -46,7 +45,6 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             return Ok(dtos);
         }
 

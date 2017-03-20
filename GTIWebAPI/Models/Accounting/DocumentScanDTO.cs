@@ -4,12 +4,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 
 namespace GTIWebAPI.Models.Accounting
 {
     public class DocumentScanDTO
     {
         public Guid Id { get; set; }
+
+        [NotMapped]
+        public string Format
+        {
+            get
+            {
+                if (FileName != null && FileName.Length > 3)
+                {
+                    int index = FileName.LastIndexOf('.');
+                    return FileName.Substring(index + 1).Trim().ToLower();
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
 
         public byte[] FileContent { get; set; }
 
@@ -30,6 +48,8 @@ namespace GTIWebAPI.Models.Accounting
         public Int16? DocumentScanTypeId { get; set; }
 
         public DocumentScanTypeDTO DocumentScanType { get; set; }
+
+       
 
     }
 }

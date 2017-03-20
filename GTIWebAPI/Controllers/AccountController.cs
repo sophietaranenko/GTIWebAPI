@@ -27,11 +27,9 @@ using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
 using System.Net;
-using GTIWebAPI.Models;
 using System.Linq;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Novell;
-using System.Text.RegularExpressions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -52,6 +50,13 @@ namespace GTIWebAPI.Controllers
         /// </summary>
         public AccountController()
         {
+            factory = new DbContextFactory();
+        }
+
+        public AccountController(ApplicationUserManager userManager)
+        {
+            factory = new DbContextFactory();
+            UserManager = userManager;
         }
 
         /// <summary>
@@ -64,13 +69,11 @@ namespace GTIWebAPI.Controllers
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
+            factory = new DbContextFactory();
         }
 
-       // private IDbContextFactory factory { get; set; }
+        private IDbContextFactory factory { get; set; }
 
-        /// <summary>
-        /// property UserManager
-        /// </summary>
         protected ApplicationUserManager UserManager
         {
             get
@@ -83,17 +86,19 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// AccessTokenFormat
-        /// </summary>
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
+
+
 
         [Authorize]
         [Route("UserInfo")]
-        public UserInfoViewModel GetUserInfo()
+        public async Task<UserInfoViewModel> GetUserInfo()
         {
             string UserId = User.Identity.GetUserId();
-            ApplicationUser user = UserManager.FindById(UserId);
+            //var result = UserManager.FindByIdAsync(;
+            ApplicationUser user = await UserManager.FindByIdAsync(UserId);
+
+          //  ApplicationUser user = UserManager.FindById(UserId);
 
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
@@ -112,14 +117,14 @@ namespace GTIWebAPI.Controllers
 
                 if (user.TableName == "Employee")
                 {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    using (IAppDbContext db = factory.CreateDbContext())
                     {
                         employeeInformation = db.IsEmployeeInformationFilled(user.TableId);
                     }
                 }
                 if (user.TableName == "OrganizationContactPerson")
                 {
-                    using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                    using (IAppDbContext db = factory.CreateDbContext())
                     {
                         model.OrganizationId = 
                             db.OrganizationContactPersons
@@ -137,7 +142,8 @@ namespace GTIWebAPI.Controllers
                 model.UserRights = user.GetUserRightsDTO();
                 model.EmployeeInformation = employeeInformation;
             }
-            return model;
+            return await Task<UserInfoViewModel>.Factory.StartNew(() => model);
+            //return model;
         }
 
         /// <summary>
