@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
-using GTIWebAPI.Models.Dictionary;
-using GTIWebAPI.Models.Personnel;
-using GTIWebAPI.Models.Service;
-using AutoMapper;
 using GTIWebAPI.Filters;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity;
-using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers

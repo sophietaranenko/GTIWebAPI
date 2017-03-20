@@ -30,6 +30,7 @@ namespace GTIWebAPI.Models.Account
         public ApplicationUser() : base()
         {
             UserRights = new List<UserRight>();
+           // Images = new List<UserImage>();
         }
 
         [Column("TableName")]
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Account
 
         public int TableId { get; set; }
 
-        public virtual UserImage Image { get; set; }
+        //public virtual ICollection<UserImage> Images { get; set; }
 
         public virtual ICollection<UserRight> UserRights { get; set; }
 
@@ -179,9 +180,9 @@ namespace GTIWebAPI.Models.Account
                    .WithMany(s => s.UserRights);
 
 
-            modelBuilder.Entity<ApplicationUser>()
-                            .HasOptional(s => s.Image)
-                            .WithRequired(ad => ad.ApplicationUser);
+            //modelBuilder.Entity<ApplicationUser>()
+            //                .HasOptional(s => s.Image)
+            //                .WithRequired(ad => ad.ApplicationUser);
         }
 
         public virtual int FileNameUnique()
@@ -192,87 +193,6 @@ namespace GTIWebAPI.Models.Account
             return result;
         }
 
-        public bool CreateOrganization(string email, string password)
-        {
-            SqlParameter pEmail = new SqlParameter
-            {
-                ParameterName = "@Username",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                Value = email
-            };
-
-            bool methodResult = false;
-
-            try
-            {
-                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Username ",
-                    pEmail
-                    ).FirstOrDefault();
-                methodResult = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return methodResult;
-        }
-
-        public bool CreateHoldingUser(string email, string password)
-        {
-            SqlParameter pEmail = new SqlParameter
-            {
-                ParameterName = "@Username",
-                IsNullable = false,
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                Value = email
-            };
-
-            bool methodResult = false;
-
-            try
-            {
-                var result = Database.SqlQuery<bool>("exec CreateDatabaseHoldingUser @Username ",
-                    pEmail
-                    ).FirstOrDefault();
-                methodResult = result;
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
-            return methodResult;
-        }
-    }
-
-
-    /// <summary>
-    /// Class for user profile picture
-    /// </summary>
-    [Table("AspNetUserImages")]
-    public class UserImage
-    {
-        /// <summary>
-        /// Id
-        /// </summary>
-        [Key]
-        [ForeignKey("ApplicationUser")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// image name
-        /// </summary>
-        public string ImageName { get; set; }
-
-        /// <summary>
-        /// image byte array 
-        /// </summary>
-        public byte[] ImageData { get; set; }
-
-        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 
 

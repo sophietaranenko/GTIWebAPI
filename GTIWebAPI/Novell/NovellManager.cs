@@ -15,7 +15,7 @@ using System.Runtime.CompilerServices;
 
 namespace GTIWebAPI.Novell
 {
-    public static class NovellManager
+    public class NovellManager : INovellManager
     {
         //Миша писал в скайп 17.02 
         //сейчас только 0.9 работает в режиме non-TLS. Остальные требуют TLS для подключения к ДВФЗ-серверу. 
@@ -23,29 +23,29 @@ namespace GTIWebAPI.Novell
         private static string[] ServerAddresses = { "192.168.0.20", "192.168.1.1", "192.168.0.6", "192.168.0.9" };
 
 
-        public static string GenerateLogin(string login)
+        public string GenerateLogin(string login)
         {
             return GenerateNovellLogin(login);
         }
 
-        public static bool CredentialsCorrect(string username, string password)
+        public bool CredentialsCorrect(string username, string password)
         {
             bool result = VerifyPassword(username, password);
             return result;
         }
 
-        public static bool CreateOrganization(NovellOrganizationContactPerson person)
+        public bool CreateOrganization(INovellOrganizationContactPerson person)
         {
             bool result = CreateNovellOrganization(person);
             return result;
         }
 
-        public static string FindEmail(string username)
+        public string FindEmail(string username)
         {
             return FindEmailByCN(username);
         }
 
-        private static string FindEmailByCN(string username)
+        private string FindEmailByCN(string username)
         {
             string email = "";
 
@@ -71,7 +71,7 @@ namespace GTIWebAPI.Novell
             return email;
         }
 
-        private static string GenerateNovellLogin(string login)
+        private string GenerateNovellLogin(string login)
         {
             string result = "";
 
@@ -103,7 +103,7 @@ namespace GTIWebAPI.Novell
         //noone knows server address
         //it'll be better if we change location to web.config 
 
-        private static bool VerifyPassword(string login, string password)
+        private bool VerifyPassword(string login, string password)
         {
             bool result = false;
 
@@ -136,7 +136,7 @@ namespace GTIWebAPI.Novell
             return result;
         }
 
-        private static bool CreateNovellOrganization(NovellOrganizationContactPerson person)
+        private bool CreateNovellOrganization(INovellOrganizationContactPerson person)
         {
             bool result = false;
 
@@ -276,7 +276,7 @@ namespace GTIWebAPI.Novell
                 return nextEntry == null ? false : true;
             }
 
-            public bool CreateEntry(NovellOrganizationContactPerson person)
+            public bool CreateEntry(INovellOrganizationContactPerson person)
             {
                 bool created = false;
                 string containerName = "ou=users,o=alien";

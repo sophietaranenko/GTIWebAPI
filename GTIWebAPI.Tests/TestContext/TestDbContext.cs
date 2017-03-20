@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
 using System.Data.Entity;
+using GTIWebAPI.Models.Account;
 
 namespace GTIWebAPI.Tests.TestContext
 {
@@ -62,6 +63,8 @@ namespace GTIWebAPI.Tests.TestContext
             this.Professions = new TestDbSet<Profession>();
             this.Regions = new TestDbSet<AddressRegion>();
             this.Villages = new TestDbSet<AddressVillage>();
+            this.UserImages = new TestDbSet<UserImage>();
+
 
             this.Containers = new TestDbSet<DealContainerViewDTO>();
             this.EmployeeViews = new TestDbSet<EmployeeView>();
@@ -411,8 +414,20 @@ namespace GTIWebAPI.Tests.TestContext
 
         public bool IsEmployeeInformationFilled(int employeeId)
         {
-            throw new NotImplementedException();
+            return true;
         }
+
+        public bool CreateOrganization(string email, string password)
+        {
+            return true;
+        }
+
+        public bool CreateHoldingUser(string email, string password)
+        {
+            return true;
+        }
+
+        public DbSet<UserImage> UserImages { get; set; }
 
 
     }

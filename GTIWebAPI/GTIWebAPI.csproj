@@ -428,6 +428,7 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
+    <Compile Include="Models\Account\UserImage.cs" />
     <Compile Include="Models\Context\AppDbContextFactory.cs" />
     <Compile Include="Models\Context\DbContextFactory.cs" />
     <Compile Include="Models\Context\IAppDbContext.cs" />
@@ -445,6 +446,8 @@
     <Compile Include="Models\Repository\Accounting\IDealsRepository.cs" />
     <Compile Include="Models\Repository\Accounting\IInvoicesRepository.cs" />
     <Compile Include="Models\Repository\Accounting\InvoicesRepository.cs" />
+    <Compile Include="Models\Repository\Identity\AccountRepository.cs" />
+    <Compile Include="Models\Repository\Identity\IAccountRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationContactPersonContactsRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationContactPersonsRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationRepository.cs" />
@@ -554,6 +557,8 @@
     <Compile Include="Models\Accounting\ShippingLine.cs" />
     <Compile Include="Models\Accounting\Terminal.cs" />
     <Compile Include="Models\Accounting\Vessel.cs" />
+    <Compile Include="Novell\INovellManager.cs" />
+    <Compile Include="Novell\INovellOrganizationContactPerson.cs" />
     <Compile Include="Novell\NovellManager.cs" />
     <Compile Include="Novell\NovellOrganizationContactPerson.cs" />
     <Compile Include="Novell\NovellEntry.cs" />

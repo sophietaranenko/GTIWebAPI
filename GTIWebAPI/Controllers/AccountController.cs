@@ -30,6 +30,7 @@ using System.Net;
 using System.Linq;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Novell;
+using GTIWebAPI.Models.Repository.Identity;
 
 namespace GTIWebAPI.Controllers
 {
@@ -40,39 +41,33 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
-
         private const string LocalLoginProvider = "Local";
-        private ApplicationUserManager _userManager;
-        private int SMSCode { get; set; }
 
-        /// <summary>
-        /// ctor empty
-        /// </summary>
+        private ApplicationUserManager _userManager;
+
+        private INovellManager novell { get; set; }
+
+        private IAccountRepository repo { get; set; }
+
         public AccountController()
         {
-            factory = new DbContextFactory();
+            novell = new NovellManager();
+            repo = new AccountRepository();
         }
 
-        public AccountController(ApplicationUserManager userManager)
+        public AccountController(IAccountRepository repo, INovellManager novell, ApplicationUserManager userManager)
         {
-            factory = new DbContextFactory();
             UserManager = userManager;
+            this.novell = novell;
+            this.repo = repo;
         }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="userManager"></param>
-        /// <param name="accessTokenFormat"></param>
         public AccountController(ApplicationUserManager userManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
-            factory = new DbContextFactory();
         }
-
-        private IDbContextFactory factory { get; set; }
 
         protected ApplicationUserManager UserManager
         {
@@ -88,131 +83,78 @@ namespace GTIWebAPI.Controllers
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
-
-
         [Authorize]
         [Route("UserInfo")]
         public async Task<UserInfoViewModel> GetUserInfo()
         {
             string UserId = User.Identity.GetUserId();
-            //var result = UserManager.FindByIdAsync(;
             ApplicationUser user = await UserManager.FindByIdAsync(UserId);
-
-          //  ApplicationUser user = UserManager.FindById(UserId);
-
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
             {
-                string profilePicturePath = null;
-                bool employeeInformation = false;
-                UserImage im = user.Image;
-
-                if (im != null)
-                {
-                    if (im.ImageName != null && im.ImageName != "")
-                    {
-                        profilePicturePath = im.ImageName;
-                    }
-                }
-
-                if (user.TableName == "Employee")
-                {
-                    using (IAppDbContext db = factory.CreateDbContext())
-                    {
-                        employeeInformation = db.IsEmployeeInformationFilled(user.TableId);
-                    }
-                }
-                if (user.TableName == "OrganizationContactPerson")
-                {
-                    using (IAppDbContext db = factory.CreateDbContext())
-                    {
-                        model.OrganizationId = 
-                            db.OrganizationContactPersons
-                            .Where(d => d.Id == user.TableId)
-                            .Select(d => d.OrganizationId)
-                            .FirstOrDefault()
-                            .GetValueOrDefault();
-                    }
-                }
-
                 model.UserName = user.UserName;
                 model.TableId = user.TableId;
                 model.TableName = user.TableName;
-                model.ProfilePicturePath = profilePicturePath;
                 model.UserRights = user.GetUserRightsDTO();
-                model.EmployeeInformation = employeeInformation;
+                model.ProfilePicturePath = repo.GetProfilePicturePathByUserId(UserId);
+                if (user.TableName == "Employee")
+                {
+                    model.EmployeeInformation = repo.IsEmployeeInformationFilled(user.TableId);
+                }
+                if (user.TableName == "OrganizationContactPerson")
+                {
+                    model.OrganizationId = repo.GetOrganizationIdOfPerson(user.TableId);
+                }
             }
             return await Task<UserInfoViewModel>.Factory.StartNew(() => model);
-            //return model;
         }
 
-        /// <summary>
-        /// Method for profile picture upload
-        /// </summary>
-        /// <param name="tableName">Image of which document we're uploading</param>
-        /// <param name="tableId">Id of document which image we're uploading</param>
-        /// <returns></returns>
+
         [GTIFilter]
         [HttpPost]
         [Route("UploadProfilePicture")]
-        public HttpResponseMessage UploadProfilePicture(string tableName, int tableId)
+        public IHttpActionResult UploadNewProfilePicture()
         {
-
-            HttpResponseMessage result = null;
+            UserImage image = new UserImage();
             var httpRequest = HttpContext.Current.Request;
-            if (httpRequest.Files.Count > 0)
+            try
             {
-                ApplicationDbContext db = new ApplicationDbContext();
-                string userId = User.Identity.GetUserId();
-                foreach (string file in httpRequest.Files)
+                if (httpRequest.Files.Count > 0)
                 {
-                    var postedFile = httpRequest.Files[file];
-                    var filePath = HttpContext.Current.Server.MapPath(
-                        "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-                    postedFile.SaveAs(filePath);
-
-                    UserImage image = 
-                        db.UserImage
-                        .Where(i => i.UserId == userId)
-                        .FirstOrDefault();
-                    if (image == null)
+                    ApplicationDbContext db = new ApplicationDbContext();
+                    string userId = User.Identity.GetUserId();
+                    foreach (string file in httpRequest.Files)
                     {
-                        image = new UserImage();
-                        image.UserId = User.Identity.GetUserId();
-                        image.ImageName = filePath;
-                        db.UserImage.Add(image);
+                        string filePath = repo.SaveFile(httpRequest.Files[file]);
+                        image = repo.AddNewProfilePicture(
+                            new UserImage
+                            {
+                                ImageName = filePath,
+                                IsProfilePicture = true,
+                                UploadDate = DateTime.Now,
+                                UserId = User.Identity.GetUserId()
+                            });
                     }
-                    else
-                    {
-                        image.ImageName = filePath;
-                        db.Entry(image).State = System.Data.Entity.EntityState.Modified;
-                    }
-
-                    db.SaveChanges();
                 }
-
-                UserImage newImage = 
-                    db.UserImage
-                    .Where(i => i.UserId == userId)
-                    .FirstOrDefault();
-
-                if (newImage != null)
-                {
-                    result = Request.CreateResponse(HttpStatusCode.Created, newImage);
-                }
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-            else
+            catch (Exception e)
             {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+                return BadRequest(e.Message);
             }
-            return result;
+            return Ok(image);
         }
 
-        /// <summary>
-        /// Get User rights 
-        /// </summary>
-        /// <returns></returns>
+
+        [GTIFilter]
+        [HttpPost]
+        [Route("SetAProfilePicture")]
+        public IHttpActionResult SetAsProfilePicture(int pictureId)
+        {
+            UserImage image = repo.SetAsProfilePicture(pictureId);
+            return Ok(image);
+        }
+
+
         [Route("UserRights")]
         public IEnumerable<UserRightDTO> GetUserRights()
         {
@@ -221,10 +163,6 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Get information about user
-        /// </summary>
-        /// <returns>UserIfoViewModel</returns>
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfoExternalLogin")]
         public UserInfoViewModel GetUserExternalLoginInfo()
@@ -246,10 +184,8 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult Logout()
         {
             Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
-
             var authentication = HttpContext.Current.GetOwinContext().Authentication;
             authentication.SignOut(DefaultAuthenticationTypes.ExternalBearer);
-
             return Ok();
         }
 
@@ -340,10 +276,9 @@ namespace GTIWebAPI.Controllers
             if (organizationContactPersonId != 0)
             {
                 OrganizationContactPersonView person = null;
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
-                {
-                    person = db.OrganizationContactPersonViews.Find(organizationContactPersonId);
-                }
+
+
+                person = repo.FindPerson(organizationContactPersonId);
 
                 if (person == null || person.Deleted == true)
                 {
@@ -357,30 +292,27 @@ namespace GTIWebAPI.Controllers
                 {
                     return BadRequest("Organization contact person email is empty");
                 }
-                NovellOrganizationContactPerson novellPerson;
+
+
+                INovellOrganizationContactPerson novellPerson;
                 try
                 {
                     novellPerson = new NovellOrganizationContactPerson(person);
+                    novellPerson.Login = novell.GenerateLogin(novellPerson.Login);
                 }
                 catch (Exception e)
                 {
                     return BadRequest(e.Message);
                 }
 
-                ApplicationUser user = null;
 
-                bool novellResult = NovellManager.CreateOrganization(novellPerson);
-
+                bool novellResult = novell.CreateOrganization(novellPerson);
                 if (novellResult)
                 {
-                    using (ApplicationDbContext iDb = new ApplicationDbContext())
-                    {
-                        bool dbResult = iDb.CreateOrganization(novellPerson.Login, novellPerson.Password);
-                    
-
+                        bool dbResult = repo.CreateOrganization(novellPerson.Login, novellPerson.Password);
                         if (dbResult)
                         {
-                            user = new ApplicationUser()
+                        ApplicationUser user = new ApplicationUser()
                             {
                                 UserName = novellPerson.Login,
                                 Email = novellPerson.Email,
@@ -397,7 +329,6 @@ namespace GTIWebAPI.Controllers
                                 else
                                 {
                                     IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
-
                                     if (!roleResult.Succeeded)
                                     {
                                         return GetErrorResult(roleResult);
@@ -406,16 +337,7 @@ namespace GTIWebAPI.Controllers
                                     bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
                                     if (rightsResult)
                                     {
-                                        await UserManager.
-                                            SendEmailAsync(user.Id,
-                                            "Register user",
-                                            @"You have successfully registered for WEBSITE_URL. <br>
-                                            Thank you for your interest and we hope you will find useful information! <br> 
-                                            Your credentials in WEBSITE_URL: <br> 
-                                            login: " + novellPerson.Login + "<br>" +
-                                            "password: " + novellPerson.Password + "<br>" +
-                                            @"информация, которую мы знаем о контакнтом лице организации
-                                            тут реклама, пара картинок");
+                                        await SendEmailWithCredentials(novellPerson, user.Id);
                                         return Ok();
                                     }
                                 }
@@ -430,8 +352,6 @@ namespace GTIWebAPI.Controllers
                         {
                             return BadRequest("Database login has not been created");
                         }
-                    }
-
                 }
                 else
                 {
@@ -444,7 +364,18 @@ namespace GTIWebAPI.Controllers
             return BadRequest("Wrong organization contact person");
         }
 
-
+        public async Task SendEmailWithCredentials(INovellOrganizationContactPerson novellPerson, string userId)
+        {
+            await UserManager.SendEmailAsync(userId,
+                                            "Register user",
+                                            @"You have successfully registered for WEBSITE_URL. <br>
+                                            Thank you for your interest and we hope you will find useful information! <br> 
+                                            Your credentials in WEBSITE_URL: <br> 
+                                            login: " + novellPerson.Login + "<br>" +
+                                            "password: " + novellPerson.Password + "<br>" +
+                                            @"информация, которую мы знаем о контакнтом лице организации
+                                            тут реклама, пара картинок");
+        }
 
 
 

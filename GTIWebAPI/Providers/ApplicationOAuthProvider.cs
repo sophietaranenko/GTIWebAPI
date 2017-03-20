@@ -15,6 +15,7 @@ using GTIWebAPI.Models.Context;
 using Microsoft.Owin;
 using System.Net;
 using GTIWebAPI.Models.Security;
+using GTIWebAPI.Models.Repository.Identity;
 
 namespace GTIWebAPI.Providers
 {
@@ -43,6 +44,8 @@ namespace GTIWebAPI.Providers
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
         private readonly string _publicClientId;
+        private INovellManager novell;
+        private IAccountRepository repo;
 
         /// <summary>
         /// Ctor of oAuth provider
@@ -55,6 +58,14 @@ namespace GTIWebAPI.Providers
                 throw new ArgumentNullException("publicClientId");
             }
             _publicClientId = publicClientId;
+            novell = new NovellManager();
+            repo = new AccountRepository();
+        }
+
+        public ApplicationOAuthProvider(INovellManager novell, IAccountRepository repo)
+        {
+            this.novell = novell;
+            this.repo = repo;
         }
 
         /// <summary>
@@ -66,7 +77,7 @@ namespace GTIWebAPI.Providers
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
             ApplicationUser user = null;
-            if (NovellManager.CredentialsCorrect(context.UserName, context.Password))
+            if (novell.CredentialsCorrect(context.UserName, context.Password))
             {
                 user = userManager.Find(context.UserName, context.Password);
                 //if found in eDirectory but not found in ApplicationUsers - then create employee user 
@@ -74,15 +85,11 @@ namespace GTIWebAPI.Providers
                 if (user == null)
                 {
                     bool dbResult = false;
-                    using (ApplicationDbContext db = new ApplicationDbContext())
-                    {
-                        dbResult = db.CreateHoldingUser(context.UserName, context.Password);
-                    }
+                    dbResult = repo.CreateHoldingUser(context.UserName, context.Password);
                     if(dbResult == true)
                     {
                         user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
                         userManager.AddToRole(user.Id, "Personnel");
-
                         bool rightsResult = UserRightsManager.GrantStandardPersonnelRights(user.Id);
                     }
                 }
@@ -116,7 +123,7 @@ namespace GTIWebAPI.Providers
                 ApplicationUser newUser = new ApplicationUser
                 {
                     UserName = username,
-                    Email = NovellManager.FindEmail(username),
+                    Email = novell.FindEmail(username),
                     TableName = "Employee",
                     TableId = employeeId
                 };

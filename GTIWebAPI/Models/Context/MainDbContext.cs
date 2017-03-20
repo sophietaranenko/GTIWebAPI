@@ -14,6 +14,7 @@ using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Accounting;
 using System.Security.Claims;
 using System.Web;
+using GTIWebAPI.Models.Account;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -145,7 +146,7 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
-
+        public virtual DbSet<UserImage> UserImages { get; set; }
 
 
 
@@ -1057,6 +1058,63 @@ namespace GTIWebAPI.Models.Context
                 .HasMany(r => r.Addresses)
                 .WithOptional(r => r.AddressLocality)
                 .HasForeignKey(r => r.LocalityId);
+        }
+
+
+
+
+        public bool CreateOrganization(string email, string password)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Username",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+        public bool CreateHoldingUser(string email, string password)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Username",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseHoldingUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
         }
 
     }

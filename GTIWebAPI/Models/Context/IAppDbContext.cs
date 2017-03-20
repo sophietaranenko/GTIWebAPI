@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Accounting;
+﻿using GTIWebAPI.Models.Account;
+using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
@@ -114,6 +115,8 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
+        DbSet<UserImage> UserImages { get; set; }
+
         bool IsEmployeeInformationFilled(int employeeId);
 
         int FileNameUnique();
@@ -167,5 +170,11 @@ namespace GTIWebAPI.Models.Context
         bool DeleteDocumentScan(Guid scanId);
 
         DocumentScanDTO GetDealDocumentScanById(Guid scanId);
+
+        bool CreateOrganization(string email, string password);
+
+        bool CreateHoldingUser(string email, string password);
+
+
     }
 }

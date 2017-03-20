@@ -11,17 +11,14 @@ namespace GTIWebAPI.Novell
 {
     //class for adding to novell edirectory a new user 
     //it might take some operations to do: transliterate names and generate novell login
-    public class NovellOrganizationContactPerson
+    public class NovellOrganizationContactPerson : INovellOrganizationContactPerson
     {
         public NovellOrganizationContactPerson(OrganizationContactPersonView person)
         {
-            string login = NovellManager.GenerateLogin(ConstructLogin(TransliterateName(person.FirstName), TransliterateName(person.LastName))); 
-
             FirstName = TransliterateName(person.FirstName);
             Surname = TransliterateName(person.LastName);
             Email = person.Email;
-            // Login = NovellManager.GenerateLogin(ConstructLogin(TransliterateName(person.FirstName), TransliterateName(person.LastName)));
-            Login = login;
+            Login = ConstructLogin(TransliterateName(person.FirstName), TransliterateName(person.LastName));
             Password = RandomPasswordGenerator.GeneratePassword(8);
         }
 

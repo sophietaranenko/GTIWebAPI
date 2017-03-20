@@ -74,6 +74,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Novell\TestNovellManager.cs" />
     <Compile Include="TestContext\TestDbContext.cs" />
     <Compile Include="TestContext\TestDbContextFactory.cs" />
     <Compile Include="TestContext\TestDbSet.cs" />

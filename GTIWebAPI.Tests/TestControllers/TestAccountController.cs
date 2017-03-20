@@ -1,5 +1,9 @@
 ﻿using GTIWebAPI.Controllers;
 using GTIWebAPI.Models.Account;
+using GTIWebAPI.Models.Repository.Identity;
+using GTIWebAPI.Novell;
+using GTIWebAPI.Tests.Novell;
+using GTIWebAPI.Tests.TestContext;
 using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -12,71 +16,71 @@ using System.Threading.Tasks;
 
 
 
-
-
 namespace GTIWebAPI.Tests.TestControllers
 {
     [TestClass]
     public class TestAccountController
     {
-        
+        private INovellManager novell;
+
+        private TestDbContextFactory factory;
+
+        private IAccountRepository repo;
+
+        public TestAccountController()
+        {
+            novell = new TestNovellManager();
+            factory = new TestDbContextFactory();
+            repo = new AccountRepository(factory);
+        }
 
         [TestMethod]
-        public void GetUserInfo_ShouldRerurnUserInfo()
+        public void GetUserInfoEmployee_ShouldRerurnUserInfo()
         {
-            //ApplicationUserManager userManager = Owin
-            var identity = new GenericIdentity("unit_testing");
-            Thread.CurrentPrincipal = new GenericPrincipal(identity, null);
-            ApplicationUserManager manager = new ApplicationUserManager(new MockUserStore());
-            var controller = new AccountController(manager);
+            ApplicationUserManager manager = new ApplicationUserManager(new MockUserStore("Employee"));
+            var controller = new AccountController(repo, novell, manager);
             var result = controller.GetUserInfo() as Task<UserInfoViewModel>;
-            //Assert.AreEqual(result.UserName, identity.Name);
+            Assert.AreEqual(result.Result.TableName, "Employee");
+            Assert.AreEqual(result.Result.EmployeeInformation, true);
         }
 
-
-    }
-
-    public class TestUser : IUser
-    {
-        public string Id
+        [TestMethod]
+        public void GetUserInfoOrganizationContactPerson_ShouldRerurnUserInfo()
         {
-            get
-            {
-                return Guid.NewGuid().ToString();
-            }
+            TestDbContext db = new TestDbContext();
+            db.OrganizationContactPersons.Add(new Models.Organizations.OrganizationContactPerson { Id = 1, OrganizationId = 222 });
+            TestDbContextFactory factory = new TestDbContextFactory(db);
+
+            ApplicationUserManager manager = new ApplicationUserManager(new MockUserStore("OrganizationContactPerson"));
+            var controller = new AccountController(repo, novell, manager);
+            var result = controller.GetUserInfo() as Task<UserInfoViewModel>;
+            Assert.AreEqual(result.Result.TableName, "OrganizationContactPerson");
+            Assert.AreEqual(result.Result.OrganizationId, 222);
         }
 
-        public string UserName
+        [TestMethod]
+        public void SimpleRegisterUser_ShouldReturnOkWhenRegistered()
         {
-            get
-            {
-                return "Test User";
-            }
 
-            set
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 
-    public class MockUserStore : IUserStore<ApplicationUser> //where TestUser : class
+    public class MockUserStore : IUserStore<ApplicationUser> 
     {
+        private string TableName { get; set; }
+        public MockUserStore(string tableName)
+        {
+            TableName = tableName;
+        }
+
         public ApplicationUser FindById(string userId)
         {
-            if (userId == null)
-            {
-                return new ApplicationUser { Id = Guid.NewGuid().ToString(), UserName = "test" };
-            }
-            else
-            {
-                return new ApplicationUser { Id = Guid.NewGuid().ToString(), UserName = "test" };
-            }
+            return new ApplicationUser { Id = Guid.NewGuid().ToString(), UserName = "test" };
         }
 
         public Task CreateAsync(ApplicationUser user)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => true);
         }
 
         public Task DeleteAsync(ApplicationUser user)
@@ -91,7 +95,8 @@ namespace GTIWebAPI.Tests.TestControllers
 
         public Task<ApplicationUser> FindByIdAsync(string userId)
         {
-            return Task.Factory.StartNew(() => new ApplicationUser { Id = userId, UserName = "sss", TableName = "Employee" });
+            return Task.Factory.StartNew(() => new ApplicationUser { Id = userId, UserName = "sss", TableName = this.TableName, TableId = 1 });
+
         }
 
         public Task<ApplicationUser> FindByNameAsync(string userName)
@@ -102,6 +107,12 @@ namespace GTIWebAPI.Tests.TestControllers
         public Task UpdateAsync(ApplicationUser user)
         {
             throw new NotImplementedException();
+        }
+
+        public Task SendEmailAsync(string userId, string subject, string body)
+        {
+            string Message = "";
+            return Task.Factory.StartNew(() => Message = "This method imitates sending e-mail");
         }
     }
 }

@@ -580,38 +580,6 @@
             Controller for manipulating with user account
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.#ctor">
-            <summary>
-            ctor empty
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.#ctor(GTIWebAPI.ApplicationUserManager,Microsoft.Owin.Security.ISecureDataFormat{Microsoft.Owin.Security.AuthenticationTicket})">
-            <summary>
-            ctor
-            </summary>
-            <param name="userManager"></param>
-            <param name="accessTokenFormat"></param>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.UploadProfilePicture(System.String,System.Int32)">
-            <summary>
-            Method for profile picture upload
-            </summary>
-            <param name="tableName">Image of which document we're uploading</param>
-            <param name="tableId">Id of document which image we're uploading</param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.GetUserRights">
-            <summary>
-            Get User rights 
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.GetUserExternalLoginInfo">
-            <summary>
-            Get information about user
-            </summary>
-            <returns>UserIfoViewModel</returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.AccountController.Logout">
             <summary>
             Logout
@@ -1127,26 +1095,6 @@
             Ctor
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Account.UserImage">
-            <summary>
-            Class for user profile picture
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.UserImage.UserId">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.UserImage.ImageName">
-            <summary>
-            image name
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Account.UserImage.ImageData">
-            <summary>
-            image byte array 
-            </summary>
-        </member>
         <member name="T:GTIWebAPI.Models.Context.MainDbContext">
             <summary>
             Context for working with Employees 
@@ -1641,138 +1589,6 @@
         <member name="T:GTIWebAPI.Models.Employees.EmployeeView">
             <summary>
             Class for results of EmployeeFilter procedure, employee data for view and searching
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Id">
-            <summary>
-            Employee Id
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.DateOfBirth">
-            <summary>
-            Employee date of birth
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.IdentityCode">
-            <summary>
-            Employee identity code
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.FirstName">
-            <summary>
-            First name from last issued passport (EmployeePassport table)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.SecondName">
-            <summary>
-            Second name from last issued passport (EmployeePassport table)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Surname">
-            <summary>
-            Surname from last issued passport  (EmployeePassport table)
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.ShortAddress">
-            <summary>
-            Short Employee Address of permanent residense (from Address table, by AddressId) in format Country, City
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.AgeCount">
-            <summary>
-            Employee Age in int
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.UserName">
-            <summary>
-            UserName from AspNetUsers  
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Position">
-            <summary>
-            Employees positions separated by symbol '|'
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.Age">
-            <summary>
-            Age object of employees ages (for Russian language) "23 ãîäà", "21 ãîä", "25 ëåò" 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeView.PositionLines">
-            <summary>
-            Position in array of string
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Id">
-            <summary>
-            Employee Id
-            Id ñîòðóäíèêà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.DateOfBirth">
-            <summary>
-            Employee date of birth
-            Äàòà ðîæäåíèÿ ñîòðóäíèêà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.IdentityCode">
-            <summary>
-            Employee government identity code 
-            Èäåíòèôèêàöèîííûé êîä ñîòðóäíèêà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.FirstName">
-            <summary>
-            First name from last issued passport
-            Èìÿ èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.SecondName">
-            <summary>
-            Second name from last issued passport
-            Îò÷åñòâî èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Surname">
-            <summary>
-            Surname from last issued passport
-            Ôàìèëèÿ èç ïîñëåäíåãî ïî äàòå âûäà÷è ïàñïîðòà
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.ShortAddress">
-            <summary>
-            Short address of permanent residence in format of Country, City
-            Êðàòêèé àäðåñ ïðîæèâàíèÿ â ôîðìàòå Ñòðàíà, Ãîðîä
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.AgeCount">
-            <summary>
-            Employee's age in int counted from date of birth
-            Âîçðàñò ñîòðóäíèêà, âû÷èñëåííûé ïî äàòå ðîæåíèÿ
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.UserName">
-            <summary>
-            Username of AspNetUsers connected to Employee
-            Èìÿ ëîãèíà ñîòðóäíèêà ïî ñâÿçè â AspNetUsers
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Position">
-            <summary>
-            Today positions of employee in format Position Department Office, separated by symbol '|'
-            Òåêóùèå äîëæíîñòè ñîòðóäíèêà â ôîðìàòå Äîëæíîñòü Îòäåë Îôèñ, îòäåëåííûå äðóã îò äðóãà ñèìâîëîì '|'
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.Age">
-            <summary>
-            Employee's age in string for features of Russian language
-            Âîçðàñò ñîòðóäíèêà â ñòðîêîâîì ôîðìàòå, äëÿ óêàçàíèÿ "25 ëåò", "23 ãîäà" èëè "21 ãîä" 
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeViewDTO.PositionLines">
-            <summary>
-            Collection of Positions of employee in format Position Department Office
-            Êîëëåêöèÿ ñòðîê, êàæäàÿ èç êîòîðûõ ñîäåðæèò â ñåáå òîëüêî îäíó äîëæíîñòü â ôîðìàòå Äîëæíîñòü Îòäåë Îôèñ èç âñåõ äîëæíîñòåé ñîòðóäíèêà
             </summary>
         </member>
         <member name="T:GTIWebAPI.Models.Service.Age">
