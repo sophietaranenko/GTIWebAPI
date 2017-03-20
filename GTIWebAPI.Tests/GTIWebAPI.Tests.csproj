@@ -76,6 +76,7 @@
     <Compile Include="TestContext\TestDbContextFactory.cs" />
     <Compile Include="TestContext\TestDbSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestControllers\TestAccountController.cs" />
     <Compile Include="TestControllers\TestContainersController.cs" />
     <Compile Include="TestControllers\TestDealsController.cs" />
     <Compile Include="TestControllers\TestEmployeeCarsController.cs" />

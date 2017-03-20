@@ -34,6 +34,7 @@ namespace GTIWebAPI.Models.Repository.Accounting
                 }
                 dto.Containers = db.GetContainersByDeal(id);
                 dto.Invoices = db.GetInvoicesByDeal(id);
+                dto.DocumentScans = db.GetDocumentScanByDeal(id);
             }
             return dto;
         }

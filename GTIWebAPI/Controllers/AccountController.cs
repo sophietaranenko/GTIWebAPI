@@ -66,6 +66,8 @@ namespace GTIWebAPI.Controllers
             AccessTokenFormat = accessTokenFormat;
         }
 
+       // private IDbContextFactory factory { get; set; }
+
         /// <summary>
         /// property UserManager
         /// </summary>

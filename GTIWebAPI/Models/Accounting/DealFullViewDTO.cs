@@ -84,5 +84,7 @@ namespace GTIWebAPI.Models.Accounting
 
         public IEnumerable<DealContainerViewDTO> Containers { get; set; }
 
+        public IEnumerable<DocumentScanDTO> DocumentScans { get; set; }
+
     }
 }
