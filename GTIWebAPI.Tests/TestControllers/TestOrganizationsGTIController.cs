@@ -29,7 +29,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsProperties()
+        public void GetGTIByOrganizationId_ShouldReturnNotDeleted()
         {
             var controller = new OrganizationsGTIController(repo);
             var result = controller.SearchOrganizationsGTI("1", "111") as OkNegotiatedContentResult<List<OrganizationGTIDTO>>;

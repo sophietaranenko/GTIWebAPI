@@ -30,7 +30,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllContainers_ShouldReturnBetween1900and2200()
         {
             var controller = new ContainersController(repo);
             var result = controller.GetContainers(1, null, null) as OkNegotiatedContentResult<List<DealContainerViewDTO>>;
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetContainer_ShouldReturnContainerWithSameId()
         {
             var controller = new ContainersController(repo);
             var result = controller.GetContainer(db.Containers.Take(1).FirstOrDefault().Id) as OkNegotiatedContentResult<DealContainerViewDTO>;

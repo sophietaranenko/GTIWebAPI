@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByContactPersonId_ShouldReturnNotDeletedContactPersonContacts()
+        public void GetByOrganizationContactId_ShouldReturnNotDeletedContactPersonContacts()
         {
             var controller = new OrganizationContactPersonContactsController(repo);
             var result = controller.GetOrganizationContactPersonContactByOrganizationContactPersonId(1) as OkNegotiatedContentResult<List<OrganizationContactPersonContactDTO>>;
@@ -37,7 +37,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetContactById_ShouldReturnObjectWithSameId()
+        public void GetOrganizationContactsById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationContactPersonContactsController(repo);
             var result = controller.GetOrganizationContactPersonContact(1) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
@@ -45,7 +45,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutOrganizationContact_ShouldReturnOk()
         {
             var controller = new OrganizationContactPersonContactsController(repo);
             OrganizationContactPersonContact contact = repo.Add(GetDemo());
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutOrganizationContact_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationContactPersonContactsController(repo);
             OrganizationContactPersonContact contact = GetDemo();
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostOrganizationContact_ShouldReturnSame()
         {
             var controller = new OrganizationContactPersonContactsController(repo);
             var item = GetDemo();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteOrganizationContact_ShouldReturnOK()
         {
             OrganizationContactPersonContact contact = repo.Add(GetDemo());
 

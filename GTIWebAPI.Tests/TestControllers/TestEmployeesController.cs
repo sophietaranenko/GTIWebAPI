@@ -29,7 +29,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetEmployeeAll_ShouldReturnNotDeleted()
         {
             var controller = new EmployeesController(repo);
             string officeIds = "1,2,4";
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetView_ShouldReturnObjectContainsOtherObjects()
+        public void GetEmployeeView_ShouldReturnObjectContainsOtherObjects()
         {
             var controller = new EmployeesController(repo);
             var result = controller.GetEmployeeView(1) as OkNegotiatedContentResult<EmployeeDTO>;
@@ -48,7 +48,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetView_ShouldReturnObjectWithSameIdAndContainsSomeStuff()
+        public void GetEmployeeView_ShouldReturnObjectWithSameIdAndContainsSomeStuff()
         {
             var controller = new EmployeesController(repo);
             var result = controller.GetEmployeeEdit(1) as OkNegotiatedContentResult<EmployeeEditDTO>;
@@ -65,7 +65,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutEmployee_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeesController(repo);
             Employee car = GetDemo();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostEmployee_ShouldReturnSame()
         {
             var controller = new EmployeesController(repo);
             var item = GetDemo();
@@ -85,7 +85,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteEmployee_ShouldReturnOK()
         {
             Employee employee = repo.Add(GetDemo());
 

@@ -46,7 +46,7 @@ namespace GTIWebAPI.Controllers
             }
 
             DateTime modDateBegin = dateBegin.GetValueOrDefault();
-            DateTime modDateEnd = dateBegin.GetValueOrDefault();
+            DateTime modDateEnd = dateEnd.GetValueOrDefault();
 
             try
             {

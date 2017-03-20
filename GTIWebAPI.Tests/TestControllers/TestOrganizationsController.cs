@@ -30,7 +30,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsProperties()
+        public void GetOrganizationView_ShouldResurnWithSameId()
         {
             var controller = new OrganizationsController(repo);
             var result = controller.GetOrganizationView(444) as OkNegotiatedContentResult<OrganizationDTO>;
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetOrganizationEdit_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationsController(repo);
             var result = controller.GetOrganizationEdit(444) as OkNegotiatedContentResult<OrganizationEditDTO>;
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutOrganization_ShouldReturnOk()
         {
             var controller = new OrganizationsController(repo);
             Organization organization = repo.Add(GetDemo());
@@ -55,7 +55,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutOrganization_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationsController(repo);
             Organization property = GetDemo();
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostOrganization_ShouldReturnSame()
         {
             var controller = new OrganizationsController(repo);
             var item = GetDemo();
@@ -73,7 +73,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteOrganization_ShouldReturnOK()
         {
             Organization organization = repo.Add(GetDemo());
 

@@ -32,7 +32,7 @@ namespace GTIWebAPI.Tests
         [TestMethod]
         public void GetAll_ShouldReturnNotDeleted()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
+            var controller = new EmployeePassportsController(repo);
             var result = controller.GetEmployeePassportAll() as OkNegotiatedContentResult<List<EmployeePassportDTO>>;
             Assert.AreEqual(3, result.Content.Count());
         }
@@ -40,7 +40,7 @@ namespace GTIWebAPI.Tests
         [TestMethod]
         public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
+            var controller = new EmployeePassportsController(repo);
             var result = controller.GetEmployeePassportByEmployee(1) as OkNegotiatedContentResult<List<EmployeePassportDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
@@ -55,25 +55,25 @@ namespace GTIWebAPI.Tests
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetPassportById_ShouldReturnObjectWithSameId()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
+            var controller = new EmployeePassportsController(repo);
             var result = controller.GetEmployeePassport(1) as OkNegotiatedContentResult<EmployeePassportDTO>;
             Assert.AreEqual(result.Content.Id, 1);
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnBadRequestWhenIdIsNotFound()
+        public void GetByPassportId_ShouldReturnBadRequestWhenIdIsNotFound()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
+            var controller = new EmployeePassportsController(repo);
             var badResult = controller.GetEmployeePassport(999);
             Assert.IsInstanceOfType(badResult, typeof(BadRequestErrorMessageResult));
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutPassport_ShouldReturnOk()
         {
-            var controller = new GTIWebAPI.Controllers.EmployeePassportsController(repo);
+            var controller = new EmployeePassportsController(repo);
             EmployeePassport passport = GetDemo();
 
             var resultAdd = controller.PostEmployeePassport(passport) as CreatedAtRouteNegotiatedContentResult<EmployeePassportDTO>;
@@ -84,7 +84,7 @@ namespace GTIWebAPI.Tests
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutPassport_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeePassportsController(repo);
             EmployeePassport passport = GetDemo();
@@ -105,7 +105,7 @@ namespace GTIWebAPI.Tests
         }
 
         [TestMethod]
-        public void DeleteProduct_ShouldReturnOK()
+        public void DeletePassport_ShouldReturnOK()
         {
             EmployeePassport passport = GetDemo();
             passport = repo.Add(passport);

@@ -28,7 +28,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsAddresses()
+        public void GetAddressByOrganizationId_ShouldReturnNotDeletedOrganizationIdsAddresses()
         {
             var controller = new OrganizationAddressesController(repo);
             var result = controller.GetOrganizationAddressByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationAddressDTO>>;
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetAddressById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationAddressesController(repo);
             var result = controller.GetOrganizationAddress(1) as OkNegotiatedContentResult<OrganizationAddressDTO>;
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutAddress_ShouldReturnOk()
         {
             var controller = new OrganizationAddressesController(repo);
             OrganizationAddress address = repo.Add(GetDemo());
@@ -55,7 +55,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutAddress_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationAddressesController(repo);
             OrganizationAddress address = GetDemo();
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostAddress_ShouldReturnSame()
         {
             var controller = new OrganizationAddressesController(repo);
             var item = GetDemo();
@@ -75,7 +75,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteAddress_ShouldReturnOK()
         {
             OrganizationAddress address = repo.Add(GetDemo());
 

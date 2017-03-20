@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsGTILinks()
+        public void GetLinksByOrganizationId_ShouldReturnNotDeletedOrganizationIdsGTILinks()
         {
             var controller = new OrganizationGTILinksController(repo);
             var result = controller.GetOrganizationGTILinkByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationGTILinkDTO>>;
@@ -37,7 +37,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetLinkById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationGTILinksController(repo);
             var result = controller.GetOrganizationGTILink(1) as OkNegotiatedContentResult<OrganizationGTILinkDTO>;
@@ -45,7 +45,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostLink_ShouldReturnSame()
         {
             var controller = new OrganizationGTILinksController(repo);
             var item = GetDemo();
@@ -56,7 +56,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteLink_ShouldReturnOK()
         {
             OrganizationGTILink link = repo.Add(GetDemo());
 

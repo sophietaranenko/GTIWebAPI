@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsAddresses()
+        public void GetTaxAddressesByOrganizationId_ShouldReturnNotDeletedOrganizationIdsAddresses()
         {
             var controller = new OrganizationTaxAddressesController(repo);
             var result = controller.GetOrganizationTaxAddressByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationTaxAddressDTO>>;
@@ -37,7 +37,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetTaxAddressById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationTaxAddressesController(repo);
             var result = controller.GetOrganizationTaxAddress(1) as OkNegotiatedContentResult<OrganizationTaxAddressDTO>;
@@ -45,7 +45,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutTaxAddress_ShouldReturnOk()
         {
             var controller = new OrganizationTaxAddressesController(repo);
             OrganizationTaxAddress address = repo.Add(GetDemo());
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutTaxAddress_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationTaxAddressesController(repo);
             OrganizationTaxAddress address = GetDemo();
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostTaxAddress_ShouldReturnSame()
         {
             var controller = new OrganizationTaxAddressesController(repo);
             var item = GetDemo();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteTaxAddress_ShouldReturnOK()
         {
             OrganizationTaxAddress gun = repo.Add(GetDemo());
 

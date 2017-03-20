@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutContact_ShouldReturnOk()
         {
             var controller = new GTIWebAPI.Controllers.EmployeeContactsController(repo);
             EmployeeContact contact = GetDemo();
@@ -82,7 +82,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutContact_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeContactsController(repo);
             EmployeeContact contact = GetDemo();

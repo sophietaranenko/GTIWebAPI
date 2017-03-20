@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsLanguageNames()
+        public void GetLanguageNamesByOrganizationId_ShouldReturnNotDeletedOrganizationIdsLanguageNames()
         {
             var controller = new OrganizationLanguageNamesController(repo);
             var result = controller.GetOrganizationLanguageNameByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationLanguageNameDTO>>;
@@ -37,7 +37,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetLanguageNameById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationLanguageNamesController(repo);
             var result = controller.GetOrganizationLanguageName(1) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
@@ -45,7 +45,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutLanguageName_ShouldReturnOk()
         {
             var controller = new OrganizationLanguageNamesController(repo);
             OrganizationLanguageName languageName = repo.Add(GetDemo());
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutLanguageName_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationLanguageNamesController(repo);
             OrganizationLanguageName languageName = GetDemo();
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostLanguageName_ShouldReturnSame()
         {
             var controller = new OrganizationLanguageNamesController(repo);
             var item = GetDemo();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteLanguageName_ShouldReturnOK()
         {
             OrganizationLanguageName languageName = repo.Add(GetDemo());
 

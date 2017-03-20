@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllCards_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             var result = controller.GetEmployeeMilitaryCardAll() as OkNegotiatedContentResult<List<EmployeeMilitaryCardDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetCardsByEmployeeId_ShouldReturnNotDeletedCards()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             var result = controller.GetEmployeeMilitaryCardByEmployee(1) as OkNegotiatedContentResult<List<EmployeeMilitaryCardDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetCardById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             var result = controller.GetEmployeeMilitaryCardView(1) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutCard_ShouldReturnOk()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             EmployeeMilitaryCard militaryCard = GetDemo();
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutCard_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             EmployeeMilitaryCard militaryCard = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostCard_ShouldReturnSame()
         {
             var controller = new EmployeeMilitaryCardsController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteCard_ShouldReturnOK()
         {
             EmployeeMilitaryCard militaryCard = GetDemo();
             militaryCard = repo.Add(militaryCard);

@@ -43,7 +43,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("UploadFile")]
-        [ResponseType(typeof(EmployeeDocumentScan))]
+        [ResponseType(typeof(List<EmployeeDocumentScan>))]
         public IHttpActionResult UploadEmployeeDocumentScan(string tableName, int tableId)
         {
             try

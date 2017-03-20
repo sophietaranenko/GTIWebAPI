@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllDocuments_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             var result = controller.GetEmployeeFoundationDocumentAll() as OkNegotiatedContentResult<List<EmployeeFoundationDocumentDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetDocumentsByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             var result = controller.GetEmployeeFoundationDocumentByEmployee(1) as OkNegotiatedContentResult<List<EmployeeFoundationDocumentDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetDocumentById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             var result = controller.GetEmployeeFoundationDocument(1) as OkNegotiatedContentResult<EmployeeFoundationDocumentDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutDocument_ShouldReturnOk()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             EmployeeFoundationDocument foundationDocument = GetDemo();
@@ -64,7 +64,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutDocument_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             EmployeeFoundationDocument foundationDocument = GetDemo();
@@ -73,7 +73,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostDocument_ShouldReturnSame()
         {
             var controller = new EmployeeFoundationDocumentsController(repo);
             var item = GetDemo();
@@ -86,7 +86,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteDocument_ShouldReturnOK()
         {
             EmployeeFoundationDocument foundationDocument = GetDemo();
             foundationDocument = repo.Add(foundationDocument);

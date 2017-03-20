@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllLanguages_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeLanguagesController(repo);
             var result = controller.GetEmployeeLanguageAll() as OkNegotiatedContentResult<List<EmployeeLanguageDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetLanguagesByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new EmployeeLanguagesController(repo);
             var result = controller.GetEmployeeLanguageByEmployee(1) as OkNegotiatedContentResult<List<EmployeeLanguageDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetLanguageById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeLanguagesController(repo);
             var result = controller.GetEmployeeLanguage(1) as OkNegotiatedContentResult<EmployeeLanguageDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutLanguage_ShouldReturnOk()
         {
             var controller = new EmployeeLanguagesController(repo);
             EmployeeLanguage language = repo.Add(GetDemo());
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutLanguage_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeLanguagesController(repo);
             EmployeeLanguage language = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostLanguage_ShouldReturnSame()
         {
             var controller = new EmployeeLanguagesController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteLanguage_ShouldReturnOK()
         {
             EmployeeLanguage language = GetDemo();
             language = repo.Add(language);

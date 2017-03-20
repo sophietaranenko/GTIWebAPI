@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByOrganizationId_ShouldReturnNotDeletedOrganizationIdsProperties()
+        public void GetPropertiesByOrganizationId_ShouldReturnNotDeletedOrganizationIdsProperties()
         {
             var controller = new OrganizationPropertiesController(repo);
             var result = controller.GetOrganizationPropertyByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationPropertyDTO>>;
@@ -37,7 +37,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetPropertyById_ShouldReturnObjectWithSameId()
         {
             var controller = new OrganizationPropertiesController(repo);
             var result = controller.GetOrganizationProperty(1) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
@@ -45,7 +45,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutProperty_ShouldReturnOk()
         {
             var controller = new OrganizationPropertiesController(repo);
             OrganizationProperty property = repo.Add(GetDemo());
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutProperty_ShouldFail_WhenDifferentID()
         {
             var controller = new OrganizationPropertiesController(repo);
             OrganizationProperty property = GetDemo();
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostProperty_ShouldReturnSame()
         {
             var controller = new OrganizationPropertiesController(repo);
             var item = GetDemo();
@@ -74,7 +74,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteProperty_ShouldReturnOK()
         {
             OrganizationProperty property = repo.Add(GetDemo());
 

@@ -66,6 +66,13 @@ namespace GTIWebAPI.Tests.TestContext
             this.Containers = new TestDbSet<DealContainerViewDTO>();
             this.EmployeeViews = new TestDbSet<EmployeeView>();
             this.OrganizationsGTI = new TestDbSet<OrganizationGTI>();
+            this.Deals = new TestDbSet<DealFullViewDTO>();
+            this.DealsView = new TestDbSet<DealViewDTO>();
+            this.DealInvoices = new TestDbSet<DealInvoiceViewDTO>();
+
+            this.InvoiceLines = new TestDbSet<InvoiceLineViewDTO>();
+            this.InvoiceContainers = new TestDbSet<InvoiceContainerViewDTO>();
+            this.InvoiceFull = new TestDbSet<InvoiceFullViewDTO>();
 
         }
 
@@ -298,7 +305,11 @@ namespace GTIWebAPI.Tests.TestContext
         {
             return DealsView.Where(d => d.CreateDate >= dateBegin && d.CreateDate < dateEnd).ToList();
         }
-
+        public TestDbSet<DealInvoiceViewDTO> DealInvoices { get; set; }
+        public List<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
+        {
+            return DealInvoices.Where(d => d.DealId == dealId).ToList();
+        }
 
 
 
@@ -333,29 +344,29 @@ namespace GTIWebAPI.Tests.TestContext
 
 
         //Invoices
+        public TestDbSet<InvoiceFullViewDTO> InvoiceFull { get; set; }
         public InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId)
         {
-            throw new NotImplementedException();
+            return InvoiceFull.Where(d => d.Id == invoiceId).FirstOrDefault();
         }
 
+
+        public TestDbSet<InvoiceLineViewDTO> InvoiceLines { get; set; }
         public List<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId)
         {
-            throw new NotImplementedException();
+            return InvoiceLines.Where(d => d.InvoiceId == invoiceId).ToList();
         }
 
+
+        public TestDbSet<InvoiceContainerViewDTO> InvoiceContainers { get; set; }
         public List<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId)
-        {
-            throw new NotImplementedException();
+            return InvoiceContainers.Where(d => d.InvoiceId == invoiceId).ToList();
         }
 
         public List<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd)
         {
-            throw new NotImplementedException();
+            return DealInvoices.Where(d => d.ClientId == organizationId && d.InvoiceDate >= dateBegin && d.InvoiceDate < dateEnd).ToList();
         }
 
 

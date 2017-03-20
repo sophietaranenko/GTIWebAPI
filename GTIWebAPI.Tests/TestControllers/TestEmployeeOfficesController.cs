@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllOffices_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeOfficesController(repo);
             var result = controller.GetEmployeeOfficeAll() as OkNegotiatedContentResult<List<EmployeeOfficeDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetOfficesByEmployeeId_ShouldReturnNotDeletedOffices()
         {
             var controller = new EmployeeOfficesController(repo);
             var result = controller.GetEmployeeOfficeByEmployeeId(1) as OkNegotiatedContentResult<List<EmployeeOfficeDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetOfficeById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeOfficesController(repo);
             var result = controller.GetEmployeeOffice(1) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutOffice_ShouldReturnOk()
         {
             var controller = new EmployeeOfficesController(repo);
             EmployeeOffice office = repo.Add(GetDemo());
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutOffice_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeOfficesController(repo);
             EmployeeOffice office = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostOffice_ShouldReturnSame()
         {
             var controller = new EmployeeOfficesController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteOffice_ShouldReturnOK()
         {
             EmployeeOffice office = GetDemo();
             office = repo.Add(office);

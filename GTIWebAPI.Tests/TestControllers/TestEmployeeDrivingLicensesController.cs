@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllLicenses_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             var result = controller.GetEmployeeDrivingLicenseAll() as OkNegotiatedContentResult<List<EmployeeDrivingLicenseDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetLicensesByEmployeeId_ShouldReturnNotDeletedLicenses()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             var result = controller.GetEmployeeDrivingLicenseByEmployee(1) as OkNegotiatedContentResult<List<EmployeeDrivingLicenseDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetLicenseById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             var result = controller.GetDrivingLicense(1) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutLicense_ShouldReturnOk()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             EmployeeDrivingLicense car = repo.Add(GetDemo());
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutLicense_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             EmployeeDrivingLicense car = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostLicense_ShouldReturnSame()
         {
             var controller = new EmployeeDrivingLicensesController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteLicense_ShouldReturnOK()
         {
             EmployeeDrivingLicense car = GetDemo();
             car = repo.Add(car);

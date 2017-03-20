@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllInternationalPassports_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             var result = controller.GetEmployeeInternationalPassportAll() as OkNegotiatedContentResult<List<EmployeeInternationalPassportDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetInternationalPassportsByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             var result = controller.GetEmployeeInternationalPassportByEmployee(1) as OkNegotiatedContentResult<List<EmployeeInternationalPassportDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetInternationalPassportById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             var result = controller.GetEmployeeInternationalPassport(1) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutInternationalPassport_ShouldReturnOk()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             EmployeeInternationalPassport internationalPassport = repo.Add(GetDemo());
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutInternationalPassport_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             EmployeeInternationalPassport internationalPassport = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostInternationalPassport_ShouldReturnSame()
         {
             var controller = new EmployeeInternationalPassportsController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteInternationalPassport_ShouldReturnOK()
         {
             EmployeeInternationalPassport internationalPassport = GetDemo();
             internationalPassport = repo.Add(internationalPassport);

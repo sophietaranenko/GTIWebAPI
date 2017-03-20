@@ -30,7 +30,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllCars_ShouldReturnNotDeletedCars()
         {
             var controller = new EmployeeCarsController(repo);
             var result = controller.GetEmplyeeCarAll() as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
@@ -38,7 +38,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetCarsByEmployeeId_ShouldReturnNotDeletedCars()
         {
             var controller = new EmployeeCarsController(repo);
             var result = controller.GetEmployeeCarByEmployee(1) as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
@@ -46,7 +46,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetCarById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeCarsController(repo);
             var result = controller.GetEmployeeCar(1) as OkNegotiatedContentResult<EmployeeCarDTO>;
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutCar_ShouldReturnOk()
         {
             var controller = new EmployeeCarsController(repo);
             EmployeeCar car = GetDemo();
@@ -63,7 +63,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutCar_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeCarsController(repo);
             EmployeeCar car = GetDemo();
@@ -72,7 +72,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostCar_ShouldReturnSame()
         {
             var controller = new EmployeeCarsController(repo);
             var item = GetDemo();
@@ -84,7 +84,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteCar_ShouldReturnOK()
         {
             EmployeeCar car = GetDemo();
             car = repo.Add(car);

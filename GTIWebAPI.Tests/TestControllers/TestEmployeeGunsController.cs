@@ -27,7 +27,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetAll_ShouldReturnNotDeleted()
+        public void GetAllGuns_ShouldReturnNotDeleted()
         {
             var controller = new EmployeeGunsController(repo);
             var result = controller.GetEmployeeGunAll() as OkNegotiatedContentResult<List<EmployeeGunDTO>>;
@@ -35,7 +35,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
+        public void GetGunsByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
         {
             var controller = new EmployeeGunsController(repo);
             var result = controller.GetEmployeeGunByEmployee(1) as OkNegotiatedContentResult<List<EmployeeGunDTO>>;
@@ -43,7 +43,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnObjectWithSameId()
+        public void GetGunById_ShouldReturnObjectWithSameId()
         {
             var controller = new EmployeeGunsController(repo);
             var result = controller.GetEmployeeGun(1) as OkNegotiatedContentResult<EmployeeGunDTO>;
@@ -51,7 +51,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutGun_ShouldReturnOk()
         {
             var controller = new EmployeeGunsController(repo);
             EmployeeGun gun = repo.Add(GetDemo());
@@ -60,7 +60,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Put_ShouldFail_WhenDifferentID()
+        public void PutGun_ShouldFail_WhenDifferentID()
         {
             var controller = new EmployeeGunsController(repo);
             EmployeeGun gun = GetDemo();
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Post_ShouldReturnSame()
+        public void PostGun_ShouldReturnSame()
         {
             var controller = new EmployeeGunsController(repo);
             var item = GetDemo();
@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
         }
 
         [TestMethod]
-        public void Delete_ShouldReturnOK()
+        public void DeleteGun_ShouldReturnOK()
         {
             EmployeeGun gun = GetDemo();
             gun = repo.Add(gun);
