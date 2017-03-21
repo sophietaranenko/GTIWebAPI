@@ -127,7 +127,7 @@ namespace GTIWebAPI.Models.Repository.Identity
         public bool CreateOrganization(string email, string password)
         {
             bool result = false;
-            using (IAppDbContext db = factory.CreateDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 result = db.CreateOrganization(email, password);
             }
@@ -137,7 +137,7 @@ namespace GTIWebAPI.Models.Repository.Identity
         public bool CreateHoldingUser(string email, string password)
         {
             bool result = false;
-            using (IAppDbContext db = factory.CreateDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 result = db.CreateHoldingUser(email, password);
             }

@@ -23,6 +23,14 @@ namespace GTIWebAPI.Models.Repository.Accounting
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 dtos = db.GetDocumentScanByDeal(dealId);
+                List<DocumentScanTypeDTO> types = db.GetDocumentScanTypes();
+                if (dtos != null && types != null)
+                {
+                    foreach (var item in dtos)
+                    {
+                        item.DocumentScanType = types.Where(d => d.Id == item.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
             }
             return dtos;
         }
@@ -33,6 +41,14 @@ namespace GTIWebAPI.Models.Repository.Accounting
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 dto = db.UpdateDocumentScanType(dto.Id, (int)dto.DocumentScanTypeId);
+                if (dto != null)
+                {
+                    List<DocumentScanTypeDTO> types = db.GetDocumentScanTypes();
+                    if (types != null)
+                    {
+                        dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
             }
             return dto;
         }
@@ -45,6 +61,14 @@ namespace GTIWebAPI.Models.Repository.Accounting
             {
                 Guid scanId = db.InsertDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
                 dto = db.GetDealDocumentScanById(scanId);
+                if (dto != null)
+                {
+                    List<DocumentScanTypeDTO> types = db.GetDocumentScanTypes();
+                    if (types != null)
+                    {
+                        dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
             }
             return dto;
         }
@@ -76,6 +100,14 @@ namespace GTIWebAPI.Models.Repository.Accounting
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 dto = db.GetDealDocumentScanById(id);
+                if (dto != null)
+                {
+                    List<DocumentScanTypeDTO> types = db.GetDocumentScanTypes();
+                    if (types != null)
+                    {
+                        dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
             }
             return dto;
         }

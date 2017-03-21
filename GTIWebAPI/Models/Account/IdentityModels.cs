@@ -180,13 +180,62 @@ namespace GTIWebAPI.Models.Account
                    .WithMany(s => s.UserRights);
         }
 
-        public virtual int FileNameUnique()
+        public bool CreateHoldingUser(string email, string password)
         {
-            string tableName = "FileNameUnique";
-            SqlParameter table = new SqlParameter("@TableName", tableName);
-            int result = this.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
-            return result;
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Username",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseHoldingUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
         }
+
+
+        public bool CreateOrganization(string email, string password)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@Username",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = email
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+
 
     }
 

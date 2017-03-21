@@ -655,21 +655,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.GetDocumentScansByDealId(System.Guid)">
-            <summary>
-            Get one document scan by id of deal it is attached to 
-            </summary>
-            <param name="dealId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.PutDealDocumentScan(System.Guid,System.Int32)">
-            <summary>
-            We can update only type of document to deal document scan. Otherwise we need to delete and upload new document scan. 
-            </summary>
-            <param name="scanId"></param>
-            <param name="documentScanTypeId"></param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.UploadDealDocumentScan(System.Int32,System.Guid)">
             <summary>
             Upload new document scan to some deal by deal id 

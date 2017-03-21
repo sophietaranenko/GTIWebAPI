@@ -112,7 +112,6 @@ namespace GTIWebAPI.Providers
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
-
         }
 
         private ApplicationUser CreateEmployeeApplicationUser(string username, string password, ApplicationUserManager userManager)
@@ -136,12 +135,10 @@ namespace GTIWebAPI.Providers
         private int CreateEmployee()
         {
             int employeeId = 0;
-
             using (SecureEmployeeCreatorDbContext db = new SecureEmployeeCreatorDbContext())
             {
                 employeeId = db.CreateEmployee();
             }
-
             return employeeId;
         }
 

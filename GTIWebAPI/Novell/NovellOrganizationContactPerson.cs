@@ -39,7 +39,8 @@ namespace GTIWebAPI.Novell
                 throw new ArgumentException("Invalid value to transliterate");
             }
             TransliterationProvider translit = new TransliterationProvider();
-            name = translit.ToLatin(name); 
+            name = translit.ToLatin(name);
+            name = name.Replace(" ", "");
             return name;
         }
 

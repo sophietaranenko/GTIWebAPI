@@ -189,46 +189,21 @@ namespace GTIWebAPI.Controllers
             DocumentScanDTO dto = new DocumentScanDTO();
             try
             {
-                using (IAppDbContext db = AppDbContextFactory.CreateDbContext(User))
+                bool result = repo.DeleteDealDocumentScan(id);
+                if (result)
                 {
-                    db.GetDealDocumentScanById(id);
-                    if (dto != null)
-                    {
-                        string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                        ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                        if (user != null)
-                        {
-                            string email = user.Email;
-                            if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
-                            {
-                                bool result = db.DeleteDocumentScan(id);
-                                if (result == true)
-                                {
-                                    return Ok();
-                                }
-                                else
-                                {
-                                    return BadRequest();
-                                }
-                            }
-                            else
-                            {
-                                return BadRequest("Sorry you can delete only your own uploads");
-                            }
-                        }
-                    }
-
+                    return Ok(repo.GetDocumentScan(id));
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
-            return BadRequest();
         }
-
-
-
     }
 }

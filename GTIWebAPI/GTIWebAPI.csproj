@@ -429,7 +429,6 @@
     <Compile Include="Models\Account\LoginEditViewModel.cs" />
     <Compile Include="Models\Account\RoleViewModel.cs" />
     <Compile Include="Models\Account\UserImage.cs" />
-    <Compile Include="Models\Context\AppDbContextFactory.cs" />
     <Compile Include="Models\Context\DbContextFactory.cs" />
     <Compile Include="Models\Context\IAppDbContext.cs" />
     <Compile Include="Models\Context\IDbContextFactory.cs" />
