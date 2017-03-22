@@ -956,7 +956,7 @@ namespace GTIWebAPI.Models.Context
                 ParameterName = "@DocumentScanTypeId",
                 IsNullable = false,
                 Direction = ParameterDirection.Input,
-                DbType = DbType.Int16,
+                DbType = DbType.Int32,
                 Value = documentScanTypeId
             };
 
