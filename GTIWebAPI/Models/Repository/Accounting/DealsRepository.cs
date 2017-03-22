@@ -35,6 +35,14 @@ namespace GTIWebAPI.Models.Repository.Accounting
                 dto.Containers = db.GetContainersByDeal(id);
                 dto.Invoices = db.GetInvoicesByDeal(id);
                 dto.DocumentScans = db.GetDocumentScanByDeal(id);
+                List<DocumentScanTypeDTO> types = db.GetDocumentScanTypes();
+                if (dto.DocumentScans != null && types != null)
+                {
+                    foreach (var item in dto.DocumentScans)
+                    {
+                        item.DocumentScanType = types.Where(d => d.Id == item.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
             }
             return dto;
         }

@@ -15,6 +15,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
+using System.Security.Claims;
+using GTIWebAPI.Models.Organizations;
+
+
+
 
 namespace GTIWebAPI.Tests.TestControllers
 {
@@ -73,7 +78,14 @@ namespace GTIWebAPI.Tests.TestControllers
         }
     }
 
-    public class MockUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
+    
+
+    public class MockUserStore : IUserStore<ApplicationUser>, 
+        IUserPasswordStore<ApplicationUser>, 
+        IUserEmailStore<ApplicationUser>, 
+        IUserClaimStore<ApplicationUser>,
+        IUserLoginStore<ApplicationUser>,
+        IUserRoleStore<ApplicationUser>
     {
         private string TableName { get; set; }
         public MockUserStore(string tableName)
@@ -155,6 +167,86 @@ namespace GTIWebAPI.Tests.TestControllers
         public Task<bool> HasPasswordAsync(ApplicationUser user)
         {
             return Task.Factory.StartNew(() => true);
+        }
+
+        public Task SetEmailAsync(ApplicationUser user, string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetEmailAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUser> FindByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<Claim>> GetClaimsAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddClaimAsync(ApplicationUser user, Claim claim)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveClaimAsync(ApplicationUser user, Claim claim)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveLoginAsync(ApplicationUser user, UserLoginInfo login)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUser> FindAsync(UserLoginInfo login)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddToRoleAsync(ApplicationUser user, string roleName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
