@@ -58,8 +58,8 @@ namespace GTIWebAPI.Models.Repository.Organization
             OrganizationContactPersonContact organizationContactPersonContact = new OrganizationContactPersonContact();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                organizationContactPersonContact = organizationContactPersonContact = db.OrganizationContactPersonContacts
-                    .Where(p => p.Deleted != true && p.Id == id)
+                organizationContactPersonContact = db.OrganizationContactPersonContacts
+                    .Where(p => p.Id == id)
                     .Include(d => d.ContactType)
                     .FirstOrDefault();
 

@@ -72,7 +72,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                         .Where(d => d.Deleted != true && d.OrganizationContactPersonId == organizationContactPerson.Id)
                         .Include(d => d.ContactType)
                         .ToList();
-                        
+
                 }
 
 
@@ -85,21 +85,17 @@ namespace GTIWebAPI.Models.Repository.Organization
             OrganizationContactPersonView organizationContactPerson = new OrganizationContactPersonView();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                organizationContactPerson =
-                    db.OrganizationContactPersonViews
+
+
+                OrganizationContactPerson toDelete = db.OrganizationContactPersons
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
-                if (organizationContactPerson == null)
+                if (toDelete == null)
                 {
                     throw new ArgumentException("Not found");
                 }
-                organizationContactPerson.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
-                   .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id && c.Deleted != true )
-                   .Include(d => d.ContactType)
-                   .ToList();
-
-                organizationContactPerson.Deleted = true;
-                db.MarkAsModified(organizationContactPerson);
+                toDelete.Deleted = true;
+                db.MarkAsModified(toDelete);
                 try
                 {
                     db.SaveChanges();
@@ -115,6 +111,16 @@ namespace GTIWebAPI.Models.Repository.Organization
                         throw;
                     }
                 }
+
+
+                organizationContactPerson =
+                    db.OrganizationContactPersonViews
+                    .Where(d => d.Id == id)
+                    .FirstOrDefault();
+                organizationContactPerson.OrganizationContactPersonContacts = db.OrganizationContactPersonContacts
+                   .Where(c => c.OrganizationContactPersonId == organizationContactPerson.Id && c.Deleted != true)
+                   .Include(d => d.ContactType)
+                   .ToList();              
             }
             return organizationContactPerson;
         }

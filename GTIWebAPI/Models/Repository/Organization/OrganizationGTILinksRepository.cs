@@ -26,6 +26,13 @@ namespace GTIWebAPI.Models.Repository.Organization
         {
             using (IAppDbContext db = factory.CreateDbContext())
             {
+                OrganizationGTILink existingLint = db.OrganizationGTILinks
+                    .Where(d => d.Deleted != true && d.GTIId == organizationGTILink.GTIId)
+                    .FirstOrDefault();
+                if (existingLint != null)
+                {
+                    throw new ArgumentException("Link to this GTI Organization already exist");
+                }
                 organizationGTILink.Id = organizationGTILink.NewId(db);
                 db.OrganizationGTILinks.Add(organizationGTILink);
                 try

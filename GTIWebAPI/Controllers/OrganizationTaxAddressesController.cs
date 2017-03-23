@@ -14,7 +14,7 @@ using System.Web.Http.Description;
 
 namespace GTIWebAPI.Controllers
 {
-    [RoutePrefix("api/OrganizationTaxTaxAddresses")]
+    [RoutePrefix("api/OrganizationTaxAddresses")]
     public class OrganizationTaxAddressesController : ApiController
     {
 

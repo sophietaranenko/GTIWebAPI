@@ -84,6 +84,7 @@ namespace GTIWebAPI.Controllers
             UserInfoViewModel model = new UserInfoViewModel();
             if (user != null)
             {
+                model.Email = user.Email;
                 model.UserName = user.UserName;
                 model.TableId = user.TableId;
                 model.TableName = user.TableName;
@@ -155,18 +156,18 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        [Route("UserInfoExternalLogin")]
-        public UserInfoViewModel GetUserExternalLoginInfo()
-        {
-            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-            return new UserInfoViewModel
-            {
-                Email = User.Identity.GetUserName(),
-                HasRegistered = externalLogin == null,
-                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
-            };
-        }
+        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        //[Route("UserInfoExternalLogin")]
+        //public UserInfoViewModel GetUserExternalLoginInfo()
+        //{
+        //    ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
+        //    return new UserInfoViewModel
+        //    {
+        //        Email = User.Identity.GetUserName(),
+        //        HasRegistered = externalLogin == null,
+        //        LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
+        //    };
+        //}
 
         /// <summary>
         /// Logout

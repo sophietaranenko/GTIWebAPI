@@ -35,9 +35,9 @@ namespace GTIWebAPI.Models.Account
 
         public string Email { get; set; }
 
-        public bool HasRegistered { get; set; }
+        //public bool HasRegistered { get; set; }
 
-        public string LoginProvider { get; set; }
+        //public string LoginProvider { get; set; }
 
         public IEnumerable<UserRightDTO> UserRights { get; set; }
 
