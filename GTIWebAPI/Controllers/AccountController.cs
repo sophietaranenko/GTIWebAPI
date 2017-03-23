@@ -23,6 +23,7 @@ using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
 using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Repository.Identity;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -129,6 +130,14 @@ namespace GTIWebAPI.Controllers
                             });
                     }
                 }
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

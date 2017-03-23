@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Repository.Organization;
@@ -43,9 +44,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -59,6 +68,14 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationLanguageNameDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -89,9 +106,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationLanguageNameDTO dto = repo.Edit(organizationLanguageName).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -110,9 +135,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationLanguageNameDTO dto = repo.Add(organizationLanguageName).ToDTO();
                 return CreatedAtRoute("GetOrganizationLanguageName", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -127,9 +160,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationLanguageNameDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -35,6 +36,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                         db.GetOrganizationGTIByOrganization(item.Id);
                 }
             }
+            if (organizationList == null)
+            {
+                throw new NotFoundException();
+            }
             return organizationList;
         }
         public List<OrganizationView> GetAll(List<int> officeIds)
@@ -44,6 +49,10 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 organizationList = db.GetOrganizationsByOffices(officeIds).ToList();
+            }
+            if (organizationList == null)
+            {
+                throw new NotFoundException();
             }
             return organizationList;
         }
@@ -135,7 +144,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .Include(d => d.Language)
                     .ToList();
             }
-
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
             return organization;
         }
 
@@ -150,6 +162,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .Include(d => d.Country)
                     .Include(d => d.OrganizationLegalForm)
                     .FirstOrDefault();
+            }
+            if (organization == null)
+            {
+                throw new NotFoundException();
             }
             return organization;
         }
@@ -169,7 +185,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationExists(organization.Id))
                     {
-                        throw new ArgumentException("Not Found");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -201,7 +217,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationExists(organization.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -229,7 +245,7 @@ namespace GTIWebAPI.Models.Repository.Organization
               .FirstOrDefault();
                 if (organization == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 if (organization != null)
                 {
@@ -250,6 +266,10 @@ namespace GTIWebAPI.Models.Repository.Organization
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 list = OrganizationList.CreateOrganizationList(db);
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

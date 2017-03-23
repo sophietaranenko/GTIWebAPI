@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeOfficeExists(employeeOffice.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -66,7 +67,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeOffice == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employeeOffice.Deleted = true;
                 db.MarkAsModified(employeeOffice);
@@ -78,7 +79,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeOfficeExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -102,7 +103,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeOfficeExists(employeeOffice.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -129,6 +130,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Department)
                     .FirstOrDefault();
             }
+            if (employeeOffice == null)
+            {
+                throw new NotFoundException();
+            }
             return employeeOffice;
         }
 
@@ -143,6 +148,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Department)
                     .ToList();
             }
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 
@@ -156,6 +165,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Office)
                     .Include(d => d.Department)
                     .ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

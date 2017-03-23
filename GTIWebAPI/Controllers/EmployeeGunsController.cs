@@ -13,6 +13,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -48,6 +49,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(guns);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -68,6 +77,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(guns);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -85,9 +102,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeGunDTO gun = repo.Get(id).ToDTO();
                 return Ok(gun);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -111,6 +136,14 @@ namespace GTIWebAPI.Controllers
                 EmployeeGunDTO gun = repo.Edit(employeeGun).ToDTO();
                 return Ok(gun);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -132,6 +165,14 @@ namespace GTIWebAPI.Controllers
                 EmployeeGunDTO gun = repo.Add(employeeGun).ToDTO();
                 return CreatedAtRoute("GetEmployeeGun", new { id = gun.Id }, gun);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -149,9 +190,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeGunDTO gun = repo.Delete(id).ToDTO();
                 return Ok(gun);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

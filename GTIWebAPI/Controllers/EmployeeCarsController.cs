@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using System;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -42,10 +43,18 @@ namespace GTIWebAPI.Controllers
                 List<EmployeeCarDTO> dtos = repo.GetAll().Select(p => p.ToDTO()).ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }  
+            }
         }
 
         [GTIFilter]
@@ -59,10 +68,18 @@ namespace GTIWebAPI.Controllers
                 List<EmployeeCarDTO> dtos = repo.GetByEmployeeId(employeeId).Select(d => d.ToDTO()).ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-            } 
+            }
         }
 
         /// <summary>
@@ -86,11 +103,18 @@ namespace GTIWebAPI.Controllers
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }
-            catch (DataException e)
+            catch (NotFoundException nfe)
             {
-                //log
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
                 return BadRequest(e.Message);
-            }         
+            }
         }
 
         /// <summary>
@@ -119,9 +143,16 @@ namespace GTIWebAPI.Controllers
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                //log
                 return BadRequest(e.Message);
             }
         }
@@ -147,9 +178,16 @@ namespace GTIWebAPI.Controllers
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                //log
                 return BadRequest(e.Message);
             }
         }
@@ -171,9 +209,16 @@ namespace GTIWebAPI.Controllers
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                //log
                 return BadRequest(e.Message);
             }
         }

@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeEducationExists(employeeEducation.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -60,7 +61,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeEducation == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employeeEducation.Deleted = true;
                 db.MarkAsModified(employeeEducation);
@@ -72,7 +73,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeEducationExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -96,7 +97,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeEducationExists(employeeEducation.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -118,6 +119,10 @@ namespace GTIWebAPI.Models.Repository
                 .Include(d => d.EducationStudyForm)
                 .FirstOrDefault();
             }
+            if (employeeEducation == null)
+            {
+                throw new NotFoundException();
+            }
             return employeeEducation;
 
         }
@@ -125,7 +130,6 @@ namespace GTIWebAPI.Models.Repository
         public List<EmployeeEducation> GetAll()
         {
             List<EmployeeEducation> educations = new List<EmployeeEducation>();
-
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 educations = db.EmployeeEducations
@@ -133,13 +137,16 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.EducationStudyForm)
                     .ToList();
             }
+            if (educations == null)
+            {
+                throw new NotFoundException();
+            }
             return educations;
         }
 
         public List<EmployeeEducation> GetByEmployeeId(int employeeId)
         {
             List<EmployeeEducation> educations = new List<EmployeeEducation>();
-
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 educations = db.EmployeeEducations
@@ -147,7 +154,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.EducationStudyForm)
                     .ToList();
             }
-
+            if (educations == null)
+            {
+                throw new NotFoundException();
+            }
             return educations;
         }
 

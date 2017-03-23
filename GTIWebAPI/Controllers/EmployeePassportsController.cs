@@ -14,6 +14,7 @@ using AutoMapper;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -49,6 +50,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(passports);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -69,6 +78,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(passports);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -87,6 +104,14 @@ namespace GTIWebAPI.Controllers
                     repo.Get(id)
                     .ToDTO();
                 return Ok(employeePassport);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -115,6 +140,14 @@ namespace GTIWebAPI.Controllers
                     .ToDTO();
                 return Ok(passport);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -139,9 +172,17 @@ namespace GTIWebAPI.Controllers
                     .ToDTO();
                 return CreatedAtRoute("GetEmployeePassport", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -158,9 +199,17 @@ namespace GTIWebAPI.Controllers
                      .ToDTO();
                 return Ok(employeePassport);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

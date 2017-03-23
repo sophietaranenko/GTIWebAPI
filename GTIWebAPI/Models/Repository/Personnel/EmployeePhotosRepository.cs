@@ -8,6 +8,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Context;
 using System.Data.Entity.Infrastructure;
 using System.Web.Helpers;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -49,7 +50,7 @@ namespace GTIWebAPI.Models.Repository
                 }
                 else
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
             }
             return photo;
@@ -64,6 +65,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
             }
+            if (photo == null)
+            {
+                throw new NotFoundException();
+            }
             return photo;
         }
 
@@ -75,6 +80,10 @@ namespace GTIWebAPI.Models.Repository
                 list = db.EmployeePhotos
                     .Where(d => d.Deleted != true && d.EmployeeId == employeeId)
                     .ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }
@@ -110,7 +119,7 @@ namespace GTIWebAPI.Models.Repository
                         }
                         catch
                         {
-                            throw new ArgumentException();
+                            throw;
                         }
                     }
                 }

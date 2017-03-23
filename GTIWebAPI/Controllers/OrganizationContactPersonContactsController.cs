@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Repository.Organization;
@@ -46,9 +47,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -70,9 +79,17 @@ namespace GTIWebAPI.Controllers
                     .ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -101,9 +118,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationContactPersonContactDTO dto = repo.Edit(organizationContactPersonContact).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -127,9 +152,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationContactPersonContactDTO dto = repo.Add(organizationContactPersonContact).ToDTO();
                 return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -149,9 +182,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationContactPersonContactDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

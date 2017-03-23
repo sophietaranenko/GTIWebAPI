@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
@@ -51,9 +52,17 @@ namespace GTIWebAPI.Controllers
                 List<DocumentScanTypeDTO> dtos = repo.GetDocumentScanTypes();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -68,9 +77,17 @@ namespace GTIWebAPI.Controllers
                 List<DocumentScanDTO> dtos = repo.GetDocumentScansByDealId(dealId);
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -117,6 +134,14 @@ namespace GTIWebAPI.Controllers
                 {
                     return NotFound();
                 }
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -168,9 +193,17 @@ namespace GTIWebAPI.Controllers
                     {
                         dto = repo.UploadDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
                     }
+                    catch (NotFoundException nfe)
+                    {
+                        return NotFound();
+                    }
+                    catch (ConflictException ce)
+                    {
+                        return Conflict();
+                    }
                     catch (Exception e)
                     {
-                        return BadRequest();
+                        return BadRequest(e.Message);
                     }
                 }
             }
@@ -189,15 +222,24 @@ namespace GTIWebAPI.Controllers
             DocumentScanDTO dto = new DocumentScanDTO();
             try
             {
+                dto = repo.GetDocumentScan(id);
                 bool result = repo.DeleteDealDocumentScan(id);
                 if (result)
                 {
-                    return Ok(repo.GetDocumentScan(id));
+                    return Ok(dto);
                 }
                 else
                 {
                     return BadRequest();
                 }
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

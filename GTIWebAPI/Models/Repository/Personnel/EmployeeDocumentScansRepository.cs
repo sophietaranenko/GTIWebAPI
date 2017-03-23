@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -36,6 +37,10 @@ namespace GTIWebAPI.Models.Repository
                 }
                 postedFile.SaveAs(filePath);
             }
+            if (filePath == null)
+            {
+                throw new NotFoundException();
+            }
             return filePath;
         }
 
@@ -47,7 +52,7 @@ namespace GTIWebAPI.Models.Repository
                 db.EmployeeDocumentScans.Add(scan);
                 db.SaveChanges();
             }
-            return Get(scan.Id);
+            return scan;
         }
 
         public EmployeeDocumentScan Delete(int id)
@@ -131,6 +136,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
             }
+            if (scan == null)
+            {
+                throw new NotFoundException();
+            }
             return scan;
         }
 
@@ -144,7 +153,10 @@ namespace GTIWebAPI.Models.Repository
                 .Where(e => e.ScanTableName == tableName && e.TableId == tableId && e.Deleted != true)
                 .ToList();
             }
-
+            if (scans == null)
+            {
+                throw new NotFoundException();
+            }
             return scans;
         }
 
@@ -156,7 +168,10 @@ namespace GTIWebAPI.Models.Repository
             {
                 scans = db.EmployeeAllDocumentScans(employeeId).ToList();
             }
-
+            if (scans == null)
+            {
+                throw new NotFoundException();
+            }
             return scans;
         }
     }

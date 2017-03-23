@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeMilitaryCardExists(employeeMilitaryCard.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -65,7 +66,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeMilitaryCard == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employeeMilitaryCard.Deleted = true;
                 db.MarkAsModified(employeeMilitaryCard);
@@ -77,7 +78,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeMilitaryCardExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -101,7 +102,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeMilitaryCardExists(employeeMilitaryCard.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -121,6 +122,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
             }
+            if (militaryCard == null)
+            {
+                throw new NotFoundException();
+            }
             return militaryCard;
         }
 
@@ -133,6 +138,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(p => p.Deleted != true)
                     .ToList();
             }
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 
@@ -144,6 +153,10 @@ namespace GTIWebAPI.Models.Repository
                 list = db.EmployeeMilitaryCards
                     .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                     .ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

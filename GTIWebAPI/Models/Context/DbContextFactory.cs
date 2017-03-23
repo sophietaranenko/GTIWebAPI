@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace GTIWebAPI.Models.Context
             if (userName == null)
             {
                 userName = "UserIsNotAllowed";
-                throw new ArgumentException("User is not allowed");
+                throw new WrongDatabaseLoginException("User is not allowed");
             }
 
             if (IsInRole("Personnel"))
@@ -36,7 +37,7 @@ namespace GTIWebAPI.Models.Context
             }
             else
             {
-                throw new ArgumentException("Database login is invalid");
+                throw new WrongDatabaseLoginException("User is not in any permitted role");
             }
         }
 

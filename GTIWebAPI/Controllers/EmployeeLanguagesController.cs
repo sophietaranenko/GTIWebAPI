@@ -14,6 +14,7 @@ using GTIWebAPI.Filters;
 using AutoMapper;
 using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -48,9 +49,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -68,12 +77,19 @@ namespace GTIWebAPI.Controllers
                 return Ok(dtos);
 
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
-            
         }
 
         [GTIFilter]
@@ -86,6 +102,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeeLanguageDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto); 
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -112,9 +136,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeLanguageDTO dto = repo.Edit(employeeLanguage).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -133,9 +165,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeLanguageDTO dto = repo.Add(employeeLanguage).ToDTO();
                 return CreatedAtRoute("GetEmployeeLanguage", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -150,9 +190,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeLanguageDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

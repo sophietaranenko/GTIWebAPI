@@ -13,6 +13,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using AutoMapper;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -45,9 +46,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -65,9 +74,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -107,9 +124,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeInternationalPassportDTO passport = repo.Edit(employeeInternationalPassport).ToDTO();
                 return Ok(passport);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -128,9 +153,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeInternationalPassportDTO dto = repo.Add(employeeInternationalPassport).ToDTO();
                 return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -145,9 +178,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeInternationalPassportDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

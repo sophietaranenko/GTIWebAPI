@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GTIWebAPI.Exceptions;
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Dictionary;
@@ -49,10 +50,18 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(list);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
-            } 
+                return BadRequest(e.Message);
+            }
         }
 
         [GTIFilter]
@@ -68,9 +77,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -85,9 +102,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeOfficeDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -110,9 +135,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeOfficeDTO dto = repo.Edit(employeeOffice).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -131,9 +164,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeOfficeDTO dto = repo.Add(employeeOffice).ToDTO();
                 return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -148,9 +189,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeOfficeDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

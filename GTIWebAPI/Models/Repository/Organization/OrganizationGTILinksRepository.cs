@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -43,7 +44,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationGTILinkExists(organizationGTILink.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -93,7 +94,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 }
                 if (organizationGTILink == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 organizationGTILink.Deleted = true;
                 db.MarkAsModified(organizationGTILink);
@@ -105,7 +106,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationGTILinkExists(id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {

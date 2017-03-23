@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Accounting
 {
@@ -29,6 +30,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
             {
                 container = db.GetContainer(id);
             }
+            if (container == null)
+            {
+                throw new NotFoundException();
+            }
             return container;
         }
 
@@ -38,6 +43,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 list = db.GetContainersFiltered(organizationId, dateBegin, dateEnd).ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

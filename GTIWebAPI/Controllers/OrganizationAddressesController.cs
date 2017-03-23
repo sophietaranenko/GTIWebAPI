@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Repository.Organization;
@@ -46,6 +47,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -67,6 +76,14 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationAddressDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -99,9 +116,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationAddressDTO dto = repo.Edit(organizationAddress).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -125,7 +150,15 @@ namespace GTIWebAPI.Controllers
                 OrganizationAddressDTO dto = repo.Add(organizationAddress).ToDTO();
                 return CreatedAtRoute("GetOrganizationAddress", new { id = dto.Id }, dto);
             }
-            catch(Exception e)
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -146,6 +179,14 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationAddressDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

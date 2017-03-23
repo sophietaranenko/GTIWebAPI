@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Exceptions;
+
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -33,6 +35,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                         .Where(d => d.Id == item.OfficeId)
                         .FirstOrDefault();
                 }
+            }
+            if (orgs == null)
+            {
+                throw new NotFoundException();
             }
             return orgs;
         }

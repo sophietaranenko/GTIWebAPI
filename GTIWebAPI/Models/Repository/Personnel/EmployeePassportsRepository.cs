@@ -7,6 +7,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Context;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -39,7 +40,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeePassportExists(passport.Id))
                     {
-                        throw new DbUpdateException("Entry with the same Id already exists");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -59,7 +60,7 @@ namespace GTIWebAPI.Models.Repository
                 passport = Get(id);
                 if (passport == null)
                 {
-                    throw new DbUpdateException("Entry with current id doesn't exist");
+                    throw new NotFoundException();
                 }
                 passport.Deleted = true;
                 db.MarkAsModified(passport);
@@ -71,7 +72,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeePassportExists(id))
                     {
-                        throw new DbUpdateException("Entry with current id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -96,7 +97,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeePassportExists(passport.Id))
                     {
-                        throw new DbUpdateException("Entry with current Id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -124,7 +125,7 @@ namespace GTIWebAPI.Models.Repository
             }
             if (passport == null)
             {
-                throw new ArgumentException("Given Id not found.", "id");
+                throw new NotFoundException();
             }
             return passport;
         }
@@ -143,6 +144,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Address.AddressVillage)
                     .ToList();
             }
+            if (passports == null)
+            {
+                throw new NotFoundException();
+            }
             return passports;
         }
 
@@ -159,6 +164,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Address.AddressRegion)
                     .Include(d => d.Address.AddressVillage)
                     .ToList();
+            }
+            if (passports == null)
+            {
+                throw new NotFoundException();
             }
             return passports;
         }

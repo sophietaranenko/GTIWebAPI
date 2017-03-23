@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationLanguageNameExists(organizationLanguageName.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -64,7 +65,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .FirstOrDefault();
                 if (organizationLanguageName == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 organizationLanguageName.Deleted = true;
                 db.MarkAsModified(organizationLanguageName);
@@ -76,7 +77,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationLanguageNameExists(id))
                     {
-                        throw new ArgumentException("NotFound");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -100,7 +101,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationLanguageNameExists(organizationLanguageName.Id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {

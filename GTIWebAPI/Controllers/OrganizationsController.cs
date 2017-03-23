@@ -17,6 +17,7 @@ using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
 using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -49,6 +50,14 @@ namespace GTIWebAPI.Controllers
                 List<OrganizationSearchDTO> list = repo.Search(countryId, registrationNumber);
                 return Ok(list);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -66,6 +75,14 @@ namespace GTIWebAPI.Controllers
             {
                 List<OrganizationView> organizationList = repo.GetAll(OfficeIds);
                 return Ok(organizationList);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -114,10 +131,18 @@ namespace GTIWebAPI.Controllers
                 dto.OrganizationProperties = propertiesDTO;
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
-            }       
+                return BadRequest(e.Message);
+            }
         }
 
         [GTIFilter]
@@ -157,9 +182,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationEditDTO dto = repo.Edit(organization).MapToEdit();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -183,11 +216,27 @@ namespace GTIWebAPI.Controllers
                         OrganizationEditDTO dto = repo.Add(organization).MapToEdit();
                         return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
                     }
+                    catch (NotFoundException nfe)
+                    {
+                        return NotFound();
+                    }
+                    catch (ConflictException ce)
+                    {
+                        return Conflict();
+                    }
                     catch (Exception e)
                     {
-                        return BadRequest();
+                        return BadRequest(e.Message);
                     }
                 }
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -211,9 +260,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationEditDTO dto = repo.DeleteOrganization(id).MapToEdit();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -230,9 +287,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationList list = repo.GetTypes();
                 return Ok(list);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
     }

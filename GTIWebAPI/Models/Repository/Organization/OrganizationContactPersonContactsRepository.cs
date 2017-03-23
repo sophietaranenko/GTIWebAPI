@@ -7,6 +7,7 @@ using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Context;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -38,7 +39,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationContactPersonContactExists(organizationContactPersonContact.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -65,7 +66,7 @@ namespace GTIWebAPI.Models.Repository.Organization
 
                 if (organizationContactPersonContact == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 organizationContactPersonContact.Deleted = true;
                 db.MarkAsModified(organizationContactPersonContact);
@@ -77,7 +78,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationContactPersonContactExists(id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -101,7 +102,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationContactPersonContactExists(organizationContactPersonContact.Id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {

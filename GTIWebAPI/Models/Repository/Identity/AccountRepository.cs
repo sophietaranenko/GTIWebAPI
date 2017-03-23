@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Identity
 {
@@ -64,7 +65,7 @@ namespace GTIWebAPI.Models.Repository.Identity
             }
             else
             {
-                throw new ArgumentException();
+                throw new NotFoundException();
             }
         }
 
@@ -81,6 +82,7 @@ namespace GTIWebAPI.Models.Repository.Identity
             }
             else
             {
+                //it is allowed (user can have no user image, UserInfoViewModel can contain null ) 
                 return null;
             }
         }
@@ -108,7 +110,7 @@ namespace GTIWebAPI.Models.Repository.Identity
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 image = db.UserImages.Where(d => d.Id == pictureId).FirstOrDefault();
-                
+
 
                 List<UserImage> images = db.UserImages.Where(d => d.UserId == image.UserId).ToList();
                 foreach (var item in images)
@@ -120,6 +122,10 @@ namespace GTIWebAPI.Models.Repository.Identity
                 image.IsProfilePicture = true;
                 db.MarkAsModified(image);
                 db.SaveChanges();
+            }
+            if (image == null)
+            {
+                throw new NotFoundException();
             }
             return image;
         }
@@ -150,6 +156,10 @@ namespace GTIWebAPI.Models.Repository.Identity
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 person = db.OrganizationContactPersonViews.Where(d => d.Id == id).FirstOrDefault();
+            }
+            if (person == null)
+            {
+                throw new NotFoundException();
             }
             return person;
         }

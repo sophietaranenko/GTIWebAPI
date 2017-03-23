@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Accounting
 {
@@ -34,6 +35,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
                     dto.Lines = db.GetInvoiceLinesByInvoice(id);
                 }
             }
+            if (dto == null)
+            {
+                throw new NotFoundException();
+            }
             return dto;
         }
 
@@ -43,6 +48,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 list = db.GetInvoicesList(organizationId, dateBegin, dateEnd).ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

@@ -8,6 +8,7 @@ using GTIWebAPI.Models.Context;
 using System.Web;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -35,6 +36,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.ContactType)
                     .ToList();
             }
+            if (contacts == null)
+            {
+                throw new NotFoundException();
+            }
             return contacts;
         }
 
@@ -48,6 +53,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                     .Include(d => d.ContactType)
                     .ToList();
+            }
+            if (contacts == null)
+            {
+                throw new NotFoundException();
             }
             return contacts;
         }
@@ -65,7 +74,7 @@ namespace GTIWebAPI.Models.Repository
             }
             if (contact == null)
             {
-                throw new ArgumentException("Given Id not found.", "id");
+                throw new NotFoundException();
             }
             return contact;
         }
@@ -85,7 +94,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeContactExists(contact.Id))
                     {
-                        throw new DbUpdateException("Entry with the same Id already exists");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -110,7 +119,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeContactExists(contact.Id))
                     {
-                        throw new DbUpdateException("Entry with current Id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -130,7 +139,7 @@ namespace GTIWebAPI.Models.Repository
                 employeeContact = Get(contactId);
                 if (employeeContact == null)
                 {
-                    throw new DbUpdateException("Entry with current id doesn't exist");
+                    throw new NotFoundException();
                 }
                 employeeContact.Deleted = true;
                 db.MarkAsModified(employeeContact);
@@ -142,7 +151,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeContactExists(contactId))
                     {
-                        throw new DbUpdateException("Entry with current id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {

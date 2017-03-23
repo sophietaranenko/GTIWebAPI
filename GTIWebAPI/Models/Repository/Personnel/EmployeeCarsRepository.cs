@@ -8,6 +8,7 @@ using GTIWebAPI.Models.Context;
 using System.Web;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -31,6 +32,10 @@ namespace GTIWebAPI.Models.Repository
             {
                 cars = db.EmployeeCars.Where(p => p.Deleted != true).ToList();
             }
+            if (cars == null)
+            {
+                throw new NotFoundException();
+            }
             return cars;
         }
 
@@ -40,6 +45,10 @@ namespace GTIWebAPI.Models.Repository
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 cars = db.EmployeeCars.Where(p => p.Deleted != true && p.EmployeeId == employeeId).ToList();
+            }
+            if (cars == null)
+            {
+                throw new NotFoundException();
             }
             return cars;
         }
@@ -53,7 +62,7 @@ namespace GTIWebAPI.Models.Repository
             }
             if (car == null)
             {
-                throw new ArgumentException("Given Id not found.", "id");
+                throw new NotFoundException();
             }
             return car;
         }
@@ -73,7 +82,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeCarExists(car.Id))
                     {
-                        throw new DbUpdateException("Entry with the same Id already exists");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -97,7 +106,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeCarExists(car.Id))
                     {
-                        throw new DbUpdateException("Entry with current Id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -116,7 +125,7 @@ namespace GTIWebAPI.Models.Repository
                 employeeCar = db.EmployeeCars.Where(d => d.Id == carId).FirstOrDefault();
                 if (employeeCar == null)
                 {
-                    throw new DbUpdateException("Entry with current id doesn't exist");
+                    throw new NotFoundException();
                 }
                 employeeCar.Deleted = true;
                 db.MarkAsModified(employeeCar);
@@ -128,7 +137,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeCarExists(carId))
                     {
-                        throw new DbUpdateException("Entry with current id doesn't exist");
+                        throw new NotFoundException();
                     }
                     else
                     {

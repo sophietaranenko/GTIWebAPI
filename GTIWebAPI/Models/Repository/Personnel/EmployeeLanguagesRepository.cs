@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -38,7 +39,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeLanguageExists(employeeLanguage.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -67,7 +68,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeLanguage == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
 
                 employeeLanguage.Deleted = true;
@@ -80,7 +81,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeLanguageExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -109,7 +110,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeLanguageExists(employeeLanguage.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -137,6 +138,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.EmployeeLanguageType)
                     .FirstOrDefault();
             }
+            if (employeeLanguage == null)
+            {
+                throw new NotFoundException();
+            }
             return employeeLanguage;
         }
 
@@ -151,6 +156,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.Language)
                     .ToList();
             }
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 
@@ -164,6 +173,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.EmployeeLanguageType)
                     .Include(d => d.Language)
                     .ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }

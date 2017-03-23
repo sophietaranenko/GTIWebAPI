@@ -15,6 +15,7 @@ using System.Web;
 using Microsoft.AspNet.Identity.Owin;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -46,9 +47,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -63,9 +72,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationGTILinkDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -75,6 +92,7 @@ namespace GTIWebAPI.Controllers
         [ResponseType(typeof(OrganizationGTILinkDTO))]
         public IHttpActionResult PostOrganizationGTILink(OrganizationGTILink organizationGTILink)
         {
+            OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO();
             try
             {
                 string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
@@ -88,22 +106,27 @@ namespace GTIWebAPI.Controllers
                         return BadRequest(ModelState);
                     }
                     organizationGTILink.EmployeeId = EmployeeId;
-                    try
-                    {
-                        OrganizationGTILinkDTO dto = repo.Add(organizationGTILink).ToDTO();
-                        return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
-                    }
-                    catch (Exception e)
-                    {
-                        return BadRequest();
-                    }
+
+                    dto = repo.Add(organizationGTILink).ToDTO();
+                    return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
                 }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-            return BadRequest();
         }
 
         [GTIFilter]
@@ -141,6 +164,14 @@ namespace GTIWebAPI.Controllers
                             createdLinks.Add(dto);
                         }
                 }
+                catch (NotFoundException nfe)
+                {
+                    return NotFound();
+                }
+                catch (ConflictException ce)
+                {
+                    return Conflict();
+                }
                 catch (Exception e)
                 {
                     return BadRequest(e.Message);
@@ -162,9 +193,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationGTILinkDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

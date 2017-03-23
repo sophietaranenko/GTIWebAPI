@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Filters;
 using System;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -45,6 +46,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(licenses);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -65,6 +74,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(licenses);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -81,6 +98,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeeDrivingLicenseDTO employeeDrivingLicense = repo.Get(id).ToDTO();
                 return Ok(employeeDrivingLicense);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -107,6 +132,14 @@ namespace GTIWebAPI.Controllers
                 EmployeeDrivingLicenseDTO dto = repo.Edit(employeeDrivingLicense).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -132,9 +165,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeDrivingLicenseDTO dto = repo.Add(employeeDrivingLicense).ToDTO();
                 return CreatedAtRoute("GetDrivingLicense", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
         }
 
@@ -149,9 +190,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeDrivingLicenseDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
         }
 

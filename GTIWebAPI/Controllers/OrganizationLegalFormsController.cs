@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using System;
@@ -41,9 +42,17 @@ namespace GTIWebAPI.Controllers
                     form = db.OrganizationLegalForms.Find(id);
                 }
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
             if (form == null)
@@ -98,9 +107,17 @@ namespace GTIWebAPI.Controllers
                     }
                 }
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
             OrganizationLegalFormDTO dto = new OrganizationLegalFormDTO { Id = form.Id, Name = form.Name, Explanation = form.Explanation };

@@ -11,6 +11,7 @@ using System.Data.Entity.Infrastructure;
 using GTIWebAPI.Models.Dictionary;
 using AutoMapper;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -45,7 +46,7 @@ namespace GTIWebAPI.Models.Repository
                 .FirstOrDefault();
                 if (employee == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employee.Deleted = true;
                 db.MarkAsModified(employee);
@@ -57,7 +58,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -85,7 +86,7 @@ namespace GTIWebAPI.Models.Repository
                 .FirstOrDefault();
                 if (employee == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
             }
             return employee;
@@ -110,6 +111,10 @@ namespace GTIWebAPI.Models.Repository
                             .ToList();
                     }
                 }
+            }
+            if (employeeList == null)
+            {
+                throw new NotFoundException();
             }
             return employeeList;
         }
@@ -175,6 +180,10 @@ namespace GTIWebAPI.Models.Repository
                 list.EducationStudyForms =
                     Mapper.Map<IEnumerable<EducationStudyForm>, IEnumerable<EducationStudyFormDTO>>(db.EducationStudyForms.ToList());
             }
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 
@@ -196,7 +205,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employee == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
 
                 employee.EmployeeOffices =
@@ -289,7 +298,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeExists(employee.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -324,7 +333,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeExists(employee.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {

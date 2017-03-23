@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Repository.Organization;
@@ -43,9 +44,17 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -60,9 +69,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationPropertyDTO dto = repo.Get(id).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -85,9 +102,17 @@ namespace GTIWebAPI.Controllers
                 OrganizationPropertyDTO dto = repo.Edit(organizationProperty).ToDTO();
                 return Ok(dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -105,6 +130,14 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationPropertyDTO dto = repo.Add(organizationProperty).ToDTO();
                 return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -140,9 +173,17 @@ namespace GTIWebAPI.Controllers
                         propertiesToReturn.Add(dto);
                     }
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
             return Ok(propertiesToReturn);
         }
@@ -157,6 +198,14 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationPropertyDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

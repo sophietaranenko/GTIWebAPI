@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
@@ -61,6 +62,14 @@ namespace GTIWebAPI.Controllers
                     }
                     return CreatedAtRoute("GetByEmployeeId", new { employeeId = employeeId }, photos);
                 }
+                catch (NotFoundException nfe)
+                {
+                    return NotFound();
+                }
+                catch (ConflictException ce)
+                {
+                    return Conflict();
+                }
                 catch (Exception e)
                 {
                     return BadRequest(e.Message);
@@ -86,6 +95,14 @@ namespace GTIWebAPI.Controllers
                 List<EmployeePhoto> photos = repo.PutDbFilesToFilesystem();
                 return Ok(photos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -103,9 +120,17 @@ namespace GTIWebAPI.Controllers
                 List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
                 return Ok(list);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -119,6 +144,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeePhoto photo = repo.Get(id);
                 return Ok(photo);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -139,13 +172,20 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-
                 EmployeePhoto photo = repo.Delete(id);
                 return Ok(photo);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
 

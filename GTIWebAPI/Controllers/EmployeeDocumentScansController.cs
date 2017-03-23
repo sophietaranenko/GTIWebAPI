@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
@@ -79,6 +80,14 @@ namespace GTIWebAPI.Controllers
                 }
                 return CreatedAtRoute("GetScanListByDocumentId", new { tableName = tableName, tableId = tableId }, scans);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -99,6 +108,14 @@ namespace GTIWebAPI.Controllers
             {
                 List<EmployeeDocumentScan> scanList = repo.FromByteArrayToString();
                 return Ok(scanList);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -123,6 +140,14 @@ namespace GTIWebAPI.Controllers
                 List<EmployeeDocumentScan> scans = repo.GetByDocumentId(tableName, tableId);
                 return Ok(scans);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -146,6 +171,14 @@ namespace GTIWebAPI.Controllers
                 List<EmployeeDocumentScan> scanList = repo.GetByEmployeeId(employeeId);
                 return Ok(scanList);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -167,6 +200,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeeDocumentScan scan = repo.Get(id);
                 return Ok(scan);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -190,9 +231,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeDocumentScan scan = repo.Delete(id);
                 return Ok(scan);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
         }
 

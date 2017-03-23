@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -38,7 +39,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeFoundationDocumentExists(foundationDocument.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -60,7 +61,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeFoundationDoc == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
 
                 employeeFoundationDoc.Deleted = true;
@@ -73,7 +74,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeFoundationDocumentExists(id))
                     {
-                        
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -98,7 +99,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeFoundationDocumentExists(employeeFoundationDoc.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -121,6 +122,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.FoundationDocument)
                     .FirstOrDefault();
             }
+            if (doc == null)
+            {
+                throw new NotFoundException();
+            }
             return doc;
         }
 
@@ -134,13 +139,16 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.FoundationDocument)
                     .ToList();
             }
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 
         public List<EmployeeFoundationDocument> GetByEmployeeId(int employeeId)
         {
             List<EmployeeFoundationDocument> list = new List<EmployeeFoundationDocument>();
-
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 list =
@@ -149,7 +157,10 @@ namespace GTIWebAPI.Models.Repository
                     .Include(d => d.FoundationDocument)
                     .ToList();
             }
-
+            if (list == null)
+            {
+                throw new NotFoundException();
+            }
             return list;
         }
 

@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -37,7 +38,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeDrivingLicenseExists(employeeDrivingLicense.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -57,7 +58,7 @@ namespace GTIWebAPI.Models.Repository
                 employeeDrivingLicense = Get(id);
                 if (employeeDrivingLicense == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employeeDrivingLicense.Deleted = true;
                 db.MarkAsModified(employeeDrivingLicense);
@@ -69,7 +70,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeDrivingLicenseExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -93,7 +94,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeDrivingLicenseExists(employeeDrivingLicense.Id))
                     {
-                        throw new ArgumentException();   
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -113,6 +114,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(p => p.Id == id)
                     .FirstOrDefault();
             }
+            if (license == null)
+            {
+                throw new NotFoundException();
+            }
             return license;
         }
 
@@ -125,6 +130,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(p => p.Deleted != true)
                     .ToList();
             }
+            if (licenses == null)
+            {
+                throw new NotFoundException();
+            }
             return licenses;
         }
 
@@ -136,6 +145,10 @@ namespace GTIWebAPI.Models.Repository
                 licenses = db.EmployeeDrivingLicenses
                     .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                     .ToList();
+            }
+            if (licenses == null)
+            {
+                throw new NotFoundException();
             }
             return licenses;
         }

@@ -11,6 +11,7 @@ using GTIWebAPI.Filters;
 using System;
 using System.Net;
 using GTIWebAPI.Models.Repository;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Controllers
 {
@@ -46,6 +47,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -66,6 +75,14 @@ namespace GTIWebAPI.Controllers
                     .ToList();
                 return Ok(dtos);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -82,6 +99,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeeContactDTO employeeContact = repo.Get(id).ToDTO();
                 return Ok(employeeContact);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {
@@ -129,9 +154,17 @@ namespace GTIWebAPI.Controllers
                 EmployeeContactDTO dto = repo.Add(employeeContact).ToDTO();
                 return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
-                return BadRequest("Troubles with database connection");
+                return BadRequest(e.Message);
             }
         }
 
@@ -145,6 +178,14 @@ namespace GTIWebAPI.Controllers
             {
                 EmployeeContactDTO dto = repo.Delete(id).ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

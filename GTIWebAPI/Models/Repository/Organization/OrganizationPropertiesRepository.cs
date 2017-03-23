@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Context;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
+
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -48,11 +51,11 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     db.SaveChanges();
                 }
-                catch (DbUpdateException)
+                catch (DbUpdateException e)
                 {
                     if (OrganizationPropertyExists(organizationProperty.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -83,7 +86,7 @@ namespace GTIWebAPI.Models.Repository.Organization
 
                 if (organizationProperty == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
 
                 organizationProperty.Deleted = true;
@@ -96,7 +99,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationPropertyExists(id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -137,7 +140,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationPropertyExists(organizationProperty.Id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {

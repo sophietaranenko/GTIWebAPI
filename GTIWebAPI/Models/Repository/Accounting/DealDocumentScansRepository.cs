@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Accounting
 {
@@ -32,6 +33,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
                     }
                 }
             }
+            if (dtos == null)
+            {
+                throw new NotFoundException();
+            }
             return dtos;
         }
 
@@ -49,6 +54,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
                         dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
                     }
                 }
+            }
+            if (dto == null)
+            {
+                throw new NotFoundException();
             }
             return dto;
         }
@@ -69,6 +78,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
                         dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
                     }
                 }
+            }
+            if (dto == null)
+            {
+                throw new NotFoundException();
             }
             return dto;
         }
@@ -91,6 +104,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
             {
                 dtos = db.GetDocumentScanTypes();
             }
+            if (dtos == null)
+            {
+                throw new NotFoundException();
+            }
             return dtos;
         }
 
@@ -108,6 +125,10 @@ namespace GTIWebAPI.Models.Repository.Accounting
                         dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
                     }
                 }
+            }
+            if (dto == null)
+            {
+                throw new NotFoundException();
             }
             return dto;
         }

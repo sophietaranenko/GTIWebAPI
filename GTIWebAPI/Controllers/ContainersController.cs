@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Filters;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Repository.Accounting;
@@ -54,6 +55,14 @@ namespace GTIWebAPI.Controllers
                 List<DealContainerViewDTO> list = repo.GetAll(organizationId, modDateBegin, modeDateEnd);
                 return Ok(list);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -70,6 +79,14 @@ namespace GTIWebAPI.Controllers
             {
                 DealContainerViewDTO container = repo.Get(id);
                 return Ok(container);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
             }
             catch (Exception e)
             {

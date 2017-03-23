@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -40,7 +41,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationAddressExists(organizationAddress.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -79,7 +80,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .FirstOrDefault();
                 if (organizationAddress == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 organizationAddress.Deleted = true;
                 db.MarkAsModified(organizationAddress);
@@ -91,7 +92,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationAddressExists(id))
                     {
-                        throw new ArgumentException("NotFound");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -117,7 +118,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationAddressExists(organizationAddress.Id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {

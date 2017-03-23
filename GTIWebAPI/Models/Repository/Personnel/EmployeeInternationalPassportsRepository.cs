@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GTIWebAPI.Exceptions;
+
 namespace GTIWebAPI.Models.Repository
 {
     public class EmployeeInternationalPassportsRepository : IRepository<EmployeeInternationalPassport>
@@ -36,7 +38,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeInternationalPassportExists(employeeInternationalPassport.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -62,7 +64,7 @@ namespace GTIWebAPI.Models.Repository
                     .FirstOrDefault();
                 if (employeeInternationalPassport == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
                 employeeInternationalPassport.Deleted = true;
                 db.MarkAsModified(employeeInternationalPassport);
@@ -74,7 +76,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeInternationalPassportExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -98,7 +100,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeInternationalPassportExists(employeeInternationalPassport.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -123,6 +125,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
             }
+            if (employeeInternationalPassport == null)
+            {
+                throw new NotFoundException();
+            }
             return employeeInternationalPassport;
         }
 
@@ -132,6 +138,10 @@ namespace GTIWebAPI.Models.Repository
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 passports = db.EmployeeInternationalPassports.Where(p => p.Deleted != true).ToList();
+            }
+            if (passports == null)
+            {
+                throw new NotFoundException();
             }
             return passports;
         }
@@ -145,6 +155,10 @@ namespace GTIWebAPI.Models.Repository
                  db.EmployeeInternationalPassports
                  .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                  .ToList(); 
+            }
+            if (passports == null)
+            {
+                throw new NotFoundException();
             }
             return passports;
         }

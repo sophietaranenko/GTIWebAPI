@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -35,7 +36,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (EmployeeGunExists(item.Id))
                     {
-                        throw new ArgumentException();
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -57,7 +58,7 @@ namespace GTIWebAPI.Models.Repository
 
                 if (employeeGun == null)
                 {
-                    throw new ArgumentException();
+                    throw new NotFoundException();
                 }
 
                 employeeGun.Deleted = true;
@@ -70,7 +71,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeGunExists(id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -94,7 +95,7 @@ namespace GTIWebAPI.Models.Repository
                 {
                     if (!EmployeeGunExists(employeeGun.Id))
                     {
-                        throw new ArgumentException();
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -114,6 +115,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(d => d.Id == id)
                     .FirstOrDefault();
             }
+            if (gun == null)
+            {
+                throw new NotFoundException();
+            }
             return gun;
         }
 
@@ -126,6 +131,10 @@ namespace GTIWebAPI.Models.Repository
                     .Where(p => p.Deleted != true)
                     .ToList();
             }
+            if (guns == null)
+            {
+                throw new NotFoundException();
+            }
             return guns;
         }
 
@@ -137,6 +146,10 @@ namespace GTIWebAPI.Models.Repository
                 guns = db.EmployeeGun
                     .Where(p => p.Deleted != true && p.EmployeeId == employeeId)
                     .ToList();
+            }
+            if (guns == null)
+            {
+                throw new NotFoundException();
             }
             return guns;
         }

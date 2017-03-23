@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Models.Repository.Organization
 {
@@ -40,7 +41,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (OrganizationTaxAddressExists(organizationTaxAddress.Id))
                     {
-                        throw new ArgumentException("Conflict");
+                        throw new ConflictException();
                     }
                     else
                     {
@@ -77,7 +78,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .FirstOrDefault();
                 if (organizationTaxAddress == null)
                 {
-                    throw new ArgumentException("Not found");
+                    throw new NotFoundException();
                 }
                 organizationTaxAddress.Deleted = true;
                 db.MarkAsModified(organizationTaxAddress);
@@ -89,7 +90,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationTaxAddressExists(id))
                     {
-                        throw new ArgumentException("NotFound");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -115,7 +116,7 @@ namespace GTIWebAPI.Models.Repository.Organization
                 {
                     if (!OrganizationTaxAddressExists(organizationTaxAddress.Id))
                     {
-                        throw new ArgumentException("Not found");
+                        throw new NotFoundException();
                     }
                     else
                     {
@@ -150,6 +151,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .Include(d => d.Address.AddressVillage)
                     .FirstOrDefault();
             }
+            if (organizationTaxAddress == null)
+            {
+                throw new NotFoundException();
+            }
             return organizationTaxAddress;
         }
 
@@ -167,6 +172,10 @@ namespace GTIWebAPI.Models.Repository.Organization
                     .Include(d => d.Address.AddressRegion)
                     .Include(d => d.Address.AddressVillage)
                     .ToList();
+            }
+            if (list == null)
+            {
+                throw new NotFoundException();
             }
             return list;
         }
