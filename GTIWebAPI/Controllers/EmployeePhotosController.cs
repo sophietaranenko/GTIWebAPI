@@ -109,30 +109,30 @@ namespace GTIWebAPI.Controllers
         //    }
         //}
 
-        //[GTIFilter]
-        //[HttpGet]
-        //[Route("GetByEmployeeId", Name = "GetByEmployeeId")]
-        //[ResponseType(typeof(List<EmployeePhoto>))]
-        //public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
-        //{
-        //    try
-        //    {
-        //        List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
-        //        return Ok(list);
-        //    }
-        //    catch (NotFoundException nfe)
-        //    {
-        //        return NotFound();
-        //    }
-        //    catch (ConflictException ce)
-        //    {
-        //        return Conflict();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //}
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetByEmployeeId", Name = "GetByEmployeeId")]
+        [ResponseType(typeof(List<EmployeePhoto>))]
+        public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
+        {
+            try
+            {
+                List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
+                return Ok(list);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
 
         [GTIFilter]
