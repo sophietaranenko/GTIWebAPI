@@ -32,7 +32,6 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Number of passport
         /// </summary>
-        [Column("NumberChar")]
         [StringLength(25)]
         public string Number { get; set; }
 

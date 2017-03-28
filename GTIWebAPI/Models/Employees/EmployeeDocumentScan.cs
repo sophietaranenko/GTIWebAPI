@@ -41,7 +41,7 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Name of file
         /// </summary>
-        [StringLength(500)]
+        [StringLength(250)]
         public string ScanName { get; set; }
 
         /// <summary>

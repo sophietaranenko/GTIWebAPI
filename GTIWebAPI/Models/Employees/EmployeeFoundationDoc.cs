@@ -17,7 +17,6 @@ namespace GTIWebAPI.Models.Employees
         [StringLength(10)]
         public string Seria { get; set; }
 
-        [Column("NumberChar")]
         [StringLength(25)]
         public string Number { get; set; }
 
