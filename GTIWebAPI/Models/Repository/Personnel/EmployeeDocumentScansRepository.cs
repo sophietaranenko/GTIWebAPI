@@ -121,16 +121,31 @@ namespace GTIWebAPI.Models.Repository
                             bool result = IsValidImage(scan.Scan);
                             if (IsPDF(scan.Scan))
                             {
-                                var sFile = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + ".pdf");
-                                System.IO.File.WriteAllBytes(sFile, scan.Scan);
+                                try
+                                {
+                                    var sFile = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + ".pdf");
+                                    System.IO.File.WriteAllBytes(sFile, scan.Scan);
+                                    scan.ScanName = sFile;
+                                    db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                catch
+                                {
+                                    throw;
+                                }
+                                continue;
                             }
-                            continue;
+                            else
+                            {
+                                throw;
+                            }
                         }
                     }
                 }
             }
             return scans;
         }
+
 
 
         public static bool IsValidImage(byte[] bytes)
