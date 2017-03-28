@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using GTIWebAPI.Exceptions;
+using System.IO;
+using System.Drawing;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -58,16 +60,13 @@ namespace GTIWebAPI.Models.Repository
         public EmployeeDocumentScan Delete(int id)
         {
             EmployeeDocumentScan scan = new EmployeeDocumentScan();
-
             using (IAppDbContext db = factory.CreateDbContext())
             {
                 scan = db.EmployeeDocumentScans.Where(d => d.Id == id).FirstOrDefault();
-
                 if (scan != null)
                 {
                     scan.Deleted = true;
                     db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-
                     bool saveFailed = false;
                     do
                     {
@@ -83,7 +82,6 @@ namespace GTIWebAPI.Models.Repository
                     } while (saveFailed);
                 }
             }
-
             scan = Get(scan.Id);
             return scan;
         }
@@ -101,7 +99,7 @@ namespace GTIWebAPI.Models.Repository
             List<EmployeeDocumentScan> scans = new List<EmployeeDocumentScan>();
             using (IAppDbContext db = factory.CreateDbContext())
             {
-                List<int> scanIds = db.EmployeeDocumentScans.Where(s => s.ScanName == null).Select(s => s.Id).ToList();
+                List<int> scanIds = db.EmployeeDocumentScans.Where(s => s.ScanName == null && s.Deleted != true).Select(s => s.Id).ToList();
                 foreach (var item in scanIds)
                 {
                     EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
@@ -117,15 +115,50 @@ namespace GTIWebAPI.Models.Repository
                             db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
                             db.SaveChanges();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            throw;
+
+                            bool result = IsValidImage(scan.Scan);
+                            if (IsPDF(scan.Scan))
+                            {
+                                var sFile = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + ".pdf");
+                                System.IO.File.WriteAllBytes(sFile, scan.Scan);
+                            }
+                            continue;
                         }
                     }
                 }
             }
             return scans;
         }
+
+
+        public static bool IsValidImage(byte[] bytes)
+        {
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(bytes))
+                    Image.FromStream(ms);
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsPDF(byte[] bytes)
+        {
+            if (bytes[0] == 0x25 && bytes[1] == 0x50 && bytes[2] == 0x44 && bytes[3] == 0x46)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         public EmployeeDocumentScan Get(int id)
         {

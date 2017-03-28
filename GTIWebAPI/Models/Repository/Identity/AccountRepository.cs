@@ -72,9 +72,16 @@ namespace GTIWebAPI.Models.Repository.Identity
         public string GetProfilePicturePathByUserId(string userId)
         {
             UserImage image = new UserImage();
-            using (IAppDbContext db = factory.CreateDbContext())
+            try
             {
-                image = db.UserImages.Where(d => d.UserId == userId && d.IsProfilePicture == true).FirstOrDefault();
+                using (IAppDbContext db = factory.CreateDbContext())
+                {
+                    image = db.UserImages.Where(d => d.UserId == userId && d.IsProfilePicture == true).FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                string m = e.Message;
             }
             if (image != null)
             {

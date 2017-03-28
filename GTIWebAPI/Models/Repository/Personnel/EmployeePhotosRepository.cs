@@ -97,7 +97,7 @@ namespace GTIWebAPI.Models.Repository
                 //пришлось доставать Idшки,
                 //а потом по каждой Id - EmployeePhoto 
                 List<int> photoIds = new List<int>();
-                photoIds = db.EmployeePhotos.Where(s => s.PhotoName == null)
+                photoIds = db.EmployeePhotos.Where(s => s.PhotoName == null && s.Deleted != true)
                     .Select(s => s.Id)
                     .ToList();
                 foreach (var item in photoIds)
