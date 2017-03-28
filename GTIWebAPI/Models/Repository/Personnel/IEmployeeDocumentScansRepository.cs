@@ -22,7 +22,7 @@ namespace GTIWebAPI.Models.Repository
 
         List<EmployeeDocumentScan> GetByEmployeeId(int employeeId);
 
-        List<EmployeeDocumentScan> FromByteArrayToString();
+        //List<EmployeeDocumentScan> FromByteArrayToString();
 
 
     }

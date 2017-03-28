@@ -14,7 +14,7 @@ namespace GTIWebAPI.Models.Repository
 
         string SaveFile(HttpPostedFile postedFile);
 
-        List<EmployeePhoto> PutDbFilesToFilesystem();
+        //List<EmployeePhoto> PutDbFilesToFilesystem();
 
         List<EmployeePhoto> GetByEmployeeId(int employeeId);
 

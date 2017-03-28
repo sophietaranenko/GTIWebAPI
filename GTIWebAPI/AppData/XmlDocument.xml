@@ -856,12 +856,6 @@
             <param name="tableId">Id of document which image we're uploading</param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.PutDbFilesToFilesystem">
-            <summary>
-            Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с реальной базой данных)
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.EmployeeDocumentScansController.GetEmployeeDocumentScanByDocumentId(System.String,System.Int32)">
             <summary>
             Get all scans by document Id 
@@ -974,12 +968,6 @@
             <summary>
             Controller for storing and showing Employee photos
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.PutDbFilesToFilesystem">
-            <summary>
-            Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с новой базой данных)
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.DeleteEmployeePhoto(System.Int32)">
             <summary>
@@ -1269,11 +1257,6 @@
         <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.TableId">
             <summary>
             Id in table named like stored in prop TableName
-            </summary>
-        </member>
-        <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.Scan">
-            <summary>
-            Byte array image, should be replaced 
             </summary>
         </member>
         <member name="P:GTIWebAPI.Models.Employees.EmployeeDocumentScan.ScanTableName">

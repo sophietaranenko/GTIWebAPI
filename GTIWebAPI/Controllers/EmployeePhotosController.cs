@@ -81,58 +81,58 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с новой базой данных)
-        /// </summary>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpPut]
-        [Route("PutDbFilesToFilesystem")]
-        public IHttpActionResult PutDbFilesToFilesystem()
-        {
-            try
-            {
-                List<EmployeePhoto> photos = repo.PutDbFilesToFilesystem();
-                return Ok(photos);
-            }
-            catch (NotFoundException nfe)
-            {
-                return NotFound();
-            }
-            catch (ConflictException ce)
-            {
-                return Conflict();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        ///// <summary>
+        ///// Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с новой базой данных)
+        ///// </summary>
+        ///// <returns></returns>
+        //[GTIFilter]
+        //[HttpPut]
+        //[Route("PutDbFilesToFilesystem")]
+        //public IHttpActionResult PutDbFilesToFilesystem()
+        //{
+        //    try
+        //    {
+        //        List<EmployeePhoto> photos = repo.PutDbFilesToFilesystem();
+        //        return Ok(photos);
+        //    }
+        //    catch (NotFoundException nfe)
+        //    {
+        //        return NotFound();
+        //    }
+        //    catch (ConflictException ce)
+        //    {
+        //        return Conflict();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetByEmployeeId", Name = "GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeePhoto>))]
-        public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
-        {
-            try
-            {
-                List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
-                return Ok(list);
-            }
-            catch (NotFoundException nfe)
-            {
-                return NotFound();
-            }
-            catch (ConflictException ce)
-            {
-                return Conflict();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //[GTIFilter]
+        //[HttpGet]
+        //[Route("GetByEmployeeId", Name = "GetByEmployeeId")]
+        //[ResponseType(typeof(List<EmployeePhoto>))]
+        //public IHttpActionResult GetEmployeePhotoByEmployeeId(int employeeId)
+        //{
+        //    try
+        //    {
+        //        List<EmployeePhoto> list = repo.GetByEmployeeId(employeeId);
+        //        return Ok(list);
+        //    }
+        //    catch (NotFoundException nfe)
+        //    {
+        //        return NotFound();
+        //    }
+        //    catch (ConflictException ce)
+        //    {
+        //        return Conflict();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
 
         [GTIFilter]

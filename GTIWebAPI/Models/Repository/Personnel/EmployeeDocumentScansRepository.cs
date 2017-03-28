@@ -94,57 +94,57 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
-        public List<EmployeeDocumentScan> FromByteArrayToString()
-        {
-            List<EmployeeDocumentScan> scans = new List<EmployeeDocumentScan>();
-            using (IAppDbContext db = factory.CreateDbContext())
-            {
-                List<int> scanIds = db.EmployeeDocumentScans.Where(s => s.ScanName == null && s.Deleted != true).Select(s => s.Id).ToList();
-                foreach (var item in scanIds)
-                {
-                    EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
-                    if (scan.Scan != null)
-                    {
-                        try
-                        {
-                            WebImage image = new WebImage(scan.Scan);
-                            var formatString = image.ImageFormat.ToString();
-                            var filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                            image.Save(filePath);
-                            scan.ScanName = filePath;
-                            db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                        catch (Exception e)
-                        {
+        //public List<EmployeeDocumentScan> FromByteArrayToString()
+        //{
+        //    List<EmployeeDocumentScan> scans = new List<EmployeeDocumentScan>();
+        //    using (IAppDbContext db = factory.CreateDbContext())
+        //    {
+        //        List<int> scanIds = db.EmployeeDocumentScans.Where(s => s.ScanName == null && s.Deleted != true).Select(s => s.Id).ToList();
+        //        foreach (var item in scanIds)
+        //        {
+        //            EmployeeDocumentScan scan = db.EmployeeDocumentScans.Find(item);
+        //            if (scan.Scan != null)
+        //            {
+        //                try
+        //                {
+        //                    WebImage image = new WebImage(scan.Scan);
+        //                    var formatString = image.ImageFormat.ToString();
+        //                    var filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
+        //                    image.Save(filePath);
+        //                    scan.ScanName = filePath;
+        //                    db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
+        //                    db.SaveChanges();
+        //                }
+        //                catch (Exception e)
+        //                {
 
-                            bool result = IsValidImage(scan.Scan);
-                            if (IsPDF(scan.Scan))
-                            {
-                                try
-                                {
-                                    var sFile = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + ".pdf");
-                                    System.IO.File.WriteAllBytes(sFile, scan.Scan);
-                                    scan.ScanName = sFile;
-                                    db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
-                                    db.SaveChanges();
-                                }
-                                catch
-                                {
-                                    throw;
-                                }
-                                continue;
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                    }
-                }
-            }
-            return scans;
-        }
+        //                    bool result = IsValidImage(scan.Scan);
+        //                    if (IsPDF(scan.Scan))
+        //                    {
+        //                        try
+        //                        {
+        //                            var sFile = HttpContext.Current.Server.MapPath("~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + ".pdf");
+        //                            System.IO.File.WriteAllBytes(sFile, scan.Scan);
+        //                            scan.ScanName = sFile;
+        //                            db.Entry(scan).State = System.Data.Entity.EntityState.Modified;
+        //                            db.SaveChanges();
+        //                        }
+        //                        catch
+        //                        {
+        //                            throw;
+        //                        }
+        //                        continue;
+        //                    }
+        //                    else
+        //                    {
+        //                        throw;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return scans;
+        //}
 
 
 

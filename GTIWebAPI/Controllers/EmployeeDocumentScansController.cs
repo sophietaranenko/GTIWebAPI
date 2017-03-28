@@ -94,34 +94,34 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с реальной базой данных)
-        /// </summary>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpPut]
-        [Route("PutDbFilesToFilesystem")]
-        [ResponseType(typeof(List<EmployeeDocumentScan>))]
-        public IHttpActionResult PutDbFilesToFilesystem()
-        {
-            try
-            {
-                List<EmployeeDocumentScan> scanList = repo.FromByteArrayToString();
-                return Ok(scanList);
-            }
-            catch (NotFoundException nfe)
-            {
-                return NotFound();
-            }
-            catch (ConflictException ce)
-            {
-                return Conflict();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        ///// <summary>
+        ///// Читает байтовый массив и превращает его в файл (для первоначального переноса при начале работы с реальной базой данных)
+        ///// </summary>
+        ///// <returns></returns>
+        //[GTIFilter]
+        //[HttpPut]
+        //[Route("PutDbFilesToFilesystem")]
+        //[ResponseType(typeof(List<EmployeeDocumentScan>))]
+        //public IHttpActionResult PutDbFilesToFilesystem()
+        //{
+        //    try
+        //    {
+        //        List<EmployeeDocumentScan> scanList = repo.FromByteArrayToString();
+        //        return Ok(scanList);
+        //    }
+        //    catch (NotFoundException nfe)
+        //    {
+        //        return NotFound();
+        //    }
+        //    catch (ConflictException ce)
+        //    {
+        //        return Conflict();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
         /// <summary>
         /// Get all scans by document Id 

@@ -15,8 +15,8 @@ namespace GTIWebAPI.Models.Employees
 
         public int? EmployeeId { get; set; }
 
-        [Column(TypeName = "image")]
-        public byte[] Photo { get; set; }
+        //[Column(TypeName = "image")]
+        //public byte[] Photo { get; set; }
 
         [StringLength(500)]
         public string PhotoName { get; set; }

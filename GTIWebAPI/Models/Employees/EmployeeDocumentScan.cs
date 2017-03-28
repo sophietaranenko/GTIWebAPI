@@ -21,14 +21,14 @@ namespace GTIWebAPI.Models.Employees
         /// </summary>
         public int? TableId { get; set; }
 
-        //необходимо оставить это поле до тех пор, 
-        //пока не будет запущена процедура преобразования байтовых массивов 
-        //в нормальные файлы
-        /// <summary>
-        /// Byte array image, should be replaced 
-        /// </summary>
-        [Column(TypeName = "image")]
-        public byte[] Scan { get; set; }
+        ////необходимо оставить это поле до тех пор, 
+        ////пока не будет запущена процедура преобразования байтовых массивов 
+        ////в нормальные файлы
+        ///// <summary>
+        ///// Byte array image, should be replaced 
+        ///// </summary>
+        //[Column(TypeName = "image")]
+        //public byte[] Scan { get; set; }
 
         //нужно, потому что переопределяет таблицу 
         /// <summary>

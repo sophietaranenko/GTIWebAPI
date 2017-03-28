@@ -88,44 +88,44 @@ namespace GTIWebAPI.Models.Repository
             return list;
         }
 
-        public List<EmployeePhoto> PutDbFilesToFilesystem()
-        {
-            List<EmployeePhoto> photos = new List<EmployeePhoto>();
-            using (IAppDbContext db = factory.CreateDbContext())
-            {
-                //поскольку тут байтовые массивы, все данные тянутся долго, и все подвисает
-                //пришлось доставать Idшки,
-                //а потом по каждой Id - EmployeePhoto 
-                List<int> photoIds = new List<int>();
-                photoIds = db.EmployeePhotos.Where(s => s.PhotoName == null && s.Deleted != true)
-                    .Select(s => s.Id)
-                    .ToList();
-                foreach (var item in photoIds)
-                {
-                    EmployeePhoto photo = db.EmployeePhotos.Find(item);
-                    if (photo.Photo != null)
-                    {
-                        try
-                        {
-                            WebImage image = new WebImage(photo.Photo);
-                            var formatString = image.ImageFormat.ToString();
-                            var filePath = HttpContext.Current.Server.MapPath(
-                             "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
-                            image.Save(filePath);
-                            photo.PhotoName = filePath;
-                            db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
-                            db.SaveChanges();
-                            photos.Add(photo);
-                        }
-                        catch
-                        {
-                            throw;
-                        }
-                    }
-                }
-            }
-            return photos;
-        }
+        //public List<EmployeePhoto> PutDbFilesToFilesystem()
+        //{
+        //    List<EmployeePhoto> photos = new List<EmployeePhoto>();
+        //    using (IAppDbContext db = factory.CreateDbContext())
+        //    {
+        //        //поскольку тут байтовые массивы, все данные тянутся долго, и все подвисает
+        //        //пришлось доставать Idшки,
+        //        //а потом по каждой Id - EmployeePhoto 
+        //        List<int> photoIds = new List<int>();
+        //        photoIds = db.EmployeePhotos.Where(s => s.PhotoName == null && s.Deleted != true)
+        //            .Select(s => s.Id)
+        //            .ToList();
+        //        foreach (var item in photoIds)
+        //        {
+        //            EmployeePhoto photo = db.EmployeePhotos.Find(item);
+        //            if (photo.Photo != null)
+        //            {
+        //                try
+        //                {
+        //                    WebImage image = new WebImage(photo.Photo);
+        //                    var formatString = image.ImageFormat.ToString();
+        //                    var filePath = HttpContext.Current.Server.MapPath(
+        //                     "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "." + formatString);
+        //                    image.Save(filePath);
+        //                    photo.PhotoName = filePath;
+        //                    db.Entry(photo).State = System.Data.Entity.EntityState.Modified;
+        //                    db.SaveChanges();
+        //                    photos.Add(photo);
+        //                }
+        //                catch
+        //                {
+        //                    throw;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return photos;
+        //}
 
         public string SaveFile(HttpPostedFile postedFile)
         {
