@@ -7,6 +7,7 @@ namespace GTIWebAPI.Models.Organizations
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Linq;
 
     /// <summary>
     /// All the organizations 
@@ -136,8 +137,12 @@ namespace GTIWebAPI.Models.Organizations
                 ParentOrganizationId = this.ParentOrganizationId,
                 CountryId = this.CountryId,
                 Country = this.Country == null? null : this.Country.ToDTO(),
-                OrganizationLegalForm = this.OrganizationLegalForm == null? null : this.OrganizationLegalForm.ToDTO()
-               
+                OrganizationLegalForm = this.OrganizationLegalForm == null? null : this.OrganizationLegalForm.ToDTO(),
+                OrganizationAddresses = this.OrganizationAddresses == null? null : this.OrganizationAddresses.Select(d => d.ToDTO()).ToList(),
+                OrganizationContactPersons = this.OrganizationContactPersonViews == null? null : this.OrganizationContactPersonViews,
+                OrganizationGTILinks = this.OrganizationGTILinks == null? null : this.OrganizationGTILinks.Select(D => D.ToDTO()).ToList(),
+                OrganizationLanguageNames = this.OrganizationLanguageNames == null ? null : this.OrganizationLanguageNames.Select(D => D.ToDTO()).ToList(),
+                OrganizationTaxAddresses = this.OrganizationTaxAddresses == null ? null : this.OrganizationTaxAddresses.Select(d => d.ToDTO()).ToList()
             };
             return dto;
         }
@@ -177,7 +182,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
 
-        public IEnumerable<OrganizationContactPersonDTO> OrganizationContactPersons { get; set; }
+        public IEnumerable<OrganizationContactPersonView> OrganizationContactPersons { get; set; }
 
         public IEnumerable<OrganizationGTILinkDTO> OrganizationGTILinks { get; set; }
 
