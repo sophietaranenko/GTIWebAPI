@@ -266,7 +266,6 @@ namespace GTIWebAPI.Models.Context
         /// <returns></returns>
         public virtual List<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId)
         {
-
             SqlParameter parameter = new SqlParameter
             {
                 ParameterName = "@Employeeid",
