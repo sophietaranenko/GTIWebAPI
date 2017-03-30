@@ -15,5 +15,7 @@ namespace GTIWebAPI.Novell
         bool CreateOrganization(INovellOrganizationContactPerson person);
 
         string FindEmail(string username);
+
+        string FindOffice(string username);
     }
 }

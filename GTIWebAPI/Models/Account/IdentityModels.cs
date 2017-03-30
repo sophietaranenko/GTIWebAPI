@@ -38,7 +38,7 @@ namespace GTIWebAPI.Models.Account
 
         public int TableId { get; set; }
 
-        //public virtual ICollection<UserImage> Images { get; set; }
+        public string LDAPou { get; set; }
 
         public virtual ICollection<UserRight> UserRights { get; set; }
 
@@ -94,6 +94,8 @@ namespace GTIWebAPI.Models.Account
             }
             return dtos;
         }
+
+        
 
         /// <summary>
         /// method that creates a new Claims Identity 

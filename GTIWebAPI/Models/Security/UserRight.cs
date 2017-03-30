@@ -66,4 +66,5 @@ namespace GTIWebAPI.Models.Security
         public Int32 ControllerId { get; set; }
         public Int32 ActionId { get; set; }
     }
+
 }

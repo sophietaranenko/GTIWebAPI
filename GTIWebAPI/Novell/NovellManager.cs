@@ -45,6 +45,37 @@ namespace GTIWebAPI.Novell
             return FindEmailByCN(username);
         }
 
+        public string FindOffice(string username)
+        {
+            return FindOUByCN(username);
+        }
+
+        private string FindOUByCN(string username)
+        {
+            string office = "";
+
+            //connect to Novell with one of server addresses 
+            foreach (string serverAddress in ServerAddresses)
+            {
+                try
+                {
+                    using (NovellProvider novell = new NovellProvider(serverAddress))
+                    {
+                        //bind with gtildap
+                        novell.Bind();
+                        office = novell.FindOffice(username);
+                    }
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+
+            }
+            //if Connect Error happened, restart with another server address 
+            return office;
+
+        }
         private string FindEmailByCN(string username)
         {
             string email = "";
@@ -70,6 +101,8 @@ namespace GTIWebAPI.Novell
             //if Connect Error happened, restart with another server address 
             return email;
         }
+
+
 
         private string GenerateNovellLogin(string login)
         {
@@ -253,6 +286,34 @@ namespace GTIWebAPI.Novell
                 return email;
             }
 
+            public string FindOffice(string username)
+            {
+                string office = "";
+
+                LdapEntry nextEntry = null;
+
+                try
+                {
+                    LdapSearchResults lsc = ldapConn.Search("", LdapConnection.SCOPE_SUB, "cn=" + username.Trim(), null, false);
+                    while (lsc.hasMore())
+                    {
+                        nextEntry = lsc.next();
+                    }
+                }
+                catch (LdapException e)
+                {
+                    throw e;
+                }
+
+                var attribute = nextEntry.getAttribute("ou");
+                if (attribute != null)
+                {
+                    office = attribute.StringValueArray[0];
+                }
+
+                return office;
+
+            }
 
             public bool EntryExists(string login)
             {

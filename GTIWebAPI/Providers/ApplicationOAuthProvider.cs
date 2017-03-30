@@ -86,6 +86,7 @@ namespace GTIWebAPI.Providers
                 {
                     bool dbResult = false;
                     dbResult = repo.CreateHoldingUser(context.UserName, context.Password);
+
                     if(dbResult == true)
                     {
                         user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
@@ -123,6 +124,7 @@ namespace GTIWebAPI.Providers
                 {
                     UserName = username,
                     Email = novell.FindEmail(username),
+                    LDAPou = novell.FindOffice(username),
                     TableName = "Employee",
                     TableId = employeeId
                 };
