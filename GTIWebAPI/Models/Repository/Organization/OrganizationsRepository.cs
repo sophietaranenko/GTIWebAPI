@@ -224,13 +224,8 @@ namespace GTIWebAPI.Models.Repository.Organization
                         throw;
                     }
                 }
-                organization = db.Organizations
-                   .Where(d => d.Id == organization.Id)
-                   .Include(d => d.Country)
-                   .Include(d => d.OrganizationLegalForm)
-                   .FirstOrDefault();
             }
-            return organization;
+            return GetView(organization.Id);
         }
 
         public Organizations.Organization DeleteOrganization(int id)
