@@ -12,16 +12,18 @@ using System.Security.Cryptography.X509Certificates;
 using Mono.Security;
 using Mono.Security.Cryptography;
 using System.Runtime.CompilerServices;
+using System.Collections.Specialized;
 
 namespace GTIWebAPI.Novell
 {
     public class NovellManager : INovellManager
     {
-        //Миша писал в скайп 17.02 
-        //сейчас только 0.9 работает в режиме non-TLS. Остальные требуют TLS для подключения к ДВФЗ-серверу. 
-        //Вообще я бы хотел для авторизации и всех операций с LDAP использовать в порядке очередности: 0.20, 1.1, 0.6, 0.9.
-        private static string[] ServerAddresses = { "192.168.0.20", "192.168.1.1", "192.168.0.6", "192.168.0.9" };
+        private StringCollection  ServerAddresses;  
 
+        public NovellManager()
+        {
+            ServerAddresses = Properties.Settings.Default.NovellIPAddresses;
+        }
 
         public string GenerateLogin(string login)
         {
@@ -221,9 +223,10 @@ namespace GTIWebAPI.Novell
             }
 
             //public void Bind(string LdapServer = "192.168.0.1", string DN = "cn=gtildap,ou=Tech,ou=ALL,o=World", string Password = "wemayont")
-            public void Bind(string DN = "cn=gtildap,ou=odessa,o=world", string Password = "wemayont")
+            public void Bind()
             {
-                //bHowToProceed = true;
+                string DN = Properties.Settings.Default.NovellDN; 
+                string Password = Properties.Settings.Default.NovellPassword; 
                 ldapConn.Bind(DN, Password);
                 bindCount++;
             }

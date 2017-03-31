@@ -248,7 +248,7 @@ namespace GTIWebAPI.Models.Account
         public async Task SendAsync(IdentityMessage message)
         {
             var email =
-               new MailMessage(new MailAddress("gtidonotreply@gtinvest.com", "(do not reply)"),
+               new MailMessage(new MailAddress(Properties.Settings.Default.SMTPEmailAddress, "(do not reply)"),
                new MailAddress(message.Destination))
                {
                    Subject = message.Subject,
@@ -257,9 +257,9 @@ namespace GTIWebAPI.Models.Account
                };
             try
             {
-                using (var client = new SmtpClient("192.168.0.9", 25)) // SmtpClient configuration comes from config file
+                using (var client = new SmtpClient(Properties.Settings.Default.SMTPIPAddress, 25)) // SmtpClient configuration comes from config file
                 {
-                    client.Credentials = new System.Net.NetworkCredential("gtidonotreply@gtinvest.com", "aluqdong");
+                    client.Credentials = new System.Net.NetworkCredential(Properties.Settings.Default.SMTPEmailAddress, Properties.Settings.Default.SMTPEmailPassword);
                     await client.SendMailAsync(email);
                 }
             }

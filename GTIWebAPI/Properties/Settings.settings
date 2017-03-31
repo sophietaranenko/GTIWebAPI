@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GTIWebAPI.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="NovellIPAddresses" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;192.168.0.20&lt;/string&gt;
+  &lt;string&gt;192.168.1.1&lt;/string&gt;
+  &lt;string&gt;192.168.0.6&lt;/string&gt;
+  &lt;string&gt;192.168.0.9&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="NovellDN" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">cn=gtildap,ou=odessa,o=world</Value>
+    </Setting>
+    <Setting Name="NovellPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">wemayont</Value>
+    </Setting>
+    <Setting Name="SMTPIPAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.0.9</Value>
+    </Setting>
+    <Setting Name="SMTPEmailAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">gtidonotreply@gtinvest.com</Value>
+    </Setting>
+    <Setting Name="SMTPEmailPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">aluqdong</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
