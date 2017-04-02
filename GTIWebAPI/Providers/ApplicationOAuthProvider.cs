@@ -124,7 +124,7 @@ namespace GTIWebAPI.Providers
                 {
                     UserName = username,
                     Email = novell.FindEmail(username),
-                    LDAPou = novell.FindOffice(username),
+                    //LDAPou = novell.FindOffice(username),
                     TableName = "Employee",
                     TableId = employeeId
                 };

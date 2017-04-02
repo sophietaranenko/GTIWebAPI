@@ -28,5 +28,10 @@ namespace GTIWebAPI.Tests.Novell
         {
             return login.Replace(" ", "");
         }
+
+        public string FindOffice(string username)
+        {
+            return "Formag odessa";
+        }
     }
 }

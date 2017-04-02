@@ -109,7 +109,7 @@ namespace GTIWebAPI.Controllers
                 UserRight right = new UserRight();
 
                 int Id = right.NewId(db);
-                right.Id = Id;
+                right.Id = Guid.NewGuid();
                 right.OfficeId = item.OfficeId;
                 right.ControllerId = item.ControllerId;
                 right.ActionId = item.ActionId;
@@ -148,7 +148,7 @@ namespace GTIWebAPI.Controllers
                 UserRight right = new UserRight();
 
                 int Id = right.NewId(db);
-                right.Id = Id;
+                right.Id = Guid.NewGuid();
                 right.OfficeId = item.OfficeId;
                 right.ControllerId = item.ControllerId;
                 right.ActionId = item.ActionId;

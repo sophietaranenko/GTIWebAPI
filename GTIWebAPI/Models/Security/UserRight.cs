@@ -19,8 +19,8 @@ namespace GTIWebAPI.Models.Security
 
         //}
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public Int32 Id { get; set; }
+       // [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid Id { get; set; }
 
         public string AspNetUserId { get; set; }
 
