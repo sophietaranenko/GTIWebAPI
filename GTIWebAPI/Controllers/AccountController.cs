@@ -366,14 +366,8 @@ namespace GTIWebAPI.Controllers
         public async Task SendEmailWithCredentials(INovellOrganizationContactPerson novellPerson, string userId)
         {
             await UserManager.SendEmailAsync(userId,
-                                            "Register user",
-                                            @"You have successfully registered for WEBSITE_URL. <br>
-                                            Thank you for your interest and we hope you will find useful information! <br> 
-                                            Your credentials in WEBSITE_URL: <br> 
-                                            login: " + novellPerson.Login + "<br>" +
-                                            "password: " + novellPerson.Password + "<br>" +
-                                            @"информация, которую мы знаем о контакнтом лице организации
-                                            тут реклама, пара картинок");
+                                            "Регистрация",
+                                            "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
         }
 
 
