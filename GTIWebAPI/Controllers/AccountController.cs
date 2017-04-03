@@ -368,6 +368,8 @@ namespace GTIWebAPI.Controllers
         {
             string letterText = File.ReadAllText(HttpContext.Current.Server.MapPath("~/HtmlMailFile/letter.html"));
 
+            letterText = letterText.Replace("NEW_USER_LOGIN",novellPerson.Login);
+            letterText = letterText.Replace("NEW_USER_PASSWORD", novellPerson.Password);
 
             await UserManager.SendEmailAsync(userId, "Регистрация в кабинете клиента GTI", letterText);
 
