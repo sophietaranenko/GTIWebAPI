@@ -24,6 +24,7 @@ using GTIWebAPI.Filters;
 using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Repository.Identity;
 using GTIWebAPI.Exceptions;
+using System.IO;
 
 namespace GTIWebAPI.Controllers
 {
@@ -365,9 +366,14 @@ namespace GTIWebAPI.Controllers
 
         public async Task SendEmailWithCredentials(INovellOrganizationContactPerson novellPerson, string userId)
         {
-            await UserManager.SendEmailAsync(userId,
-                                            "Регистрация",
-                                            "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
+            string letterText = File.ReadAllText(HttpContext.Current.Server.MapPath("~/HtmlMailFile/letter.html"));
+
+
+            await UserManager.SendEmailAsync(userId, "Регистрация в кабинете клиента GTI", letterText);
+
+           // await UserManager.SendEmailAsync(userId,
+                                           // "Регистрация",
+                                           // "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
         }
 
 
