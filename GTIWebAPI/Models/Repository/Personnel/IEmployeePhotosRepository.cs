@@ -21,5 +21,7 @@ namespace GTIWebAPI.Models.Repository
         EmployeePhoto Get(int id);
 
         EmployeePhoto Delete(int id);
+
+        //EmployeePhoto RenameFile(int id);
     }
 }

@@ -9,6 +9,7 @@ using GTIWebAPI.Models.Context;
 using System.Data.Entity.Infrastructure;
 using System.Web.Helpers;
 using GTIWebAPI.Exceptions;
+using GTIWebAPI.Providers;
 
 namespace GTIWebAPI.Models.Repository
 {
@@ -132,13 +133,15 @@ namespace GTIWebAPI.Models.Repository
             string filePath = "";
             if (postedFile != null)
             {
+                string stringFileName = RandomPasswordGenerator.GeneratePassword(10);
                 using (IAppDbContext db = factory.CreateDbContext())
                 {
                     filePath = HttpContext.Current.Server.MapPath(
-    "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
+    "~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(postedFile.FileName));
                 }
                 postedFile.SaveAs(filePath);
             }
+            filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
             return filePath;
         }
 

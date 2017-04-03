@@ -35,7 +35,7 @@ namespace GTIWebAPI.Models.Repository
                 using (IAppDbContext db = factory.CreateDbContext())
                 {
                     filePath = HttpContext.Current.Server.MapPath(
-    "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
+    "~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(postedFile.FileName));
                 }
                 postedFile.SaveAs(filePath);
             }
@@ -43,6 +43,7 @@ namespace GTIWebAPI.Models.Repository
             {
                 throw new NotFoundException();
             }
+            filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
             return filePath;
         }
 

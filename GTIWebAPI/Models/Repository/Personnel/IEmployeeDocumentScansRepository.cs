@@ -21,9 +21,5 @@ namespace GTIWebAPI.Models.Repository
         List<EmployeeDocumentScan> GetByDocumentId(string tableName, int tableId);
 
         List<EmployeeDocumentScan> GetByEmployeeId(int employeeId);
-
-        //List<EmployeeDocumentScan> FromByteArrayToString();
-
-
     }
 }
