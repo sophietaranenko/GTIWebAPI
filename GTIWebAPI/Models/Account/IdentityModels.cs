@@ -58,35 +58,100 @@ namespace GTIWebAPI.Models.Account
                             dto.OfficeId = item.Id;
                             dto.OfficeName = item.ShortName;
 
-                            List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                            var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
 
-                            if (cList != null)
+                            List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
+                            var bList = UserRights.Where(d => d.OfficeId == item.Id).Select(d => d.Controller.ControllerBox).Distinct().ToList();
+
+                            if (bList != null)
                             {
-                                foreach (var c in cList)
+                                foreach (var box in bList)
                                 {
-                                    ControllerDTO cDto = new ControllerDTO();
-                                    cDto.ControllerName = c.Name;
-                                    cDto.Id = c.Id;
 
-                                    List<ActionDTO> actionList = new List<ActionDTO>();
-                                    var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
-                                    if (aList != null)
+                                    ControllerBoxDTO boxDTO = new ControllerBoxDTO();
+                                    boxDTO.Name = box.Name;
+                                    boxDTO.Id = box.Id;
+
+
+
+                                    List<ControllerDTO> controllerList = new List<ControllerDTO>();
+                                    var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
+
+                                    if (cList != null)
                                     {
-                                        foreach (var a in aList)
+                                        foreach (var c in cList)
                                         {
-                                            ActionDTO aDto = new ActionDTO();
-                                            aDto.Id = a.Id;
-                                            aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
-                                            aDto.ActionName = a.Name == null ? "" : a.Name;
-                                            actionList.Add(aDto);
+                                            ControllerDTO cDto = new ControllerDTO();
+                                            cDto.ControllerName = c.Name;
+                                            cDto.Id = c.Id;
+
+                                            List<ActionDTO> actionList = new List<ActionDTO>();
+                                            var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
+                                            if (aList != null)
+                                            {
+                                                foreach (var a in aList)
+                                                {
+                                                    ActionDTO aDto = new ActionDTO();
+                                                    aDto.Id = a.Id;
+                                                    aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
+                                                    aDto.ActionName = a.Name == null ? "" : a.Name;
+                                                    actionList.Add(aDto);
+                                                }
+                                            }
+                                            cDto.Actions = actionList;
+                                            controllerList.Add(cDto);
                                         }
                                     }
-                                    cDto.Actions = actionList;
-                                    controllerList.Add(cDto);
+
+                                    boxDTO.Controllers = controllerList;
+                                    boxesList.Add(boxDTO);
+
+
+
+
                                 }
                             }
-                            dto.Controllers = controllerList;
+
+
+
+
+
+                            //List<ControllerDTO> controllerList = new List<ControllerDTO>();
+                            //var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
+
+                            //if (cList != null)
+                            //{
+                            //    foreach (var c in cList)
+                            //    {
+                            //        ControllerDTO cDto = new ControllerDTO();
+                            //        cDto.ControllerName = c.Name;
+                            //        cDto.Id = c.Id;
+
+                            //        List<ActionDTO> actionList = new List<ActionDTO>();
+                            //        var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
+                            //        if (aList != null)
+                            //        {
+                            //            foreach (var a in aList)
+                            //            {
+                            //                ActionDTO aDto = new ActionDTO();
+                            //                aDto.Id = a.Id;
+                            //                aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
+                            //                aDto.ActionName = a.Name == null ? "" : a.Name;
+                            //                actionList.Add(aDto);
+                            //            }
+                            //        }
+                            //        cDto.Actions = actionList;
+                            //        controllerList.Add(cDto);
+                            //    }
+                            //}
+
+
+
+
+
+
+
+
+                            dto.Boxes = boxesList;
                             dtos.Add(dto);
                         }
                     }
@@ -172,6 +237,8 @@ namespace GTIWebAPI.Models.Account
                 .WithMany(s => s.UserRights);
 
 
+
+
             modelBuilder.Entity<UserRight>()
                    .HasRequired<Service.OfficeSecurity>(s => s.OfficeSecurity)
                    .WithMany(s => s.UserRights);
@@ -180,6 +247,10 @@ namespace GTIWebAPI.Models.Account
             modelBuilder.Entity<UserRight>()
                    .HasRequired<ApplicationUser>(s => s.ApplicationUser)
                    .WithMany(s => s.UserRights);
+
+            modelBuilder.Entity<Controller>()
+                .HasRequired<ControllerBox>(s => s.ControllerBox)
+                .WithMany(d => d.Controllers);
         }
 
         public bool CreateHoldingUser(string email, string password)

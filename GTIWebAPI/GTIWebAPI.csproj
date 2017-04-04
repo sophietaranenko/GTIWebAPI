@@ -512,6 +512,7 @@
     <Compile Include="Models\Repository\Personnel\IEmployeePhotosRepository.cs" />
     <Compile Include="Models\Repository\Personnel\IEmployeesRepository.cs" />
     <Compile Include="Models\Repository\Personnel\IPersonnelRepository.cs" />
+    <Compile Include="Models\Security\ControllerBox.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightsManager.cs" />
     <Compile Include="Models\Service\GTITable.cs" />
