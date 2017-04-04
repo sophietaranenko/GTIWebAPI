@@ -74,7 +74,7 @@ namespace GTIWebAPI.Models.Account
 
 
                                     List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                                    var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
+                                    var cList = UserRights.Where(r => r.OfficeId == item.Id && r.Controller.BoxId == box.Id).Select(r => r.Controller).Distinct().ToList();
 
                                     if (cList != null)
                                     {
