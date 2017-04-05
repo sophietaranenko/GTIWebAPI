@@ -6,6 +6,7 @@ using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using GTIWebAPI.Filters;
+using System.Web.Http.Cors;
 
 namespace GTIWebAPI
 {
@@ -33,6 +34,9 @@ namespace GTIWebAPI
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
             //config.Routes.MapHttpRoute(
             //    name: "ActionApi",
             //    routeTemplate: "api/{controller}/{action}/{id}",
