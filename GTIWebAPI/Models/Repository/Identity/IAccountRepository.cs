@@ -27,6 +27,8 @@ namespace GTIWebAPI.Models.Repository.Identity
 
         bool CreateHoldingUser(string email, string pasword);
 
+        string GetFullUserName(string userId);
+
         OrganizationContactPersonView FindPerson(int id);
 
 

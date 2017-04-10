@@ -26,7 +26,7 @@ namespace GTIWebAPI.Models.Dictionary
             OfficeDTO dto = new OfficeDTO
             {
                 Id = this.Id,
-                ShortName = this.NativeName
+                ShortName = this.ShortName 
             };
             return dto;
         }

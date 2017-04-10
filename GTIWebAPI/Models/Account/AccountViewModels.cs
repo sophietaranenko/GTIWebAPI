@@ -33,6 +33,8 @@ namespace GTIWebAPI.Models.Account
 
         public string UserName { get; set; }
 
+        public string FullUserName { get; set; }
+
         public string Email { get; set; }
 
         //public bool HasRegistered { get; set; }

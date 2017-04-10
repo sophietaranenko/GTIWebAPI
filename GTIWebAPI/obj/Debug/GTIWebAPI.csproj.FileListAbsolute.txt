@@ -229,3 +229,8 @@ C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Text.Encodings.Web.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Swashbuckle.Core.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\WebActivatorEx.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csprojResolveAssemblyReference.cache
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Web.Cors.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Web.Http.Cors.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Web.Http.Cors.xml
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Owin.Cors.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Owin.Cors.xml

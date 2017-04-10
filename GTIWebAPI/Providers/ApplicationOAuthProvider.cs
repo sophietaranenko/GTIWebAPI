@@ -16,6 +16,7 @@ using Microsoft.Owin;
 using System.Net;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Repository.Identity;
+using System.Web.Http.Cors;
 
 namespace GTIWebAPI.Providers
 {
@@ -41,6 +42,7 @@ namespace GTIWebAPI.Providers
         }
     }
 
+   // [EnableCors(origins: "*", headers: "*", methods: "GET, POST, PUT, DELETE, OPTIONS", SupportsCredentials = true)]
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
         private readonly string _publicClientId;

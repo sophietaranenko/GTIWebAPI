@@ -223,6 +223,7 @@ namespace GTIWebAPI.Models.Account
             }
             return result;
         }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -297,6 +298,33 @@ namespace GTIWebAPI.Models.Account
             try
             {
                 var result = Database.SqlQuery<bool>("exec CreateDatabaseExternalUser @Username ",
+                    pEmail
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+        public string GetFullUserName(string userId)
+        {
+            SqlParameter pEmail = new SqlParameter
+            {
+                ParameterName = "@AspNetUserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
+
+            string methodResult = "";
+
+            try
+            {
+                var result = Database.SqlQuery<string>("exec GetFullAspNetUserName @AspNetUserId",
                     pEmail
                     ).FirstOrDefault();
                 methodResult = result;

@@ -92,9 +92,11 @@ namespace GTIWebAPI.Controllers
                 model.TableName = user.TableName;
                 model.UserRights = user.GetUserRightsDTO();
                 model.ProfilePicturePath = repo.GetProfilePicturePathByUserId(UserId);
+                model.FullUserName = repo.GetFullUserName(UserId);
                 if (user.TableName == "Employee")
                 {
                     model.EmployeeInformation = repo.IsEmployeeInformationFilled(user.TableId);
+                    
                 }
                 if (user.TableName == "OrganizationContactPerson")
                 {

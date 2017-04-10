@@ -64,7 +64,9 @@ namespace GTIWebAPI.Models.Security
     public class UserRightEditDTO
     {
         public Int32 OfficeId { get; set; }
+
         public Int32 ControllerId { get; set; }
+
         public Int32 ActionId { get; set; }
     }
 

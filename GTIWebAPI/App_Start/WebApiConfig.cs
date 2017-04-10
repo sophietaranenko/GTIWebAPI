@@ -34,9 +34,13 @@ namespace GTIWebAPI
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            //origins: "http://gtiweb.formag-group.com",
+            // config.EnableCors(new EnableCorsAttribute(origins: "", headers: "Authorization, Content-Type", methods: "GET, PUT, POST, DELETE, OPTIONS"));
+            // var cors = new EnableCorsAttribute("*", "*", "*");
+            // config.EnableCors(cors);
 
-            var cors = new EnableCorsAttribute("*", "*", "*");
-            config.EnableCors(cors);
+
+
             //config.Routes.MapHttpRoute(
             //    name: "ActionApi",
             //    routeTemplate: "api/{controller}/{action}/{id}",

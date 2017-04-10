@@ -38,7 +38,7 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpGet]
-        [Route("GetUserRightsView")]
+        [Route("Get")]
         [ResponseType(typeof(List<UserRightDTO>))]
         public IHttpActionResult GetUserRightView(string UserId)
         {
@@ -47,7 +47,6 @@ namespace GTIWebAPI.Controllers
             {
                 return NotFound();
             }
-            //List<UserRightDTO> rights = u.UserRightsDto;
             List<UserRightDTO> rights = u.GetUserRightsDTO();
             if (rights == null)
             {
@@ -56,30 +55,11 @@ namespace GTIWebAPI.Controllers
             return Ok(rights);
         }
 
-        [GTIFilter]
-        [HttpGet]
-        [Route("GetUserRightsEdit")]
-        [ResponseType(typeof(List<UserRightDTO>))]
-        public IHttpActionResult GetUserRightEdit(string UserId)
-        {
-            ApplicationUser u = UserManager.FindById(UserId);
-            if (u == null)
-            {
-                return NotFound();
-            }
-            //List<UserRightDTO> rights = u.UserRightsDto;
-            List<UserRightDTO> rights = u.GetUserRightsDTO();
-            if (rights == null)
-            {
-                return NotFound();
-            }
-            return Ok(rights);
-        }
 
 
         [GTIFilter]
         [HttpPut]
-        [Route("PutUserRights")]
+        [Route("Put")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutUserRights(string UserId, List<UserRightEditDTO> rights)
         {
@@ -133,7 +113,7 @@ namespace GTIWebAPI.Controllers
 
         [GTIFilter]
         [HttpPost]
-        [Route("PostUserRights")]
+        [Route("Post")]
         [ResponseType(typeof(List<UserRightDTO>))]
         public IHttpActionResult PostUserRights(string UserId, List<UserRightEditDTO> rights)
         {
@@ -168,6 +148,47 @@ namespace GTIWebAPI.Controllers
             return StatusCode(HttpStatusCode.Created);
         }
 
+
+        [GTIFilter]
+        [HttpPost]
+        [Route("PostSeveral")]
+        [ResponseType(typeof(List<UserRightDTO>))]
+        public IHttpActionResult PostSeveralUserRights(string[] UserIds, List<UserRightEditDTO> rights)
+        {
+            if (rights == null || UserIds == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            foreach (var UserId in UserIds)
+            {
+                List<UserRight> newRights = new List<UserRight>();
+                foreach (var item in rights)
+                {
+                    UserRight right = new UserRight();
+
+                    int Id = right.NewId(db);
+                    right.Id = Guid.NewGuid();
+                    right.OfficeId = item.OfficeId;
+                    right.ControllerId = item.ControllerId;
+                    right.ActionId = item.ActionId;
+                    right.AspNetUserId = UserId;
+
+                    newRights.Add(right);
+                    db.UserRights.AddRange(newRights);
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            return StatusCode(HttpStatusCode.Created);
+        }
+
         /// <summary>
         /// Delete all rights by user
         /// </summary>
@@ -175,7 +196,7 @@ namespace GTIWebAPI.Controllers
         /// <returns></returns>
         [GTIFilter]
         [HttpDelete]
-        [Route("DeleteUserRights")]
+        [Route("Delete")]
         [ResponseType(typeof(List<UserRightDTO>))]
         public IHttpActionResult DeleteUserRights(string UserId)
         {
@@ -194,6 +215,18 @@ namespace GTIWebAPI.Controllers
             db.UserRights.RemoveRange(rights);
             db.SaveChanges();
             return Ok(rightsDTO);
+        }
+
+
+        [HttpGet]
+        [Route("GetLists")]
+        [ResponseType(typeof(UserRightList))]
+        public IHttpActionResult GetUserRigthLists()
+        {
+
+            List<Controller> cList = db.Controllers.ToList();
+            //List<Action> 
+            return Ok();
         }
 
         /// <summary>

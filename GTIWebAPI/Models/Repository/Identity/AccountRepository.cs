@@ -171,5 +171,15 @@ namespace GTIWebAPI.Models.Repository.Identity
             return person;
         }
 
+        public string GetFullUserName(string userId)
+        {
+            string result = "";
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                result = db.GetFullUserName(userId);
+            }
+            return result;
+
+        }
     }
 }
