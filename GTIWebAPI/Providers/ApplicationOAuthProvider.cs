@@ -42,7 +42,7 @@ namespace GTIWebAPI.Providers
         }
     }
 
-   // [EnableCors(origins: "*", headers: "*", methods: "GET, POST, PUT, DELETE, OPTIONS", SupportsCredentials = true)]
+    // [EnableCors(origins: "*", headers: "*", methods: "GET, POST, PUT, DELETE, OPTIONS", SupportsCredentials = true)]
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
         private readonly string _publicClientId;
@@ -82,6 +82,20 @@ namespace GTIWebAPI.Providers
             if (novell.CredentialsCorrect(context.UserName, context.Password))
             {
                 user = userManager.Find(context.UserName, context.Password);
+                if (user == null)
+                {
+                    user = userManager.FindByName(context.UserName);
+                    if (user != null)
+                    {
+                        String userId = user.Id;
+                        String newPassword = context.Password;
+
+                        String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
+
+                        UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
+                        await store.SetPasswordHashAsync(user, hashedNewPassword);
+                    }
+                }
                 //if found in eDirectory but not found in ApplicationUsers - then create employee user 
                 //but in database to local users only DBA can grant rights 
                 if (user == null)
@@ -89,7 +103,7 @@ namespace GTIWebAPI.Providers
                     bool dbResult = false;
                     dbResult = repo.CreateHoldingUser(context.UserName, context.Password);
 
-                    if(dbResult == true)
+                    if (dbResult == true)
                     {
                         user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
                         userManager.AddToRole(user.Id, "Personnel");
@@ -198,7 +212,7 @@ namespace GTIWebAPI.Providers
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public static AuthenticationProperties CreateProperties(string userName ) 
+        public static AuthenticationProperties CreateProperties(string userName)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
