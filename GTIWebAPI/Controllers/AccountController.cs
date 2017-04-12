@@ -153,7 +153,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPost]
         [Route("SetAProfilePicture")]
-        public IHttpActionResult SetAsProfilePicture(int pictureId)
+        public IHttpActionResult SetAsProfilePicture(Guid pictureId)
         {
             UserImage image = repo.SetAsProfilePicture(pictureId);
             return Ok(image);

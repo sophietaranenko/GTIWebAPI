@@ -79,6 +79,11 @@ namespace GTIWebAPI.Tests.TestContext
             this.DealDocumentScans = new TestDbSet<DocumentScanDTO>();
         }
 
+        public DbSet<TEntity> Set<TEntity>() where TEntity : class
+        {
+            return new TestDbSet<TEntity>();
+        }
+
         public void MarkAsModified(object entity)
         {
         }
@@ -425,6 +430,11 @@ namespace GTIWebAPI.Tests.TestContext
         public bool CreateHoldingUser(string email, string password)
         {
             return true;
+        }
+
+        public string GetProfilePicturePathByEmployeeId(int employeeId)
+        {
+            return "SomeImagePath";
         }
 
         public DbSet<UserImage> UserImages { get; set; }

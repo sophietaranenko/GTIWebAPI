@@ -14,13 +14,16 @@ namespace GTIWebAPI.Models.Security
     {
         public Action()
         {
-            UserRights = new List<UserRight>();
+            UserRights = new HashSet<UserRight>();
+            UserRightMaskAction = new HashSet<UserRightMaskAction>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Int32 Id { get; set; }
 
         public Int32 ControllerId { get; set; }
+
+        public virtual Controller Controller { get; set; }
 
         public string Name { get; set; }
 
@@ -29,6 +32,8 @@ namespace GTIWebAPI.Models.Security
         protected override string TableName { get { return "RightControllerAction"; } }
 
         public virtual ICollection<UserRight> UserRights { get; set; }
+
+        public virtual ICollection<UserRightMaskAction> UserRightMaskAction { get; set; }
     }
 
     public class ActionDTO

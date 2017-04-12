@@ -91,7 +91,7 @@ namespace GTIWebAPI.Controllers
                 int Id = right.NewId(db);
                 right.Id = Guid.NewGuid();
                 right.OfficeId = item.OfficeId;
-                right.ControllerId = item.ControllerId;
+                //right.ControllerId = item.ControllerId;
                 right.ActionId = item.ActionId;
                 right.AspNetUserId = UserId;
 
@@ -130,7 +130,7 @@ namespace GTIWebAPI.Controllers
                 int Id = right.NewId(db);
                 right.Id = Guid.NewGuid();
                 right.OfficeId = item.OfficeId;
-                right.ControllerId = item.ControllerId;
+                //right.ControllerId = item.ControllerId;
                 right.ActionId = item.ActionId;
                 right.AspNetUserId = UserId;
 
@@ -170,7 +170,7 @@ namespace GTIWebAPI.Controllers
                     int Id = right.NewId(db);
                     right.Id = Guid.NewGuid();
                     right.OfficeId = item.OfficeId;
-                    right.ControllerId = item.ControllerId;
+                    //right.ControllerId = item.ControllerId;
                     right.ActionId = item.ActionId;
                     right.AspNetUserId = UserId;
 
@@ -225,7 +225,6 @@ namespace GTIWebAPI.Controllers
         {
 
             List<Controller> cList = db.Controllers.ToList();
-            //List<Action> 
             return Ok();
         }
 

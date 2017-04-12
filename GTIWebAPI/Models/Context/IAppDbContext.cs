@@ -17,6 +17,7 @@ namespace GTIWebAPI.Models.Context
 {
     public interface IAppDbContext : IDisposable, IServiceDbContext, IDbContextAddress, IDbContextEmployeeLanguage, IDbContextOrganization
     {
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
         //string CreateConnectionString(IPrincipal user);
         DbEntityEntry Entry(object entity);
@@ -174,6 +175,8 @@ namespace GTIWebAPI.Models.Context
         bool CreateOrganization(string email, string password);
 
         bool CreateHoldingUser(string email, string password);
+
+        string GetProfilePicturePathByEmployeeId(int employeeId);
 
 
     }

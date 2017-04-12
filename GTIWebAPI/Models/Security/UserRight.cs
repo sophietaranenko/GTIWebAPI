@@ -14,25 +14,14 @@ namespace GTIWebAPI.Models.Security
     [Table("AspNetUserRights")]
     public class UserRight : GTITable
     {
-        //public UserRight()
-        //{
-
-        //}
         [Key]
-       // [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid Id { get; set; }
 
         public string AspNetUserId { get; set; }
 
-        //[ForeignKey]
         public Int32 OfficeId { get; set; }
 
-        public Int32 ControllerId { get; set; }
-
         public Int32 ActionId { get; set; }
-
-        [ForeignKey("ControllerId")]
-        public virtual Models.Security.Controller Controller { get; set; }
 
         [ForeignKey("ActionId")]
         public virtual Models.Security.Action Action { get; set; }

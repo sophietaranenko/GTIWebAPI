@@ -11,6 +11,11 @@ namespace GTIWebAPI.Models.Dictionary
     [Table("Office")]
     public class Office 
     {
+        public Office()
+        {
+            Masks = new HashSet<UserRightMask>();
+        }
+
         public int Id { get; set; }
 
         public string NativeName { get; set; }
@@ -20,6 +25,8 @@ namespace GTIWebAPI.Models.Dictionary
         public string EnglishName { get; set; }
 
         public string DealIndex { get; set; }
+
+        public virtual ICollection<UserRightMask> Masks { get; set; }
 
         public OfficeDTO ToDTO()
         {

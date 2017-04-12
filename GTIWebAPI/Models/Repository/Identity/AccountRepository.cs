@@ -53,14 +53,15 @@ namespace GTIWebAPI.Models.Repository.Identity
         public string SaveFile(HttpPostedFile postedFile)
         {
             string filePath = "";
+
             using (IAppDbContext db = factory.CreateDbContext())
             { 
-                filePath = HttpContext.Current.Server.MapPath(
-                            "~/PostedFiles/" + db.FileNameUnique().ToString().Trim() + "_" + postedFile.FileName);
-            postedFile.SaveAs(filePath);
+                filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(postedFile.FileName));
+                postedFile.SaveAs(filePath);
             }
             if (filePath != null && filePath.Length > 3)
             {
+                filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
                 return filePath;
             }
             else
@@ -104,14 +105,14 @@ namespace GTIWebAPI.Models.Repository.Identity
                     item.IsProfilePicture = false;
                     db.MarkAsModified(item);
                 }
-                image.Id = image.NewId(db);
+                image.Id = Guid.NewGuid();
                 db.UserImages.Add(image);
                 db.SaveChanges();
             }
             return image;
         }
 
-        public UserImage SetAsProfilePicture(int pictureId)
+        public UserImage SetAsProfilePicture(Guid pictureId)
         {
             UserImage image = new UserImage();
             using (IAppDbContext db = factory.CreateDbContext())

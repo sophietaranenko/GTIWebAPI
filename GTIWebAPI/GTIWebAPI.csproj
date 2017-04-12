@@ -464,6 +464,7 @@
     <Compile Include="Models\Repository\Accounting\IDealsRepository.cs" />
     <Compile Include="Models\Repository\Accounting\IInvoicesRepository.cs" />
     <Compile Include="Models\Repository\Accounting\InvoicesRepository.cs" />
+    <Compile Include="Models\Repository\GenericRepository.cs" />
     <Compile Include="Models\Repository\Identity\AccountRepository.cs" />
     <Compile Include="Models\Repository\Identity\IAccountRepository.cs" />
     <Compile Include="Models\Repository\Organization\IOrganizationContactPersonContactsRepository.cs" />
@@ -525,9 +526,12 @@
     <Compile Include="Models\Repository\Personnel\IEmployeePhotosRepository.cs" />
     <Compile Include="Models\Repository\Personnel\IEmployeesRepository.cs" />
     <Compile Include="Models\Repository\Personnel\IPersonnelRepository.cs" />
+    <Compile Include="Models\Repository\UnitOfWork.cs" />
     <Compile Include="Models\Security\ControllerBox.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightList.cs" />
+    <Compile Include="Models\Security\UserRightMask.cs" />
+    <Compile Include="Models\Security\UserRightMaskAction.cs" />
     <Compile Include="Models\Security\UserRightsManager.cs" />
     <Compile Include="Models\Service\GTITable.cs" />
     <Compile Include="Models\Dictionary\Address.cs" />
@@ -664,6 +668,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\Repository\Rights\" />
     <Folder Include="PostedFiles\" />
   </ItemGroup>
   <ItemGroup>

@@ -60,7 +60,11 @@ namespace GTIWebAPI.Models.Account
 
 
                             List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
-                            var bList = UserRights.Where(d => d.OfficeId == item.Id).Select(d => d.Controller.ControllerBox).Distinct().ToList();
+                            var bList = UserRights
+                                .Where(d => d.OfficeId == item.Id)
+                                .Select(d => d.Action.Controller.ControllerBox)
+                                .Distinct()
+                                .ToList();
 
                             if (bList != null)
                             {
@@ -74,7 +78,7 @@ namespace GTIWebAPI.Models.Account
 
 
                                     List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                                    var cList = UserRights.Where(r => r.OfficeId == item.Id && r.Controller.BoxId == box.Id).Select(r => r.Controller).Distinct().ToList();
+                                    var cList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.Controller.BoxId == box.Id).Select(r => r.Action.Controller).Distinct().ToList();
 
                                     if (cList != null)
                                     {
@@ -85,7 +89,7 @@ namespace GTIWebAPI.Models.Account
                                             cDto.Id = c.Id;
 
                                             List<ActionDTO> actionList = new List<ActionDTO>();
-                                            var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
+                                            var aList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
                                             if (aList != null)
                                             {
                                                 foreach (var a in aList)
@@ -104,53 +108,8 @@ namespace GTIWebAPI.Models.Account
 
                                     boxDTO.Controllers = controllerList;
                                     boxesList.Add(boxDTO);
-
-
-
-
                                 }
                             }
-
-
-
-
-
-                            //List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                            //var cList = UserRights.Where(r => r.OfficeId == item.Id).Select(r => r.Controller).Distinct().ToList();
-
-                            //if (cList != null)
-                            //{
-                            //    foreach (var c in cList)
-                            //    {
-                            //        ControllerDTO cDto = new ControllerDTO();
-                            //        cDto.ControllerName = c.Name;
-                            //        cDto.Id = c.Id;
-
-                            //        List<ActionDTO> actionList = new List<ActionDTO>();
-                            //        var aList = UserRights.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
-                            //        if (aList != null)
-                            //        {
-                            //            foreach (var a in aList)
-                            //            {
-                            //                ActionDTO aDto = new ActionDTO();
-                            //                aDto.Id = a.Id;
-                            //                aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
-                            //                aDto.ActionName = a.Name == null ? "" : a.Name;
-                            //                actionList.Add(aDto);
-                            //            }
-                            //        }
-                            //        cDto.Actions = actionList;
-                            //        controllerList.Add(cDto);
-                            //    }
-                            //}
-
-
-
-
-
-
-
-
                             dto.Boxes = boxesList;
                             dtos.Add(dto);
                         }
@@ -201,7 +160,7 @@ namespace GTIWebAPI.Models.Account
 
         public DbSet<Controller> Controllers { get; set; }
 
-        public DbSet<GTIWebAPI.Models.Security.Action> Actions { get; set; }
+        public DbSet<Security.Action> Actions { get; set; }
 
         public DbSet<OfficeSecurity> OfficeSecurity { get; set; }
 
@@ -228,17 +187,14 @@ namespace GTIWebAPI.Models.Account
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserRight>()
+            modelBuilder.Entity<Security.Action>()
                 .HasRequired<Controller>(s => s.Controller)
-                .WithMany(s => s.UserRights);
+                .WithMany(s => s.Actions);
 
 
             modelBuilder.Entity<UserRight>()
                 .HasRequired<GTIWebAPI.Models.Security.Action>(s => s.Action)
                 .WithMany(s => s.UserRights);
-
-
-
 
             modelBuilder.Entity<UserRight>()
                    .HasRequired<Service.OfficeSecurity>(s => s.OfficeSecurity)

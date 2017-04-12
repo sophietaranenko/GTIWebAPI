@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace GTIWebAPI.Models.Account
 {
     [Table("AspNetUserImages")]
-    public class UserImage : GTITable
+    public class UserImage 
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public bool IsProfilePicture { get; set; }
 
@@ -21,12 +21,5 @@ namespace GTIWebAPI.Models.Account
 
         public string ImageName { get; set; }
 
-        protected override string TableName
-        {
-            get
-            {
-                return "AspNetUserImages";
-            }
-        }
     }
 }

@@ -35,7 +35,7 @@ namespace GTIWebAPI.Filters
             try
             {
                 ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                UserRight right = user.UserRights.Where(r => r.Controller.Name == cName && r.Action.Name == aName).FirstOrDefault();
+                UserRight right = user.UserRights.Where(r => r.Action.Controller.Name == cName && r.Action.Name == aName).FirstOrDefault();
                 if (right != null)
                 {
                     allow = true;

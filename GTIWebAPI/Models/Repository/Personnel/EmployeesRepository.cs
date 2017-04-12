@@ -208,6 +208,8 @@ namespace GTIWebAPI.Models.Repository
                     throw new NotFoundException();
                 }
 
+                employee.ProfilePicture = db.GetProfilePicturePathByEmployeeId(employee.Id);
+
                 employee.EmployeeOffices =
                     db.EmployeeOffices
                     .Where(o => o.Deleted != true && o.EmployeeId == id)

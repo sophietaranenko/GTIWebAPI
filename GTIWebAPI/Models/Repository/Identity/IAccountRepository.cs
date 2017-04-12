@@ -21,7 +21,7 @@ namespace GTIWebAPI.Models.Repository.Identity
 
         UserImage AddNewProfilePicture(UserImage image);
 
-        UserImage SetAsProfilePicture(int pictureId);
+        UserImage SetAsProfilePicture(Guid pictureId);
 
         bool CreateOrganization(string email, string password);
 

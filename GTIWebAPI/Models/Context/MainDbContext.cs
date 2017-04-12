@@ -1116,5 +1116,31 @@ namespace GTIWebAPI.Models.Context
             return methodResult;
         }
 
+        public string GetProfilePicturePathByEmployeeId(int employeeId)
+        {
+            SqlParameter pEmployeeId = new SqlParameter
+            {
+                ParameterName = "@EmployeeId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.Int32,
+                Value = employeeId
+            };
+
+            string methodResult = "";
+
+            try
+            {
+                var result = Database.SqlQuery<string>("exec GetProfilePicturePathByEmployeeId @EmployeeId ",
+                    pEmployeeId
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
     }
 }

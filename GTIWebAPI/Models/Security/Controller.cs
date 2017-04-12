@@ -14,7 +14,7 @@ namespace GTIWebAPI.Models.Security
     {
         public Controller()
         {
-            UserRights = new List<UserRight>();
+            Actions = new HashSet<Action>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -27,9 +27,9 @@ namespace GTIWebAPI.Models.Security
         [ForeignKey("BoxId")]
         public virtual ControllerBox ControllerBox { get; set; }
 
-        protected override string TableName { get { return "RightController"; } }
+        public virtual ICollection<Action> Actions { get; set; }
 
-        public virtual ICollection<UserRight> UserRights { get; set; }
+        protected override string TableName { get { return "RightController"; } }
     }
 
     public class ControllerDTO

@@ -1,6 +1,7 @@
 ﻿namespace GTIWebAPI.Models.Employees
 {
     using Dictionary;
+    using Security;
     using Service;
     using System;
     using System.Collections.Generic;
@@ -13,6 +14,11 @@
     [Table("Employee")]
     public partial class Employee : GTITable
     {
+        public Employee()
+        {
+            Masks = new HashSet<UserRightMask>();
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
@@ -36,6 +42,9 @@
             get { return new Age(DateOfBirth); }
         }
 
+        [NotMapped]
+        public string ProfilePicture { get; set; }
+
         public virtual ICollection<EmployeeOffice> EmployeeOffices { get; set; }
 
         public virtual ICollection<EmployeePassport> EmployeePassports { get; set; }
@@ -58,6 +67,7 @@
 
         public virtual ICollection<EmployeeCar> EmployeeCars { get; set; }
 
+        public virtual ICollection<UserRightMask> Masks { get; set; }
 
         protected override string TableName
         {
@@ -89,6 +99,7 @@
                 EmployeeEducations = this.EmployeeEducations == null ? null : this.EmployeeEducations.Select(d => d.ToDTO()).ToList(),
                 EmployeeDrivingLicenses = this.EmployeeDrivingLicenses == null ? null : this.EmployeeDrivingLicenses.Select(d => d.ToDTO()).ToList(),
                 EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts.Select(d => d.ToDTO()).ToList(),
+                ProfilePicture = this.ProfilePicture
             };
             return dto;
         }
@@ -136,6 +147,8 @@
         public AddressDTO Address { get; set; }
 
         public string Age { get; set; }
+
+        public string ProfilePicture { get; set; }
 
         public IEnumerable<EmployeePassportDTO> EmployeePassports { get; set; }
 

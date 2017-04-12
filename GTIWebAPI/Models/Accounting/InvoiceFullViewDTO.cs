@@ -10,6 +10,8 @@ namespace GTIWebAPI.Models.Accounting
     {
         public Guid? DealId { get; set; }
 
+        public string DealNumber { get; set; }
+
         public string CurrencyName { get; set; }
 
         public int? CurrencyId { get; set; }
