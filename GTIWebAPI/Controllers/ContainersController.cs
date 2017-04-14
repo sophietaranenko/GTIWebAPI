@@ -2,9 +2,12 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,22 +21,22 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Containers")]
     public class ContainersController : ApiController
     {
-        IContainersRepository repo;
+        IDbContextFactory factory;
 
         public ContainersController()
         {
-            repo = new ContainersRepository();
+            factory = new DbContextFactory();
         }
 
-        public ContainersController(IContainersRepository repo)
+        public ContainersController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<DealContainerViewDTO>))]
+        [ResponseType(typeof(IEnumerable<DealContainerViewDTO>))]
         public IHttpActionResult GetContainers(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (organizationId == 0)
@@ -49,10 +52,36 @@ namespace GTIWebAPI.Controllers
                 dateEnd = new DateTime(2200, 1, 1);
             }
             DateTime modDateBegin = dateBegin.GetValueOrDefault();
-            DateTime modeDateEnd = dateEnd.GetValueOrDefault();
+            DateTime modDateEnd = dateEnd.GetValueOrDefault();
             try
             {
-                List<DealContainerViewDTO> list = repo.GetAll(organizationId, modDateBegin, modeDateEnd);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parClient = new SqlParameter
+                {
+                    ParameterName = "@OrganizationId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = organizationId
+                };
+                SqlParameter parBegin = new SqlParameter
+                {
+                    ParameterName = "@DateBegin",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateBegin
+                };
+                SqlParameter parEnd = new SqlParameter
+                {
+                    ParameterName = "@DateEnd",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateEnd
+                };
+                IEnumerable<DealContainerViewDTO> list =
+                    unitOfWork.SQLQuery<DealContainerViewDTO>("exec ContainersList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd);
                 return Ok(list);
             }
             catch (NotFoundException nfe)
@@ -76,8 +105,17 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult GetContainer(Guid id)
         {
             try
-            {
-                DealContainerViewDTO container = repo.Get(id);
+            { 
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parId = new SqlParameter
+                {
+                    ParameterName = "@ContainerId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                DealContainerViewDTO container = unitOfWork.SQLQuery<DealContainerViewDTO>("exec ContainerFullView @ContainerId", parId).FirstOrDefault(); 
                 return Ok(container);
             }
             catch (NotFoundException nfe)
