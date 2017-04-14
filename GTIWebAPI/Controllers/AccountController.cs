@@ -25,6 +25,11 @@ using GTIWebAPI.Novell;
 using GTIWebAPI.Models.Repository.Identity;
 using GTIWebAPI.Exceptions;
 using System.IO;
+using System.Web.Helpers;
+using System.Net;
+using System.Linq;
+using System.Diagnostics;
+using System.Text;
 
 namespace GTIWebAPI.Controllers
 {
@@ -96,7 +101,7 @@ namespace GTIWebAPI.Controllers
                 if (user.TableName == "Employee")
                 {
                     model.EmployeeInformation = repo.IsEmployeeInformationFilled(user.TableId);
-                    
+
                 }
                 if (user.TableName == "OrganizationContactPerson")
                 {
@@ -106,6 +111,53 @@ namespace GTIWebAPI.Controllers
             return await Task<UserInfoViewModel>.Factory.StartNew(() => model);
         }
 
+        
+
+        //[Route("Binary")]
+        //[HttpPost]
+        //public async Task<HttpResponseMessage> PostFile()
+        //{
+        //    // Check if the request contains multipart/form-data.
+        //    if (!Request.Content.IsMimeMultipartContent())
+        //    {
+        //        throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+        //    }
+
+        //    string root = HttpContext.Current.Server.MapPath("~/PostedFiles");
+        //    var provider = new MultipartFormDataStreamProvider(root);
+
+        //    try
+        //    {
+        //        StringBuilder sb = new StringBuilder(); // Holds the response body
+
+        //        // Read the form data and return an async task.
+        //        await Request.Content.ReadAsMultipartAsync(provider);
+
+        //        // This illustrates how to get the form data.
+        //        foreach (var key in provider.FormData.AllKeys)
+        //        {
+        //            foreach (var val in provider.FormData.GetValues(key))
+        //            {
+        //                sb.Append(string.Format("{0}: {1}\n", key, val));
+        //            }
+        //        }
+
+        //        // This illustrates how to get the file names for uploaded files.
+        //        foreach (var file in provider.FileData)
+        //        {
+        //            FileInfo fileInfo = new FileInfo(file.LocalFileName);
+        //            sb.Append(string.Format("Uploaded file: {0} ({1} bytes)\n", fileInfo.Name, fileInfo.Length));
+        //        }
+        //        return new HttpResponseMessage()
+        //        {
+        //            Content = new StringContent(sb.ToString())
+        //        };
+        //    }
+        //    catch (System.Exception e)
+        //    {
+        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
+        //    }
+        //}
 
         [GTIFilter]
         [HttpPost]
@@ -113,6 +165,8 @@ namespace GTIWebAPI.Controllers
         public IHttpActionResult UploadNewProfilePicture()
         {
             UserImage image = new UserImage();
+
+
             var httpRequest = HttpContext.Current.Request;
             try
             {
@@ -150,6 +204,95 @@ namespace GTIWebAPI.Controllers
         }
 
 
+        //[GTIFilter]
+        //[HttpPost]
+        //[Route("UploadProfilePictureByteArray")]
+        //public HttpResponseMessage UploadNewProfilePictureByteArray(string fileName)
+        //{
+        //    // Check if the request contains multipart/form-data.
+        //    if (!Request.Content.IsMimeMultipartContent())
+        //        throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+
+        //    try
+        //    {
+        //        var httpRequest = HttpContext.Current.Request;
+
+        //        // Check if any file(s) have been uploaded
+        //        if (httpRequest.Files.Count > 0)
+        //        {
+        //            // Get file content as byte array
+        //            MemoryStream ms = new MemoryStream();
+        //            httpRequest.Files[0].InputStream.CopyTo(ms);
+        //            byte[] fileContent = ms.ToArray();
+
+        //            // Populate Feedback object
+        //            Feedback feedback = new Feedback();
+        //            feedback.PrototypeId = httpRequest.Form["prototypeId"];
+        //            feedback.PageUrl = httpRequest.Form["pageURL"];
+        //            feedback.EmailId = httpRequest.Form["emailId"];
+        //            feedback.Comment = httpRequest.Form["comment"];
+        //            feedback.Attachment = fileContent;
+
+        //            // Call the wrapper method
+        //            if (_wrapper.CreateFeedback(feedback))
+        //                return Request.CreateResponse(HttpStatusCode.Created);
+        //        }
+        //        else
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.BadRequest);
+        //        }
+
+        //        // Return status indicating that the server refuses to fulfill request
+        //        return Request.CreateResponse(HttpStatusCode.Forbidden);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+        //    }
+        //}
+
+        //    if (image == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    if (image.FileName == null || image.FileName == "" || image.ImageContent == null)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    UserImage newImage = new UserImage();
+        //    try
+        //    {
+        //        ApplicationDbContext db = new ApplicationDbContext();
+        //        string userId = User.Identity.GetUserId();
+
+
+        //        string filePath = repo.SaveFile(image.ImageContent, image.FileName);
+        //        newImage = repo.AddNewProfilePicture(
+        //            new UserImage
+        //            {
+        //                ImageName = filePath,
+        //                IsProfilePicture = true,
+        //                UploadDate = DateTime.Now,
+        //                UserId = User.Identity.GetUserId()
+        //            });
+        //    }
+        //    catch (NotFoundException nfe)
+        //    {
+        //        return NotFound();
+        //    }
+        //    catch (ConflictException ce)
+        //    {
+        //        return Conflict();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //    return Ok(newImage);
+        //}
+
+
         [GTIFilter]
         [HttpPost]
         [Route("SetAProfilePicture")]
@@ -159,7 +302,6 @@ namespace GTIWebAPI.Controllers
             return Ok(image);
         }
 
-
         [Route("UserRights")]
         public IEnumerable<UserRightDTO> GetUserRights()
         {
@@ -167,19 +309,6 @@ namespace GTIWebAPI.Controllers
             return user.GetUserRightsDTO();
         }
 
-
-        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        //[Route("UserInfoExternalLogin")]
-        //public UserInfoViewModel GetUserExternalLoginInfo()
-        //{
-        //    ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-        //    return new UserInfoViewModel
-        //    {
-        //        Email = User.Identity.GetUserName(),
-        //        HasRegistered = externalLogin == null,
-        //        LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
-        //    };
-        //}
 
         /// <summary>
         /// Logout
@@ -311,49 +440,49 @@ namespace GTIWebAPI.Controllers
                 bool novellResult = novell.CreateOrganization(novellPerson);
                 if (novellResult)
                 {
-                        bool dbResult = repo.CreateOrganization(novellPerson.Login, novellPerson.Password);
-                        if (dbResult)
-                        {
+                    bool dbResult = repo.CreateOrganization(novellPerson.Login, novellPerson.Password);
+                    if (dbResult)
+                    {
                         ApplicationUser user = new ApplicationUser()
-                            {
-                                UserName = novellPerson.Login,
-                                Email = novellPerson.Email,
-                                TableName = "OrganizationContactPerson",
-                                TableId = organizationContactPersonId
-                            };
-                            try
-                            {
-                                IdentityResult result = await UserManager.CreateAsync(user, novellPerson.Password);
-                                if (!result.Succeeded)
-                                {
-                                    return GetErrorResult(result);
-                                }
-                                else
-                                {
-                                    IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
-                                    if (!roleResult.Succeeded)
-                                    {
-                                        return GetErrorResult(roleResult);
-                                    }
-
-                                    bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
-                                    if (rightsResult)
-                                    {
-                                        await SendEmailWithCredentials(novellPerson, user.Id);
-                                        return Ok();
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                string m = e.Message;
-                                return BadRequest("AspNetUser has not been created");
-                            }
-                        }
-                        else
                         {
-                            return BadRequest("Database login has not been created");
+                            UserName = novellPerson.Login,
+                            Email = novellPerson.Email,
+                            TableName = "OrganizationContactPerson",
+                            TableId = organizationContactPersonId
+                        };
+                        try
+                        {
+                            IdentityResult result = await UserManager.CreateAsync(user, novellPerson.Password);
+                            if (!result.Succeeded)
+                            {
+                                return GetErrorResult(result);
+                            }
+                            else
+                            {
+                                IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
+                                if (!roleResult.Succeeded)
+                                {
+                                    return GetErrorResult(roleResult);
+                                }
+
+                                bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
+                                if (rightsResult)
+                                {
+                                    await SendEmailWithCredentials(novellPerson, user.Id);
+                                    return Ok();
+                                }
+                            }
                         }
+                        catch (Exception e)
+                        {
+                            string m = e.Message;
+                            return BadRequest("AspNetUser has not been created");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Database login has not been created");
+                    }
                 }
                 else
                 {
@@ -370,14 +499,14 @@ namespace GTIWebAPI.Controllers
         {
             string letterText = File.ReadAllText(HttpContext.Current.Server.MapPath("~/HtmlMailFile/letter.html"));
 
-            letterText = letterText.Replace("NEW_USER_LOGIN",novellPerson.Login);
+            letterText = letterText.Replace("NEW_USER_LOGIN", novellPerson.Login);
             letterText = letterText.Replace("NEW_USER_PASSWORD", novellPerson.Password);
 
             await UserManager.SendEmailAsync(userId, "Регистрация в кабинете клиента GTI", letterText);
 
-           // await UserManager.SendEmailAsync(userId,
-                                           // "Регистрация",
-                                           // "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
+            // await UserManager.SendEmailAsync(userId,
+            // "Регистрация",
+            // "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
         }
 
 

@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Service;
+﻿using GTIWebAPI.Models.Security;
+using GTIWebAPI.Models.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,6 +32,57 @@ namespace GTIWebAPI.Models.Security
 
         protected override string TableName { get { return "RightController"; } }
     }
+
+    [Table("RightController")]
+    public class RightController : GTITable
+    {
+        public RightController()
+        {
+            Actions = new HashSet<RightControllerAction>();
+        }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Int32 Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string LongName { get; set; }
+
+        public int BoxId { get; set; }
+
+        public virtual ICollection<RightControllerAction> Actions { get; set; }
+
+        protected override string TableName { get { return "RightController"; } }
+
+        public RightControllerDTO ToDTO()
+        {
+            return new RightControllerDTO()
+            {
+                Id = this.Id,
+                Name = this.Name,
+                LongName = this.LongName,
+                Actions = this.Actions.Select(d => d.ToDTO())
+            };
+        }
+
+
+    }
+
+
+    public class RightControllerDTO
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string LongName { get; set; }
+
+        public IEnumerable<RightControllerActionDTO> Actions { get; set; }
+    }
+
+    public class RightControllerMask
+
 
     public class ControllerDTO
     {

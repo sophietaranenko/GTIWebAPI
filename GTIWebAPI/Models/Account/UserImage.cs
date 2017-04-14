@@ -22,4 +22,11 @@ namespace GTIWebAPI.Models.Account
         public string ImageName { get; set; }
 
     }
+
+    public class UserImageByteArray
+    {
+        public byte[] ImageContent { get; set; }
+
+        public string FileName { get; set; }
+    }
 }

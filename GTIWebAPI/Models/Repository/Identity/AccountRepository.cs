@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using GTIWebAPI.Exceptions;
+using System.Web.Helpers;
 
 namespace GTIWebAPI.Models.Repository.Identity
 {
@@ -181,6 +182,27 @@ namespace GTIWebAPI.Models.Repository.Identity
             }
             return result;
 
+        }
+
+        public string SaveFile(byte[] array, string fileName)
+        {
+            string filePath = "";
+
+            using (IAppDbContext db = factory.CreateDbContext())
+            {
+                filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(fileName));
+                WebImage image = new WebImage(array);
+                image.Save(filePath);
+            }
+            if (filePath != null && filePath.Length > 3)
+            {
+                filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
+                return filePath;
+            }
+            else
+            {
+                throw new NotFoundException();
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using Microsoft.AspNet.Identity;
+
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,6 +14,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
+
+
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Repository.Organization;
 using GTIWebAPI.Exceptions;

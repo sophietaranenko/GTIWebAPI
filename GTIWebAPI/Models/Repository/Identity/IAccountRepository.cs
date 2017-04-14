@@ -31,6 +31,8 @@ namespace GTIWebAPI.Models.Repository.Identity
 
         OrganizationContactPersonView FindPerson(int id);
 
+        string SaveFile(byte[] array, string fileName);
+
 
     }
 }

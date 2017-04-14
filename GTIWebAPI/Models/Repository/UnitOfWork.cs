@@ -12,9 +12,9 @@ namespace GTIWebAPI.Models.Repository
     {
         private IAppDbContext context;
 
-        public UnitOfWork(IAppDbContext context)
+        public UnitOfWork(IDbContextFactory factory)
         {
-            this.context = context;
+            this.context = factory.CreateDbContext();
         }
             
 
@@ -23,7 +23,6 @@ namespace GTIWebAPI.Models.Repository
         {
             get
             {
-
                 if (this.userRightsRepository == null)
                 {
                     this.userRightsRepository = new GenericRepository<UserRight>(context);
@@ -37,7 +36,6 @@ namespace GTIWebAPI.Models.Repository
         {
             get
             {
-
                 if (this.userRightMasksRepository == null)
                 {
                     this.userRightMasksRepository = new GenericRepository<UserRightMask>(context);
@@ -46,7 +44,46 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
-       
+        private GenericRepository<UserRightMaskRight> userRightMaskRightsRepository;
+        public GenericRepository<UserRightMaskRight> UserRightMaskRightsRepository
+        {
+            get
+            {
+                if (this.userRightMaskRightsRepository == null)
+                {
+                    this.userRightMaskRightsRepository = new GenericRepository<UserRightMaskRight>(context);
+                }
+                return userRightMaskRightsRepository;
+            }
+        }
+
+        private GenericRepository<RightControllerAction> actionsRepository;
+        public GenericRepository<RightControllerAction> ActionsRepository
+        {
+            get
+            {
+                if (this.actionsRepository == null)
+                {
+                    this.actionsRepository = new GenericRepository<RightControllerAction>(context);
+                }
+                return actionsRepository;
+            }
+        }
+
+
+        private GenericRepository<RightController> controllersRepository;
+        public GenericRepository<RightController> ControllersRepository
+        {
+            get
+            {
+                if (this.controllersRepository == null)
+                {
+                    this.controllersRepository = new GenericRepository<RightController>(context);
+                }
+                return controllersRepository;
+            }
+        }
+
         public void Save()
         {
             context.SaveChanges();
