@@ -81,7 +81,7 @@ namespace GTIWebAPI.Models.Security
         public IEnumerable<RightControllerActionDTO> Actions { get; set; }
     }
 
-    public class RightControllerMask
+    //public class RightControllerMask
 
 
     public class ControllerDTO

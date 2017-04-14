@@ -33,6 +33,10 @@ namespace GTIWebAPI.Models.Account
            // Images = new List<UserImage>();
         }
 
+        //public string Id { get; set; }
+
+        //public string UserName { get; set; }
+
         [Column("TableName")]
         public string TableName { get; set; }
 
