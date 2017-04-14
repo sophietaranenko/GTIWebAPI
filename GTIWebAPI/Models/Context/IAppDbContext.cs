@@ -174,6 +174,8 @@ namespace GTIWebAPI.Models.Context
 
         bool CreateOrganization(string email, string password);
 
+        string GetFullUserNameByEmployeeId(int employeeId);
+
         bool CreateHoldingUser(string email, string password);
 
         string GetProfilePicturePathByEmployeeId(int employeeId);

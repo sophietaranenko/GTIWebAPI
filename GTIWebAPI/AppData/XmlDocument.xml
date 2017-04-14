@@ -1234,6 +1234,26 @@
             Languages that employee can have
             </summary>
         </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.ProfilePicture">
+            <summary>
+            Does not update
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.Employee.FullUserName">
+            <summary>
+            Does not update
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.ProfilePicture">
+            <summary>
+            Does not update
+            </summary>
+        </member>
+        <member name="P:GTIWebAPI.Models.Employees.EmployeeDTO.FullUserName">
+            <summary>
+            Does not update
+            </summary>
+        </member>
         <member name="T:GTIWebAPI.Models.Employees.EmployeeCar">
             <summary>
             Data from car registration document

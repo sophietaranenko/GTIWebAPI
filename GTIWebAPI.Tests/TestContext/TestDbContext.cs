@@ -437,6 +437,11 @@ namespace GTIWebAPI.Tests.TestContext
             return "SomeImagePath";
         }
 
+        public string GetFullUserNameByEmployeeId(int employeeId)
+        {
+            throw new NotImplementedException();
+        }
+
         public DbSet<UserImage> UserImages { get; set; }
 
 

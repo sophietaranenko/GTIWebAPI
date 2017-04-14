@@ -210,6 +210,8 @@ namespace GTIWebAPI.Models.Repository
 
                 employee.ProfilePicture = db.GetProfilePicturePathByEmployeeId(employee.Id);
 
+                employee.FullUserName = db.GetFullUserNameByEmployeeId(employee.Id);
+
                 employee.EmployeeOffices =
                     db.EmployeeOffices
                     .Where(o => o.Deleted != true && o.EmployeeId == id)

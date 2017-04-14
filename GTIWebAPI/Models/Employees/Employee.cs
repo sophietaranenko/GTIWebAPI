@@ -42,8 +42,17 @@
             get { return new Age(DateOfBirth); }
         }
 
+        /// <summary>
+        /// Does not update
+        /// </summary>
         [NotMapped]
         public string ProfilePicture { get; set; }
+
+        /// <summary>
+        /// Does not update
+        /// </summary>
+        [NotMapped]
+        public string FullUserName { get; set; }
 
         public virtual ICollection<EmployeeOffice> EmployeeOffices { get; set; }
 
@@ -99,7 +108,8 @@
                 EmployeeEducations = this.EmployeeEducations == null ? null : this.EmployeeEducations.Select(d => d.ToDTO()).ToList(),
                 EmployeeDrivingLicenses = this.EmployeeDrivingLicenses == null ? null : this.EmployeeDrivingLicenses.Select(d => d.ToDTO()).ToList(),
                 EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts.Select(d => d.ToDTO()).ToList(),
-                ProfilePicture = this.ProfilePicture
+                ProfilePicture = this.ProfilePicture,
+                FullUserName = this.FullUserName
             };
             return dto;
         }
@@ -148,7 +158,15 @@
 
         public string Age { get; set; }
 
+        /// <summary>
+        /// Does not update
+        /// </summary>
         public string ProfilePicture { get; set; }
+
+        /// <summary>
+        /// Does not update
+        /// </summary>
+        public string FullUserName { get; set; }
 
         public IEnumerable<EmployeePassportDTO> EmployeePassports { get; set; }
 
