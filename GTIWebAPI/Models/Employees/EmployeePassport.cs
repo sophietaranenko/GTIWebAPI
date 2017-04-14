@@ -93,9 +93,16 @@ namespace GTIWebAPI.Models.Employees
                 string res = "";
                 if (FirstName != null && SecondName != null && Surname != null)
                 {
-                    res = FirstName.Substring(0, 1) + ". " +
-                        SecondName.Substring(0, 1) + ". " +
-                        Surname;
+                    if (FirstName.Length > 3 && SecondName.Length > 3)
+                    {
+                        res = FirstName.Substring(0, 1) + ". " +
+                            SecondName.Substring(0, 1) + ". " +
+                            Surname;
+                    }
+                    else
+                    {
+                        res = "";
+                    }
                 }
                 else
                 {
