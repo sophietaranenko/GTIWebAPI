@@ -2,9 +2,12 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,17 +19,20 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Deals")]
     public class DealsController : ApiController
     {
-        private IDealsRepository repo;
+        private IDbContextFactory factory;
+
 
         public DealsController()
         {
-            repo = new DealsRepository();
+            factory = new DbContextFactory();
         }
 
-        public DealsController(IDealsRepository repo)
+        public DealsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
+
+
         /// <summary>
         /// Get short info about deals 
         /// </summary>
@@ -55,9 +61,35 @@ namespace GTIWebAPI.Controllers
 
             DateTime modDateBegin = dateBegin.GetValueOrDefault();
             DateTime modDateEnd = dateEnd.GetValueOrDefault();
+
             try
             {
-                List<DealViewDTO> dtos = repo.GetAll(organizationId, modDateBegin, modDateEnd);
+                SqlParameter parClient = new SqlParameter
+                {
+                    ParameterName = "@OrganizationId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = organizationId
+                };
+                SqlParameter parBegin = new SqlParameter
+                {
+                    ParameterName = "@DateBegin",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateBegin
+                };
+                SqlParameter parEnd = new SqlParameter
+                {
+                    ParameterName = "@DateEnd",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateEnd
+                };
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<DealViewDTO> dtos = unitOfWork.SQLQuery<DealViewDTO>("exec DealsFilter @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd);
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -88,13 +120,38 @@ namespace GTIWebAPI.Controllers
         {
             Guid id;
             bool result = Guid.TryParse(Id, out id);
+
             if (result == false)
             {
                 return BadRequest();
             }
             try
             {
-                DealFullViewDTO dto = repo.Get(id);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parameter = new SqlParameter
+                {
+                    ParameterName = "@DealId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = Id
+                };
+                DealFullViewDTO dto = unitOfWork.SQLQuery<DealFullViewDTO>("exec DealInfo @DealId", parameter).FirstOrDefault();
+                if (dto == null)
+                {
+                    return NotFound();
+                }
+                dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec DealContainersList @DealId", parameter);
+                dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList @DealId", parameter);
+                dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter);
+                IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
+                if (dto.DocumentScans != null && types != null)
+                {
+                    foreach (var item in dto.DocumentScans)
+                    {
+                        item.DocumentScanType = types.Where(d => d.Id == item.DocumentScanTypeId).FirstOrDefault();
+                    }
+                }
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
