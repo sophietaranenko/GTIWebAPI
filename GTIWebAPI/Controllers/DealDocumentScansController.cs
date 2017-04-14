@@ -3,11 +3,14 @@ using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Models.Repository.Accounting;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,16 +28,16 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/DealDocumentScans")]
     public class DealDocumentScansController : ApiController
     {
-        private IDealDocumentScansRepository repo;
+        private IDbContextFactory factory;
 
         public DealDocumentScansController()
         {
-            repo = new DealDocumentScansRepository();
+            factory = new DbContextFactory();
         }
 
-        public DealDocumentScansController(IDealDocumentScansRepository repo)
+        public DealDocumentScansController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         /// <summary>
@@ -49,7 +52,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                List<DocumentScanTypeDTO> dtos = repo.GetDocumentScanTypes();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<DocumentScanTypeDTO> dtos = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -66,15 +70,29 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Get scans by deal id
+        /// </summary>
+        /// <param name="dealId"></param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpGet]
         [Route("GetByDealId")]
-        [ResponseType(typeof(List<DocumentScanDTO>))]
+        [ResponseType(typeof(IEnumerable<DocumentScanDTO>))]
         public IHttpActionResult GetDocumentScansByDealId(Guid dealId)
         {
             try
             {
-                List<DocumentScanDTO> dtos = repo.GetDocumentScansByDealId(dealId);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parameter = new SqlParameter
+                {
+                    ParameterName = "@DealId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = dealId
+                };
+                IEnumerable<DocumentScanDTO> dtos = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter);
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -91,6 +109,14 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+
+
+        /// <summary>
+        /// Ony documentScanTypeId property of documentScan can be updated 
+        /// </summary>
+        /// <param name="scanId">Id of scan we want to update</param>
+        /// <param name="documentScanTypeId">Id of document scan type</param>
+        /// <returns></returns>
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
@@ -98,8 +124,17 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                DocumentScanDTO dto = new DocumentScanDTO();
-                dto = repo.GetDocumentScan(scanId);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter pScanId = new SqlParameter
+                {
+                    ParameterName = "@ScanId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = scanId
+                };
+                DocumentScanDTO dto = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanById @ScanId", pScanId).FirstOrDefault();
+
                 if (dto != null)
                 {
                     string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
@@ -110,9 +145,22 @@ namespace GTIWebAPI.Controllers
                         string email = user.Email;
                         if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
                         {
-                            dto = repo.UpdateDealDocumentScan(dto);
+                            SqlParameter pDocumentScanTypeId = new SqlParameter
+                            {
+                                ParameterName = "@DocumentScanTypeId",
+                                IsNullable = false,
+                                Direction = ParameterDirection.Input,
+                                DbType = DbType.Int32,
+                                Value = documentScanTypeId
+                            };
+                            dto = unitOfWork.SQLQuery<DocumentScanDTO>("exec UpdateDocumentScanType @ScanId, @DocumentScanTypeId", pScanId, pDocumentScanTypeId).FirstOrDefault();
                             if (dto != null)
                             {
+                                IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
+                                if (types != null)
+                                {
+                                    dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
+                                }
                                 return Ok(dto);
                             }
                             else
@@ -160,18 +208,21 @@ namespace GTIWebAPI.Controllers
         [Route("Upload")]
         public IHttpActionResult UploadDealDocumentScan(int documentScanTypeId, Guid dealId)
         {
-            HttpResponseMessage result = Request.CreateResponse(HttpStatusCode.BadRequest);
-            var httpRequest = HttpContext.Current.Request;
             DocumentScanDTO dto = new DocumentScanDTO();
+
+            var httpRequest = HttpContext.Current.Request;
             if (httpRequest.Files.Count == 1)
             {
                 string fileName = "";
                 byte[] fileContent = new byte[0];
                 string email = "";
 
+
                 string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
                 ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
                 email = user.Email;
+
+
                 foreach (string file in httpRequest.Files)
                 {
                     var postedFile = httpRequest.Files[file];
@@ -191,7 +242,79 @@ namespace GTIWebAPI.Controllers
                     fileName = postedFile.FileName;
                     try
                     {
-                        dto = repo.UploadDealDocumentScan(dealId, fileContent, fileName, email, documentScanTypeId);
+
+                        UnitOfWork unitOfWork = new UnitOfWork(factory);
+
+                        SqlParameter pDealId = new SqlParameter
+                        {
+                            ParameterName = "@DealId",
+                            IsNullable = false,
+                            DbType = DbType.Guid,
+                            Value = dealId
+                        };
+
+                        SqlParameter pFileContent = new SqlParameter
+                        {
+                            ParameterName = "@FileContent",
+                            IsNullable = false,
+                            DbType = DbType.Binary,
+                            Value = fileContent
+                        };
+
+                        SqlParameter pFileName = new SqlParameter
+                        {
+                            ParameterName = "@FileName",
+                            IsNullable = false,
+                            DbType = DbType.AnsiStringFixedLength,
+                            Size = 100,
+                            Value = fileName
+                        };
+
+                        SqlParameter pEmail = new SqlParameter
+                        {
+                            ParameterName = "@Email",
+                            IsNullable = false,
+                            DbType = DbType.AnsiStringFixedLength,
+                            Size = 25,
+                            Value = email
+                        };
+
+                        SqlParameter pTypeId = new SqlParameter
+                        {
+                            ParameterName = "@DocumentScanTypeId",
+                            IsNullable = false,
+                            DbType = DbType.Int32,
+                            Value = documentScanTypeId
+                        };
+
+                        Guid scanId = unitOfWork.SQLQuery<Guid>("exec InsertDocumentScanByDeal @DealId, @FileContent, @FileName, @Email, @DocumentScanTypeId",
+                                pDealId,
+                                pFileContent,
+                                pFileName,
+                                pEmail,
+                                pTypeId
+                                ).FirstOrDefault();
+
+
+                        SqlParameter pScanId = new SqlParameter
+                        {
+                            ParameterName = "@ScanId",
+                            IsNullable = false,
+                            Direction = ParameterDirection.Input,
+                            DbType = DbType.Guid,
+                            Value = scanId
+                        };
+
+                        dto = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanById @ScanId", pScanId).FirstOrDefault();
+
+                        if (dto != null)
+                        {
+                            IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
+                            if (types != null)
+                            {
+                                dto.DocumentScanType = types.Where(d => d.Id == dto.DocumentScanTypeId).FirstOrDefault();
+                            }
+                        }
                     }
                     catch (NotFoundException nfe)
                     {
@@ -207,6 +330,10 @@ namespace GTIWebAPI.Controllers
                     }
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
             return Ok(dto);
         }
 
@@ -219,11 +346,19 @@ namespace GTIWebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult DeleteDealDocumentScan(Guid id)
         {
-            DocumentScanDTO dto = new DocumentScanDTO();
             try
             {
-                dto = repo.GetDocumentScan(id);
-                bool result = repo.DeleteDealDocumentScan(id);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter pScanId = new SqlParameter
+                {
+                    ParameterName = "@ScanId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                DocumentScanDTO dto = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanById @ScanId", pScanId).FirstOrDefault();
+                bool result = unitOfWork.SQLQuery<bool>("exec DeleteDocumentScan @ScanId", pScanId).FirstOrDefault();
                 if (result)
                 {
                     return Ok(dto);
