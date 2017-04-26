@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Context
 {
-    public interface IPrincipalProvider
+    interface IStoredProcedureExecute<T> 
     {
-        string GetUserName();
-
-        bool IsInRole(string roleName);
+        IEnumerable<T> ExecuteStoredProcedures(string query, params object[] parameters);
     }
 }

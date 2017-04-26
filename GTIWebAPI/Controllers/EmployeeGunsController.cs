@@ -23,30 +23,28 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeGuns")]
     public class EmployeeGunsController : ApiController
     {
-        private IRepository<EmployeeGun> repo;
+        private IDbContextFactory factory;
 
         public EmployeeGunsController()
         {
-            repo = new EmployeeGunsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeGunsController(IRepository<EmployeeGun> repo)
+        public EmployeeGunsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeGunDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
         public IHttpActionResult GetEmployeeGunAll()
         {
             try
             {
-                List<EmployeeGunDTO> guns = 
-                    repo.GetAll()
-                    .Select(g => g.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeGunDTO> guns = unitOfWork.EmployeeGunsRepository.Get(d => d.Deleted != true).Select(d => d.ToDTO());
                 return Ok(guns);
             }
             catch (NotFoundException nfe)
@@ -66,15 +64,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeGunDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeGunDTO>))]
         public IHttpActionResult GetEmployeeGunByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeGunDTO> guns = 
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitofWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeGunDTO> guns = unitofWork.EmployeeGunsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId).Select(d => d.ToDTO());
                 return Ok(guns);
             }
             catch (NotFoundException nfe)
@@ -99,7 +95,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeGunDTO gun = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeGunDTO gun = unitOfWork.EmployeeGunsRepository.GetByID(id).ToDTO();
                 return Ok(gun);
             }
             catch (NotFoundException nfe)
@@ -133,7 +130,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeGunDTO gun = repo.Edit(employeeGun).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeGunsRepository.Update(employeeGun);
+                unitOfWork.Save();
+                EmployeeGunDTO gun = employeeGun.ToDTO();
                 return Ok(gun);
             }
             catch (NotFoundException nfe)
@@ -162,7 +162,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeGunDTO gun = repo.Add(employeeGun).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeGun.Id = employeeGun.NewId(unitOfWork);
+                unitOfWork.EmployeeGunsRepository.Insert(employeeGun);
+                unitOfWork.Save();
+                EmployeeGunDTO gun = employeeGun.ToDTO();
                 return CreatedAtRoute("GetEmployeeGun", new { id = gun.Id }, gun);
             }
             catch (NotFoundException nfe)
@@ -182,13 +186,18 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(EmployeeGun))]
+        [ResponseType(typeof(EmployeeGunDTO))]
         public IHttpActionResult DeleteEmployeeGun(int id)
         {
             try
             {
-                EmployeeGunDTO gun = repo.Delete(id).ToDTO();
-                return Ok(gun);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeGun gun = unitOfWork.EmployeeGunsRepository.GetByID(id);
+                gun.Deleted = true;
+                unitOfWork.EmployeeGunsRepository.Update(gun);
+                unitOfWork.Save();
+                EmployeeGunDTO dto = gun.ToDTO();
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {

@@ -2,12 +2,12 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -17,16 +17,16 @@ namespace GTIWebAPI.Controllers
     public class OrganizationsGTIController : ApiController
     {
 
-        IOrganizationsGTIRepository repo;
+        private IDbContextFactory factory;
 
         public OrganizationsGTIController()
         {
-            repo = new OrganizationsGTIRepository();
+            factory = new DbContextFactory();
         }
 
-        public OrganizationsGTIController(IOrganizationsGTIRepository repo)
+        public OrganizationsGTIController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIOfficeFilter]
@@ -37,14 +37,42 @@ namespace GTIWebAPI.Controllers
         {
             List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             IEnumerable<OrganizationGTI> orgs = new List<OrganizationGTI>();
-
             try
             {
-                List<OrganizationGTIDTO> dtos =
-                    repo.Search(OfficeIds, registrationNumber)
-                    .Select(d => d.ToDTO())
-                    .ToList();
-                return Ok(dtos);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                DataTable dataTable = new DataTable();
+                dataTable.Clear();
+                dataTable.Columns.Add("Value");
+                foreach (var id in OfficeIds)
+                {
+                    DataRow row = dataTable.NewRow();
+                    row["Value"] = id;
+                    dataTable.Rows.Add(row);
+                }
+                SqlParameter pOffices = new SqlParameter
+                {
+                    ParameterName = "@OfficeIds",
+                    TypeName = "ut_IntList",
+                    Value = dataTable,
+                    SqlDbType = SqlDbType.Structured
+                };
+                SqlParameter pRegistrationNumber = new SqlParameter
+                {
+                    ParameterName = "@RegistrationNumber",
+                    IsNullable = true,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Size = 1000,
+                    Value = registrationNumber
+                };
+                IEnumerable<OrganizationGTIDTO> gtis = 
+                    unitOfWork.SQLQuery<OrganizationGTI>("exec SearchOrganizationGTI @OfficeIds, @RegistrationNumber", pOffices, pRegistrationNumber)
+                    .Select(d => d.ToDTO());
+                foreach (var item in gtis)
+                {
+                    item.Office = unitOfWork.OfficesRepository.Get(d => d.Id == item.OfficeId).FirstOrDefault().ToDTO();
+                }
+                return Ok(gtis);
             }
             catch (NotFoundException nfe)
             {

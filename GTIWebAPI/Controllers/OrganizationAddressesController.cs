@@ -2,7 +2,7 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -21,30 +21,31 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationAddresses")]
     public class OrganizationAddressesController : ApiController
     {
-        private IOrganizationRepository<OrganizationAddress> repo;
+        private IDbContextFactory factory;
 
         public OrganizationAddressesController()
         {
-            repo = new OrganizationAddressesRepository();
+            factory = new DbContextFactory();
         }
 
-        public OrganizationAddressesController(IOrganizationRepository<OrganizationAddress> repo)
+        public OrganizationAddressesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(List<OrganizationAddressDTO>))]
+        [ResponseType(typeof(IEnumerable<OrganizationAddressDTO>))]
         public IHttpActionResult GetOrganizationAddressByOrganizationId(int organizationId)
         {
             try
             {
-                List<OrganizationAddressDTO> dtos = 
-                    repo.GetByOrganizationId(organizationId)
-                    .Select(p => p.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<OrganizationAddressDTO> dtos = unitOfWork.OrganizationAddressesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == organizationId, 
+                    includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+                    .Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -74,7 +75,11 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationAddressDTO dto = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationAddressDTO dto = unitOfWork.OrganizationAddressesRepository
+               .Get(d => d.Id == id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+               .FirstOrDefault()
+               .ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -113,7 +118,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationAddressDTO dto = repo.Edit(organizationAddress).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.OrganizationAddressesRepository.Update(organizationAddress);
+                unitOfWork.Save();
+                OrganizationAddressDTO dto = unitOfWork.OrganizationAddressesRepository
+               .Get(d => d.Id == id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+               .FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -147,7 +157,15 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationAddressDTO dto = repo.Add(organizationAddress).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                organizationAddress.Id = organizationAddress.NewId(unitOfWork);
+                organizationAddress.Address.Id = organizationAddress.Address.NewId(unitOfWork);
+                organizationAddress.AddressId = organizationAddress.Address.Id;
+                unitOfWork.OrganizationAddressesRepository.Insert(organizationAddress);
+                unitOfWork.Save();
+                OrganizationAddressDTO dto = unitOfWork.OrganizationAddressesRepository
+                    .Get(d => d.Id == organizationAddress.Id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+                    .FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetOrganizationAddress", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -177,7 +195,14 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationAddressDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationAddress address = unitOfWork.OrganizationAddressesRepository
+               .Get(d => d.Id == id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+               .FirstOrDefault();
+                address.Deleted = true;
+                unitOfWork.OrganizationAddressesRepository.Update(address);
+                unitOfWork.Save();
+                OrganizationAddressDTO dto = address.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

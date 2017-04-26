@@ -2,7 +2,7 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -21,16 +21,16 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationContactPersonContacts")]
     public class OrganizationContactPersonContactsController : ApiController
     {
-        IOrganizationContactPersonContactsRepository repo;
+        IDbContextFactory factory;
 
         public OrganizationContactPersonContactsController()
         {
-            repo = new OrganizationContactPersonContactsRepository();
+            factory = new DbContextFactory();
         }
 
-        public OrganizationContactPersonContactsController(IOrganizationContactPersonContactsRepository repo)
+        public OrganizationContactPersonContactsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
@@ -41,10 +41,10 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                List<OrganizationContactPersonContactDTO> dtos = 
-                    repo.GetByOrganizationContactPersonId(organizationContactPersonId)
-                    .Select(p => p.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<OrganizationContactPersonContactDTO> dtos = unitOfWork.OrganizationContactPersonContactsRepository
+                    .Get(d => d.Deleted != true && d.OrganizationContactPersonId == organizationContactPersonId, includeProperties: "ContactType")
+                    .Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -74,8 +74,10 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationContactPersonContactDTO dto = 
-                    repo.Get(id)
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationContactPersonContactDTO dto = unitOfWork.OrganizationContactPersonContactsRepository
+                    .Get(d => d.Id == id, includeProperties: "ContactType")
+                    .FirstOrDefault()
                     .ToDTO();
                 return Ok(dto);
             }
@@ -115,7 +117,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationContactPersonContactDTO dto = repo.Edit(organizationContactPersonContact).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.OrganizationContactPersonContactsRepository.Update(organizationContactPersonContact);
+                unitOfWork.Save();
+                OrganizationContactPersonContactDTO dto = unitOfWork.OrganizationContactPersonContactsRepository
+                    .Get(d => d.Id == id, includeProperties: "ContactType")
+                    .FirstOrDefault()
+                    .ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -149,8 +157,18 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationContactPersonContactDTO dto = repo.Add(organizationContactPersonContact).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                organizationContactPersonContact.Id = organizationContactPersonContact.NewId(unitOfWork);
+                unitOfWork.OrganizationContactPersonContactsRepository.Insert(organizationContactPersonContact);
+                unitOfWork.Save();
+                OrganizationContactPersonContact c = unitOfWork.OrganizationContactPersonContactsRepository
+                    .Get(d => d.Id == organizationContactPersonContact.Id, includeProperties: "ContactType").FirstOrDefault();
+                OrganizationContactPersonContactDTO dto = c.ToDTO();
                 return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (NotFoundException nfe)
             {
@@ -179,8 +197,18 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationContactPersonContactDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationContactPersonContact contact = unitOfWork.OrganizationContactPersonContactsRepository
+                    .Get(d => d.Id == id, includeProperties: "ContactType")
+                    .FirstOrDefault();
+                contact.Deleted = true;
+                unitOfWork.OrganizationContactPersonContactsRepository.Update(contact);
+                OrganizationContactPersonContactDTO dto = contact.ToDTO();
                 return Ok(dto);
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (NotFoundException nfe)
             {

@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,99 +17,174 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeeInternationalPassportsController
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeInternationalPassport> repo;
-
-        public TestEmployeeInternationalPassportsController()
+        [TestMethod]
+        public void GetAllPassports_ShouldReturnNotDeleted()
         {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeInternationalPassportsRepository(factory);
-            GetFewDemo();
+            var passportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.GetEmployeeInternationalPassportAll() as OkNegotiatedContentResult<IEnumerable<EmployeeInternationalPassportDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetAllInternationalPassports_ShouldReturnNotDeleted()
+        public void GetPassportsByEmployeeId_ShouldReturn()
         {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            var result = controller.GetEmployeeInternationalPassportAll() as OkNegotiatedContentResult<List<EmployeeInternationalPassportDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
-        }
-
-        [TestMethod]
-        public void GetInternationalPassportsByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
-        {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            var result = controller.GetEmployeeInternationalPassportByEmployee(1) as OkNegotiatedContentResult<List<EmployeeInternationalPassportDTO>>;
+            var passportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.GetEmployeeInternationalPassportByEmployee(2) as OkNegotiatedContentResult<IEnumerable<EmployeeInternationalPassportDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetInternationalPassportById_ShouldReturnObjectWithSameId()
+        public void GetInternationalPassportById_ShouldReturn()
         {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            var result = controller.GetEmployeeInternationalPassport(1) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutInternationalPassport_ShouldReturnOk()
-        {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            EmployeeInternationalPassport internationalPassport = repo.Add(GetDemo());
-            var result = controller.PutEmployeeInternationalPassport(internationalPassport.Id, internationalPassport) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutInternationalPassport_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            EmployeeInternationalPassport internationalPassport = GetDemo();
-            var badresult = controller.PutEmployeeInternationalPassport(999, internationalPassport);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostInternationalPassport_ShouldReturnSame()
-        {
-            var controller = new EmployeeInternationalPassportsController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployeeInternationalPassport(item) as CreatedAtRouteNegotiatedContentResult<EmployeeInternationalPassportDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetEmployeeInternationalPassport");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteInternationalPassport_ShouldReturnOK()
-        {
-            EmployeeInternationalPassport internationalPassport = GetDemo();
-            internationalPassport = repo.Add(internationalPassport);
-
-            var controller = new EmployeeInternationalPassportsController(repo);
-            var result = controller.DeleteEmployeeInternationalPassport(internationalPassport.Id) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(internationalPassport.Id, result.Content.Id);
-        }
-
-        private EmployeeInternationalPassport GetDemo()
-        {
-            EmployeeInternationalPassport internationalPassport = new EmployeeInternationalPassport
+            var passportsTestData = new List<EmployeeInternationalPassport>()
             {
-                Id = 0,
-                Seria = "SS",
-                EmployeeId = 1
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
             };
-            return internationalPassport;
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.GetEmployeeInternationalPassport(1) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.EmployeeId);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
         {
-            repo.Add(new EmployeeInternationalPassport { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeInternationalPassport { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeInternationalPassport { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeInternationalPassport { Id = 4, Deleted = false, EmployeeId = 2 });
+            var passportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeInternationalPassport passport = new EmployeeInternationalPassport { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.PutEmployeeInternationalPassport(3, passport) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostInternationalPassport_ShoulAddInternationalPassport()
+        {
+            var passportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            passports.Setup(d => d.Add(It.IsAny<EmployeeInternationalPassport>())).Returns<EmployeeInternationalPassport>((contact) =>
+            {
+                passportsTestData.Add(contact);
+                passports = MockHelper.MockDbSet(passportsTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = passports.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeInternationalPassport passport = new EmployeeInternationalPassport { Id = 0, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.PostEmployeeInternationalPassport(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+            Assert.AreEqual("Wow", result.Content.IssuedBy);
+        }
+
+        [TestMethod]
+        public void DeleteInternationalPassport_ShouldDeleteAndReturnOk()
+        {
+            var passportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport { Id = 1, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeInternationalPassport { Id = 3, EmployeeId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(passports.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeInternationalPassport passport = new EmployeeInternationalPassport { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeInternationalPassportsController(factory.Object);
+            var result = controller.DeleteEmployeeInternationalPassport(3) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
         }
     }
 }

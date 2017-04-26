@@ -4,20 +4,17 @@ using GTIWebAPI.Models.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using AutoMapper;
-using GTIWebAPI.Models.Dictionary;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Web.Http.Description;
 using GTIWebAPI.Models.Account;
 using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
-using GTIWebAPI.Models.Repository.Organization;
 using GTIWebAPI.Exceptions;
+using System.Data;
+using System.Data.SqlClient;
+using GTIWebAPI.Models.Repository;
 
 namespace GTIWebAPI.Controllers
 {
@@ -27,16 +24,25 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Organizations")]
     public class OrganizationsController : ApiController
     {
-        private IOrganizationsRepository repo;
+        private IDbContextFactory factory;
+        private IIdentityHelper identityHelper;
 
         public OrganizationsController()
         {
-            repo = new OrganizationsRepository();
+            factory = new DbContextFactory();
+            identityHelper = new IdentityHelper();
         }
 
-        public OrganizationsController(IOrganizationsRepository repo)
+        public OrganizationsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
+            this.identityHelper = new IdentityHelper();
+        }
+
+        public OrganizationsController(IDbContextFactory factory, IIdentityHelper identityHelper)
+        {
+            this.factory = factory;
+            this.identityHelper = identityHelper;
         }
 
         [GTIFilter]
@@ -47,8 +53,39 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                List<OrganizationSearchDTO> list = repo.Search(countryId, registrationNumber);
-                return Ok(list);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter pCountryId = new SqlParameter
+                {
+                    ParameterName = "@CountryId",
+                    IsNullable = true,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = countryId
+                };
+                SqlParameter pRegistrationNumber = new SqlParameter
+                {
+                    ParameterName = "@RegistrationNumber",
+                    IsNullable = true,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Size = 50,
+                    Value = registrationNumber
+                };
+                IEnumerable<OrganizationSearchDTO> orgs = unitOfWork.SQLQuery<OrganizationSearchDTO>("exec SearchOrganization @CountryId, @RegistrationNumber", pCountryId, pRegistrationNumber);
+                foreach (var item in orgs)
+                {
+                    SqlParameter parId = new SqlParameter
+                    {
+                        ParameterName = "@OrganizationId",
+                        IsNullable = false,
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.Int32,
+                        Value = item.Id
+                    };
+                    item.OrganizationGTILinks = unitOfWork.SQLQuery<OrganizationGTIShortDTO>("exec OrganizationGTILinkForSearchByOrganization @OrganizationId", parId).ToList();
+
+                }
+                return Ok(orgs);
             }
             catch (NotFoundException nfe)
             {
@@ -73,8 +110,25 @@ namespace GTIWebAPI.Controllers
             List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             try
             {
-                List<OrganizationView> organizationList = repo.GetAll(OfficeIds);
-                return Ok(organizationList);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                DataTable dataTable = new DataTable();
+                dataTable.Clear();
+                dataTable.Columns.Add("Value");
+                foreach (var id in OfficeIds)
+                {
+                    DataRow row = dataTable.NewRow();
+                    row["Value"] = id;
+                    dataTable.Rows.Add(row);
+                }
+                SqlParameter parameter = new SqlParameter
+                {
+                    ParameterName = "@OfficeIds",
+                    TypeName = "ut_IntList",
+                    Value = dataTable,
+                    SqlDbType = SqlDbType.Structured
+                };
+                IEnumerable<OrganizationView> orgs = unitOfWork.SQLQuery<OrganizationView>("exec OrganizationByOfficeIds @OfficeIds", parameter);
+                return Ok(orgs);
             }
             catch (NotFoundException nfe)
             {
@@ -105,19 +159,61 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                Organization organization = repo.GetView(id);
-                IEnumerable<int> popertyTypeIds = organization
-                .OrganizationProperties
-                .Select(d => d.OrganizationPropertyTypeId)
-                .Distinct();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
 
-                //особый вид OrganizationProperties 
+                OrganizationDTO organization = unitOfWork.OrganizationsRepository.Get(d => d.Id == id).FirstOrDefault().MapToDTO();
+
+                //Addresses with Address values 
+                organization.OrganizationAddresses = unitOfWork.OrganizationAddressesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "Address,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage,Address.Country,OrganizationAddressType")
+                    .Select(d => d.ToDTO());
+
+
+                //ContactPersons with contacts 
+                organization.OrganizationContactPersons = unitOfWork.OrganizationContactPersonsViewRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id)
+                    .Select(d => d.ToDTO());
+                if (organization.OrganizationContactPersons != null)
+                {
+                    foreach (var person in organization.OrganizationContactPersons)
+                    {
+                        person.OrganizationContactPersonContact = unitOfWork.OrganizationContactPersonContactsRepository
+                        .Get(d => d.Deleted != true && d.OrganizationContactPersonId == person.Id, includeProperties: "ContactType").Select(d => d.ToDTO());
+                    }
+                }
+
+
+                //GTI Links with OrganizationGTI and Office
+                organization.OrganizationGTILinks = unitOfWork.OrganizationGTILinksRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id)
+                    .Select(d => d.ToDTO());
+                foreach (var link in organization.OrganizationGTILinks)
+                {
+                    if (link.GTIId != null)
+                    {
+                        link.OrganizationGTI = unitOfWork.OrganizationGTIsRepository.
+                            Get(d => d.Id == link.GTIId).FirstOrDefault().ToDTO();
+                        if (link.OrganizationGTI != null)
+                        {
+                            link.OrganizationGTI.Office =
+                            unitOfWork.OfficesRepository.Get(d => d.Id == link.OrganizationGTI.OfficeId).FirstOrDefault().ToDTO();
+                        }
+                    }
+                }
+
+
+                //Properties
+                IEnumerable<OrganizationProperty> properties = unitOfWork.OrganizationPropertiesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias");
+
+                IEnumerable<int> popertyTypeIds = properties
+                    .Select(d => d.OrganizationPropertyTypeId)
+                    .Distinct();
                 List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
                 foreach (int value in popertyTypeIds)
                 {
                     List<OrganizationProperty> propertiesByType =
-                    organization
-                    .OrganizationProperties
+                    properties
                     .Where(d => d.OrganizationPropertyTypeId == value)
                     .ToList();
 
@@ -127,9 +223,18 @@ namespace GTIWebAPI.Controllers
                         PropertiesById = propertiesByType.Select(d => d.ToDTO())
                     });
                 }
-                OrganizationDTO dto = organization.MapToDTO();
-                dto.OrganizationProperties = propertiesDTO;
-                return Ok(dto);
+                organization.OrganizationProperties = propertiesDTO;
+
+
+                //Tax addresses 
+                organization.OrganizationTaxAddresses = unitOfWork.OrganizationTaxAddressesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "Address,Address.AddressRegion,Address.AddressLocality,Address.AddressPlace,Address.AddressVillage,Address.Country")
+                    .Select(d => d.ToDTO());
+
+                //Language names 
+                organization.OrganizationLanguageNames = unitOfWork.OrganizationLanguageNamesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id).Select(d => d.ToDTO());
+                return Ok(organization);
             }
             catch (NotFoundException nfe)
             {
@@ -150,11 +255,14 @@ namespace GTIWebAPI.Controllers
         [Route("GetEdit", Name = "GetOrganizationEdit")]
         [ResponseType(typeof(OrganizationEditDTO))]
         public IHttpActionResult GetOrganizationEdit(int id)
-        {        
+        {
             try
             {
-                OrganizationEditDTO dto = repo.GetEdit(id).MapToEdit();
-                return Ok(dto);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationEditDTO organization = unitOfWork.OrganizationsRepository
+                    .Get(d => d.Id == id, includeProperties: "Country,OrganizationLegalForm")
+                        .FirstOrDefault().MapToEdit();
+                return Ok(organization);
             }
             catch (Exception e)
             {
@@ -176,10 +284,14 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                OrganizationEditDTO dto = repo.Edit(organization).MapToEdit();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.OrganizationsRepository.Update(organization);
+                unitOfWork.Save();
+                OrganizationEditDTO dto = unitOfWork.OrganizationsRepository
+                    .Get(d => d.Id == id, includeProperties: "Country,OrganizationLegalForm")
+                        .FirstOrDefault().MapToEdit();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -205,29 +317,17 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-
-                if (user != null && user.TableName == "Employee")
+                if (identityHelper.GetUserTableName(User) == "Employee")
                 {
-                    organization.EmployeeId = user.TableId;
-                    try
-                    {
-                        OrganizationEditDTO dto = repo.Add(organization).MapToEdit();
-                        return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
-                    }
-                    catch (NotFoundException nfe)
-                    {
-                        return NotFound();
-                    }
-                    catch (ConflictException ce)
-                    {
-                        return Conflict();
-                    }
-                    catch (Exception e)
-                    {
-                        return BadRequest(e.Message);
-                    }
+                    organization.EmployeeId = identityHelper.GetUserTableId(User);
+                    UnitOfWork unitOfWork = new UnitOfWork(factory);
+                    organization.Id = organization.NewId(unitOfWork);
+                    unitOfWork.OrganizationsRepository.Insert(organization);
+                    unitOfWork.Save();
+                    OrganizationEditDTO dto = unitOfWork.OrganizationsRepository
+                        .Get(d => d.Id == organization.Id, includeProperties: "Country,OrganizationLegalForm")
+                    .FirstOrDefault().MapToEdit();
+                    return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
                 }
             }
             catch (NotFoundException nfe)
@@ -257,8 +357,13 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationEditDTO dto = repo.DeleteOrganization(id).MapToEdit();
-                return Ok(dto);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                Organization organization = unitOfWork.OrganizationsRepository
+                    .Get(d => d.Id == id, includeProperties: "Country,OrganizationLegalForm")
+                    .FirstOrDefault();
+                organization.Deleted = true;
+                unitOfWork.OrganizationsRepository.Update(organization);
+                return Ok(organization.MapToEdit());
             }
             catch (NotFoundException nfe)
             {
@@ -284,7 +389,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationList list = repo.GetTypes();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                OrganizationList list = unitOfWork.CreateOrganizationList();
                 return Ok(list);
             }
             catch (NotFoundException nfe)

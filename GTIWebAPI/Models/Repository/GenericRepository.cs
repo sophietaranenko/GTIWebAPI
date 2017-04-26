@@ -1,4 +1,6 @@
-﻿using GTIWebAPI.Models.Context;
+﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Service;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -31,13 +33,11 @@ namespace GTIWebAPI.Models.Repository
             {
                 query = query.Where(filter);
             }
-
             foreach (var includeProperty in includeProperties.Split
                 (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
             }
-
             if (orderBy != null)
             {
                 return orderBy(query).ToList();
@@ -50,7 +50,12 @@ namespace GTIWebAPI.Models.Repository
 
         public virtual TEntity GetByID(object id)
         {
-            return dbSet.Find(id);
+            TEntity entity = dbSet.Find(id);
+            if (entity == null)
+            {
+                throw new NotFoundException();
+            }
+            return entity;
         }
 
         public virtual void Insert(TEntity entity)
@@ -61,6 +66,10 @@ namespace GTIWebAPI.Models.Repository
         public virtual void Delete(object id)
         {
             TEntity entityToDelete = dbSet.Find(id);
+            if (entityToDelete == null)
+            {
+                throw new NotFoundException();
+            }
             Delete(entityToDelete);
         }
 
@@ -76,7 +85,7 @@ namespace GTIWebAPI.Models.Repository
         public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
-            context.Entry(entityToUpdate).State = EntityState.Modified;
+            context.MarkAsModified(entityToUpdate);
         }
     }
 }

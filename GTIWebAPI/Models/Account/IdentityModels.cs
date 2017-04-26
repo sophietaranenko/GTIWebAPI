@@ -25,19 +25,14 @@ namespace GTIWebAPI.Models.Account
     /// <summary>
     /// User of application
     /// </summary>
+   // [Table("AspNetUsers")]
     public class ApplicationUser : IdentityUser
     {
         public ApplicationUser() : base()
         {
             UserRights = new List<UserRight>();
-           // Images = new List<UserImage>();
         }
 
-        //public string Id { get; set; }
-
-        //public string UserName { get; set; }
-
-        [Column("TableName")]
         public string TableName { get; set; }
 
         public int TableId { get; set; }
@@ -49,76 +44,81 @@ namespace GTIWebAPI.Models.Account
         public List<UserRightDTO>  GetUserRightsDTO()
         {
             List<UserRightDTO> dtos = new List<UserRightDTO>();
-            if (UserRights != null)
+            
+            try
             {
-                if (UserRights.Count != 0)
+                if (UserRights != null)
                 {
-                    var result = UserRights.Select(r => r.OfficeSecurity).Distinct().ToList();
-                    if (result != null)
+                    if (UserRights.Count != 0)
                     {
-                        foreach (var item in result)
+                        var result = UserRights.Select(r => r.OfficeSecurity).Distinct().ToList();
+                        if (result != null)
                         {
-                            UserRightDTO dto = new UserRightDTO();
-                            dto.OfficeId = item.Id;
-                            dto.OfficeName = item.ShortName;
-
-
-                            List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
-                            var bList = UserRights
-                                .Where(d => d.OfficeId == item.Id)
-                                .Select(d => d.Action.Controller.ControllerBox)
-                                .Distinct()
-                                .ToList();
-
-                            if (bList != null)
+                            foreach (var item in result)
                             {
-                                foreach (var box in bList)
+                                UserRightDTO dto = new UserRightDTO();
+                                dto.OfficeId = item.Id;
+                                dto.OfficeName = item.ShortName;
+
+                                List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
+                                var bList = UserRights
+                                    .Where(d => d.OfficeId == item.Id)
+                                    .Select(d => d.Action.Controller.ControllerBox)
+                                    .Distinct()
+                                    .ToList();
+
+                                if (bList != null)
                                 {
-
-                                    ControllerBoxDTO boxDTO = new ControllerBoxDTO();
-                                    boxDTO.Name = box.Name;
-                                    boxDTO.Id = box.Id;
-
-
-
-                                    List<ControllerDTO> controllerList = new List<ControllerDTO>();
-                                    var cList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.Controller.BoxId == box.Id).Select(r => r.Action.Controller).Distinct().ToList();
-
-                                    if (cList != null)
+                                    foreach (var box in bList)
                                     {
-                                        foreach (var c in cList)
+
+                                        ControllerBoxDTO boxDTO = new ControllerBoxDTO();
+                                        boxDTO.Name = box.Name;
+                                        boxDTO.Id = box.Id;
+
+                                        List<ControllerDTO> controllerList = new List<ControllerDTO>();
+                                        var cList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.Controller.BoxId == box.Id).Select(r => r.Action.Controller).Distinct().ToList();
+
+                                        if (cList != null)
                                         {
-                                            ControllerDTO cDto = new ControllerDTO();
-                                            cDto.ControllerName = c.Name;
-                                            cDto.Id = c.Id;
-
-                                            List<ActionDTO> actionList = new List<ActionDTO>();
-                                            var aList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
-                                            if (aList != null)
+                                            foreach (var c in cList)
                                             {
-                                                foreach (var a in aList)
-                                                {
-                                                    ActionDTO aDto = new ActionDTO();
-                                                    aDto.Id = a.Id;
-                                                    aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
-                                                    aDto.ActionName = a.Name == null ? "" : a.Name;
-                                                    actionList.Add(aDto);
-                                                }
-                                            }
-                                            cDto.Actions = actionList;
-                                            controllerList.Add(cDto);
-                                        }
-                                    }
+                                                ControllerDTO cDto = new ControllerDTO();
+                                                cDto.ControllerName = c.Name;
+                                                cDto.Id = c.Id;
 
-                                    boxDTO.Controllers = controllerList;
-                                    boxesList.Add(boxDTO);
+                                                List<ActionDTO> actionList = new List<ActionDTO>();
+                                                var aList = UserRights.Where(r => r.OfficeId == item.Id && r.Action.ControllerId == c.Id).Select(r => r.Action).Distinct().ToList();
+                                                if (aList != null)
+                                                {
+                                                    foreach (var a in aList)
+                                                    {
+                                                        ActionDTO aDto = new ActionDTO();
+                                                        aDto.Id = a.Id;
+                                                        aDto.ActionLongName = a.LongName == null ? "" : a.LongName;
+                                                        aDto.ActionName = a.Name == null ? "" : a.Name;
+                                                        actionList.Add(aDto);
+                                                    }
+                                                }
+                                                cDto.Actions = actionList;
+                                                controllerList.Add(cDto);
+                                            }
+                                        }
+
+                                        boxDTO.Controllers = controllerList;
+                                        boxesList.Add(boxDTO);
+                                    }
                                 }
+                                dto.Boxes = boxesList;
+                                dtos.Add(dto);
                             }
-                            dto.Boxes = boxesList;
-                            dtos.Add(dto);
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                string m = e.Message;
             }
             return dtos;
         }

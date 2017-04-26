@@ -20,30 +20,28 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeDrivingLicenses")]
     public class EmployeeDrivingLicensesController : ApiController
     {
-        private IRepository<EmployeeDrivingLicense> repo;
+        private IDbContextFactory factory;
 
         public EmployeeDrivingLicensesController()
         {
-            repo = new EmployeeDrivingLicensesRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeDrivingLicensesController(IRepository<EmployeeDrivingLicense> repo)
+        public EmployeeDrivingLicensesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeDrivingLicenseDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
         public IHttpActionResult GetEmployeeDrivingLicenseAll()
         {
             try
             {
-                List<EmployeeDrivingLicenseDTO> licenses =
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeDrivingLicenseDTO> licenses = unitOfWork.EmployeeDrivingLicensesRepository.Get(d => d.Deleted != true).Select(d => d.ToDTO());
                 return Ok(licenses);
             }
             catch (NotFoundException nfe)
@@ -63,15 +61,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeDrivingLicenseDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeDrivingLicenseDTO>))]
         public IHttpActionResult GetEmployeeDrivingLicenseByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeDrivingLicenseDTO> licenses =
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeDrivingLicenseDTO> licenses = unitOfWork.EmployeeDrivingLicensesRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId).Select(d => d.ToDTO());
                 return Ok(licenses);
             }
             catch (NotFoundException nfe)
@@ -96,7 +92,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeDrivingLicenseDTO employeeDrivingLicense = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeDrivingLicenseDTO employeeDrivingLicense = unitOfWork.EmployeeDrivingLicensesRepository.GetByID(id).ToDTO();
                 return Ok(employeeDrivingLicense);
             }
             catch (NotFoundException nfe)
@@ -129,7 +126,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeDrivingLicenseDTO dto = repo.Edit(employeeDrivingLicense).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeDrivingLicensesRepository.Update(employeeDrivingLicense);
+                unitOfWork.Save();
+                EmployeeDrivingLicenseDTO dto = unitOfWork.EmployeeDrivingLicensesRepository.GetByID(id).ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -162,7 +162,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeDrivingLicenseDTO dto = repo.Add(employeeDrivingLicense).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeDrivingLicense.Id = employeeDrivingLicense.NewId(unitOfWork);
+                unitOfWork.EmployeeDrivingLicensesRepository.Insert(employeeDrivingLicense);
+                unitOfWork.Save();
+                EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
                 return CreatedAtRoute("GetDrivingLicense", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -187,8 +191,17 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeDrivingLicenseDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeDrivingLicense license = unitOfWork.EmployeeDrivingLicensesRepository.GetByID(id);
+                license.Deleted = true;
+                unitOfWork.EmployeeDrivingLicensesRepository.Update(license);
+                unitOfWork.Save();
+                EmployeeDrivingLicenseDTO dto = license.ToDTO();
                 return Ok(dto);
+            }
+            catch (NullReferenceException nle)
+            {
+                return NotFound();
             }
             catch (NotFoundException nfe)
             {

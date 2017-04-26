@@ -54,29 +54,29 @@
         [NotMapped]
         public string FullUserName { get; set; }
 
-        public virtual ICollection<EmployeeOffice> EmployeeOffices { get; set; }
+        public virtual IEnumerable<EmployeeOffice> EmployeeOffices { get; set; }
 
-        public virtual ICollection<EmployeePassport> EmployeePassports { get; set; }
+        public virtual IEnumerable<EmployeePassport> EmployeePassports { get; set; }
 
-        public virtual ICollection<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
+        public virtual IEnumerable<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
 
-        public virtual ICollection<EmployeeLanguage> EmployeeLanguages { get; set; }
+        public virtual IEnumerable<EmployeeLanguage> EmployeeLanguages { get; set; }
 
-        public virtual ICollection<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
+        public virtual IEnumerable<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
 
-        public virtual ICollection<EmployeeGun> EmployeeGuns { get; set; }
+        public virtual IEnumerable<EmployeeGun> EmployeeGuns { get; set; }
 
-        public virtual ICollection<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
+        public virtual IEnumerable<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
 
-        public virtual ICollection<EmployeeEducation> EmployeeEducations { get; set; }
+        public virtual IEnumerable<EmployeeEducation> EmployeeEducations { get; set; }
 
-        public virtual ICollection<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
+        public virtual IEnumerable<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
 
-        public virtual ICollection<EmployeeContact> EmployeeContacts { get; set; }
+        public virtual IEnumerable<EmployeeContact> EmployeeContacts { get; set; }
 
-        public virtual ICollection<EmployeeCar> EmployeeCars { get; set; }
+        public virtual IEnumerable<EmployeeCar> EmployeeCars { get; set; }
 
-        public virtual ICollection<UserRightMask> Masks { get; set; }
+        public virtual IEnumerable<UserRightMask> Masks { get; set; }
 
         protected override string TableName
         {

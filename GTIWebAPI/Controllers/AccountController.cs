@@ -22,7 +22,6 @@ using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
 using GTIWebAPI.Novell;
-using GTIWebAPI.Models.Repository.Identity;
 using GTIWebAPI.Exceptions;
 using System.IO;
 using System.Web.Helpers;
@@ -30,6 +29,10 @@ using System.Net;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace GTIWebAPI.Controllers
 {
@@ -46,19 +49,30 @@ namespace GTIWebAPI.Controllers
 
         private INovellManager novell { get; set; }
 
-        private IAccountRepository repo { get; set; }
+        private IDbContextFactory factory;
+
+        private ApplicationDbContext context;
 
         public AccountController()
         {
             novell = new NovellManager();
-            repo = new AccountRepository();
+            factory = new DbContextFactory();
+            context = new ApplicationDbContext();
         }
 
-        public AccountController(IAccountRepository repo, INovellManager novell, ApplicationUserManager userManager)
+        //public AccountController(IAccountRepository repo, INovellManager novell, ApplicationUserManager userManager)
+        //{
+        //    UserManager = userManager;
+        //    this.novell = novell;
+        //    this.repo = repo;
+        //}
+
+        public AccountController(IDbContextFactory factory, INovellManager novell, ApplicationUserManager userManager)
         {
             UserManager = userManager;
             this.novell = novell;
-            this.repo = repo;
+            this.factory = factory;
+            context = new ApplicationDbContext();
         }
 
         public AccountController(ApplicationUserManager userManager,
@@ -66,6 +80,9 @@ namespace GTIWebAPI.Controllers
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
+            novell = new NovellManager();
+            factory = new DbContextFactory();
+            context = new ApplicationDbContext();
         }
 
         protected ApplicationUserManager UserManager
@@ -88,104 +105,100 @@ namespace GTIWebAPI.Controllers
         {
             string UserId = User.Identity.GetUserId();
             ApplicationUser user = await UserManager.FindByIdAsync(UserId);
-            UserInfoViewModel model = new UserInfoViewModel();
-            if (user != null)
-            {
-                model.Email = user.Email;
-                model.UserName = user.UserName;
-                model.TableId = user.TableId;
-                model.TableName = user.TableName;
-                model.UserRights = user.GetUserRightsDTO();
-                model.ProfilePicturePath = repo.GetProfilePicturePathByUserId(UserId);
-                model.FullUserName = repo.GetFullUserName(UserId);
-                if (user.TableName == "Employee")
-                {
-                    model.EmployeeInformation = repo.IsEmployeeInformationFilled(user.TableId);
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
 
-                }
-                if (user.TableName == "OrganizationContactPerson")
+            bool isEmployeeInformationFilled = false;
+            if (user.TableName == "Employee")
+            {
+                SqlParameter parameter = new SqlParameter
                 {
-                    model.OrganizationId = repo.GetOrganizationIdOfPerson(user.TableId);
-                }
+                    ParameterName = "@EmployeeId",
+                    IsNullable = true,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Size = 1000,
+                    Value = user.TableId
+                };
+                isEmployeeInformationFilled = unitOfWork.SQLQuery<bool>("exec IsEmployeeInformationFilled @EmployeeId", parameter).FirstOrDefault();
             }
+            int organizationRelatedToContactPersonId = 0;
+            if (user.TableName == "OrganizationContactPerson")
+            {
+                organizationRelatedToContactPersonId = unitOfWork.OrganizationContactPersonsRepository
+                    .Get(d => d.Id == user.TableId).Select(d => d.OrganizationId).FirstOrDefault().GetValueOrDefault();
+            }
+
+            string profilePicturePath = "";
+            UserImage image = unitOfWork.UserImagesRepository
+                .Get(d => d.UserId == UserId && d.IsProfilePicture == true)
+                .FirstOrDefault();
+
+
+
+
+            UserInfoViewModel model = new UserInfoViewModel()
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                TableId = user.TableId,
+                TableName = user.TableName,
+                UserRights = user.GetUserRightsDTO(),
+                ProfilePicturePath = profilePicturePath,
+                FullUserName = context.GetFullUserName(UserId),
+                EmployeeInformation = isEmployeeInformationFilled,
+                OrganizationId = organizationRelatedToContactPersonId
+            };
             return await Task<UserInfoViewModel>.Factory.StartNew(() => model);
         }
 
-        
 
-        //[Route("Binary")]
-        //[HttpPost]
-        //public async Task<HttpResponseMessage> PostFile()
-        //{
-        //    // Check if the request contains multipart/form-data.
-        //    if (!Request.Content.IsMimeMultipartContent())
-        //    {
-        //        throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
-        //    }
 
-        //    string root = HttpContext.Current.Server.MapPath("~/PostedFiles");
-        //    var provider = new MultipartFormDataStreamProvider(root);
 
-        //    try
-        //    {
-        //        StringBuilder sb = new StringBuilder(); // Holds the response body
-
-        //        // Read the form data and return an async task.
-        //        await Request.Content.ReadAsMultipartAsync(provider);
-
-        //        // This illustrates how to get the form data.
-        //        foreach (var key in provider.FormData.AllKeys)
-        //        {
-        //            foreach (var val in provider.FormData.GetValues(key))
-        //            {
-        //                sb.Append(string.Format("{0}: {1}\n", key, val));
-        //            }
-        //        }
-
-        //        // This illustrates how to get the file names for uploaded files.
-        //        foreach (var file in provider.FileData)
-        //        {
-        //            FileInfo fileInfo = new FileInfo(file.LocalFileName);
-        //            sb.Append(string.Format("Uploaded file: {0} ({1} bytes)\n", fileInfo.Name, fileInfo.Length));
-        //        }
-        //        return new HttpResponseMessage()
-        //        {
-        //            Content = new StringContent(sb.ToString())
-        //        };
-        //    }
-        //    catch (System.Exception e)
-        //    {
-        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
-        //    }
-        //}
 
         [GTIFilter]
         [HttpPost]
         [Route("UploadProfilePicture")]
         public IHttpActionResult UploadNewProfilePicture()
         {
-            UserImage image = new UserImage();
-
-
             var httpRequest = HttpContext.Current.Request;
             try
             {
+                UserImage image = new UserImage();
                 if (httpRequest.Files.Count > 0)
                 {
-                    ApplicationDbContext db = new ApplicationDbContext();
                     string userId = User.Identity.GetUserId();
+                    UnitOfWork unitOfWork = new UnitOfWork(factory);
                     foreach (string file in httpRequest.Files)
                     {
-                        string filePath = repo.SaveFile(httpRequest.Files[file]);
-                        image = repo.AddNewProfilePicture(
-                            new UserImage
-                            {
-                                ImageName = filePath,
-                                IsProfilePicture = true,
-                                UploadDate = DateTime.Now,
-                                UserId = User.Identity.GetUserId()
-                            });
+                        string filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(httpRequest.Files[file].FileName));
+                        if (filePath != null && filePath.Length > 3)
+                        {
+                            httpRequest.Files[file].SaveAs(filePath);
+                            filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
+                        }
+                        else
+                        {
+                            throw new NotFoundException();
+                        }
+                        image.ImageName = filePath;
+                        image.IsProfilePicture = true;
+                        image.UploadDate = DateTime.Now;
+                        image.UserId = User.Identity.GetUserId();
+                        IEnumerable<UserImage> images = unitOfWork.UserImagesRepository.Get(d => d.UserId == image.UserId);
+                        foreach (var item in images)
+                        {
+                            item.IsProfilePicture = false;
+                            unitOfWork.UserImagesRepository.Update(item);
+                        }
+                        image.Id = Guid.NewGuid();
+                        unitOfWork.UserImagesRepository.Insert(image);
+                        unitOfWork.Save();
                     }
+                    return Ok(image);
+                }
+                else
+                {
+                    return NotFound();
                 }
             }
             catch (NotFoundException nfe)
@@ -200,97 +213,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(e.Message);
             }
-            return Ok(image);
         }
-
-
-        //[GTIFilter]
-        //[HttpPost]
-        //[Route("UploadProfilePictureByteArray")]
-        //public HttpResponseMessage UploadNewProfilePictureByteArray(string fileName)
-        //{
-        //    // Check if the request contains multipart/form-data.
-        //    if (!Request.Content.IsMimeMultipartContent())
-        //        throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
-
-        //    try
-        //    {
-        //        var httpRequest = HttpContext.Current.Request;
-
-        //        // Check if any file(s) have been uploaded
-        //        if (httpRequest.Files.Count > 0)
-        //        {
-        //            // Get file content as byte array
-        //            MemoryStream ms = new MemoryStream();
-        //            httpRequest.Files[0].InputStream.CopyTo(ms);
-        //            byte[] fileContent = ms.ToArray();
-
-        //            // Populate Feedback object
-        //            Feedback feedback = new Feedback();
-        //            feedback.PrototypeId = httpRequest.Form["prototypeId"];
-        //            feedback.PageUrl = httpRequest.Form["pageURL"];
-        //            feedback.EmailId = httpRequest.Form["emailId"];
-        //            feedback.Comment = httpRequest.Form["comment"];
-        //            feedback.Attachment = fileContent;
-
-        //            // Call the wrapper method
-        //            if (_wrapper.CreateFeedback(feedback))
-        //                return Request.CreateResponse(HttpStatusCode.Created);
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest);
-        //        }
-
-        //        // Return status indicating that the server refuses to fulfill request
-        //        return Request.CreateResponse(HttpStatusCode.Forbidden);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-        //    }
-        //}
-
-        //    if (image == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    if (image.FileName == null || image.FileName == "" || image.ImageContent == null)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    UserImage newImage = new UserImage();
-        //    try
-        //    {
-        //        ApplicationDbContext db = new ApplicationDbContext();
-        //        string userId = User.Identity.GetUserId();
-
-
-        //        string filePath = repo.SaveFile(image.ImageContent, image.FileName);
-        //        newImage = repo.AddNewProfilePicture(
-        //            new UserImage
-        //            {
-        //                ImageName = filePath,
-        //                IsProfilePicture = true,
-        //                UploadDate = DateTime.Now,
-        //                UserId = User.Identity.GetUserId()
-        //            });
-        //    }
-        //    catch (NotFoundException nfe)
-        //    {
-        //        return NotFound();
-        //    }
-        //    catch (ConflictException ce)
-        //    {
-        //        return Conflict();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //    return Ok(newImage);
-        //}
 
 
         [GTIFilter]
@@ -298,7 +221,19 @@ namespace GTIWebAPI.Controllers
         [Route("SetAProfilePicture")]
         public IHttpActionResult SetAsProfilePicture(Guid pictureId)
         {
-            UserImage image = repo.SetAsProfilePicture(pictureId);
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            UserImage image = unitOfWork.UserImagesRepository
+                .Get(d => d.Id == pictureId).FirstOrDefault();
+            IEnumerable<UserImage> images = unitOfWork.UserImagesRepository
+            .Get(d => d.UserId == image.UserId);
+            foreach (var item in images)
+            {
+                item.IsProfilePicture = false;
+                unitOfWork.UserImagesRepository.Update(item);
+            }
+            image.IsProfilePicture = true;
+            unitOfWork.UserImagesRepository.Update(image);
+            unitOfWork.Save();
             return Ok(image);
         }
 
@@ -333,14 +268,11 @@ namespace GTIWebAPI.Controllers
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
             IdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
-
             if (user == null)
             {
                 return null;
             }
-
             List<UserLoginInfoViewModel> logins = new List<UserLoginInfoViewModel>();
-
             foreach (IdentityUserLogin linkedAccount in user.Logins)
             {
                 logins.Add(new UserLoginInfoViewModel
@@ -349,7 +281,6 @@ namespace GTIWebAPI.Controllers
                     ProviderKey = linkedAccount.ProviderKey
                 });
             }
-
             if (user.PasswordHash != null)
             {
                 logins.Add(new UserLoginInfoViewModel
@@ -358,13 +289,12 @@ namespace GTIWebAPI.Controllers
                     ProviderKey = user.UserName,
                 });
             }
-
             return new ManageInfoViewModel
             {
                 LocalLoginProvider = LocalLoginProvider,
                 Email = user.UserName,
                 Logins = logins,
-                ExternalLoginProviders = GetExternalLogins(returnUrl, generateState)
+                // ExternalLoginProviders = GetExternalLogins(returnUrl, generateState)
             };
         }
 
@@ -408,8 +338,9 @@ namespace GTIWebAPI.Controllers
             {
                 OrganizationContactPersonView person = null;
 
-
-                person = repo.FindPerson(organizationContactPersonId);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                person = unitOfWork.OrganizationContactPersonsViewRepository.Get(d => d.Id == organizationContactPersonId)
+                    .FirstOrDefault();
 
                 if (person == null || person.Deleted == true)
                 {
@@ -423,8 +354,6 @@ namespace GTIWebAPI.Controllers
                 {
                     return BadRequest("Organization contact person email is empty");
                 }
-
-
                 INovellOrganizationContactPerson novellPerson;
                 try
                 {
@@ -440,7 +369,7 @@ namespace GTIWebAPI.Controllers
                 bool novellResult = novell.CreateOrganization(novellPerson);
                 if (novellResult)
                 {
-                    bool dbResult = repo.CreateOrganization(novellPerson.Login, novellPerson.Password);
+                    bool dbResult = context.CreateOrganization(novellPerson.Login, novellPerson.Password);
                     if (dbResult)
                     {
                         ApplicationUser user = new ApplicationUser()
@@ -498,190 +427,10 @@ namespace GTIWebAPI.Controllers
         public async Task SendEmailWithCredentials(INovellOrganizationContactPerson novellPerson, string userId)
         {
             string letterText = File.ReadAllText(HttpContext.Current.Server.MapPath("~/HtmlMailFile/letter.html"));
-
             letterText = letterText.Replace("NEW_USER_LOGIN", novellPerson.Login);
             letterText = letterText.Replace("NEW_USER_PASSWORD", novellPerson.Password);
-
             await UserManager.SendEmailAsync(userId, "Регистрация в кабинете клиента GTI", letterText);
-
-            // await UserManager.SendEmailAsync(userId,
-            // "Регистрация",
-            // "<div style=\"background: #fcfcfc; color: #4d4d4d\"><h2 style = \"margin-bottom: 10px;\"> Вы были успешно зарегестрированны в <a href = \"https://wwww.gtiweb.formag-group.com\" style = \"color: #61bc30 \"> клиентской версии GTI </a></h2><h4 style = \"margin-top: 5px;\"> Для доступа к кабинету клиента можно использовать следующие данные для входа на сайт: </h4><p style = \"padding-left: 30px\"> login: <strong>  " + novellPerson.Login + " </strong><br/> password: <strong> " + novellPerson.Password + " </strong></p></div>");
         }
-
-
-
-        /// <summary>
-        /// GetExtenal login (not useful for GTI)
-        /// </summary>
-        /// <param name="provider"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        [OverrideAuthentication]
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
-        [AllowAnonymous]
-        [Route("ExternalLogin", Name = "ExternalLogin")]
-        public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
-        {
-            if (error != null)
-            {
-                return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
-            }
-
-            if (!User.Identity.IsAuthenticated)
-            {
-                return new ChallengeResult(provider, this);
-            }
-
-            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-
-            if (externalLogin == null)
-            {
-                return InternalServerError();
-            }
-
-            if (externalLogin.LoginProvider != provider)
-            {
-                Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                return new ChallengeResult(provider, this);
-            }
-
-            ApplicationUser user = await UserManager.FindAsync(new UserLoginInfo(externalLogin.LoginProvider,
-                externalLogin.ProviderKey));
-
-            bool hasRegistered = user != null;
-
-            if (hasRegistered)
-            {
-                Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                   OAuthDefaults.AuthenticationType);
-                ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    CookieAuthenticationDefaults.AuthenticationType);
-
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
-                Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
-            }
-            else
-            {
-                IEnumerable<Claim> claims = externalLogin.GetClaims();
-                ClaimsIdentity identity = new ClaimsIdentity(claims, OAuthDefaults.AuthenticationType);
-                Authentication.SignIn(identity);
-            }
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Get external logins (not useful for GTI)
-        /// </summary>
-        /// <param name="returnUrl"></param>
-        /// <param name="generateState"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [Route("ExternalLogins")]
-        public IEnumerable<ExternalLoginViewModel> GetExternalLogins(string returnUrl, bool generateState = false)
-        {
-            IEnumerable<AuthenticationDescription> descriptions = Authentication.GetExternalAuthenticationTypes();
-            List<ExternalLoginViewModel> logins = new List<ExternalLoginViewModel>();
-
-            string state;
-
-            if (generateState)
-            {
-                const int strengthInBits = 256;
-                state = RandomOAuthStateGenerator.Generate(strengthInBits);
-            }
-            else
-            {
-                state = null;
-            }
-
-            foreach (AuthenticationDescription description in descriptions)
-            {
-                ExternalLoginViewModel login = new ExternalLoginViewModel
-                {
-                    Name = description.Caption,
-                    Url = Url.Route("ExternalLogin", new
-                    {
-                        provider = description.AuthenticationType,
-                        response_type = "token",
-                        client_id = Startup.PublicClientId,
-                        redirect_uri = new Uri(Request.RequestUri, returnUrl).AbsoluteUri,
-                        state = state
-                    }),
-                    State = state
-                };
-                logins.Add(login);
-            }
-
-            return logins;
-        }
-
-        /// <summary>
-        /// Register (not useful fro GTI)
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [Route("Register")]
-        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
-
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// RegisterExternal (not useful for GTI)
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [OverrideAuthentication]
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        [Route("RegisterExternal")]
-        public async Task<IHttpActionResult> RegisterExternal(RegisterExternalBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var info = await Authentication.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                return InternalServerError();
-            }
-
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
-
-            IdentityResult result = await UserManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            result = await UserManager.AddLoginAsync(user.Id, info.Login);
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-            return Ok();
-        }
-
 
         /// <summary>
         /// Dispose AccountConrtoller (to destroy connections)
@@ -694,7 +443,7 @@ namespace GTIWebAPI.Controllers
                 _userManager.Dispose();
                 _userManager = null;
             }
-
+            context.Dispose();
             base.Dispose(disposing);
         }
 

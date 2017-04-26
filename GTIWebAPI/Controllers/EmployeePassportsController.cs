@@ -24,30 +24,29 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeePassports")]
     public class EmployeePassportsController : ApiController
     {
-        private IRepository<EmployeePassport> repo;
+        private IDbContextFactory factory;
 
         public EmployeePassportsController()
         {
-            repo = new EmployeePassportsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeePassportsController(IRepository<EmployeePassport> repo)
+        public EmployeePassportsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeePassportDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
         public IHttpActionResult GetEmployeePassportAll()
         {
             try
             {
-                List<EmployeePassportDTO> passports = 
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeePassportDTO> passports = unitOfWork.EmployeePassportsRepository
+                    .Get(d => d.Deleted != true, includeProperties: "Address, Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").Select(d => d.ToDTO());
                 return Ok(passports);
             }
             catch (NotFoundException nfe)
@@ -67,15 +66,15 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeePassportDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeePassportDTO>))]
         public IHttpActionResult GetEmployeePassportByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeePassportDTO> passports = 
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeePassportDTO> passports = unitOfWork.EmployeePassportsRepository
+                    .Get(d => d.Deleted != true && d.EmployeeId == employeeId, 
+                    includeProperties: "Address, Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").Select(d => d.ToDTO());
                 return Ok(passports);
             }
             catch (NotFoundException nfe)
@@ -100,9 +99,13 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeePassportDTO employeePassport =
-                    repo.Get(id)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeePassport p = unitOfWork.EmployeePassportsRepository
+                   .Get(d => d.Id == id,
+                   includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+                   .FirstOrDefault();
+                EmployeePassportDTO employeePassport = p.ToDTO();
+
                 return Ok(employeePassport);
             }
             catch (NotFoundException nfe)
@@ -135,9 +138,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeePassportDTO passport =
-                    repo.Edit(employeePassport)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeePassportsRepository.Update(employeePassport);
+                unitOfWork.Save();
+                EmployeePassportDTO passport = unitOfWork.EmployeePassportsRepository
+                   .Get(d => d.EmployeeId == id,
+                   includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault().ToDTO();
                 return Ok(passport);
             }
             catch (NotFoundException nfe)
@@ -164,12 +170,17 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             try
             {
-                EmployeePassportDTO dto =
-                    repo.Add(employeePassport)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeePassport.Address.Id = employeePassport.Address.NewId(unitOfWork);
+                employeePassport.AddressId = employeePassport.Address.Id;
+                employeePassport.Id = employeePassport.NewId(unitOfWork);
+                unitOfWork.EmployeePassportsRepository.Insert(employeePassport);
+                unitOfWork.Save();
+                EmployeePassportDTO dto = unitOfWork.EmployeePassportsRepository
+                   .Get(d => d.Id == employeePassport.Id,
+                   includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeePassport", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -194,10 +205,15 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeePassportDTO employeePassport =
-                     repo.Delete(id)
-                     .ToDTO();
-                return Ok(employeePassport);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeePassport passport = unitOfWork.EmployeePassportsRepository
+                   .Get(d => d.EmployeeId == id,
+                   includeProperties: "Address, Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault();
+                passport.Deleted = true;
+                unitOfWork.EmployeePassportsRepository.Update(passport);
+                unitOfWork.Save();
+                EmployeePassportDTO dto = passport.ToDTO();
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {

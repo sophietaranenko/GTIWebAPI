@@ -1,4 +1,5 @@
 ﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Models.Context;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -27,7 +28,7 @@ namespace GTIWebAPI.Models.Context
             {
                 originalString = ConfigurationManager.ConnectionStrings["DbPersonnel"].ConnectionString;
                 originalString = originalString.Replace("somefakelogin", userName);
-                return new MainDbContext(originalString);
+                return new Context.MainDbContext(originalString);
             }
             else if (IsInRole("Organization"))
             {

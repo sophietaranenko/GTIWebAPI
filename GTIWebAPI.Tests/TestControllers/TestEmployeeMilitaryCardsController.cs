@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,99 +17,173 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeeMilitaryCardsController
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeMilitaryCard> repo;
-
-        public TestEmployeeMilitaryCardsController()
+        [TestMethod]
+        public void GetAllMilitaryCards_ShouldReturnNotDeleted()
         {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeMilitaryCardsRepository(factory);
-            GetFewDemo();
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
+            };
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.GetEmployeeMilitaryCardAll() as OkNegotiatedContentResult<IEnumerable<EmployeeMilitaryCardDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetAllCards_ShouldReturnNotDeleted()
+        public void GetMilitaryCardsByEmployeeId_ShouldReturn()
         {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            var result = controller.GetEmployeeMilitaryCardAll() as OkNegotiatedContentResult<List<EmployeeMilitaryCardDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
-        }
-
-        [TestMethod]
-        public void GetCardsByEmployeeId_ShouldReturnNotDeletedCards()
-        {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            var result = controller.GetEmployeeMilitaryCardByEmployee(1) as OkNegotiatedContentResult<List<EmployeeMilitaryCardDTO>>;
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
+            };
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.GetEmployeeMilitaryCardByEmployee(2) as OkNegotiatedContentResult<IEnumerable<EmployeeMilitaryCardDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetCardById_ShouldReturnObjectWithSameId()
+        public void GetMilitaryCardById_ShouldReturn()
         {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            var result = controller.GetEmployeeMilitaryCardView(1) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutCard_ShouldReturnOk()
-        {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            EmployeeMilitaryCard militaryCard = GetDemo();
-            var result = controller.PutEmployeeMilitaryCard(militaryCard.Id, militaryCard) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutCard_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            EmployeeMilitaryCard militaryCard = GetDemo();
-            var badresult = controller.PutEmployeeMilitaryCard(999, militaryCard);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostCard_ShouldReturnSame()
-        {
-            var controller = new EmployeeMilitaryCardsController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployeeMilitaryCard(item) as CreatedAtRouteNegotiatedContentResult<EmployeeMilitaryCardDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetEmployeeMilitaryCard");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteCard_ShouldReturnOK()
-        {
-            EmployeeMilitaryCard militaryCard = GetDemo();
-            militaryCard = repo.Add(militaryCard);
-
-            var controller = new EmployeeMilitaryCardsController(repo);
-            var result = controller.DeleteEmployeeMilitaryCard(militaryCard.Id) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(militaryCard.Id, result.Content.Id);
-        }
-
-        private EmployeeMilitaryCard GetDemo()
-        {
-            EmployeeMilitaryCard militaryCard = new EmployeeMilitaryCard
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
             {
-                Id = 0,
-                Seria = "SS",
-                EmployeeId = 1
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
             };
-            return militaryCard;
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            militaryCards.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return militaryCards.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.GetEmployeeMilitaryCardView(1) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.EmployeeId);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
         {
-            repo.Add(new EmployeeMilitaryCard { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeMilitaryCard { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeMilitaryCard { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeMilitaryCard { Id = 4, Deleted = false, EmployeeId = 2 });
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
+            };
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            militaryCards.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return militaryCards.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeMilitaryCard passport = new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 };
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.PutEmployeeMilitaryCard(3, passport) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostMilitaryCard_ShoulAddMilitaryCard()
+        {
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
+            };
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            militaryCards.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return militaryCards.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            militaryCards.Setup(d => d.Add(It.IsAny<EmployeeMilitaryCard>())).Returns<EmployeeMilitaryCard>((contact) =>
+            {
+                militaryCardsTestData.Add(contact);
+                militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = militaryCards.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeMilitaryCard passport = new EmployeeMilitaryCard { Id = 0, EmployeeId = 3 };
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.PostEmployeeMilitaryCard(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+        }
+
+        [TestMethod]
+        public void DeleteMilitaryCard_ShouldDeleteAndReturnOk()
+        {
+            var militaryCardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard { Id = 1, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 }
+            };
+            var militaryCards = MockHelper.MockDbSet(militaryCardsTestData);
+            militaryCards.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return militaryCards.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(militaryCards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(militaryCards.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeMilitaryCard passport = new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 };
+            var controller = new EmployeeMilitaryCardsController(factory.Object);
+            var result = controller.DeleteEmployeeMilitaryCard(3) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
         }
     }
 }

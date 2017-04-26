@@ -71,7 +71,7 @@ namespace GTIWebAPI.Models.Security
 
 
     }
-    public class RightControllerActionDTO
+    public class RightControllerActionDTO : IEquatable<RightControllerActionDTO>
     {
         [Key]
         public int Id { get; set; }
@@ -80,16 +80,17 @@ namespace GTIWebAPI.Models.Security
 
         public string LongName { get; set; }
 
-        public RightControllerAction FromDTO()
+        public bool Value { get; set; }
+
+        public bool Equals(RightControllerActionDTO other)
         {
-            return new RightControllerAction
-            {
-                Id = this.Id,
-                Name = this.Name,
-                LongName = this.LongName
-            };
+            return this.Id == other.Id;
         }
-        
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 
     public class ActionDTO

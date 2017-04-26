@@ -24,30 +24,28 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeOffices")]
     public class EmployeeOfficesController : ApiController
     {
-        private IRepository<EmployeeOffice> repo;
+        private IDbContextFactory factory;
 
         public EmployeeOfficesController()
         {
-            this.repo = new EmployeeOfficesRepository();
+            this.factory = new DbContextFactory();
         }
 
-        public EmployeeOfficesController(IRepository<EmployeeOffice> repo)
+        public EmployeeOfficesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeOfficeDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
         public IHttpActionResult GetEmployeeOfficeAll()
         {
             try
             {
-                List<EmployeeOfficeDTO> list =
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeOfficeDTO> list = unitOfWork.EmployeeOfficesRepository.Get(d => d.Deleted != true,includeProperties: "Office,Department,Profession").Select(d => d.ToDTO());
                 return Ok(list);
             }
             catch (NotFoundException nfe)
@@ -67,14 +65,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeOfficeDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeOfficeDTO>))]
         public IHttpActionResult GetEmployeeOfficeByEmployeeId(int employeeId)
         {
             try
             {
-                List<EmployeeOfficeDTO> dtos = repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeOfficeDTO> dtos = unitOfWork.EmployeeOfficesRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId, includeProperties: "Office,Department,Profession").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -99,7 +96,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeOfficeDTO dto = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -132,7 +130,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeOfficeDTO dto = repo.Edit(employeeOffice).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeOfficesRepository.Update(employeeOffice);
+                unitOfWork.Save();
+                EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -161,7 +162,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeOfficeDTO dto = repo.Add(employeeOffice).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeOffice.Id = employeeOffice.NewId(unitOfWork);
+                unitOfWork.EmployeeOfficesRepository.Insert(employeeOffice);
+                unitOfWork.Save();
+                EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == employeeOffice.Id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -186,7 +191,12 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeOfficeDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeOffice office = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == id, includeProperties: "Office,Department,Profession").FirstOrDefault();
+                office.Deleted = true;
+                unitOfWork.EmployeeOfficesRepository.Update(office);
+                unitOfWork.Save();
+                EmployeeOfficeDTO dto = office.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

@@ -3,14 +3,11 @@ using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Repository;
-using GTIWebAPI.Models.Repository.Accounting;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -43,7 +40,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<DealViewDTO>))]
+        [ResponseType(typeof(IEnumerable<DealViewDTO>))]
         public IHttpActionResult GetDeals(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (organizationId == 0)
@@ -134,16 +131,44 @@ namespace GTIWebAPI.Controllers
                     IsNullable = false,
                     Direction = ParameterDirection.Input,
                     DbType = DbType.Guid,
-                    Value = Id
+                    Value = id
                 };
                 DealFullViewDTO dto = unitOfWork.SQLQuery<DealFullViewDTO>("exec DealInfo @DealId", parameter).FirstOrDefault();
                 if (dto == null)
                 {
                     return NotFound();
                 }
-                dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec DealContainersList @DealId", parameter);
-                dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList @DealId", parameter);
-                dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter);
+
+                SqlParameter parameter1 = new SqlParameter
+                {
+                    ParameterName = "@DealId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec DealContainersList @DealId", parameter1);
+
+                SqlParameter parameter2 = new SqlParameter
+                {
+                    ParameterName = "@DealId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList @DealId", parameter2);
+
+                SqlParameter parameter3 = new SqlParameter
+                {
+                    ParameterName = "@DealId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter3);
+
                 IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
                 if (dto.DocumentScans != null && types != null)
                 {

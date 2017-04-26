@@ -17,14 +17,15 @@ namespace GTIWebAPI.Models.Security
             Rights = new HashSet<UserRightMaskRight>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
-        public int OfficeId { get; set; }
+        public int? OfficeId { get; set; }
 
-        public int CreatorId { get; set; }
+        public int? CreatorId { get; set; }
+
+        public bool? Deleted { get; set; }
 
         public virtual Office Office {get;set;}
 
@@ -33,51 +34,72 @@ namespace GTIWebAPI.Models.Security
 
         public virtual ICollection<UserRightMaskRight> Rights { get; set; }
 
-        public UserRightMaskDTO ToDTO()
-        {
-            UserRightMaskDTO dto = new UserRightMaskDTO()
-            {
-                Id = this.Id,
-                Name = this.Name,
-                OfficeId = this.OfficeId,
-                Office = this.Office == null ? null : this.Office.ToDTO(),
-                Controllers = this.Rights.Select(d => d.Action.Controller).Distinct().Select(d => d.ToDTO())
-             };
-            foreach (var item in dto.Controllers)
-            {
-
-            }
-            return dto;
-        }
-
-
     }
-
 
     public class UserRightMaskDTO
     {
-        public int Id { get; set; }
+        public int? CreatorId { get; set; }
+
+        public Guid? Id { get; set; }
 
         public string Name { get; set; }
 
-        public int OfficeId { get; set; }
+        public int? OfficeId { get; set; }
 
-        public int CreatorId { get; set; }
+        public string OfficeShortName { get; set; }
+
+        public int? BoxId { get; set; }
+
+        public string BoxName { get; set; }
+
+        public string BoxLongName { get; set; }
+
+        public int? ActionId { get; set; }
+
+        public string ActionName { get; set; }
+
+        public string ActionLongName { get; set; }
+
+        public int? ControllerId { get; set; }
+
+        public string ControllerName { get; set; }
+
+        public string ControllerLongName { get; set; }
+
+        public bool Value { get; set; }
+
+        public RightControllerBoxDTO Box {get;set;}
+
+        public RightControllerDTO Controller { get; set; }
+
+        public RightControllerActionDTO Action { get; set; }
 
         public OfficeDTO Office { get; set; }
 
-        public IEnumerable<RightControllerDTO> Controllers { get; set; }
+    }
 
-        public UserRightMask FromDTO()
+    public class UserRightMaskTreeView : IEquatable<UserRightMaskTreeView>
+    {
+        public int? CreatorId { get; set; }
+
+        public Guid? Id { get; set; }
+
+        public string Name { get; set; }
+
+        public int? OfficeId { get; set; }
+
+        public OfficeDTO Office { get; set; }
+
+        public IEnumerable<RightControllerBoxDTO> Boxes { get; set; }
+
+        public bool Equals(UserRightMaskTreeView other)
         {
-            return new UserRightMask()
-            {
-                Id = this.Id,
-                Name = this.Name,
-                OfficeId = this.OfficeId,
-                Office = this.Office == null ? null : this.Office.FromDTO()
-            };
+            return this.Id == other.Id;
         }
 
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

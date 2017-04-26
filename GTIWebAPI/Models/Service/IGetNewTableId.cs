@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTIWebAPI.Models.Context
+namespace GTIWebAPI.Models.Service
 {
-    public interface IServiceDbContext
+    public interface IGetNewTableId
     {
-        int NewTableId(string tableName);
+        Int32 GetNewTableId(string tableName);
     }
 }

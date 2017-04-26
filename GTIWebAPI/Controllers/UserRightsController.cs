@@ -13,6 +13,10 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace GTIWebAPI.Controllers
 {
@@ -22,248 +26,179 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/UserRights")]
     public class UserRightsController : ApiController
     {
-        private ApplicationUserManager _userManager;
-        ApplicationDbContext db = new ApplicationDbContext();
-        protected ApplicationUserManager UserManager
+        private IDbContextFactory factory;
+
+        public UserRightsController()
         {
-            get
+            factory = new DbContextFactory();
+        }
+
+        public UserRightsController(IDbContextFactory factory)
+        {
+            this.factory = factory;
+        }
+
+        public UserRightTreeView ToTreeView(List<UserRightOfficeDTO> rights)
+        {
+            UserRightTreeView userRightTreeView = new UserRightTreeView();
+            //он все равно один
+            userRightTreeView.UserId = rights.Where(d => d.UserId != null).Select(d => d.UserId).FirstOrDefault();
+            //равно как и офис
+            userRightTreeView.OfficeId = rights.Where(d => d.OfficeId != null).Select(d => d.OfficeId).FirstOrDefault();
+            string office = rights.Where(d => d.OfficeShortName != null).Select(d => d.OfficeShortName).FirstOrDefault();
+            userRightTreeView.Office = new OfficeDTO
             {
-                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
+                Id = userRightTreeView.OfficeId.GetValueOrDefault(),
+                ShortName = office
+            };
+
+            List<RightControllerBoxDTO> boxes = rights.Select(d => new RightControllerBoxDTO
             {
-                _userManager = value;
+                Id = d.BoxId,
+                Name = d.BoxName,
+                LongName = d.BoxLongName
+            }).Distinct().ToList();
+
+            foreach (var box in boxes)
+            {
+                List<RightControllerDTO> controllers = rights.Where(d => d.BoxId == box.Id)
+                    .Where(d => d.BoxId != null)
+                    .Select(d => new RightControllerDTO
+                    {
+                        Id = d.ControllerId.GetValueOrDefault(),
+                        Name = d.ControllerName,
+                        LongName = d.ControllerLongName
+                    }).Distinct().ToList();
+                foreach (var controller in controllers)
+                {
+                    List<RightControllerActionDTO> actions = rights.Where(d => d.ControllerId == controller.Id)
+                        .Select(d => new RightControllerActionDTO
+                        {
+                            Id = d.ActionId.GetValueOrDefault(),
+                            Name = d.ActionName,
+                            LongName = d.ActionLongName,
+                            Value = d.Value.GetValueOrDefault()
+                        }).Distinct().ToList();
+                    controller.Actions = actions;
+                }
+                box.Controllers = controllers;
             }
+            
+            userRightTreeView.Boxes = boxes;
+            return userRightTreeView;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("Get")]
-        [ResponseType(typeof(List<UserRightDTO>))]
-        public IHttpActionResult GetUserRightView(string UserId)
+        [ResponseType(typeof(List<UserRightTreeView>))]
+        public IHttpActionResult GetUserRightsByUser(string userId)
         {
-            ApplicationUser u = UserManager.FindById(UserId);
-            if (u == null)
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            SqlParameter pUserId = new SqlParameter()
             {
-                return NotFound();
-            }
-            List<UserRightDTO> rights = u.GetUserRightsDTO();
-            if (rights == null)
+                DbType = System.Data.DbType.String,
+                Value = userId,
+                ParameterName = "@UserId"
+            };
+            IEnumerable<int> officeIds = unitOfWork.SQLQuery<int>("exec GetAspNetUserRightsByOfficeId @UserId", pUserId);
+            List<UserRightTreeView> trees = new List<UserRightTreeView>();
+            foreach (int officeId in officeIds)
             {
-                return NotFound();
+                SqlParameter pUserIdIn = new SqlParameter()
+                {
+                    DbType = System.Data.DbType.String,
+                    Value = userId,
+                    ParameterName = "@UserId"
+                };
+                SqlParameter pOfficeIdIn = new SqlParameter()
+                {
+                    DbType = System.Data.DbType.Int32,
+                    Value = officeId,
+                    ParameterName = "@OfficeId"
+                };
+                List<UserRightOfficeDTO> rights = 
+                    unitOfWork.SQLQuery<UserRightOfficeDTO>("exec GetAspNetUSerRights @UserId, @OfficeId", pUserIdIn, pOfficeIdIn).ToList();
+                trees.Add(ToTreeView(rights));
             }
-            return Ok(rights);
+            return Ok(trees);
         }
 
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetByOffice")]
+        [ResponseType(typeof(List<UserRightDTO>))]
+        public IHttpActionResult GetUserRightsByUserAndOffice(string userId, int officeId)
+        {
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
 
+            SqlParameter pUserIdIn = new SqlParameter()
+            {
+                DbType = System.Data.DbType.String,
+                Value = userId,
+                ParameterName = "@UserId"
+            };
+            SqlParameter pOfficeIdIn = new SqlParameter()
+            {
+                DbType = System.Data.DbType.Int32,
+                Value = officeId,
+                ParameterName = "@OfficeId"
+            };
+            List<UserRightOfficeDTO> rights =
+                unitOfWork.SQLQuery<UserRightOfficeDTO>("exec GetAspNetUSerRights @UserId, @OfficeId", pUserIdIn, pOfficeIdIn).ToList();
+
+            return Ok(ToTreeView(rights));
+        }
 
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutUserRights(string UserId, List<UserRightEditDTO> rights)
+        [ResponseType(typeof(UserRightTreeView))]
+        public IHttpActionResult PutUserRights(string userId, int officeId, UserRightTreeView tree)
         {
-            if (!ModelState.IsValid)
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+
+            SqlParameter pUserIdIn = new SqlParameter()
             {
-                return BadRequest(ModelState);
-            }
-            if (UserId == null)
+                DbType = System.Data.DbType.String,
+                Value = userId,
+                ParameterName = "@UserId"
+            };
+            SqlParameter pOfficeIdIn = new SqlParameter()
             {
-                return BadRequest();
-            }
+                DbType = System.Data.DbType.Int32,
+                Value = officeId,
+                ParameterName = "@OfficeId"
+            };
 
-            List<UserRight> oldRights = UserManager.FindById(UserId).UserRights.ToList();
-            db.UserRights.RemoveRange(oldRights);
-            try
+            IEnumerable<int> actionIds = new List<int>();
+            if (tree.Boxes != null)
+            { 
+                actionIds = tree.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Select(a => a.Id)));
+            }
+            DataTable dataTable = new DataTable();
+            dataTable.Clear();
+            dataTable.Columns.Add("ActionId");
+
+            foreach (var actionId in actionIds)
             {
-                db.SaveChanges();
+                DataRow row = dataTable.NewRow();
+                row["ActionId"] = actionId;
+                dataTable.Rows.Add(row);
             }
-            catch (DbUpdateConcurrencyException)
+            SqlParameter actions = new SqlParameter
             {
-                throw;
-            }
+                ParameterName = "@Actions",
+                TypeName = "ut_MaskRight",
+                Value = dataTable,
+                SqlDbType = SqlDbType.Structured
+            };
 
-            List<UserRight> newRights = new List<UserRight>();
-            foreach (var item in rights)
-            {
-                UserRight right = new UserRight();
-
-                int Id = right.NewId(db);
-                right.Id = Guid.NewGuid();
-                right.OfficeId = item.OfficeId;
-                //right.ControllerId = item.ControllerId;
-                right.ActionId = item.ActionId;
-                right.AspNetUserId = UserId;
-
-                newRights.Add(right);
-            }
-
-            db.UserRights.AddRange(newRights);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        [GTIFilter]
-        [HttpPost]
-        [Route("Post")]
-        [ResponseType(typeof(List<UserRightDTO>))]
-        public IHttpActionResult PostUserRights(string UserId, List<UserRightEditDTO> rights)
-        {
-            if (rights == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-            List<UserRight> newRights = new List<UserRight>();
-            foreach (var item in rights)
-            {
-                UserRight right = new UserRight();
-
-                int Id = right.NewId(db);
-                right.Id = Guid.NewGuid();
-                right.OfficeId = item.OfficeId;
-                //right.ControllerId = item.ControllerId;
-                right.ActionId = item.ActionId;
-                right.AspNetUserId = UserId;
-
-                newRights.Add(right);
-            }
-            db.UserRights.AddRange(newRights);
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            return StatusCode(HttpStatusCode.Created);
-        }
+            List<UserRightOfficeDTO> rights =
+                unitOfWork.SQLQuery<UserRightOfficeDTO>("exec UpdateAspNetUserRights @UserId, @OfficeId, @Actions", pUserIdIn, pOfficeIdIn, actions).ToList();
 
 
-        [GTIFilter]
-        [HttpPost]
-        [Route("PostSeveral")]
-        [ResponseType(typeof(List<UserRightDTO>))]
-        public IHttpActionResult PostSeveralUserRights(string[] UserIds, List<UserRightEditDTO> rights)
-        {
-            if (rights == null || UserIds == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-            foreach (var UserId in UserIds)
-            {
-                List<UserRight> newRights = new List<UserRight>();
-                foreach (var item in rights)
-                {
-                    UserRight right = new UserRight();
-
-                    int Id = right.NewId(db);
-                    right.Id = Guid.NewGuid();
-                    right.OfficeId = item.OfficeId;
-                    //right.ControllerId = item.ControllerId;
-                    right.ActionId = item.ActionId;
-                    right.AspNetUserId = UserId;
-
-                    newRights.Add(right);
-                    db.UserRights.AddRange(newRights);
-                }
-            }
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            return StatusCode(HttpStatusCode.Created);
-        }
-
-        /// <summary>
-        /// Delete all rights by user
-        /// </summary>
-        /// <param name="UserId"></param>
-        /// <returns></returns>
-        [GTIFilter]
-        [HttpDelete]
-        [Route("Delete")]
-        [ResponseType(typeof(List<UserRightDTO>))]
-        public IHttpActionResult DeleteUserRights(string UserId)
-        {
-            ApplicationUser u = UserManager.FindById(UserId);
-            if (u == null)
-            {
-                return NotFound();
-            }
-            //List<UserRightDTO> rightsDTO = u.UserRightsDto;
-            List<UserRightDTO> rightsDTO = u.GetUserRightsDTO();
-            if (rightsDTO == null)
-            {
-                return NotFound();
-            }
-            List<UserRight> rights = u.UserRights.ToList();
-            db.UserRights.RemoveRange(rights);
-            db.SaveChanges();
-            return Ok(rightsDTO);
-        }
-
-
-        [HttpGet]
-        [Route("GetLists")]
-        [ResponseType(typeof(UserRightList))]
-        public IHttpActionResult GetUserRigthLists()
-        {
-
-            List<Controller> cList = db.Controllers.ToList();
-            return Ok();
-        }
-
-        /// <summary>
-        /// Get all controllers
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetControllers")]
-        public IEnumerable<ControllerDTO> GetControllers()
-        {
-            List<Controller> cList = db.Controllers.ToList();
-            AutoMapper.Mapper.Initialize(m => m.CreateMap<Controller, ControllerDTO>());
-            IEnumerable<ControllerDTO> dtoList = AutoMapper.Mapper.Map<IEnumerable<Controller>, IEnumerable<ControllerDTO>>(cList);
-            return dtoList;
-        }
-
-        /// <summary>
-        /// Get all actions of controller
-        /// </summary>
-        /// <param name="controllerId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("GetActions")]
-        public IEnumerable<ActionDTO> GetActions(int controllerId)
-        {
-            List<Models.Security.Action> aList = db.Actions.Where(a => a.ControllerId == controllerId).ToList();
-            AutoMapper.Mapper.Initialize(m => m.CreateMap<Models.Security.Action, ActionDTO>());
-            IEnumerable<ActionDTO> dtoList = AutoMapper.Mapper.Map<IEnumerable<Models.Security.Action>, IEnumerable<ActionDTO>>(aList);
-            return dtoList;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            return Ok(ToTreeView(rights));
         }
 
     }

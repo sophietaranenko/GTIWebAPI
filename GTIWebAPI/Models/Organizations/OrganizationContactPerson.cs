@@ -99,6 +99,6 @@ namespace GTIWebAPI.Models.Organizations
 
         public bool IsRegistered { get; set; }
 
-        public virtual ICollection<OrganizationContactPersonContactDTO> OrganizationContactPersonContact { get; set; }
+        public virtual IEnumerable<OrganizationContactPersonContactDTO> OrganizationContactPersonContact { get; set; }
     }
 }

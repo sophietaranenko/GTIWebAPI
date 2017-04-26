@@ -1,9 +1,11 @@
 ﻿using GTIWebAPI.Controllers;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,182 +18,324 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeesController
     {
-        private IDbContextFactory factory;
-        private IEmployeesRepository repo;
-        private TestDbContext db;
-
-        public TestEmployeesController()
+        [TestMethod]
+        public void GetAllEmployees_ShouldReturnNotDeleted()
         {
-            db = new TestDbContext();
-            factory = new TestDbContextFactory(db);
-            repo = new EmployeesRepository(factory);
-            GetFewDemo();
+            var passportsTestData = new List<Employee>()
+            {
+                new Employee { Id = 1},
+                new Employee { Id = 2},
+                new Employee { Id = 3}
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            var contactsTestData = new List<EmployeeContact>()
+            {
+                new EmployeeContact { Id = 1, ContactTypeId = 1}
+            };
+            var contacts = MockHelper.MockDbSet(contactsTestData);
+
+            var dbContext = new Mock<IAppDbContext>();
+
+            dbContext.Setup(d => d.EmployeeContacts).Returns(contacts.Object);
+            dbContext.Setup(d => d.Set<EmployeeContact>()).Returns(contacts.Object);
+
+            dbContext.Setup(m => m.Employees).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(passports.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<EmployeeView>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<EmployeeView> list = new List<EmployeeView>();
+                   if (query.Contains("EmployeeByOfficeIds"))
+                   {
+                       list.Add( new EmployeeView { Id = 1, Email = "ss"});
+                       list.Add(new EmployeeView { Id = 2, Email = "ss" });
+                       list.Add(new EmployeeView { Id = 3, Email = "ss" });
+                       list.Add(new EmployeeView { Id = 4, Email = "ss" });
+                       list.Add(new EmployeeView { Id = 5, Email = "ss" });
+                   }
+                   else
+                   {
+                       list.Add(new EmployeeView { Id = 1, Email = "ss" });
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeesController(factory.Object);
+            var result = controller.GetEmployeeAll("1,2") as OkNegotiatedContentResult<IEnumerable<EmployeeViewDTO>>;
+            Assert.AreEqual(5, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetEmployeeAll_ShouldReturnNotDeleted()
+        public void GetEmployeeView_ShouldReturn()
         {
-            var controller = new EmployeesController(repo);
-            string officeIds = "1,2,4";
-            var result = controller.GetEmployeeAll(officeIds) as OkNegotiatedContentResult<List<EmployeeViewDTO>>;
-            Assert.AreEqual(4, result.Content.Count());
+            var employeesTestData = new List<Employee>()
+            {
+                new Employee { Id = 1},
+                new Employee { Id = 2, Deleted = true },
+                new Employee { Id = 3}
+            };
+            var employees = MockHelper.MockDbSet(employeesTestData);
+
+            //жопа
+
+            var contactsTestData = new List<EmployeeContact>()
+            {
+                new EmployeeContact() { Id = 1}
+            };
+            var contacts = MockHelper.MockDbSet(contactsTestData);
+
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar() { Id = 1 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense() { Id = 1 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+
+
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+
+            var passportsTestData = new List<EmployeePassport>()
+            {
+                new EmployeePassport { Id = 1 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+
+
+            var cardsTestData = new List<EmployeeMilitaryCard>()
+            {
+                new EmployeeMilitaryCard {Id = 1 }
+            };
+            var cards = MockHelper.MockDbSet(cardsTestData);
+
+
+            var languagesTestData = new List<EmployeeLanguage>()
+            {
+                new EmployeeLanguage { Id = 1 }
+            };
+            var language = MockHelper.MockDbSet(languagesTestData);
+
+            var intPassportsTestData = new List<EmployeeInternationalPassport>()
+            {
+                new EmployeeInternationalPassport {Id = 1 }
+            };
+            var intPassports = MockHelper.MockDbSet(intPassportsTestData);
+
+            var fDocsTestData = new List<EmployeeFoundationDocument>()
+            {
+                new EmployeeFoundationDocument { Id = 1 }
+            };
+            var fDocs = MockHelper.MockDbSet(fDocsTestData);
+
+            var eduTestData = new List<EmployeeEducation>()
+            {
+                new EmployeeEducation { Id = 1}
+            };
+            var edu = MockHelper.MockDbSet(eduTestData);
+
+            var gunTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1}
+            };
+            var gun = MockHelper.MockDbSet(gunTestData);
+
+            var dbContext = new Mock<IAppDbContext>();
+
+
+            dbContext.Setup(m => m.Employees).Returns(employees.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(employees.Object);
+
+            dbContext.Setup(m => m.EmployeeContacts).Returns(contacts.Object);
+            dbContext.Setup(d => d.Set<EmployeeContact>()).Returns(contacts.Object);
+
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+
+            dbContext.Setup(m => m.Employees).Returns(employees.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(employees.Object);
+
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+
+            dbContext.Setup(m => m.EmployeePassports).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<EmployeePassport>()).Returns(passports.Object);
+
+            dbContext.Setup(m => m.EmployeeMilitaryCards).Returns(cards.Object);
+            dbContext.Setup(d => d.Set<EmployeeMilitaryCard>()).Returns(cards.Object);
+
+            dbContext.Setup(m => m.EmployeeLanguages).Returns(language.Object);
+            dbContext.Setup(d => d.Set<EmployeeLanguage>()).Returns(language.Object);
+
+            dbContext.Setup(m => m.EmployeeInternationalPassports).Returns(intPassports.Object);
+            dbContext.Setup(d => d.Set<EmployeeInternationalPassport>()).Returns(intPassports.Object);
+
+            dbContext.Setup(m => m.EmployeeFoundationDocuments).Returns(fDocs.Object);
+            dbContext.Setup(d => d.Set<EmployeeFoundationDocument>()).Returns(fDocs.Object);
+
+            dbContext.Setup(m => m.EmployeeEducations).Returns(edu.Object);
+            dbContext.Setup(d => d.Set<EmployeeEducation>()).Returns(edu.Object);
+
+            dbContext.Setup(m => m.EmployeeGuns).Returns(gun.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(gun.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<string>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<string> stringList = new List<string>();
+                   if (query.Contains("GetProfilePicturePathByEmployeeId") || query.Contains("GetFullAspNetUserNameByEmployeeId"))
+                   {
+                       stringList.Add("ss");
+                   }
+                   else
+                   {
+                       stringList.Add("sss");
+                   }
+                   return stringList;
+               });
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeesController(factory.Object);
+            var result = controller.GetEmployeeView(2) as OkNegotiatedContentResult<EmployeeDTO>;
+            Assert.IsNotNull(result);
         }
 
         [TestMethod]
-        public void GetEmployeeView_ShouldReturnObjectContainsOtherObjects()
+        public void GetEmployeeEdit_ShouldReturn()
         {
-            var controller = new EmployeesController(repo);
-            var result = controller.GetEmployeeView(1) as OkNegotiatedContentResult<EmployeeDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-            Assert.IsNotNull(result.Content.EmployeePassports);
-            Assert.IsNotNull(result.Content.EmployeePassports.Take(1).FirstOrDefault().Address);
-        }
+            var passportsTestData = new List<Employee>()
+            {
+                new Employee { Id = 1},
+                new Employee { Id = 2, Deleted = true},
+                new Employee { Id = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
 
-        [TestMethod]
-        public void GetEmployeeView_ShouldReturnObjectWithSameIdAndContainsSomeStuff()
-        {
-            var controller = new EmployeesController(repo);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.Employees).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeesController(factory.Object);
             var result = controller.GetEmployeeEdit(1) as OkNegotiatedContentResult<EmployeeEditDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
+            Assert.AreEqual(1, result.Content.Id);
         }
 
         [TestMethod]
-        public void Put_ShouldReturnOk()
+        public void PutEmployee_ShouldReturnOk()
         {
-            var controller = new EmployeesController(repo);
-            Employee employee = repo.Add(GetDemo());
-            var result = controller.PutEmployee(employee.Id, employee) as OkNegotiatedContentResult<EmployeeEditDTO>;
-            Assert.IsNotNull(result);
-        }
+            var passportsTestData = new List<Employee>()
+            {
+                new Employee { Id = 1},
+                new Employee { Id = 2, Deleted = true},
+                new Employee { Id = 3}
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
 
-        [TestMethod]
-        public void PutEmployee_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeesController(repo);
-            Employee car = GetDemo();
-            var badresult = controller.PutEmployee(999, car);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.Employees).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(passports.Object);
 
-        [TestMethod]
-        public void PostEmployee_ShouldReturnSame()
-        {
-            var controller = new EmployeesController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployee(item) as CreatedAtRouteNegotiatedContentResult<EmployeeEditDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetEmployeeEdit");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
 
-        [TestMethod]
-        public void DeleteEmployee_ShouldReturnOK()
-        {
-            Employee employee = repo.Add(GetDemo());
-
-            var controller = new EmployeesController(repo);
-            var result = controller.DeleteEmployee(employee.Id) as OkNegotiatedContentResult<EmployeeEditDTO>;
+            Employee passport = new Employee { Id = 3};
+            var controller = new EmployeesController(factory.Object);
+            var result = controller.PutEmployee(3, passport) as OkNegotiatedContentResult<EmployeeEditDTO>;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(employee.Id, result.Content.Id);
+            Assert.AreEqual(3, result.Content.Id);
         }
 
-        private Employee GetDemo()
+        [TestMethod]
+        public void PostEmployee_ShoulAddEmployee()
         {
-            Employee employee = new Employee();
-            employee.Id = 101;
-            employee.AddressId = 220;
-            Models.Dictionary.Address employeeAddress = new Models.Dictionary.Address()
+            var passportsTestData = new List<Employee>()
             {
-                Id = 220,
-                Apartment = "1"
+                new Employee { Id = 1},
+                new Employee { Id = 2, Deleted = true },
+                new Employee { Id = 3 }
             };
-            employee.Address = employeeAddress;
-            Models.Dictionary.Address passportAddress = new Models.Dictionary.Address()
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            passports.Setup(d => d.Add(It.IsAny<Employee>())).Returns<Employee>((contact) =>
             {
-                Id = 330,
-                Apartment = "1"
-            };
+                passportsTestData.Add(contact);
+                passports = MockHelper.MockDbSet(passportsTestData);
+                return contact;
+            });
 
-            employee.EmployeePassports = new List<EmployeePassport>();
-            employee.EmployeePassports.Add(new EmployeePassport()
-                {
-                    EmployeeId = 101,
-                    FirstName = "First Name",
-                    SecondName = "Secons Name",
-                    AddressId = 330,
-                    Address = passportAddress
-                });
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.Employees).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(passports.Object);
 
-            return employee;
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = passports.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            Employee passport = new Employee { Id = 0, Address = new Address { Apartment = "3", BuildingNumber = 45 } };
+            var controller = new EmployeesController(factory.Object);
+            var result = controller.PostEmployee(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeEditDTO>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void DeleteEmployee_ShouldDeleteAndReturnOk()
         {
-            db.EmployeeViews.Add(
-                new EmployeeView()
-                {
-                    DateOfBirth = new DateTime(1999, 1, 1),
-                    Id = 50,
-                    Position = "some position"
-                });
-            db.EmployeeViews.Add(
-                new EmployeeView()
-                {
-                    DateOfBirth = new DateTime(1999, 1, 1),
-                    Id = 20,
-                    Position = "some position"
-                });
-            db.EmployeeViews.Add(
-                new EmployeeView()
-                {
-                    DateOfBirth = new DateTime(1999, 1, 1),
-                    Id = 30,
-                    Position = "some position"
-                });
-            db.EmployeeViews.Add(
-                new EmployeeView()
-                {
-                    DateOfBirth = new DateTime(1999, 1, 1),
-                    Id = 40,
-                    Position = "some position"
-                });
-
-            Employee employee = new Employee();
-            employee.Id = 1;
-            employee.AddressId = 22;
-            Models.Dictionary.Address employeeAddress = new Models.Dictionary.Address()
+            var passportsTestData = new List<Employee>()
             {
-                Id = 22,
-                Apartment = "1"
+                new Employee { Id = 1 },
+                new Employee { Id = 2 },
+                new Employee { Id = 3 }
             };
-            employee.Address = employeeAddress;
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
 
-           
-            Models.Dictionary.Address passportAddress = new Models.Dictionary.Address()
-            {
-                Id = 33,
-                Apartment = "1"
-            };
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.Employees).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<Employee>()).Returns(passports.Object);
 
-            employee.EmployeePassports = new List<EmployeePassport>();
-            
 
-            db.Addresses.Add(employeeAddress);
-            db.Addresses.Add(passportAddress);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
 
-            db.EmployeePassports.Add(
-                new EmployeePassport()
-                {
-                    EmployeeId = 1,
-                    FirstName = "First Name",
-                    SecondName = "Secons Name",
-                    AddressId = 33,
-                    Address = passportAddress
-                });
+            var controller = new EmployeesController(factory.Object);
+            var result = controller.DeleteEmployee(3) as OkNegotiatedContentResult<EmployeeEditDTO>;
 
-            db.Employees.Add(employee);
-
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
         }
     }
 }

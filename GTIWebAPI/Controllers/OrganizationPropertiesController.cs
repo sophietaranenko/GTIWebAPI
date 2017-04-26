@@ -2,14 +2,10 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -18,31 +14,31 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/OrganizationProperties")]
     public class OrganizationPropertiesController : ApiController
     {
-        private IOrganizationRepository<OrganizationProperty> repo;
+        private IDbContextFactory factory;
 
         public OrganizationPropertiesController()
         {
-            repo = new OrganizationPropertiesRepository();
+            factory = new DbContextFactory();
         }
 
-        public OrganizationPropertiesController(IOrganizationRepository<OrganizationProperty> repo)
+        public OrganizationPropertiesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetByOrganizationId")]
-        [ResponseType(typeof(List<OrganizationPropertyDTO>))]
+        [ResponseType(typeof(IEnumerable<OrganizationPropertyDTO>))]
         public IHttpActionResult GetOrganizationPropertyByOrganizationId(int organizationId)
         {
             try
             {
-                List<OrganizationPropertyDTO> dtos =
-                    repo.GetByOrganizationId(organizationId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
-                return Ok(dtos);
+                UnitOfWork unitOFWork = new UnitOfWork(factory);
+                IEnumerable<OrganizationPropertyDTO> properties = unitOFWork.OrganizationPropertiesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == organizationId, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                    .Select(d => d.ToDTO());
+                return Ok(properties);
             }
             catch (NotFoundException nfe)
             {
@@ -66,8 +62,13 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationPropertyDTO dto = repo.Get(id).ToDTO();
-                return Ok(dto);
+
+                UnitOfWork unitOFWork = new UnitOfWork(factory);
+                OrganizationPropertyDTO property = unitOFWork.OrganizationPropertiesRepository
+                    .Get(d => d.Id == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                    .FirstOrDefault()
+                    .ToDTO();
+                return Ok(property);
             }
             catch (NotFoundException nfe)
             {
@@ -99,8 +100,26 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationPropertyDTO dto = repo.Edit(organizationProperty).ToDTO();
-                return Ok(dto);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                int? propertyCountryId = unitOfWork.OrganizationPropertyTypesRepository
+                .Get(d => d.Id == organizationProperty.OrganizationPropertyTypeId)
+                    .Select(d => d.CountryId)
+                    .FirstOrDefault();
+                int? organizationCountryId = unitOfWork.OrganizationsRepository
+                .Get(d => d.Id == organizationProperty.OrganizationId)
+                    .Select(d => d.CountryId)
+                    .FirstOrDefault();
+                if (propertyCountryId != organizationCountryId)
+                {
+                    return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
+                }
+                unitOfWork.OrganizationPropertiesRepository.Update(organizationProperty);
+                unitOfWork.Save();
+                OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
+                    .Get(d => d.Id == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                    .FirstOrDefault()
+                    .ToDTO();
+                return Ok(property);
             }
             catch (NotFoundException nfe)
             {
@@ -128,8 +147,30 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                OrganizationPropertyDTO dto = repo.Add(organizationProperty).ToDTO();
-                return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                int? propertyCountryId = unitOfWork.OrganizationPropertyTypesRepository
+                .Get(d => d.Id == organizationProperty.OrganizationPropertyTypeId)
+                    .Select(d => d.CountryId)
+                    .FirstOrDefault();
+                int? organizationCountryId = unitOfWork.OrganizationsRepository
+                .Get(d => d.Id == organizationProperty.OrganizationId)
+                    .Select(d => d.CountryId)
+                    .FirstOrDefault();
+
+                if (propertyCountryId != organizationCountryId)
+                {
+                    return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
+                }
+
+                organizationProperty.Id = organizationProperty.NewId(unitOfWork);
+                unitOfWork.OrganizationPropertiesRepository.Insert(organizationProperty);
+                unitOfWork.Save();
+
+                OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
+                         .Get(d => d.Id == organizationProperty.Id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                         .FirstOrDefault()
+                         .ToDTO();
+                return CreatedAtRoute("GetOrganizationProperty", new { id = property.Id }, property);
             }
             catch (NotFoundException nfe)
             {
@@ -156,22 +197,48 @@ namespace GTIWebAPI.Controllers
                 return BadRequest();
             }
             List<OrganizationPropertyDTO> propertiesToReturn = new List<OrganizationPropertyDTO>();
+
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+
             try
             {
-                    foreach (var item in properties)
+                foreach (var item in properties)
+                {
+                    OrganizationProperty organizationProperty = new OrganizationProperty()
                     {
-                        OrganizationProperty organizationProperty = new OrganizationProperty()
-                        {
-                            DateBegin = null,
-                            DateEnd = null,
-                            Deleted = null,
-                            OrganizationId = item.OrganizationId,
-                            OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
-                            Value = item.Value
-                        };
-                        OrganizationPropertyDTO dto = repo.Add(organizationProperty).ToDTO();
-                        propertiesToReturn.Add(dto);
+                        DateBegin = null,
+                        DateEnd = null,
+                        Deleted = null,
+                        OrganizationId = item.OrganizationId,
+                        OrganizationPropertyTypeId = item.OrganizationPropertyTypeId,
+                        Value = item.Value
+                    };
+
+                    int? propertyCountryId = unitOfWork.OrganizationPropertyTypesRepository
+                    .Get(d => d.Id == organizationProperty.OrganizationPropertyTypeId)
+                        .Select(d => d.CountryId)
+                        .FirstOrDefault();
+                    int? organizationCountryId = unitOfWork.OrganizationsRepository
+                    .Get(d => d.Id == organizationProperty.OrganizationId)
+                        .Select(d => d.CountryId)
+                        .FirstOrDefault();
+
+                    if (propertyCountryId != organizationCountryId)
+                    {
+                        return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
                     }
+
+                    organizationProperty.Id = organizationProperty.NewId(unitOfWork);
+                    unitOfWork.OrganizationPropertiesRepository.Insert(organizationProperty);
+                    unitOfWork.Save();
+
+                    OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
+                         .Get(d => d.Id == organizationProperty.Id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                         .FirstOrDefault()
+                         .ToDTO();
+
+                    propertiesToReturn.Add(property);
+                }
             }
             catch (NotFoundException nfe)
             {
@@ -196,8 +263,14 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                OrganizationPropertyDTO dto = repo.Delete(id).ToDTO();
-                return Ok(dto);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+
+                OrganizationProperty organizationProperty = unitOfWork.OrganizationPropertiesRepository
+                    .Get(d => d.Id == id).FirstOrDefault();
+                organizationProperty.Deleted = true;
+                unitOfWork.OrganizationPropertiesRepository.Update(organizationProperty);
+                unitOfWork.Save();
+                return Ok(organizationProperty.ToDTO());
             }
             catch (NotFoundException nfe)
             {

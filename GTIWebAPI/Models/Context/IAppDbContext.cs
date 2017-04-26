@@ -17,9 +17,10 @@ namespace GTIWebAPI.Models.Context
 {
     public interface IAppDbContext : IDisposable, IServiceDbContext, IDbContextAddress, IDbContextEmployeeLanguage, IDbContextOrganization
     {
+        IEnumerable<T> ExecuteStoredProcedure<T>(string query, params object[] parameters);
+
         DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
-        //string CreateConnectionString(IPrincipal user);
         DbEntityEntry Entry(object entity);
 
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
@@ -44,7 +45,7 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<Employee> Employees { get; set; }
 
-        DbSet<EmployeeCar> EmployeeCars { get; set; }
+        IDbSet<EmployeeCar> EmployeeCars { get; set; }
 
         DbSet<EmployeeDocumentScan> EmployeeDocumentScans { get; set; }
 
@@ -68,7 +69,7 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
 
-        DbSet<EmployeeGun> EmployeeGun { get; set; }
+        DbSet<EmployeeGun> EmployeeGuns { get; set; }
 
         DbSet<Language> Languages { get; set; }
 
@@ -118,67 +119,11 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<UserImage> UserImages { get; set; }
 
-        bool IsEmployeeInformationFilled(int employeeId);
-
-        int FileNameUnique();
-
-        int NewTableId(string tableName);
-
-        List<EmployeeView> EmployeeFilter(string myFilter);
-
-        List<EmployeeView> EmployeeByOffices(List<int> officeIds);
-
-        List<EmployeeDocumentScan> EmployeeAllDocumentScans(int employeeId);
-
-        List<OrganizationView> GetOrganizationsFilter(string myFilter);
-
-        List<OrganizationView> GetOrganizationsByOffices(List<int> officeIds);
-
-        List<OrganizationGTI> SearchOrganizationGTI(List<int> officeIds, string registrationNumber);
-
-        List<OrganizationSearchDTO> SearchOrganization(int countryId, string registrationNumber);
-
-        List<DealViewDTO> GetDealsFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
-
-        DealFullViewDTO GetDealCardInfo(Guid dealId);
-
-        List<DealContainerViewDTO> GetContainersByDeal(Guid dealId);
-
-        List<DealInvoiceViewDTO> GetInvoicesByDeal(Guid dealId);
-
-        List<DealInvoiceViewDTO> GetInvoicesList(int organizationId, DateTime dateBegin, DateTime dateEnd);
-
-        InvoiceFullViewDTO GetInvoiceCardInfo(int invoiceId);
-
-        List<InvoiceLineViewDTO> GetInvoiceLinesByInvoice(int invoiceId);
-
-        List<InvoiceContainerViewDTO> GetContainersByInvoiceId(int invoiceId);
-
-        List<DealContainerViewDTO> GetContainersFiltered(int organizationId, DateTime dateBegin, DateTime dateEnd);
-
-        DealContainerViewDTO GetContainer(Guid id);
-
-        List<DocumentScanTypeDTO> GetDocumentScanTypes();
-
-        List<DocumentScanDTO> GetDocumentScanByDeal(Guid dealId);
-
-        List<OrganizationGTIShortDTO> GetOrganizationGTIByOrganization(int organizationId);
-
-        Guid InsertDealDocumentScan(Guid dealId, byte[] fileContent, string fileName, string email, int documentScanTypeId);
-
-        DocumentScanDTO UpdateDocumentScanType(Guid scanId, int documentScanTypeId);
-
-        bool DeleteDocumentScan(Guid scanId);
-
-        DocumentScanDTO GetDealDocumentScanById(Guid scanId);
-
         bool CreateOrganization(string email, string password);
 
-        string GetFullUserNameByEmployeeId(int employeeId);
 
         bool CreateHoldingUser(string email, string password);
 
-        string GetProfilePicturePathByEmployeeId(int employeeId);
 
 
     }

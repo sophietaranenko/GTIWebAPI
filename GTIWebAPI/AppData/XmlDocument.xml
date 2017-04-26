@@ -608,36 +608,6 @@
             <param name="organizationContactPersonId"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.GetExternalLogin(System.String,System.String)">
-            <summary>
-            GetExtenal login (not useful for GTI)
-            </summary>
-            <param name="provider"></param>
-            <param name="error"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.GetExternalLogins(System.String,System.Boolean)">
-            <summary>
-            Get external logins (not useful for GTI)
-            </summary>
-            <param name="returnUrl"></param>
-            <param name="generateState"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.Register(GTIWebAPI.Models.Account.RegisterBindingModel)">
-            <summary>
-            Register (not useful fro GTI)
-            </summary>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.AccountController.RegisterExternal(GTIWebAPI.Models.Account.RegisterExternalBindingModel)">
-            <summary>
-            RegisterExternal (not useful for GTI)
-            </summary>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Controllers.AccountController.Dispose(System.Boolean)">
             <summary>
             Dispose AccountConrtoller (to destroy connections)
@@ -653,6 +623,21 @@
             <summary>
             To get all scan types (types of document type we attach - BL, CMR etc.) 
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.GetDocumentScansByDealId(System.Guid)">
+            <summary>
+            Get scans by deal id
+            </summary>
+            <param name="dealId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.PutDealDocumentScan(System.Guid,System.Int32)">
+            <summary>
+            Ony documentScanTypeId property of documentScan can be updated 
+            </summary>
+            <param name="scanId">Id of scan we want to update</param>
+            <param name="documentScanTypeId">Id of document scan type</param>
             <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Controllers.DealDocumentScansController.UploadDealDocumentScan(System.Int32,System.Guid)">
@@ -755,20 +740,6 @@
             Contact persons are pepople we contact to 
             </summary>
         </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.GetOrganizationLegalForm(System.Int32)">
-            <summary>
-            Get one contact for edit by contact id
-            </summary>
-            <param name="id">EmployeeContact id</param>
-            <returns>EmployeeContactEditDTO object</returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.OrganizationLegalFormsController.PostOrganizationLegalForm(GTIWebAPI.Models.Organizations.OrganizationLegalForm)">
-            <summary>
-            Insert new employee contact
-            </summary>
-            <param name="form">EmployeeContact object</param>
-            <returns></returns>
-        </member>
         <member name="T:GTIWebAPI.Controllers.OrganizationsController">
             <summary>
             Controller for organizations
@@ -840,7 +811,7 @@
         </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeContactsController">
             <summary>
-            Controller for employee contacts (facebook, skype, home phone number etc. and their values) 
+            Employee contacts (facebook, skype, home phone number etc.) 
             </summary>
         </member>
         <member name="T:GTIWebAPI.Controllers.EmployeeDocumentScansController">
@@ -964,24 +935,6 @@
             Controller for employee passports
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Controllers.EmployeePhotosController">
-            <summary>
-            Controller for storing and showing Employee photos
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.DeleteEmployeePhoto(System.Int32)">
-            <summary>
-            Delete photo
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.EmployeePhotosController.Dispose(System.Boolean)">
-            <summary>
-            Dispose controller
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="T:GTIWebAPI.Controllers.EmployeesController">
             <summary>
             Controller manipulating employees
@@ -1010,26 +963,6 @@
             <summary>
             Controller for user rights
             </summary>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.UserRightsController.DeleteUserRights(System.String)">
-            <summary>
-            Delete all rights by user
-            </summary>
-            <param name="UserId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.UserRightsController.GetControllers">
-            <summary>
-            Get all controllers
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Controllers.UserRightsController.GetActions(System.Int32)">
-            <summary>
-            Get all actions of controller
-            </summary>
-            <param name="controllerId"></param>
-            <returns></returns>
         </member>
         <member name="M:GTIWebAPI.Filters.QueryParser.Parse(System.String,System.String,System.Char)">
             <summary>
@@ -1068,11 +1001,6 @@
             Ctor
             </summary>
         </member>
-        <member name="T:GTIWebAPI.Models.Context.MainDbContext">
-            <summary>
-            Context for working with Employees 
-            </summary>
-        </member>
         <member name="P:GTIWebAPI.Models.Context.MainDbContext.Addresses">
             <summary>
             Addresses block
@@ -1095,20 +1023,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.EmployeeFilter(System.String)">
-            <summary>
-            Stored procedure call that filters employee list 
-            </summary>
-            <param name="myFilter"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.EmployeeAllDocumentScans(System.Int32)">
-            <summary>
-            Stored procedure call that filters employee list 
-            </summary>
-            <param name="myFilter"></param>
-            <returns></returns>
-        </member>
         <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetOrganizationsFilter(System.String)">
             <summary>
             Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
@@ -1116,42 +1030,21 @@
             <param name="myFilter"></param>
             <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetDealCardInfo(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Repository.UnitOfWork.SQLQuery``1(System.String,System.Object[])">
             <summary>
-            Stored procedure call to return current deal data
+            For using Stored Procedures throw UnitOfWork
             </summary>
-            <param name="dealId"></param>
-            <returns>Deal info</returns>
+            <typeparam name="T"></typeparam>
+            <param name="sql"></param>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetContainersByDeal(System.Guid)">
+        <member name="M:GTIWebAPI.Models.Repository.UnitOfWork.GetNewTableId(System.String)">
             <summary>
-            Selects containers by current deal 
+            Stored Procedure call 
             </summary>
-            <param name="dealId"></param>
-            <returns>List of containers</returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetInvoicesByDeal(System.Guid)">
-            <summary>
-            Selects invoices by current deal using 
-            </summary>
-            <param name="dealId"></param>
-            <returns>list of invoices</returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetInvoicesList(System.Int32,System.DateTime,System.DateTime)">
-            <summary>
-            Stored procedure call to return invoice list selected by organization and dates 
-            </summary>
-            <param name="organizationId"></param>
-            <param name="dateBegin"></param>
-            <param name="dateEnd"></param>
-            <returns>List of invoices</returns>
-        </member>
-        <member name="M:GTIWebAPI.Models.Context.MainDbContext.GetInvoiceLinesByInvoice(System.Int32)">
-            <summary>
-            Select view InvoiceLines by invoiceId
-            </summary>
-            <param name="invoiceId">Invoice Id</param>
-            <returns>List of invoice lines</returns>
+            <param name="tableName"></param>
+            <returns></returns>
         </member>
         <member name="T:GTIWebAPI.Models.Organizations.Organization">
             <summary>

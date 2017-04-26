@@ -20,27 +20,29 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeCars")]
     public class EmployeeCarsController : ApiController
     {
-        private IRepository<EmployeeCar> repo;
+        private IDbContextFactory factory;
 
         public EmployeeCarsController()
         {
-            repo = new EmployeeCarRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeCarsController(IRepository<EmployeeCar> repo)
+        public EmployeeCarsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeCarDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
         public IHttpActionResult GetEmplyeeCarAll()
         {
             try
             {
-                List<EmployeeCarDTO> dtos = repo.GetAll().Select(p => p.ToDTO()).ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeCarDTO> dtos =
+                    unitOfWork.EmployeeCarsRepository.Get(d => d.Deleted != true).Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -60,12 +62,15 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeCarDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeCarDTO>))]
         public IHttpActionResult GetEmployeeCarByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeCarDTO> dtos = repo.GetByEmployeeId(employeeId).Select(d => d.ToDTO()).ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeCar> cs = unitOfWork.EmployeeCarsRepository.
+                    Get(d => d.Deleted != true && d.EmployeeId == employeeId);
+                IEnumerable<EmployeeCarDTO> dtos = cs.Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -95,12 +100,12 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeCar employeeCar = repo.Get(id);
-                if (employeeCar == null)
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeCarDTO dto = unitOfWork.EmployeeCarsRepository.GetByID(id).ToDTO();
+                if (dto == null)
                 {
                     return NotFound();
                 }
-                EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -139,7 +144,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                employeeCar = repo.Edit(employeeCar);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeCarsRepository.Update(employeeCar);
+                unitOfWork.Save();
+                //cos there are no included object-properies we need to load, then just ToDTO call  
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }
@@ -174,7 +182,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                employeeCar = repo.Add(employeeCar);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeCar.Id = employeeCar.NewId(unitOfWork);
+                unitOfWork.EmployeeCarsRepository.Insert(employeeCar);
+                unitOfWork.Save();
+                //cos there are no included object-properies we need to load, then just ToDTO call  
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
             }
@@ -205,7 +217,12 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeCar employeeCar = repo.Delete(id);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+
+                EmployeeCar employeeCar = unitOfWork.EmployeeCarsRepository.GetByID(id);
+                employeeCar.Deleted = true;
+                unitOfWork.EmployeeCarsRepository.Update(employeeCar);
+                unitOfWork.Save();
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }

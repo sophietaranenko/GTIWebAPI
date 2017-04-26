@@ -16,35 +16,34 @@ using GTIWebAPI.Exceptions;
 namespace GTIWebAPI.Controllers
 {
     /// <summary>
-    /// Controller for employee contacts (facebook, skype, home phone number etc. and their values) 
+    /// Employee contacts (facebook, skype, home phone number etc.) 
     /// </summary>
     [RoutePrefix("api/EmployeeContacts")]
     public class EmployeeContactsController : ApiController
     {
-        private IRepository<EmployeeContact> repo;
+        private IDbContextFactory factory;
 
         public EmployeeContactsController()
         {
-            repo = new EmployeeContactsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeContactsController(IRepository<EmployeeContact> repo)
+        public EmployeeContactsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeContactDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
         public IHttpActionResult GetEmployeeContactAll()
         {
             try
             {
-                List<EmployeeContactDTO> dtos =
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeContactDTO> dtos =
+                    unitOfWork.EmployeeContactsRepository.Get(d => d.Deleted != true, includeProperties: "ContactType").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -54,6 +53,10 @@ namespace GTIWebAPI.Controllers
             catch (ConflictException ce)
             {
                 return Conflict();
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -64,15 +67,16 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeContactDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeContactDTO>))]
         public IHttpActionResult GetEmployeeContactByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeContactDTO> dtos =
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeContactDTO> dtos = 
+                    unitOfWork.EmployeeContactsRepository
+                    .Get(d => d.Deleted != true && d.EmployeeId == employeeId, includeProperties: "ContactType")
+                    .Select(d => d.ToDTO()); 
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -82,6 +86,10 @@ namespace GTIWebAPI.Controllers
             catch (ConflictException ce)
             {
                 return Conflict();
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -97,7 +105,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeContactDTO employeeContact = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeContactDTO employeeContact = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
                 return Ok(employeeContact);
             }
             catch (NotFoundException nfe)
@@ -107,6 +116,10 @@ namespace GTIWebAPI.Controllers
             catch (ConflictException ce)
             {
                 return Conflict();
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -130,8 +143,23 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeContactDTO dto = repo.Edit(employeeContact).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeContactsRepository.Update(employeeContact);
+                unitOfWork.Save();
+                EmployeeContactDTO dto = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
                 return Ok(dto);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (NullReferenceException nre)
+            {
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -151,7 +179,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeContactDTO dto = repo.Add(employeeContact).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeContact.Id = employeeContact.NewId(unitOfWork);
+                unitOfWork.EmployeeContactsRepository.Insert(employeeContact);
+                unitOfWork.Save();
+
+                EmployeeContactDTO dto = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == employeeContact.Id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -171,12 +204,17 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpDelete]
         [Route("Delete")]
-        [ResponseType(typeof(EmployeeContact))]
+        [ResponseType(typeof(EmployeeContactDTO))]
         public IHttpActionResult DeleteEmployeeContact(int id)
         {
             try
             {
-                EmployeeContactDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeContact employeeContact = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == id, includeProperties: "ContactType").FirstOrDefault();
+                employeeContact.Deleted = true;
+                unitOfWork.EmployeeContactsRepository.Update(employeeContact);
+                unitOfWork.Save();
+                EmployeeContactDTO dto = employeeContact.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

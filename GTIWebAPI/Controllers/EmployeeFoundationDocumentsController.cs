@@ -24,16 +24,16 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeFoundationDocuments")]
     public class EmployeeFoundationDocumentsController : ApiController
     {
-        private IRepository<EmployeeFoundationDocument> repo;
+        private IDbContextFactory factory;
 
         public EmployeeFoundationDocumentsController()
         {
-            repo = new EmployeeFoundationDocumentsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeFoundationDocumentsController(IRepository<EmployeeFoundationDocument> repo)
+        public EmployeeFoundationDocumentsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
         /// <summary>
         /// All foundation documents 
@@ -42,15 +42,14 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeFoundationDocumentDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentAll()
         {
             try
             {
-                List<EmployeeFoundationDocumentDTO> dtos =
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeFoundationDocumentDTO> dtos = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Deleted != true, includeProperties: "FoundationDocument").Select(d => d.ToDTO());
+
                 return Ok(dtos);
 
             }
@@ -76,15 +75,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeFoundationDocumentDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeFoundationDocumentDTO>))]
         public IHttpActionResult GetEmployeeFoundationDocumentByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeFoundationDocumentDTO> dtos =
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeFoundationDocumentDTO> dtos = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId).Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -114,9 +111,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeFoundationDocumentDTO foundationDoc = 
-                    repo.Get(id)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeFoundationDocumentDTO foundationDoc = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
                 return Ok(foundationDoc);
             }
             catch (NotFoundException nfe)
@@ -155,10 +151,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-
-                EmployeeFoundationDocumentDTO dto =
-                    repo.Edit(employeeFoundationDoc)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeFoundationDocumentsRepository.Update(employeeFoundationDoc);
+                unitOfWork.Save();
+                EmployeeFoundationDocumentDTO dto = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -197,9 +193,11 @@ namespace GTIWebAPI.Controllers
 
             try
             {
-                EmployeeFoundationDocumentDTO dto = 
-                    repo.Add(employeeFoundationDoc)
-                    .ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeFoundationDoc.Id = employeeFoundationDoc.NewId(unitOfWork);
+                unitOfWork.EmployeeFoundationDocumentsRepository.Insert(employeeFoundationDoc);
+                unitOfWork.Save();
+                EmployeeFoundationDocumentDTO dto = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == employeeFoundationDoc.Id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeFoundationDocument", new { id = dto.Id }, dto);
             }
             catch (Exception e)
@@ -221,7 +219,12 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeFoundationDocumentDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeFoundationDocument document = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == id, includeProperties: "FoundationDocument").FirstOrDefault();
+                document.Deleted = true;
+                unitOfWork.EmployeeFoundationDocumentsRepository.Update(document);
+                unitOfWork.Save();
+                EmployeeFoundationDocumentDTO dto = document.ToDTO();
                 return Ok(dto);
             }
             catch (Exception e)

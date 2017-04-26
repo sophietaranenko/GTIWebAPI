@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,99 +17,174 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeeGunsController 
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeGun> repo;
-
-        public TestEmployeeGunsController()
+        [TestMethod]
+        public void GetAllDocuments_ShouldReturnNotDeleted()
         {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeGunsRepository(factory);
-            GetFewDemo();
+            var gunsTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
+            };
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.GetEmployeeGunAll() as OkNegotiatedContentResult<IEnumerable<EmployeeGunDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetAllGuns_ShouldReturnNotDeleted()
+        public void GetDocumentsByEmployeeId_ShouldReturn()
         {
-            var controller = new EmployeeGunsController(repo);
-            var result = controller.GetEmployeeGunAll() as OkNegotiatedContentResult<List<EmployeeGunDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
-        }
-
-        [TestMethod]
-        public void GetGunsByEmployeeId_ShouldReturnNotDeletedEmployeesPassport()
-        {
-            var controller = new EmployeeGunsController(repo);
-            var result = controller.GetEmployeeGunByEmployee(1) as OkNegotiatedContentResult<List<EmployeeGunDTO>>;
+            var gunsTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
+            };
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.GetEmployeeGunByEmployee(2) as OkNegotiatedContentResult<IEnumerable<EmployeeGunDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetGunById_ShouldReturnObjectWithSameId()
+        public void GetGunById_ShouldReturn()
         {
-            var controller = new EmployeeGunsController(repo);
-            var result = controller.GetEmployeeGun(1) as OkNegotiatedContentResult<EmployeeGunDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutGun_ShouldReturnOk()
-        {
-            var controller = new EmployeeGunsController(repo);
-            EmployeeGun gun = repo.Add(GetDemo());
-            var result = controller.PutEmployeeGun(gun.Id, gun) as OkNegotiatedContentResult<EmployeeGunDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutGun_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeeGunsController(repo);
-            EmployeeGun gun = GetDemo();
-            var badresult = controller.PutEmployeeGun(999, gun);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostGun_ShouldReturnSame()
-        {
-            var controller = new EmployeeGunsController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployeeGun(item) as CreatedAtRouteNegotiatedContentResult<EmployeeGunDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetEmployeeGun");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteGun_ShouldReturnOK()
-        {
-            EmployeeGun gun = GetDemo();
-            gun = repo.Add(gun);
-
-            var controller = new EmployeeGunsController(repo);
-            var result = controller.DeleteEmployeeGun(gun.Id) as OkNegotiatedContentResult<EmployeeGunDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(gun.Id, result.Content.Id);
-        }
-
-        private EmployeeGun GetDemo()
-        {
-            EmployeeGun gun = new EmployeeGun
+            var gunsTestData = new List<EmployeeGun>()
             {
-                Id = 0,
-                Seria = "SS",
-                EmployeeId = 1
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
             };
-            return gun;
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            guns.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return guns.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.GetEmployeeGun(1) as OkNegotiatedContentResult<EmployeeGunDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.EmployeeId);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
         {
-            repo.Add(new EmployeeGun { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeGun { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeGun { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeGun { Id = 4, Deleted = false, EmployeeId = 2 });
+            var gunsTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
+            };
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            guns.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return guns.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeGun license = new EmployeeGun { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.PutEmployeeGun(3, license) as OkNegotiatedContentResult<EmployeeGunDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostGun_ShoulAddGun()
+        {
+            var gunsTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
+            };
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            guns.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return guns.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            guns.Setup(d => d.Add(It.IsAny<EmployeeGun>())).Returns<EmployeeGun>((contact) =>
+            {
+                gunsTestData.Add(contact);
+                guns = MockHelper.MockDbSet(gunsTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = guns.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeGun license = new EmployeeGun { Id = 0, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.PostEmployeeGun(license) as CreatedAtRouteNegotiatedContentResult<EmployeeGunDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+            Assert.AreEqual("Wow", result.Content.IssuedBy);
+        }
+
+        [TestMethod]
+        public void DeleteGun_ShouldDeleteAndReturnOk()
+        {
+            var gunsTestData = new List<EmployeeGun>()
+            {
+                new EmployeeGun { Id = 1, EmployeeId = 2 },
+                new EmployeeGun { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeGun { Id = 3, EmployeeId = 3 }
+            };
+            var guns = MockHelper.MockDbSet(gunsTestData);
+            guns.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return guns.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeGuns).Returns(guns.Object);
+            dbContext.Setup(d => d.Set<EmployeeGun>()).Returns(guns.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeGun license = new EmployeeGun { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
+            var controller = new EmployeeGunsController(factory.Object);
+            var result = controller.DeleteEmployeeGun(3) as OkNegotiatedContentResult<EmployeeGunDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
         }
     }
 }

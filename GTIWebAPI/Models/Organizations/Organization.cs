@@ -139,7 +139,7 @@ namespace GTIWebAPI.Models.Organizations
                 Country = this.Country == null? null : this.Country.ToDTO(),
                 OrganizationLegalForm = this.OrganizationLegalForm == null? null : this.OrganizationLegalForm.ToDTO(),
                 OrganizationAddresses = this.OrganizationAddresses == null? null : this.OrganizationAddresses.Select(d => d.ToDTO()).ToList(),
-                OrganizationContactPersons = this.OrganizationContactPersonViews == null? null : this.OrganizationContactPersonViews,
+                OrganizationContactPersons = this.OrganizationContactPersonViews == null? null : this.OrganizationContactPersonViews.Select(d => d.ToDTO()),
                 OrganizationGTILinks = this.OrganizationGTILinks == null? null : this.OrganizationGTILinks.Select(D => D.ToDTO()).ToList(),
                 OrganizationLanguageNames = this.OrganizationLanguageNames == null ? null : this.OrganizationLanguageNames.Select(D => D.ToDTO()).ToList(),
                 OrganizationTaxAddresses = this.OrganizationTaxAddresses == null ? null : this.OrganizationTaxAddresses.Select(d => d.ToDTO()).ToList()
@@ -182,7 +182,7 @@ namespace GTIWebAPI.Models.Organizations
 
         public IEnumerable<OrganizationAddressDTO> OrganizationAddresses { get; set; }
 
-        public IEnumerable<OrganizationContactPersonView> OrganizationContactPersons { get; set; }
+        public IEnumerable<OrganizationContactPersonDTO> OrganizationContactPersons { get; set; }
 
         public IEnumerable<OrganizationGTILinkDTO> OrganizationGTILinks { get; set; }
 

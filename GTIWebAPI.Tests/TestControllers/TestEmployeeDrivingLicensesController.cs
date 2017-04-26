@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,100 +17,177 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeeDrivingLicensesController
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeDrivingLicense> repo;
-
-        public TestEmployeeDrivingLicensesController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeDrivingLicensesRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
         public void GetAllLicenses_ShouldReturnNotDeleted()
         {
-            var controller = new EmployeeDrivingLicensesController(repo);
-            var result = controller.GetEmployeeDrivingLicenseAll() as OkNegotiatedContentResult<List<EmployeeDrivingLicenseDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
+            var result = controller.GetEmployeeDrivingLicenseAll() as OkNegotiatedContentResult<IEnumerable<EmployeeDrivingLicenseDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
         public void GetLicensesByEmployeeId_ShouldReturnNotDeletedLicenses()
         {
-            var controller = new EmployeeDrivingLicensesController(repo);
-            var result = controller.GetEmployeeDrivingLicenseByEmployee(1) as OkNegotiatedContentResult<List<EmployeeDrivingLicenseDTO>>;
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
+            var result = controller.GetEmployeeDrivingLicenseByEmployee(2) as OkNegotiatedContentResult<IEnumerable<EmployeeDrivingLicenseDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetLicenseById_ShouldReturnObjectWithSameId()
+        public void GetLicense_ShouldReturnLicense()
         {
-            var controller = new EmployeeDrivingLicensesController(repo);
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            licenses.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return licenses.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
             var result = controller.GetDrivingLicense(1) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.EmployeeId);
+
         }
 
         [TestMethod]
         public void PutLicense_ShouldReturnOk()
         {
-            var controller = new EmployeeDrivingLicensesController(repo);
-            EmployeeDrivingLicense car = repo.Add(GetDemo());
-            var result = controller.PutEmployeeDrivingLicense(car.Id, car) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutLicense_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeeDrivingLicensesController(repo);
-            EmployeeDrivingLicense car = GetDemo();
-            var badresult = controller.PutEmployeeDrivingLicense(999, car);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostLicense_ShouldReturnSame()
-        {
-            var controller = new EmployeeDrivingLicensesController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployeeDrivingLicense(item) as CreatedAtRouteNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetDrivingLicense");
-            Assert.AreEqual(result.RouteValues["Id"], item.Id);
-        }
-
-        [TestMethod]
-        public void DeleteLicense_ShouldReturnOK()
-        {
-            EmployeeDrivingLicense car = GetDemo();
-            car = repo.Add(car);
-
-            var controller = new EmployeeDrivingLicensesController(repo);
-            var result = controller.DeleteEmployeeDrivingLicense(car.Id) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(car.Id, result.Content.Id);
-        }
-
-        private EmployeeDrivingLicense GetDemo()
-        {
-            EmployeeDrivingLicense car = new EmployeeDrivingLicense
+            var licensesTestData = new List<EmployeeDrivingLicense>()
             {
-                Id = 0,
-                Seria = "SS",
-                EmployeeId = 1,
-                IssuedBy = "Кем-то там выдана"
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
             };
-            return car;
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            licenses.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return licenses.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeDrivingLicense license = new EmployeeDrivingLicense { Id = 3, EmployeeId = 3, Category = "b", IssuedBy = "Wow" };
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
+            var result = controller.PutEmployeeDrivingLicense(3, license) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void PostLicense_ShoulAddLicense()
         {
-            repo.Add(new EmployeeDrivingLicense { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeDrivingLicense { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeDrivingLicense { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeDrivingLicense { Id = 4, Deleted = false, EmployeeId = 2 });
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            licenses.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return licenses.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            licenses.Setup(d => d.Add(It.IsAny<EmployeeDrivingLicense>())).Returns<EmployeeDrivingLicense>((contact) =>
+            {
+                licensesTestData.Add(contact);
+                licenses = MockHelper.MockDbSet(licensesTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = licenses.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeDrivingLicense license = new EmployeeDrivingLicense { Id = 0, EmployeeId = 3, Category = "b", IssuedBy = "Wow" };
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
+            var result = controller.PostEmployeeDrivingLicense(license) as CreatedAtRouteNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+            Assert.AreEqual("b", result.Content.Category);
+            Assert.AreEqual("Wow", result.Content.IssuedBy);
         }
+
+        [TestMethod]
+        public void DeleteLicense_ShouldDeleteAndReturnOk()
+        {
+            var licensesTestData = new List<EmployeeDrivingLicense>()
+            {
+                new EmployeeDrivingLicense { Id = 1, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeDrivingLicense { Id = 3, EmployeeId = 3 }
+            };
+            var licenses = MockHelper.MockDbSet(licensesTestData);
+            licenses.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return licenses.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeDrivingLicenses).Returns(licenses.Object);
+            dbContext.Setup(d => d.Set<EmployeeDrivingLicense>()).Returns(licenses.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeDrivingLicense license = new EmployeeDrivingLicense { Id = 3, EmployeeId = 3, Category = "b", IssuedBy = "Wow" };
+            var controller = new EmployeeDrivingLicensesController(factory.Object);
+            var result = controller.DeleteEmployeeDrivingLicense(3) as OkNegotiatedContentResult<EmployeeDrivingLicenseDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+        }
+
     }
 }

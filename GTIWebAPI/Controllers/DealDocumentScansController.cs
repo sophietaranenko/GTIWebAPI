@@ -4,7 +4,7 @@ using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Repository;
-using GTIWebAPI.Models.Repository.Accounting;
+using GTIWebAPI.Models.Service;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
@@ -13,10 +13,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web;
-using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -29,17 +27,36 @@ namespace GTIWebAPI.Controllers
     public class DealDocumentScansController : ApiController
     {
         private IDbContextFactory factory;
+        private IIdentityHelper identityHelper;
+        private IRequest request; 
 
         public DealDocumentScansController()
         {
             factory = new DbContextFactory();
+            identityHelper = new IdentityHelper();
+            request = new Request();
         }
 
         public DealDocumentScansController(IDbContextFactory factory)
         {
             this.factory = factory;
+            identityHelper = new IdentityHelper();
+            request = new Request();
         }
 
+        public DealDocumentScansController(IDbContextFactory factory, IIdentityHelper identityHelper)
+        {
+            this.factory = factory;
+            this.identityHelper = identityHelper;
+            this.request = new Request();
+        }
+
+        public DealDocumentScansController(IDbContextFactory factory, IIdentityHelper identityHelper, IRequest request)
+        {
+            this.factory = factory;
+            this.identityHelper = identityHelper;
+            this.request = request;
+        }
         /// <summary>
         /// To get all scan types (types of document type we attach - BL, CMR etc.) 
         /// </summary>
@@ -47,7 +64,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetDocumentScanTypes")]
-        [ResponseType(typeof(List<DocumentScanTypeDTO>))]
+        [ResponseType(typeof(IEnumerable<DocumentScanTypeDTO>))]
         public IHttpActionResult GetDocumentScanTypes()
         {
             try
@@ -137,12 +154,10 @@ namespace GTIWebAPI.Controllers
 
                 if (dto != null)
                 {
-                    string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                    ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+                    //   string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
+                    //  ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
 
-                    if (user != null)
-                    {
-                        string email = user.Email;
+                    string email = identityHelper.GetUserEmail(User);
                         if (dto.ComputerName != null && dto.ComputerName.Trim().ToUpper() == email.Trim().ToUpper())
                         {
                             SqlParameter pDocumentScanTypeId = new SqlParameter
@@ -172,11 +187,7 @@ namespace GTIWebAPI.Controllers
                         {
                             return BadRequest("Invalid arguments");
                         }
-                    }
-                    else
-                    {
-                        return BadRequest("User not found");
-                    }
+
                 }
                 else
                 {
@@ -210,41 +221,22 @@ namespace GTIWebAPI.Controllers
         {
             DocumentScanDTO dto = new DocumentScanDTO();
 
-            var httpRequest = HttpContext.Current.Request;
-            if (httpRequest.Files.Count == 1)
+
+            if (request.FileCount() == 1)
             {
                 string fileName = "";
                 byte[] fileContent = new byte[0];
                 string email = "";
 
+                email = identityHelper.GetUserEmail(User);
 
-                string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                email = user.Email;
-
-
-                foreach (string file in httpRequest.Files)
+                foreach(string file in request.Collection())
                 {
-                    var postedFile = httpRequest.Files[file];
-                    byte[] fileData = null;
+                    fileContent = request.GetBytes(file);
+                    fileName = request.GetFileName(file);
                     try
                     {
-                        using (var binaryReader = new BinaryReader(postedFile.InputStream))
-                        {
-                            fileData = binaryReader.ReadBytes(postedFile.ContentLength);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        return BadRequest("Error reading file");
-                    }
-                    fileContent = fileData;
-                    fileName = postedFile.FileName;
-                    try
-                    {
-
                         UnitOfWork unitOfWork = new UnitOfWork(factory);
-
                         SqlParameter pDealId = new SqlParameter
                         {
                             ParameterName = "@DealId",
@@ -358,7 +350,17 @@ namespace GTIWebAPI.Controllers
                     Value = id
                 };
                 DocumentScanDTO dto = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanById @ScanId", pScanId).FirstOrDefault();
-                bool result = unitOfWork.SQLQuery<bool>("exec DeleteDocumentScan @ScanId", pScanId).FirstOrDefault();
+
+                //Error: SqlParameter уже содержится в другом SqlParameterCollection 
+                SqlParameter pScanId1 = new SqlParameter
+                {
+                    ParameterName = "@ScanId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Guid,
+                    Value = id
+                };
+                bool result = unitOfWork.SQLQuery<bool>("exec DeleteDocumentScan @ScanId", pScanId1).FirstOrDefault();
                 if (result)
                 {
                     return Ok(dto);

@@ -13,60 +13,134 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using GTIWebAPI.Controllers;
+using System.Data.Entity;
+using Moq;
 
 namespace GTIWebAPI.Tests.TestControllers
 {
     [TestClass]
     public class TestEmployeeCarsController
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeCar> repo;
-
-        public TestEmployeeCarsController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeCarRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
         public void GetAllCars_ShouldReturnNotDeletedCars()
         {
-            var controller = new EmployeeCarsController(repo);
-            var result = controller.GetEmplyeeCarAll() as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+            var result = controller.GetEmplyeeCarAll() as OkNegotiatedContentResult<IEnumerable<EmployeeCarDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
         public void GetCarsByEmployeeId_ShouldReturnNotDeletedCars()
         {
-            var controller = new EmployeeCarsController(repo);
-            var result = controller.GetEmployeeCarByEmployee(1) as OkNegotiatedContentResult<List<EmployeeCarDTO>>;
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+            var result = controller.GetEmployeeCarByEmployee(2) as OkNegotiatedContentResult<IEnumerable<EmployeeCarDTO>>;
             Assert.AreEqual(1, result.Content.Count());
+            Assert.AreEqual(1, result.Content.FirstOrDefault().Id);
         }
 
         [TestMethod]
         public void GetCarById_ShouldReturnObjectWithSameId()
         {
-            var controller = new EmployeeCarsController(repo);
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+            cars.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return cars.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
             var result = controller.GetEmployeeCar(1) as OkNegotiatedContentResult<EmployeeCarDTO>;
             Assert.AreEqual(result.Content.Id, 1);
+            Assert.AreEqual(result.Content.EmployeeId, 2);
         }
 
         [TestMethod]
         public void PutCar_ShouldReturnOk()
         {
-            var controller = new EmployeeCarsController(repo);
-            EmployeeCar car = GetDemo();
-            var result = controller.PutEmployeeCar(car.Id, car) as OkNegotiatedContentResult<EmployeeCarDTO>;
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+
+            EmployeeCar car = new EmployeeCar { Id = 4, Capacity = 33, Deleted = null, EmployeeId = 1 };
+
+            var result = controller.PutEmployeeCar(4, car) as OkNegotiatedContentResult<EmployeeCarDTO>;
+            // EmployeeCarDTO dto = result.Content;
+          
             Assert.IsNotNull(result);
+            Assert.AreEqual(33, (int)result.Content.Capacity);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(1, result.Content.EmployeeId);
         }
 
         [TestMethod]
         public void PutCar_ShouldFail_WhenDifferentID()
         {
-            var controller = new EmployeeCarsController(repo);
-            EmployeeCar car = GetDemo();
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+            var cars = MockHelper.MockDbSet(carsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+
+            EmployeeCar car = new EmployeeCar { Id = 1, Capacity = 333, Deleted = null, EmployeeId = 1 };
             var badresult = controller.PutEmployeeCar(999, car);
             Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
         }
@@ -74,46 +148,61 @@ namespace GTIWebAPI.Tests.TestControllers
         [TestMethod]
         public void PostCar_ShouldReturnSame()
         {
-            var controller = new EmployeeCarsController(repo);
-            var item = GetDemo();
+            var carsTestData = new List<EmployeeCar>()
+            {
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
+            };
+
+
+            var cars = MockHelper.MockDbSet(carsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+
+            EmployeeCar item = new EmployeeCar { Id = 0, Capacity = 333, Deleted = null, EmployeeId = 3 };
             var result = controller.PostEmployeeCar(item) as CreatedAtRouteNegotiatedContentResult<EmployeeCarDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.RouteName, "GetEmployeeCar");
             Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-            Assert.AreEqual(result.Content.MassInService, item.MassInService);
+            Assert.AreEqual(result.Content.Capacity, item.Capacity);
         }
 
         [TestMethod]
         public void DeleteCar_ShouldReturnOK()
         {
-            EmployeeCar car = GetDemo();
-            car = repo.Add(car);
-
-            var controller = new EmployeeCarsController(repo);
-            var result = controller.DeleteEmployeeCar(car.Id) as OkNegotiatedContentResult<EmployeeCarDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(car.Id, result.Content.Id);
-        }
-
-        private EmployeeCar GetDemo()
-        {
-            EmployeeCar car = new EmployeeCar
+            var carsTestData = new List<EmployeeCar>()
             {
-                Id = 0,
-                Seria = "SS",
-                MassInService = 1100,
-                EmployeeId = 1
+                new EmployeeCar { Id = 1, EmployeeId = 2 },
+                new EmployeeCar { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeCar { Id = 3, EmployeeId = 3 }
             };
-            return car;
+            object ids = 344;
+            carsTestData.Find(d => d.Id == Int32.Parse(ids.ToString()));
+
+            var cars = MockHelper.MockDbSet(carsTestData);
+            cars.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return cars.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeCars).Returns(cars.Object);
+            dbContext.Setup(d => d.Set<EmployeeCar>()).Returns(cars.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            IDbContextFactory fac = factory.Object;
+            var controller = new EmployeeCarsController(fac);
+
+            var result = controller.DeleteEmployeeCar(1) as OkNegotiatedContentResult<EmployeeCarDTO>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Content.Id);
         }
 
-        private void GetFewDemo()
-        {
-            repo.Add(new EmployeeCar { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeCar { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeCar { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeCar { Id = 4, Deleted = false, EmployeeId = 2 });
-        }
+        
     }
 }

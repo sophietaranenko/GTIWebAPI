@@ -23,7 +23,7 @@ namespace GTIWebAPI.Models.Security
 
         public string Name { get; set; }
 
-        public int BoxId { get; set; }
+        public int? BoxId { get; set; }
 
         [ForeignKey("BoxId")]
         public virtual ControllerBox ControllerBox { get; set; }
@@ -69,7 +69,7 @@ namespace GTIWebAPI.Models.Security
     }
 
 
-    public class RightControllerDTO
+    public class RightControllerDTO : IEquatable<RightControllerDTO>
     {
         [Key]
         public int Id { get; set; }
@@ -79,6 +79,16 @@ namespace GTIWebAPI.Models.Security
         public string LongName { get; set; }
 
         public IEnumerable<RightControllerActionDTO> Actions { get; set; }
+
+        public bool Equals(RightControllerDTO other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 
     //public class RightControllerMask

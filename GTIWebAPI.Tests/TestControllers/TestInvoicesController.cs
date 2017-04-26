@@ -1,102 +1,107 @@
-﻿using GTIWebAPI.Controllers;
-using GTIWebAPI.Models.Accounting;
-using GTIWebAPI.Models.Context;
-using GTIWebAPI.Models.Repository.Accounting;
-using GTIWebAPI.Tests.TestContext;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GTIWebAPI.Tests.TestContext;
+using GTIWebAPI.Models.Accounting;
+using Moq;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Controllers;
 using System.Web.Http.Results;
+using System.Linq;
 
 namespace GTIWebAPI.Tests.TestControllers
 {
     [TestClass]
-    public class TestInvoicesController
+    public class TestInvoicesController 
     {
-        private IDbContextFactory factory;
-        private IInvoicesRepository repo;
-        private TestDbContext db;
-
-        public TestInvoicesController()
+        [TestMethod]
+        public void GetAllContainers_ShouldReturnContainers()
         {
-            db = new TestDbContext();
-            factory = new TestDbContextFactory(db);
-            repo = new InvoicesRepository(factory);
-            FillFewDemo();
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(d => d.ExecuteStoredProcedure<DealInvoiceViewDTO>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<DealInvoiceViewDTO> list = new List<DealInvoiceViewDTO>();
+                   if (query.Contains("InvoicesList"))
+                   {
+                       list.Add(new DealInvoiceViewDTO { Id = 1 } );
+                       list.Add(new DealInvoiceViewDTO { Id = 2 } );
+                       list.Add(new DealInvoiceViewDTO { Id = 3 } );
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            var controller = new InvoicesController(factory.Object);
+
+            var result = controller.GetInvoiceAll(1, DateTime.Now, DateTime.Now) 
+                as OkNegotiatedContentResult<IEnumerable<DealInvoiceViewDTO>>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetInvoices_ShouldReturnBetween1900and2200yearsAndWithSameOrganization()
+        public void GetOneContainer_ShouldReturnContainer()
         {
-            var controller = new InvoicesController(repo);
-            var result = controller.GetInvoiceAll(1, null, null) as OkNegotiatedContentResult<List<DealInvoiceViewDTO>>;
-            Assert.AreEqual(1, result.Content.Count());
-        }
+            int invoiceId = 44;
+            var dbContext = new Mock<IAppDbContext>();
 
-        [TestMethod]
-        public void GetInvoice_ShouldReturnDealWithContainersAndLines()
-        {
-            var controller = new InvoicesController(repo);
-            var result = controller.GetInvoice(22) as OkNegotiatedContentResult<InvoiceFullViewDTO>;
-            Assert.AreEqual(22, result.Content.Id);
-            Assert.AreEqual(2, result.Content.Containers.Count());
-            Assert.AreEqual(1, result.Content.Lines.Count());
-        }
+            dbContext.Setup(d => d.ExecuteStoredProcedure<InvoiceFullViewDTO>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<InvoiceFullViewDTO> list = new List<InvoiceFullViewDTO>();
+                   if (query.Contains("InvoiceInfo"))
+                   {
+                       list.Add(new InvoiceFullViewDTO { Id = invoiceId });
+                   }
+                   else
+                   {
+                       list.Add(new InvoiceFullViewDTO { Id = 1 });
+                   }
+                   return list;
+               });
 
-        public void FillFewDemo()
-        {
-            db.DealInvoices.Add(new DealInvoiceViewDTO()
-            {
-                Id = 1,
-                InvoiceDate = new DateTime(2201, 1, 1),
-                ClientId = 1
-            });
-            db.DealInvoices.Add(new DealInvoiceViewDTO()
-            {
-                Id = 2,
-                InvoiceDate = new DateTime(2005, 1, 3),
-                ClientId = 1
-            });
-            db.DealInvoices.Add(new DealInvoiceViewDTO()
-            {
-                Id = 3,
-                InvoiceDate = new DateTime(2005, 1, 3),
-                ClientId = 2
-            });
+            dbContext.Setup(d => d.ExecuteStoredProcedure<InvoiceContainerViewDTO>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<InvoiceContainerViewDTO> list = new List<InvoiceContainerViewDTO>();
+                   if (query.Contains("InvoiceContainerList"))
+                   {
+                       list.Add(new InvoiceContainerViewDTO { Id = Guid.NewGuid()});
+                   }
+                   else
+                   {
+                       list.Add(new InvoiceContainerViewDTO { Id = Guid.NewGuid() });
+                   }
+                   return list;
+               });
 
-
-            db.InvoiceFull.Add(new InvoiceFullViewDTO()
-            {
-                Id = 22
-            });
-            db.InvoiceContainers.Add(new InvoiceContainerViewDTO()
-            {
-                InvoiceId = 22,
-                BL = ""
-            });
-            db.InvoiceContainers.Add(new InvoiceContainerViewDTO()
-            {
-                InvoiceId = 22,
-                BL = ""
-            });
-            db.InvoiceContainers.Add(new InvoiceContainerViewDTO()
-            {
-                InvoiceId = 33,
-                BL = ""
-            });
-            db.InvoiceLines.Add(new InvoiceLineViewDTO()
-            {
-                InvoiceId = 33
-            });
-            db.InvoiceLines.Add(new InvoiceLineViewDTO()
-            {
-                InvoiceId = 22
-            });
+            dbContext.Setup(d => d.ExecuteStoredProcedure<InvoiceLineViewDTO>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<InvoiceLineViewDTO> list = new List<InvoiceLineViewDTO>();
+                   if (query.Contains("InvoiceLineList"))
+                   {
+                       list.Add(new InvoiceLineViewDTO { Id = Guid.NewGuid() });
+                   }
+                   else
+                   {
+                       list.Add(new InvoiceLineViewDTO { Id = Guid.NewGuid() });
+                   }
+                   return list;
+               });
 
 
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new InvoicesController(factory.Object);
+
+            var result = controller.GetInvoice(invoiceId) as OkNegotiatedContentResult<InvoiceFullViewDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(invoiceId, result.Content.Id);
         }
     }
 }

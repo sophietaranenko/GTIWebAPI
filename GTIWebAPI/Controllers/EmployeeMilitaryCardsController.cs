@@ -21,30 +21,28 @@ namespace GTIWebAPI.Controllers
     public class EmployeeMilitaryCardsController : ApiController
     {
 
-        private IRepository<EmployeeMilitaryCard> repo;
+        private IDbContextFactory factory;
 
         public EmployeeMilitaryCardsController()
         {
-            repo = new EmployeeMilitaryCardsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeMilitaryCardsController(IRepository<EmployeeMilitaryCard> repo)
+        public EmployeeMilitaryCardsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeMilitaryCardDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
         public IHttpActionResult GetEmployeeMilitaryCardAll()
         {
             try
             {
-                List<EmployeeMilitaryCardDTO> list =
-                    repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeMilitaryCardDTO> list = unitOfWork.EmployeeMilitaryCardsRepository.Get(d => d.Deleted != true).Select(d => d.ToDTO());  
                 return Ok(list);
             }
             catch (NotFoundException nfe)
@@ -64,15 +62,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeMilitaryCardDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeMilitaryCardDTO>))]
         public IHttpActionResult GetEmployeeMilitaryCardByEmployee(int employeeId)
         {
             try
             {
-                List<EmployeeMilitaryCardDTO> list =
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeMilitaryCardDTO> list = unitOfWork.EmployeeMilitaryCardsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId).Select(d => d.ToDTO());
                 return Ok(list);
             }
             catch (NotFoundException nfe)
@@ -97,7 +93,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeMilitaryCardDTO militaryCard = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeMilitaryCardDTO militaryCard = unitOfWork.EmployeeMilitaryCardsRepository.GetByID(id).ToDTO();
                 return Ok(militaryCard);
             }
             catch (NotFoundException nfe)
@@ -130,7 +127,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeMilitaryCardDTO dto = repo.Edit(employeeMilitaryCard).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeMilitaryCardsRepository.Update(employeeMilitaryCard);
+                unitOfWork.Save();
+                EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -159,7 +159,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeMilitaryCardDTO dto = repo.Add(employeeMilitaryCard).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeMilitaryCard.Id = employeeMilitaryCard.NewId(unitOfWork);
+                unitOfWork.EmployeeMilitaryCardsRepository.Insert(employeeMilitaryCard);
+                unitOfWork.Save();
+                EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
                 return CreatedAtRoute("GetEmployeeMilitaryCard", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -185,7 +189,12 @@ namespace GTIWebAPI.Controllers
             EmployeeMilitaryCard employeeMilitaryCard = new EmployeeMilitaryCard();
             try
             {
-                EmployeeMilitaryCardDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeMilitaryCard card = unitOfWork.EmployeeMilitaryCardsRepository.GetByID(id);
+                card.Deleted = true;
+                unitOfWork.EmployeeMilitaryCardsRepository.Update(card);
+                unitOfWork.Save();
+                EmployeeMilitaryCardDTO dto = card.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

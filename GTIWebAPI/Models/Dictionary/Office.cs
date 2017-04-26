@@ -39,7 +39,7 @@ namespace GTIWebAPI.Models.Dictionary
         }
     }
 
-    public class OfficeDTO
+    public class OfficeDTO : IEquatable<OfficeDTO>
     {
         public int Id { get; set; }
 
@@ -54,6 +54,16 @@ namespace GTIWebAPI.Models.Dictionary
                 Id = this.Id,
                 ShortName = this.ShortName
             };
+        }
+
+        public bool Equals(OfficeDTO other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
         }
     }
 

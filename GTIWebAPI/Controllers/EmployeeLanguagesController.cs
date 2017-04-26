@@ -24,29 +24,28 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeLanguages")]
     public class EmployeeLanguagesController : ApiController
     {
-        private IRepository<EmployeeLanguage> repo;
+        private IDbContextFactory factory;
 
         public EmployeeLanguagesController()
         {
-            repo = new EmployeeLanguagesRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeLanguagesController(IRepository<EmployeeLanguage> repo)
+        public EmployeeLanguagesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeLanguageDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
         public IHttpActionResult GetEmployeeLanguageAll()
         {
             try
             {
-                List<EmployeeLanguageDTO> dtos = repo.GetAll()
-                    .Select(d => d.ToDTO())
-                    .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeLanguageDTO> dtos = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Deleted != true, includeProperties: "Language,EmployeeLanguageType").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -66,16 +65,14 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeLanguageDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeLanguageDTO>))]
         public IHttpActionResult GetEmployeeLanguageByEmployee(int employeeId)
         {
-            try {
-                List<EmployeeLanguageDTO> dtos = 
-                    repo.GetByEmployeeId(employeeId)
-                    .Select(d => d.ToDTO())
-                    .ToList();
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeLanguageDTO> dtos = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId, includeProperties: "Language,EmployeeLanguageType").Select(d => d.ToDTO());
                 return Ok(dtos);
-
             }
             catch (NotFoundException nfe)
             {
@@ -100,7 +97,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeLanguageDTO dto = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
                 return Ok(dto); 
             }
             catch (NotFoundException nfe)
@@ -133,7 +131,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeLanguageDTO dto = repo.Edit(employeeLanguage).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeLanguagesRepository.Update(employeeLanguage);
+                unitOfWork.Save();
+                EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -162,7 +163,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeLanguageDTO dto = repo.Add(employeeLanguage).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeLanguage.Id = employeeLanguage.NewId(unitOfWork);
+                unitOfWork.EmployeeLanguagesRepository.Insert(employeeLanguage);
+                unitOfWork.Save();
+                EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == employeeLanguage.Id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeLanguage", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -187,7 +192,12 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeLanguageDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeLanguage language = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault();
+                language.Deleted = true;
+                unitOfWork.EmployeeLanguagesRepository.Update(language);
+                unitOfWork.Save();
+                EmployeeLanguageDTO dto = language.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

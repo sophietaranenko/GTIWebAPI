@@ -17,30 +17,28 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/EmployeeEducations")]
     public class EmployeeEducationsController : ApiController
     {
-        private IRepository<EmployeeEducation> repo;
+        private IDbContextFactory factory;
 
         public EmployeeEducationsController()
         {
-            repo = new EmployeeEducationsRepository();
+            factory = new DbContextFactory();
         }
 
-        public EmployeeEducationsController(IRepository<EmployeeEducation> repo)
+        public EmployeeEducationsController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<EmployeeEducationDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
         public IHttpActionResult GetEmployeeEducation()
         {
             try
             {
-                List<EmployeeEducationDTO> dtos =
-                     repo.GetAll()
-                     .Select(d => d.ToDTO())
-                     .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeEducationDTO> dtos = unitOfWork.EmployeeEducationsRepository.Get(d => d.Deleted != true, includeProperties: "EducationStudyForm").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -60,15 +58,13 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetByEmployeeId")]
-        [ResponseType(typeof(List<EmployeeEducationDTO>))]
+        [ResponseType(typeof(IEnumerable<EmployeeEducationDTO>))]
         public IHttpActionResult GetEmployeeEducationByEmployeeId(int employeeId)
         {
             try
             {
-                List<EmployeeEducationDTO> dtos =
-                repo.GetByEmployeeId(employeeId)
-                .Select(d => d.ToDTO())
-                .ToList();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<EmployeeEducationDTO> dtos = unitOfWork.EmployeeEducationsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId, includeProperties: "EducationStudyForm").Select(d => d.ToDTO());
                 return Ok(dtos);
 
             }
@@ -94,7 +90,8 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeEducationDTO employeeEducation = repo.Get(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeEducationDTO employeeEducation = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
                 return Ok(employeeEducation);
             }
             catch (NotFoundException nfe)
@@ -127,7 +124,10 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                EmployeeEducationDTO dto = repo.Edit(employeeEducation).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.EmployeeEducationsRepository.Update(employeeEducation);
+                unitOfWork.Save();
+                EmployeeEducationDTO dto = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -152,7 +152,11 @@ namespace GTIWebAPI.Controllers
         {
             try
             {
-                EmployeeEducationDTO dto = repo.Add(employeeEducation).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                employeeEducation.Id = employeeEducation.NewId(unitOfWork);
+                unitOfWork.EmployeeEducationsRepository.Insert(employeeEducation);
+                unitOfWork.Save();
+                EmployeeEducationDTO dto = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == employeeEducation.Id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeEducation", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -178,7 +182,12 @@ namespace GTIWebAPI.Controllers
             EmployeeEducation employeeEducation = null;
             try
             {
-                EmployeeEducationDTO dto = repo.Delete(id).ToDTO();
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                EmployeeEducation education = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == id, includeProperties: "EducationStudyForm").FirstOrDefault();
+                education.Deleted = true;
+                unitOfWork.EmployeeEducationsRepository.Update(education);
+                unitOfWork.Save();
+                EmployeeEducationDTO dto = education.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

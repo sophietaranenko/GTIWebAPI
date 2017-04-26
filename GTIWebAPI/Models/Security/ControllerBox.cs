@@ -34,4 +34,25 @@ namespace GTIWebAPI.Models.Security
 
         public List<ControllerDTO> Controllers { get; set; }
     }
+
+    public class RightControllerBoxDTO : IEquatable<RightControllerBoxDTO>
+    {
+        public int? Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string LongName { get; set; }
+
+        public IEnumerable<RightControllerDTO> Controllers { get; set; }
+
+        public bool Equals(RightControllerBoxDTO other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
 }

@@ -2,9 +2,11 @@
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Accounting;
 using GTIWebAPI.Models.Context;
-using GTIWebAPI.Models.Repository.Accounting;
+using GTIWebAPI.Models.Repository;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,22 +21,22 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Invoices")]
     public class InvoicesController : ApiController
     {
-        private IInvoicesRepository repo;
+        private IDbContextFactory factory;
 
         public InvoicesController()
         {
-            repo = new InvoicesRepository();
+            factory = new DbContextFactory();
         }
 
-        public InvoicesController(IInvoicesRepository repo)
+        public InvoicesController(IDbContextFactory factory)
         {
-            this.repo = repo;
+            this.factory = factory;
         }
 
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(List<DealInvoiceViewDTO>))]
+        [ResponseType(typeof(IEnumerable<DealInvoiceViewDTO>))]
         public IHttpActionResult GetInvoiceAll(int organizationId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
@@ -45,13 +47,36 @@ namespace GTIWebAPI.Controllers
             {
                 dateEnd = new DateTime(2200, 1, 1);
             }
-
             DateTime modDateBegin = dateBegin.GetValueOrDefault();
             DateTime modDateEnd = dateEnd.GetValueOrDefault();
-
             try
             {
-                List<DealInvoiceViewDTO> dtos = repo.GetAll(organizationId, modDateBegin, modDateEnd);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parClient = new SqlParameter
+                {
+                    ParameterName = "@OrganizationId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = organizationId
+                };
+                SqlParameter parBegin = new SqlParameter
+                {
+                    ParameterName = "@DateBegin",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateBegin
+                };
+                SqlParameter parEnd = new SqlParameter
+                {
+                    ParameterName = "@DateEnd",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.DateTime,
+                    Value = modDateEnd
+                };
+                IEnumerable<DealInvoiceViewDTO> dtos = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec InvoicesList @OrganizationId, @DateBegin, @DateEnd", parClient, parBegin, parEnd);
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -66,7 +91,6 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(e.Message);
             }
-
         }
 
 
@@ -82,7 +106,42 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                InvoiceFullViewDTO dto = repo.Get(id);
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                    SqlParameter parameter = new SqlParameter
+                    {
+                        ParameterName = "@InvoiceId",
+                        IsNullable = false,
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.Int32,
+                        Value = id
+                    };
+
+                InvoiceFullViewDTO dto = unitOfWork.SQLQuery<InvoiceFullViewDTO>("exec InvoiceInfo @InvoiceId", parameter).FirstOrDefault();
+                if (dto == null)
+                {
+                    return NotFound();
+                }
+
+                SqlParameter parameter1 = new SqlParameter
+                {
+                    ParameterName = "@InvoiceId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = id
+                };
+
+                dto.Containers = unitOfWork.SQLQuery<InvoiceContainerViewDTO>("Exec InvoiceContainerList @InvoiceId", parameter1).OrderBy(l => l.Name);
+
+                SqlParameter parameter2 = new SqlParameter
+                {
+                    ParameterName = "@InvoiceId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = id
+                };
+                dto.Lines = unitOfWork.SQLQuery<InvoiceLineViewDTO>("Exec InvoiceLineList @InvoiceId", parameter2).OrderBy(l => l.LinePosition);
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

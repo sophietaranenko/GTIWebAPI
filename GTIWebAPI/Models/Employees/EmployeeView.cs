@@ -42,6 +42,8 @@ namespace GTIWebAPI.Models.Employees
 
         public string Email { get; set; }
 
+        public string UserId { get; set; }
+
         [NotMapped]
         public Age Age
         {
@@ -99,7 +101,8 @@ namespace GTIWebAPI.Models.Employees
                 UserName = this.UserName,
                 EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts,
                 Email = this.Email,
-                PhotoPath = this.PhotoPath
+                PhotoPath = this.PhotoPath,
+                UserId = this.UserId 
             };
             return dto;
         }
@@ -137,6 +140,8 @@ namespace GTIWebAPI.Models.Employees
         public string PhotoPath { get; set; }
 
         public string Email { get; set; }
+
+        public string UserId { get; set; }
 
     }
 }

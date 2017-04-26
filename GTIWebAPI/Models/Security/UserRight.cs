@@ -41,10 +41,63 @@ namespace GTIWebAPI.Models.Security
         }
     }
 
-    public class UserRightDTO
+    public class UserRightOfficeDTO
+    {
+        public string UserId { get; set; }
+
+        public int? OfficeId { get; set; }
+
+        public string OfficeShortName { get; set; }
+
+        public int? ActionId { get; set; }
+
+        public string ActionName { get; set; }
+
+        public string ActionLongName { get; set; }
+
+        public int? ControllerId { get; set; }
+
+        public string ControllerName { get; set; }
+
+        public string ControllerLongName { get; set; }
+
+        public int? BoxId { get; set; }
+
+        public string BoxName { get; set; }
+
+        public string BoxLongName { get; set; }
+
+        public bool? Value { get; set; }
+    }
+
+    public class UserRightTreeView : IEquatable<UserRightTreeView>
+    { 
+
+        public string UserId { get; set; }
+
+        public int? OfficeId { get; set; }
+
+        public OfficeDTO Office { get; set; }
+
+        public IEnumerable<RightControllerBoxDTO> Boxes { get; set; }
+
+        public bool Equals(UserRightTreeView other)
+        {
+            return this.UserId == other.UserId;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.UserId.GetHashCode();
+        }
+    }
+
+
+public class UserRightDTO
     {
         [Key]
         public Int32 OfficeId { get; set; }
+
         public string OfficeName { get; set; }
 
         public List<ControllerBoxDTO> Boxes { get; set; }
@@ -58,8 +111,5 @@ namespace GTIWebAPI.Models.Security
 
         public Int32 ActionId { get; set; }
     }
-
-
-    
 
 }

@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,98 +17,173 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestEmployeeOfficesController
     {
-        private IDbContextFactory factory;
-        private IRepository<EmployeeOffice> repo;
-
-        public TestEmployeeOfficesController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new EmployeeOfficesRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
         public void GetAllOffices_ShouldReturnNotDeleted()
         {
-            var controller = new EmployeeOfficesController(repo);
-            var result = controller.GetEmployeeOfficeAll() as OkNegotiatedContentResult<List<EmployeeOfficeDTO>>;
-            Assert.AreEqual(3, result.Content.Count());
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.GetEmployeeOfficeAll() as OkNegotiatedContentResult<IEnumerable<EmployeeOfficeDTO>>;
+            Assert.AreEqual(2, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetOfficesByEmployeeId_ShouldReturnNotDeletedOffices()
+        public void GetOfficesByEmployeeId_ShouldReturn()
         {
-            var controller = new EmployeeOfficesController(repo);
-            var result = controller.GetEmployeeOfficeByEmployeeId(1) as OkNegotiatedContentResult<List<EmployeeOfficeDTO>>;
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.GetEmployeeOfficeByEmployeeId(2) as OkNegotiatedContentResult<IEnumerable<EmployeeOfficeDTO>>;
             Assert.AreEqual(1, result.Content.Count());
         }
 
         [TestMethod]
-        public void GetOfficeById_ShouldReturnObjectWithSameId()
+        public void GetOfficeById_ShouldReturn()
         {
-            var controller = new EmployeeOfficesController(repo);
-            var result = controller.GetEmployeeOffice(1) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutOffice_ShouldReturnOk()
-        {
-            var controller = new EmployeeOfficesController(repo);
-            EmployeeOffice office = repo.Add(GetDemo());
-            var result = controller.PutEmployeeOffice(office.Id, office) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutOffice_ShouldFail_WhenDifferentID()
-        {
-            var controller = new EmployeeOfficesController(repo);
-            EmployeeOffice office = GetDemo();
-            var badresult = controller.PutEmployeeOffice(999, office);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostOffice_ShouldReturnSame()
-        {
-            var controller = new EmployeeOfficesController(repo);
-            var item = GetDemo();
-            var result = controller.PostEmployeeOffice(item) as CreatedAtRouteNegotiatedContentResult<EmployeeOfficeDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetEmployeeOffice");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteOffice_ShouldReturnOK()
-        {
-            EmployeeOffice office = GetDemo();
-            office = repo.Add(office);
-
-            var controller = new EmployeeOfficesController(repo);
-            var result = controller.DeleteEmployeeOffice(office.Id) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(office.Id, result.Content.Id);
-        }
-
-        private EmployeeOffice GetDemo()
-        {
-            EmployeeOffice office = new EmployeeOffice
+            var officesTestData = new List<EmployeeOffice>()
             {
-                Id = 0,
-                EmployeeId = 1
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
             };
-            return office;
+            var offices = MockHelper.MockDbSet(officesTestData);
+            offices.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return offices.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.GetEmployeeOffice(1) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.EmployeeId);
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
         {
-            repo.Add(new EmployeeOffice { Id = 1, Deleted = true, EmployeeId = 1 });
-            repo.Add(new EmployeeOffice { Id = 2, Deleted = false, EmployeeId = 1 });
-            repo.Add(new EmployeeOffice { Id = 3, Deleted = false, EmployeeId = 2 });
-            repo.Add(new EmployeeOffice { Id = 4, Deleted = false, EmployeeId = 2 });
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+            offices.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return offices.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeOffice passport = new EmployeeOffice { Id = 3, EmployeeId = 3 };
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.PutEmployeeOffice(3, passport) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostOffice_ShoulAddOffice()
+        {
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+            offices.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return offices.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            offices.Setup(d => d.Add(It.IsAny<EmployeeOffice>())).Returns<EmployeeOffice>((contact) =>
+            {
+                officesTestData.Add(contact);
+                offices = MockHelper.MockDbSet(officesTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = offices.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeOffice passport = new EmployeeOffice { Id = 0, EmployeeId = 3 };
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.PostEmployeeOffice(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeOfficeDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
+        }
+
+        [TestMethod]
+        public void DeleteOffice_ShouldDeleteAndReturnOk()
+        {
+            var officesTestData = new List<EmployeeOffice>()
+            {
+                new EmployeeOffice { Id = 1, EmployeeId = 2 },
+                new EmployeeOffice { Id = 2, Deleted = true, EmployeeId = 2 },
+                new EmployeeOffice { Id = 3, EmployeeId = 3 }
+            };
+            var offices = MockHelper.MockDbSet(officesTestData);
+            offices.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return offices.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.EmployeeOffices).Returns(offices.Object);
+            dbContext.Setup(d => d.Set<EmployeeOffice>()).Returns(offices.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            EmployeeOffice passport = new EmployeeOffice { Id = 3, EmployeeId = 3 };
+            var controller = new EmployeeOfficesController(factory.Object);
+            var result = controller.DeleteEmployeeOffice(3) as OkNegotiatedContentResult<EmployeeOfficeDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.EmployeeId);
         }
     }
 }

@@ -15,7 +15,6 @@ using GTIWebAPI.Models.Context;
 using Microsoft.Owin;
 using System.Net;
 using GTIWebAPI.Models.Security;
-using GTIWebAPI.Models.Repository.Identity;
 using System.Web.Http.Cors;
 
 namespace GTIWebAPI.Providers
@@ -47,7 +46,6 @@ namespace GTIWebAPI.Providers
     {
         private readonly string _publicClientId;
         private INovellManager novell;
-        private IAccountRepository repo;
 
         /// <summary>
         /// Ctor of oAuth provider
@@ -61,13 +59,11 @@ namespace GTIWebAPI.Providers
             }
             _publicClientId = publicClientId;
             novell = new NovellManager();
-            repo = new AccountRepository();
         }
 
-        public ApplicationOAuthProvider(INovellManager novell, IAccountRepository repo)
+        public ApplicationOAuthProvider(INovellManager novell)
         {
             this.novell = novell;
-            this.repo = repo;
         }
 
         /// <summary>
@@ -81,8 +77,15 @@ namespace GTIWebAPI.Providers
             ApplicationUser user = null;
             if (novell.CredentialsCorrect(context.UserName, context.Password))
             {
-                user = userManager.Find(context.UserName, context.Password);
-                if (user == null)
+                try
+                {
+                    user = userManager.Find(context.UserName, context.Password);
+                }
+                catch (Exception e)
+                {
+                    string excMes = e.Message;
+                }
+                    if (user == null)
                 {
                     user = userManager.FindByName(context.UserName);
                     if (user != null)
@@ -101,8 +104,11 @@ namespace GTIWebAPI.Providers
                 if (user == null)
                 {
                     bool dbResult = false;
-                    dbResult = repo.CreateHoldingUser(context.UserName, context.Password);
-
+                    using (ApplicationDbContext db = new ApplicationDbContext())
+                    {
+                        dbResult = db.CreateHoldingUser(context.UserName, context.Password);
+                            //CreateHoldingUser(context.UserName, context.Password);
+                    }
                     if (dbResult == true)
                     {
                         user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);

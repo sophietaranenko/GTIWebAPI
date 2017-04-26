@@ -1,9 +1,9 @@
 ﻿using GTIWebAPI.Controllers;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,91 +16,204 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestOrganizationPropertiesController
     {
-        private IDbContextFactory factory;
-        private IOrganizationRepository<OrganizationProperty> repo;
-
-        public TestOrganizationPropertiesController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new OrganizationPropertiesRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
-        public void GetPropertiesByOrganizationId_ShouldReturnNotDeletedOrganizationIdsProperties()
+        public void GetPropertysByOrganizationId_ShouldReturn()
         {
-            var controller = new OrganizationPropertiesController(repo);
-            var result = controller.GetOrganizationPropertyByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationPropertyDTO>>;
-            Assert.AreEqual(1, result.Content.Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationId).Distinct().Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationId).Distinct().Take(1).FirstOrDefault());
-        }
-
-        [TestMethod]
-        public void GetPropertyById_ShouldReturnObjectWithSameId()
-        {
-            var controller = new OrganizationPropertiesController(repo);
-            var result = controller.GetOrganizationProperty(1) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutProperty_ShouldReturnOk()
-        {
-            var controller = new OrganizationPropertiesController(repo);
-            OrganizationProperty property = repo.Add(GetDemo());
-            var result = controller.PutOrganizationProperty(property.Id, property) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutProperty_ShouldFail_WhenDifferentID()
-        {
-            var controller = new OrganizationPropertiesController(repo);
-            OrganizationProperty property = GetDemo();
-            var badresult = controller.PutOrganizationProperty(999, property);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostProperty_ShouldReturnSame()
-        {
-            var controller = new OrganizationPropertiesController(repo);
-            var item = GetDemo();
-            var result = controller.PostOrganizationProperty(item) as CreatedAtRouteNegotiatedContentResult<OrganizationPropertyDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetOrganizationProperty");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteProperty_ShouldReturnOK()
-        {
-            OrganizationProperty property = repo.Add(GetDemo());
-
-            var controller = new OrganizationPropertiesController(repo);
-            var result = controller.DeleteOrganizationProperty(property.Id) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(property.Id, result.Content.Id);
-        }
-
-        private OrganizationProperty GetDemo()
-        {
-            OrganizationProperty gun = new OrganizationProperty
+            var propertiesTestData = new List<OrganizationProperty>()
             {
-                Id = 0,
-                OrganizationId = 1
+                new OrganizationProperty { Id = 1, OrganizationId = 2 },
+                new OrganizationProperty { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationProperty { Id = 3, OrganizationId = 3 }
             };
-            return gun;
+            var properties = MockHelper.MockDbSet(propertiesTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationProperties).Returns(properties.Object);
+            dbContext.Setup(d => d.Set<OrganizationProperty>()).Returns(properties.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationPropertiesController(factory.Object);
+            var result = controller.GetOrganizationPropertyByOrganizationId(2) as OkNegotiatedContentResult<IEnumerable<OrganizationPropertyDTO>>;
+            Assert.AreEqual(1, result.Content.Count());
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void GetPropertyById_ShouldReturn()
         {
-            repo.Add(new OrganizationProperty { Id = 1, Deleted = true, OrganizationId = 1 } );
-            repo.Add(new OrganizationProperty { Id = 2, Deleted = false, OrganizationId = 1 } );
-            repo.Add(new OrganizationProperty { Id = 3, Deleted = false, OrganizationId = 2 });
-            repo.Add(new OrganizationProperty { Id = 4, Deleted = false, OrganizationId = 2 });
+            var propertiesTestData = new List<OrganizationProperty>()
+            {
+                new OrganizationProperty { Id = 1, OrganizationId = 2 },
+                new OrganizationProperty { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationProperty { Id = 3, OrganizationId = 3 }
+            };
+            var properties = MockHelper.MockDbSet(propertiesTestData);
+            properties.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return properties.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationProperties).Returns(properties.Object);
+            dbContext.Setup(d => d.Set<OrganizationProperty>()).Returns(properties.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationPropertiesController(factory.Object);
+            var result = controller.GetOrganizationProperty(1) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.OrganizationId);
+        }
+
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
+        {
+            var propertiesTestData = new List<OrganizationProperty>()
+            {
+                new OrganizationProperty { Id = 1, OrganizationId = 2 },
+                new OrganizationProperty { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationProperty { Id = 3, OrganizationId = 3 }
+            };
+            var properties = MockHelper.MockDbSet(propertiesTestData);
+            properties.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return properties.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            properties.Setup(d => d.Add(It.IsAny<OrganizationProperty>())).Returns<OrganizationProperty>((contact) =>
+            {
+                propertiesTestData.Add(contact);
+                properties = MockHelper.MockDbSet(propertiesTestData);
+                return contact;
+            });
+
+
+            var typesTestData = new List<OrganizationPropertyType>()
+            {
+                new OrganizationPropertyType { Id = 1, CountryId = 1 },
+                new OrganizationPropertyType { Id = 2, CountryId = 1 },
+                new OrganizationPropertyType { Id = 3, CountryId = 2 }
+            };
+            var types = MockHelper.MockDbSet(typesTestData);
+
+            var orgsTestData = new List<Organization>()
+            {
+                new Organization { CountryId = 1 }
+            };
+            var orgs = MockHelper.MockDbSet(orgsTestData);
+
+
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationProperties).Returns(properties.Object);
+            dbContext.Setup(d => d.Set<OrganizationProperty>()).Returns(properties.Object);
+
+            dbContext.Setup(m => m.Organizations).Returns(orgs.Object);
+            dbContext.Setup(d => d.Set<Organization>()).Returns(orgs.Object);
+
+            dbContext.Setup(m => m.OrganizationPropertyTypes).Returns(types.Object);
+            dbContext.Setup(d => d.Set<OrganizationPropertyType>()).Returns(types.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationProperty passport = new OrganizationProperty { Id = 3, OrganizationId = 3 };
+            var controller = new OrganizationPropertiesController(factory.Object);
+            var result = controller.PutOrganizationProperty(3, passport) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostProperty_ShoulAddProperty()
+        {
+            var propertiesTestData = new List<OrganizationProperty>()
+            {
+                new OrganizationProperty { Id = 1, OrganizationId = 2 },
+                new OrganizationProperty { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationProperty { Id = 3, OrganizationId = 3 }
+            };
+            var properties = MockHelper.MockDbSet(propertiesTestData);
+            properties.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return properties.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            properties.Setup(d => d.Add(It.IsAny<OrganizationProperty>())).Returns<OrganizationProperty>((contact) =>
+            {
+                propertiesTestData.Add(contact);
+                properties = MockHelper.MockDbSet(propertiesTestData);
+                return contact;
+            });
+
+
+            var typesTestData = new List<OrganizationPropertyType>()
+            {
+                new OrganizationPropertyType { Id = 1, CountryId = 1 },
+                new OrganizationPropertyType { Id = 2, CountryId = 1 },
+                new OrganizationPropertyType { Id = 3, CountryId = 2 }
+            };
+            var types = MockHelper.MockDbSet(typesTestData);
+
+            var orgsTestData = new List<Organization>()
+            {
+                new Organization { CountryId = 1 }
+            };
+            var orgs = MockHelper.MockDbSet(orgsTestData);
+
+
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationProperties).Returns(properties.Object);
+            dbContext.Setup(d => d.Set<OrganizationProperty>()).Returns(properties.Object);
+
+            dbContext.Setup(m => m.Organizations).Returns(orgs.Object);
+            dbContext.Setup(d => d.Set<Organization>()).Returns(orgs.Object);
+
+            dbContext.Setup(m => m.OrganizationPropertyTypes).Returns(types.Object);
+            dbContext.Setup(d => d.Set<OrganizationPropertyType>()).Returns(types.Object);
+
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = properties.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            OrganizationProperty passport = new OrganizationProperty { Id = 0, OrganizationId = 3 };
+            var controller = new OrganizationPropertiesController(factory.Object);
+            var result = controller.PostOrganizationProperty(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationPropertyDTO>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationId);
+        }
+
+        [TestMethod]
+        public void DeleteProperty_ShouldDeleteAndReturnOk()
+        {
+            var propertiesTestData = new List<OrganizationProperty>()
+            {
+                new OrganizationProperty { Id = 1, OrganizationId = 2 },
+                new OrganizationProperty { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationProperty { Id = 3, OrganizationId = 3 }
+            };
+            var properties = MockHelper.MockDbSet(propertiesTestData);
+            properties.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return properties.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationProperties).Returns(properties.Object);
+            dbContext.Setup(d => d.Set<OrganizationProperty>()).Returns(properties.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationProperty passport = new OrganizationProperty { Id = 3, OrganizationId = 3 };
+            var controller = new OrganizationPropertiesController(factory.Object);
+            var result = controller.DeleteOrganizationProperty(3) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationId);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using GTIWebAPI.Controllers;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,92 +16,151 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestOrganizationContactPersonContactsController
     {
-        private IDbContextFactory factory;
-        private IOrganizationContactPersonContactsRepository repo;
-
-        public TestOrganizationContactPersonContactsController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new OrganizationContactPersonContactsRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
-        public void GetByOrganizationContactId_ShouldReturnNotDeletedContactPersonContacts()
+        public void GetPassportsByOrganizationId_ShouldReturn()
         {
-            var controller = new OrganizationContactPersonContactsController(repo);
-            var result = controller.GetOrganizationContactPersonContactByOrganizationContactPersonId(1) as OkNegotiatedContentResult<List<OrganizationContactPersonContactDTO>>;
-            Assert.AreEqual(1, result.Content.Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationContactPersonId).Distinct().Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationContactPersonId).Distinct().Take(1).FirstOrDefault());
-        }
-
-        [TestMethod]
-        public void GetOrganizationContactsById_ShouldReturnObjectWithSameId()
-        {
-            var controller = new OrganizationContactPersonContactsController(repo);
-            var result = controller.GetOrganizationContactPersonContact(1) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutOrganizationContact_ShouldReturnOk()
-        {
-            var controller = new OrganizationContactPersonContactsController(repo);
-            OrganizationContactPersonContact contact = repo.Add(GetDemo());
-            var result = controller.PutOrganizationContactPersonContact(contact.Id, contact) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutOrganizationContact_ShouldFail_WhenDifferentID()
-        {
-            var controller = new OrganizationContactPersonContactsController(repo);
-            OrganizationContactPersonContact contact = GetDemo();
-            var badresult = controller.PutOrganizationContactPersonContact(999, contact);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostOrganizationContact_ShouldReturnSame()
-        {
-            var controller = new OrganizationContactPersonContactsController(repo);
-            var item = GetDemo();
-            var result = controller.PostOrganizationContactPersonContact(item) as CreatedAtRouteNegotiatedContentResult<OrganizationContactPersonContactDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetOrganizationContactPersonContact");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteOrganizationContact_ShouldReturnOK()
-        {
-            OrganizationContactPersonContact contact = repo.Add(GetDemo());
-
-            var controller = new OrganizationContactPersonContactsController(repo);
-            var result = controller.DeleteOrganizationContactPersonContact(contact.Id) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(contact.Id, result.Content.Id);
-        }
-
-        private OrganizationContactPersonContact GetDemo()
-        {
-            OrganizationContactPersonContact contact = new OrganizationContactPersonContact
+            var passportsTestData = new List<OrganizationContactPersonContact>()
             {
-                Id = 0,
-                ContactTypeId = 1,
-                OrganizationContactPersonId = 1
+                new OrganizationContactPersonContact { Id = 1, OrganizationContactPersonId = 2},
+                new OrganizationContactPersonContact { Id = 2, Deleted = true, OrganizationContactPersonId = 2 },
+                new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 }
             };
-            return contact;
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationContactPersonContacts).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationContactPersonContact>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationContactPersonContactsController(factory.Object);
+            var result = controller.GetOrganizationContactPersonContactByOrganizationContactPersonId(2) as OkNegotiatedContentResult<IEnumerable<OrganizationContactPersonContactDTO>>;
+            Assert.AreEqual(1, result.Content.Count());
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void GetPassportById_ShouldReturn()
         {
-            repo.Add(new OrganizationContactPersonContact { Id = 1, Deleted = true, OrganizationContactPersonId = 1 });
-            repo.Add(new OrganizationContactPersonContact { Id = 2, Deleted = false, OrganizationContactPersonId = 1 });
-            repo.Add(new OrganizationContactPersonContact { Id = 3, Deleted = false, OrganizationContactPersonId = 2 });
-            repo.Add(new OrganizationContactPersonContact { Id = 4, Deleted = false, OrganizationContactPersonId = 2 });
+            var passportsTestData = new List<OrganizationContactPersonContact>()
+            {
+                new OrganizationContactPersonContact { Id = 1, OrganizationContactPersonId = 2},
+                new OrganizationContactPersonContact { Id = 2, Deleted = true, OrganizationContactPersonId = 2 },
+                new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationContactPersonContacts).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationContactPersonContact>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationContactPersonContactsController(factory.Object);
+            var result = controller.GetOrganizationContactPersonContact(1) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.OrganizationContactPersonId);
+        }
+
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
+        {
+            var passportsTestData = new List<OrganizationContactPersonContact>()
+            {
+                new OrganizationContactPersonContact { Id = 1, OrganizationContactPersonId = 2},
+                new OrganizationContactPersonContact { Id = 2, Deleted = true, OrganizationContactPersonId = 2 },
+                new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationContactPersonContacts).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationContactPersonContact>()).Returns(passports.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationContactPersonContact passport = new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 };
+            var controller = new OrganizationContactPersonContactsController(factory.Object);
+            var result = controller.PutOrganizationContactPersonContact(3, passport) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostPassport_ShoulAddPassport()
+        {
+            var passportsTestData = new List<OrganizationContactPersonContact>()
+            {
+                new OrganizationContactPersonContact { Id = 1, OrganizationContactPersonId = 2},
+                new OrganizationContactPersonContact { Id = 2, Deleted = true, OrganizationContactPersonId = 2 },
+                new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            passports.Setup(d => d.Add(It.IsAny<OrganizationContactPersonContact>())).Returns<OrganizationContactPersonContact>((contact) =>
+            {
+                passportsTestData.Add(contact);
+                passports = MockHelper.MockDbSet(passportsTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationContactPersonContacts).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationContactPersonContact>()).Returns(passports.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = passports.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            OrganizationContactPersonContact passport = new OrganizationContactPersonContact { Id = 0, OrganizationContactPersonId = 3 };
+            var controller = new OrganizationContactPersonContactsController(factory.Object);
+            var result = controller.PostOrganizationContactPersonContact(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationContactPersonId);
+        }
+
+        [TestMethod]
+        public void DeletePassport_ShouldDeleteAndReturnOk()
+        {
+            var passportsTestData = new List<OrganizationContactPersonContact>()
+            {
+                new OrganizationContactPersonContact { Id = 1, OrganizationContactPersonId = 2},
+                new OrganizationContactPersonContact { Id = 2, Deleted = true, OrganizationContactPersonId = 2 },
+                new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationContactPersonContacts).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationContactPersonContact>()).Returns(passports.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationContactPersonContact passport = new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 };
+            var controller = new OrganizationContactPersonContactsController(factory.Object);
+            var result = controller.DeleteOrganizationContactPersonContact(3) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationContactPersonId);
         }
     }
 }

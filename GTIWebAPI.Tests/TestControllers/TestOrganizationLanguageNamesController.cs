@@ -1,9 +1,9 @@
 ﻿using GTIWebAPI.Controllers;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
-using GTIWebAPI.Models.Repository.Organization;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,91 +16,154 @@ namespace GTIWebAPI.Tests.TestControllers
     [TestClass]
     public class TestOrganizationLanguageNamesController
     {
-        private IDbContextFactory factory;
-        private IOrganizationRepository<OrganizationLanguageName> repo;
-
-        public TestOrganizationLanguageNamesController()
-        {
-            factory = new TestDbContextFactory();
-            repo = new OrganizationLanguageNamesRepository(factory);
-            GetFewDemo();
-        }
-
         [TestMethod]
-        public void GetLanguageNamesByOrganizationId_ShouldReturnNotDeletedOrganizationIdsLanguageNames()
+        public void GetPassportsByOrganizationId_ShouldReturn()
         {
-            var controller = new OrganizationLanguageNamesController(repo);
-            var result = controller.GetOrganizationLanguageNameByOrganizationId(1) as OkNegotiatedContentResult<List<OrganizationLanguageNameDTO>>;
-            Assert.AreEqual(1, result.Content.Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationId).Distinct().Count());
-            Assert.AreEqual(1, result.Content.Select(d => d.OrganizationId).Distinct().Take(1).FirstOrDefault());
-        }
-
-        [TestMethod]
-        public void GetLanguageNameById_ShouldReturnObjectWithSameId()
-        {
-            var controller = new OrganizationLanguageNamesController(repo);
-            var result = controller.GetOrganizationLanguageName(1) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
-            Assert.AreEqual(result.Content.Id, 1);
-        }
-
-        [TestMethod]
-        public void PutLanguageName_ShouldReturnOk()
-        {
-            var controller = new OrganizationLanguageNamesController(repo);
-            OrganizationLanguageName languageName = repo.Add(GetDemo());
-            var result = controller.PutOrganizationLanguageName(languageName.Id, languageName) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void PutLanguageName_ShouldFail_WhenDifferentID()
-        {
-            var controller = new OrganizationLanguageNamesController(repo);
-            OrganizationLanguageName languageName = GetDemo();
-            var badresult = controller.PutOrganizationLanguageName(999, languageName);
-            Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
-        }
-
-        [TestMethod]
-        public void PostLanguageName_ShouldReturnSame()
-        {
-            var controller = new OrganizationLanguageNamesController(repo);
-            var item = GetDemo();
-            var result = controller.PostOrganizationLanguageName(item) as CreatedAtRouteNegotiatedContentResult<OrganizationLanguageNameDTO>;
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.RouteName, "GetOrganizationLanguageName");
-            Assert.AreEqual(result.RouteValues["id"], result.Content.Id);
-        }
-
-        [TestMethod]
-        public void DeleteLanguageName_ShouldReturnOK()
-        {
-            OrganizationLanguageName languageName = repo.Add(GetDemo());
-
-            var controller = new OrganizationLanguageNamesController(repo);
-            var result = controller.DeleteOrganizationLanguageName(languageName.Id) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(languageName.Id, result.Content.Id);
-        }
-
-        private OrganizationLanguageName GetDemo()
-        {
-            OrganizationLanguageName gun = new OrganizationLanguageName
+            var passportsTestData = new List<OrganizationLanguageName>()
             {
-                Id = 0,
-                OrganizationId = 1
+                new OrganizationLanguageName { Id = 1, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 3, OrganizationId = 3 }
             };
-            return gun;
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationLanguageNames).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationLanguageName>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationLanguageNamesController(factory.Object);
+            var result = controller.GetOrganizationLanguageNameByOrganizationId(2) as OkNegotiatedContentResult<IEnumerable<OrganizationLanguageNameDTO>>;
+            Assert.AreEqual(1, result.Content.Count());
         }
 
-        private void GetFewDemo()
+        [TestMethod]
+        public void GetPassportById_ShouldReturn()
         {
-            repo.Add(new OrganizationLanguageName { Id = 1, Deleted = true, OrganizationId = 1, LanguageId = 1 } );
-            repo.Add(new OrganizationLanguageName { Id = 2, Deleted = false, OrganizationId = 1, LanguageId = 2 });
-            repo.Add(new OrganizationLanguageName { Id = 3, Deleted = false, OrganizationId = 2, LanguageId = 1 });
-            repo.Add(new OrganizationLanguageName { Id = 4, Deleted = false, OrganizationId = 2, LanguageId = 2 });
+            var passportsTestData = new List<OrganizationLanguageName>()
+            {
+                new OrganizationLanguageName { Id = 1, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 3, OrganizationId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationLanguageNames).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationLanguageName>()).Returns(passports.Object);
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            var controller = new OrganizationLanguageNamesController(factory.Object);
+            var result = controller.GetOrganizationLanguageName(1) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
+            Assert.AreEqual(1, result.Content.Id);
+            Assert.AreEqual(2, result.Content.OrganizationId);
+        }
+
+        [TestMethod]
+        public void PutDocument_ShouldReturnOk()
+        {
+            var passportsTestData = new List<OrganizationLanguageName>()
+            {
+                new OrganizationLanguageName { Id = 1, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 3, OrganizationId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationLanguageNames).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationLanguageName>()).Returns(passports.Object);
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationLanguageName passport = new OrganizationLanguageName { Id = 3, OrganizationId = 3 };
+            var controller = new OrganizationLanguageNamesController(factory.Object);
+            var result = controller.PutOrganizationLanguageName(3, passport) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void PostPassport_ShoulAddPassport()
+        {
+            var passportsTestData = new List<OrganizationLanguageName>()
+            {
+                new OrganizationLanguageName { Id = 1, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 3, OrganizationId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+
+
+
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+            passports.Setup(d => d.Add(It.IsAny<OrganizationLanguageName>())).Returns<OrganizationLanguageName>((contact) =>
+            {
+                passportsTestData.Add(contact);
+                passports = MockHelper.MockDbSet(passportsTestData);
+                return contact;
+            });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationLanguageNames).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationLanguageName>()).Returns(passports.Object);
+
+            dbContext.Setup(d => d.ExecuteStoredProcedure<int>(It.IsAny<string>(), It.IsAny<object[]>()))
+               .Returns<string, object[]>((query, parameters) =>
+               {
+                   List<int> list = new List<int>();
+                   if (query.Contains("NewTableId"))
+                   {
+                       int i = passports.Object.Max(d => d.Id) + 1;
+                       list.Add(i);
+                   }
+                   else
+                   {
+                       list.Add(0);
+                   }
+                   return list;
+               });
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+            OrganizationLanguageName passport = new OrganizationLanguageName { Id = 0, OrganizationId = 3 };
+            var controller = new OrganizationLanguageNamesController(factory.Object);
+            var result = controller.PostOrganizationLanguageName(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationLanguageNameDTO>;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationId);
+        }
+
+        [TestMethod]
+        public void DeletePassport_ShouldDeleteAndReturnOk()
+        {
+            var passportsTestData = new List<OrganizationLanguageName>()
+            {
+                new OrganizationLanguageName { Id = 1, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 2, Deleted = true, OrganizationId = 2 },
+                new OrganizationLanguageName { Id = 3, OrganizationId = 3 }
+            };
+            var passports = MockHelper.MockDbSet(passportsTestData);
+            passports.Setup(d => d.Find(It.IsAny<object>())).Returns<object[]>((keyValues) => { return passports.Object.SingleOrDefault(product => product.Id == (int)keyValues.Single()); });
+
+            var dbContext = new Mock<IAppDbContext>();
+            dbContext.Setup(m => m.OrganizationLanguageNames).Returns(passports.Object);
+            dbContext.Setup(d => d.Set<OrganizationLanguageName>()).Returns(passports.Object);
+
+
+            var factory = new Mock<IDbContextFactory>();
+            factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
+
+            OrganizationLanguageName passport = new OrganizationLanguageName { Id = 3, OrganizationId = 3 };
+            var controller = new OrganizationLanguageNamesController(factory.Object);
+            var result = controller.DeleteOrganizationLanguageName(3) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.Id);
+            Assert.AreEqual(3, result.Content.OrganizationId);
         }
     }
 }
