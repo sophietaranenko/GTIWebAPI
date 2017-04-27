@@ -10,13 +10,9 @@ using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
-
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OAuth;
 
-using GTIWebAPI.Providers;
-using GTIWebAPI.Results;
 using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Organizations;
@@ -24,15 +20,12 @@ using GTIWebAPI.Filters;
 using GTIWebAPI.Novell;
 using GTIWebAPI.Exceptions;
 using System.IO;
-using System.Web.Helpers;
-using System.Net;
 using System.Linq;
-using System.Diagnostics;
-using System.Text;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Repository;
 using System.Data.SqlClient;
 using System.Data;
+using GTIWebAPI.Models.Service;
 
 namespace GTIWebAPI.Controllers
 {
@@ -43,47 +36,80 @@ namespace GTIWebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+
         private const string LocalLoginProvider = "Local";
 
         private ApplicationUserManager _userManager;
 
-        private INovellManager novell { get; set; }
+        private IApplicationDbContext context;
+
+        private INovellManager novell;  
 
         private IDbContextFactory factory;
 
-        private ApplicationDbContext context;
+        private IIdentityHelper identityHelper;
+
+        private IRequest request; 
 
         public AccountController()
         {
             novell = new NovellManager();
             factory = new DbContextFactory();
             context = new ApplicationDbContext();
-        }
-
-        //public AccountController(IAccountRepository repo, INovellManager novell, ApplicationUserManager userManager)
-        //{
-        //    UserManager = userManager;
-        //    this.novell = novell;
-        //    this.repo = repo;
-        //}
-
-        public AccountController(IDbContextFactory factory, INovellManager novell, ApplicationUserManager userManager)
-        {
-            UserManager = userManager;
-            this.novell = novell;
-            this.factory = factory;
-            context = new ApplicationDbContext();
+            identityHelper = new IdentityHelper();
+            request = new Request();
         }
 
         public AccountController(ApplicationUserManager userManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
-            UserManager = userManager;
-            AccessTokenFormat = accessTokenFormat;
+            this.UserManager = userManager;
+            this.AccessTokenFormat = accessTokenFormat;
+
             novell = new NovellManager();
             factory = new DbContextFactory();
             context = new ApplicationDbContext();
+            identityHelper = new IdentityHelper();
+            request = new Request();
         }
+
+
+        public AccountController(IDbContextFactory factory, IApplicationDbContext context, IRequest request, IIdentityHelper identityHelper, INovellManager novell, ApplicationUserManager userManager)
+        {
+            this.novell = novell;
+            this.factory = factory;
+            this.UserManager = userManager;
+            this.context = context;
+            this.identityHelper = identityHelper;
+            this.request = request;
+        }
+
+        public AccountController(IDbContextFactory factory, IApplicationDbContext context, IIdentityHelper identityHelper)
+        {
+            this.factory = factory;
+            this.identityHelper = identityHelper;
+            this.context = context;
+
+            request = new Request();
+            novell = new NovellManager();
+            identityHelper = new IdentityHelper();
+        }
+
+        public AccountController(IDbContextFactory factory, IIdentityHelper identityHelper, IRequest request)
+        {
+            this.factory = factory;
+            this.identityHelper = identityHelper;
+            this.request = request;
+
+            context = new ApplicationDbContext();
+            novell = new NovellManager();
+            identityHelper = new IdentityHelper();
+        }
+
+
+
+
+
 
         protected ApplicationUserManager UserManager
         {
@@ -103,8 +129,9 @@ namespace GTIWebAPI.Controllers
         [Route("UserInfo")]
         public async Task<UserInfoViewModel> GetUserInfo()
         {
-            string UserId = User.Identity.GetUserId();
-            ApplicationUser user = await UserManager.FindByIdAsync(UserId);
+            string UserId = identityHelper.GetUserId(User);
+            ApplicationUser user = identityHelper.FindUserById(UserId);
+
             UnitOfWork unitOfWork = new UnitOfWork(factory);
 
             bool isEmployeeInformationFilled = false;
@@ -122,6 +149,7 @@ namespace GTIWebAPI.Controllers
                 isEmployeeInformationFilled = unitOfWork.SQLQuery<bool>("exec IsEmployeeInformationFilled @EmployeeId", parameter).FirstOrDefault();
             }
             int organizationRelatedToContactPersonId = 0;
+
             if (user.TableName == "OrganizationContactPerson")
             {
                 organizationRelatedToContactPersonId = unitOfWork.OrganizationContactPersonsRepository
@@ -132,9 +160,6 @@ namespace GTIWebAPI.Controllers
             UserImage image = unitOfWork.UserImagesRepository
                 .Get(d => d.UserId == UserId && d.IsProfilePicture == true)
                 .FirstOrDefault();
-
-
-
 
             UserInfoViewModel model = new UserInfoViewModel()
             {
@@ -148,6 +173,7 @@ namespace GTIWebAPI.Controllers
                 EmployeeInformation = isEmployeeInformationFilled,
                 OrganizationId = organizationRelatedToContactPersonId
             };
+
             return await Task<UserInfoViewModel>.Factory.StartNew(() => model);
         }
 
@@ -160,30 +186,22 @@ namespace GTIWebAPI.Controllers
         [Route("UploadProfilePicture")]
         public IHttpActionResult UploadNewProfilePicture()
         {
-            var httpRequest = HttpContext.Current.Request;
             try
             {
                 UserImage image = new UserImage();
-                if (httpRequest.Files.Count > 0)
+                if (request.FileCount() > 0)
                 {
-                    string userId = User.Identity.GetUserId();
+                    string userId = identityHelper.GetUserId(User);
+
                     UnitOfWork unitOfWork = new UnitOfWork(factory);
-                    foreach (string file in httpRequest.Files)
+                    foreach (string file in request.Collection())
                     {
-                        string filePath = HttpContext.Current.Server.MapPath("~/PostedFiles/" + Guid.NewGuid().ToString().Trim() + System.IO.Path.GetExtension(httpRequest.Files[file].FileName));
-                        if (filePath != null && filePath.Length > 3)
-                        {
-                            httpRequest.Files[file].SaveAs(filePath);
-                            filePath = filePath.Replace(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"], String.Empty);
-                        }
-                        else
-                        {
-                            throw new NotFoundException();
-                        }
+                        string filePath = request.SaveFile(file);
                         image.ImageName = filePath;
                         image.IsProfilePicture = true;
                         image.UploadDate = DateTime.Now;
                         image.UserId = User.Identity.GetUserId();
+
                         IEnumerable<UserImage> images = unitOfWork.UserImagesRepository.Get(d => d.UserId == image.UserId);
                         foreach (var item in images)
                         {
@@ -240,8 +258,9 @@ namespace GTIWebAPI.Controllers
         [Route("UserRights")]
         public IEnumerable<UserRightDTO> GetUserRights()
         {
-            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-            return user.GetUserRightsDTO();
+            ApplicationUser user = identityHelper.FindUserById(identityHelper.GetUserId(User));
+            IEnumerable<UserRightDTO> rights = user.GetUserRightsDTO();
+            return rights;
         }
 
 
@@ -365,7 +384,6 @@ namespace GTIWebAPI.Controllers
                     return BadRequest(e.Message);
                 }
 
-
                 bool novellResult = novell.CreateOrganization(novellPerson);
                 if (novellResult)
                 {
@@ -388,13 +406,13 @@ namespace GTIWebAPI.Controllers
                             }
                             else
                             {
-                                IdentityResult roleResult = UserManager.AddToRole(user.Id, "Organization");
+                                IdentityResult roleResult = await UserManager.AddToRoleAsync(user.Id, "Organization");
                                 if (!roleResult.Succeeded)
                                 {
                                     return GetErrorResult(roleResult);
                                 }
 
-                                bool rightsResult = UserRightsManager.GrantOrganizationRights(user.Id);
+                                bool rightsResult = context.GrantRightsToOrganization(user.Id);
                                 if (rightsResult)
                                 {
                                     await SendEmailWithCredentials(novellPerson, user.Id);
@@ -419,14 +437,12 @@ namespace GTIWebAPI.Controllers
                 }
 
             }
-
-
             return BadRequest("Wrong organization contact person");
         }
 
         public async Task SendEmailWithCredentials(INovellOrganizationContactPerson novellPerson, string userId)
         {
-            string letterText = File.ReadAllText(HttpContext.Current.Server.MapPath("~/HtmlMailFile/letter.html"));
+            string letterText = File.ReadAllText(request.AppPath() + "/HtmlMailFile/letter.html");
             letterText = letterText.Replace("NEW_USER_LOGIN", novellPerson.Login);
             letterText = letterText.Replace("NEW_USER_PASSWORD", novellPerson.Password);
             await UserManager.SendEmailAsync(userId, "Регистрация в кабинете клиента GTI", letterText);

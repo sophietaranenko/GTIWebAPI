@@ -3,6 +3,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Security;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -33,7 +34,9 @@ namespace GTIWebAPI.Security
                     if (controller == null)
                     {
                         controller = new Controller() { Name = controllerName };
-                        controller.Id = controller.NewId(db);
+
+                        SqlParameter ptn = new SqlParameter { ParameterName = "@TableName", Value = "RightController" };
+                        controller.Id = db.ExecuteStoredProcedure<int>("exec NewTableId @TableName", ptn).FirstOrDefault();
                         db.Controllers.Add(controller);
                         db.SaveChanges();
                     }
@@ -48,7 +51,9 @@ namespace GTIWebAPI.Security
                         if (action == null)
                         {
                             action = new Models.Security.Action() { Name = methodName, ControllerId = controllerId };
-                            action.Id = action.NewId(db);
+
+                            SqlParameter ptn2 = new SqlParameter { ParameterName = "@TableName", Value = "RightControllerAction" };
+                            action.Id = db.ExecuteStoredProcedure<int>("exec NewTableId @TableName", ptn2).FirstOrDefault();
                             db.Actions.Add(action);
                             db.SaveChanges();
                         }

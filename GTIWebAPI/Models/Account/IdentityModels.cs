@@ -25,7 +25,6 @@ namespace GTIWebAPI.Models.Account
     /// <summary>
     /// User of application
     /// </summary>
-   // [Table("AspNetUsers")]
     public class ApplicationUser : IdentityUser
     {
         public ApplicationUser() : base()
@@ -140,14 +139,26 @@ namespace GTIWebAPI.Models.Account
         }
     }
 
-    /// <summary>
-    /// Context for ApplicationUser
-    /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> , IServiceDbContext
+    public interface IApplicationDbContext : IDisposable
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
+
+        DbSet<Controller> Controllers { get; set; }
+
+        DbSet<Security.Action> Actions { get; set; }
+
+        bool CreateHoldingUser(string email, string password);
+
+        bool CreateOrganization(string email, string password);
+        
+        string GetFullUserName(string userId);
+
+        bool GrantRightsToOrganization(string userId);
+
+        bool GrantStandardRightsToPersonnel(string userId);
+    }
+
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> , IApplicationDbContext
+    {
         public ApplicationDbContext()
             :base("name=DbUsers", throwIfV1Schema: false)
         {
@@ -158,35 +169,16 @@ namespace GTIWebAPI.Models.Account
             return new ApplicationDbContext();
         }
 
-        public DbSet<UserRight> UserRights { get; set; }
-
-        public DbSet<UserImage> UserImage { get; set; }
+        public IEnumerable<T> ExecuteStoredProcedure<T>(string query, params object[] parameters)
+        {
+            return this.Database.SqlQuery<T>(query, parameters).ToList();
+        }
 
         public DbSet<Controller> Controllers { get; set; }
 
         public DbSet<Security.Action> Actions { get; set; }
 
-        public DbSet<OfficeSecurity> OfficeSecurity { get; set; }
-
-        public object Address { get; internal set; }
-
-
-
-        public virtual int NewTableId(string tableName)
-        {
-            int result = 0;
-            SqlParameter table = new SqlParameter("@TableName", tableName);
-            try
-            {
-                result = Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-            return result;
-        }
-
+      
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -296,7 +288,59 @@ namespace GTIWebAPI.Models.Account
             return methodResult;
         }
 
+        public bool GrantRightsToOrganization(string userId)
+        {
+            SqlParameter pUserId = new SqlParameter
+            {
+                ParameterName = "@AspNetUserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
 
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec GrantAspNetUserRightsForOrganization @AspNetUserId ",
+                    pUserId
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
+
+        public bool GrantStandardRightsToPersonnel(string userId)
+        {
+            SqlParameter pUserId = new SqlParameter
+            {
+                ParameterName = "@AspNetUserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
+
+            bool methodResult = false;
+
+            try
+            {
+                var result = Database.SqlQuery<bool>("exec GrantAspNetUserStandardRightsForPersonnel @AspNetUserId ",
+                    pUserId
+                    ).FirstOrDefault();
+                methodResult = result;
+            }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
+            return methodResult;
+        }
 
     }
 

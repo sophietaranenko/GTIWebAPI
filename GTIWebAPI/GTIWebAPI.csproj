@@ -450,8 +450,6 @@
     <Compile Include="Models\Context\IAppDbContext.cs" />
     <Compile Include="Models\Context\IDbContextFactory.cs" />
     <Compile Include="Models\Context\IPrincipalProvider.cs" />
-    <Compile Include="Models\Context\IServiceDbContext.cs" />
-    <Compile Include="Models\Context\IStoredProcedureExecute.cs" />
     <Compile Include="Models\Context\RightsDbContext.cs" />
     <Compile Include="Models\Context\SecureEmployeeCreatorDbContext.cs" />
     <Compile Include="Models\Context\IDbContextAddress.cs" />

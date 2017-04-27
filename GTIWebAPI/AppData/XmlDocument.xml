@@ -991,16 +991,6 @@
             <param name="authenticationType"></param>
             <returns></returns>
         </member>
-        <member name="T:GTIWebAPI.Models.Account.ApplicationDbContext">
-            <summary>
-            Context for ApplicationUser
-            </summary>
-        </member>
-        <member name="M:GTIWebAPI.Models.Account.ApplicationDbContext.#ctor">
-            <summary>
-            Ctor
-            </summary>
-        </member>
         <member name="P:GTIWebAPI.Models.Context.MainDbContext.Addresses">
             <summary>
             Addresses block

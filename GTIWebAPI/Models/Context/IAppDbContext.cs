@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Models.Context
 {
-    public interface IAppDbContext : IDisposable, IServiceDbContext, IDbContextAddress, IDbContextEmployeeLanguage, IDbContextOrganization
+    public interface IAppDbContext : IDisposable, IDbContextAddress, IDbContextEmployeeLanguage, IDbContextOrganization
     {
         IEnumerable<T> ExecuteStoredProcedure<T>(string query, params object[] parameters);
 

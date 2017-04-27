@@ -17,11 +17,6 @@ namespace GTIWebAPI.Models.Service
 
         protected virtual string TableName { get; }
 
-        public int NewId(IServiceDbContext context)
-        {
-            return context.NewTableId(TableName);
-        }
-
         public int NewId(IGetNewTableId unitOfWork)
         {
             return unitOfWork.GetNewTableId(TableName);

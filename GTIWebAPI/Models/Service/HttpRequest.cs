@@ -1,4 +1,5 @@
 ﻿using GTIWebAPI.Exceptions;
+using GTIWebAPI.Models.Account;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,7 @@ namespace GTIWebAPI.Models.Service
         string GetFileName(string fileName);
 
         int FileCount();
+
     }
 
     public class Request : IRequest
@@ -92,5 +94,6 @@ namespace GTIWebAPI.Models.Service
         {
             return HttpContext.Current.Request.Files.Count;
         }
+
     }
 }
