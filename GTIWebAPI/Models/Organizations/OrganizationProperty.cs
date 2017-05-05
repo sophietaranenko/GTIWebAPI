@@ -48,6 +48,20 @@ namespace GTIWebAPI.Models.Organizations
             return dto;
         }
 
+        public OrganizationPropertyTreeViewDTO ToTreeViewDTO()
+        {
+            OrganizationPropertyTreeViewDTO dto = new OrganizationPropertyTreeViewDTO()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Id = this.Id,
+                OrganizationId = this.OrganizationId,
+                OrganizationPropertyTypeId = this.OrganizationPropertyTypeId,
+                Value = this.Value
+            };
+            return dto;
+        }
+
         protected override string TableName
         {
             get
@@ -85,11 +99,26 @@ namespace GTIWebAPI.Models.Organizations
         public string Value { get; set; }
     }
 
+    public class OrganizationPropertyTreeViewDTO
+    {
+        public int Id { get; set; }
+
+        public int? OrganizationId { get; set; }
+
+        public int OrganizationPropertyTypeId { get; set; }
+
+        public string Value { get; set; }
+
+        public DateTime? DateBegin { get; set; }
+
+        public DateTime? DateEnd { get; set; }
+    }
+
     public class OrganizationPropertyTreeView
     {
-        public int? OrganizationPropertyTypeId { get; set; }
+        public OrganizationPropertyTypeDTO OrganizationPropertyType { get; set; }
 
-        public IEnumerable<OrganizationPropertyDTO> PropertiesById { get; set; }
+        public IEnumerable<OrganizationPropertyTreeViewDTO> PropertiesByType { get; set; }
     }
 
 

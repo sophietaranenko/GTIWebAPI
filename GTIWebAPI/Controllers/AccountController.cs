@@ -160,6 +160,10 @@ namespace GTIWebAPI.Controllers
             UserImage image = unitOfWork.UserImagesRepository
                 .Get(d => d.UserId == UserId && d.IsProfilePicture == true)
                 .FirstOrDefault();
+            if (image != null)
+            {
+                profilePicturePath = image.ImageName;
+            }
 
             UserInfoViewModel model = new UserInfoViewModel()
             {

@@ -42,6 +42,12 @@ namespace GTIWebAPI.Controllers
                 Name = d.Name,
                 OfficeId = d.OfficeId
             }).FirstOrDefault();
+
+            if (mask == null)
+            {
+                mask = new UserRightMaskTreeView();
+            }
+
             string office = officeUserRightMask.Where(d => d.OfficeShortName != null).Select(d => d.OfficeShortName).FirstOrDefault();
             mask.Office = new Models.Dictionary.OfficeDTO()
             {

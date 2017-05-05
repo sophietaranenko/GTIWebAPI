@@ -352,15 +352,25 @@ namespace GTIWebAPI.Models.Repository
         public EmployeeList CreateEmployeeList()
         {
             EmployeeList list = new EmployeeList();
-            list.AddressList = AddressList.CreateAddressList(context);
-            list.EmployeeLanguageList = EmployeeLanguageList.CreateEmployeeLanguageList(context);
-            list.EmployeeOfficeList = new EmployeeOfficeList();
-            list.EmployeeOfficeList.Offices = context.Offices.Select(d => d.ToDTO());
-            list.EmployeeOfficeList.Professions = context.Professions.Select(d => d.ToDTO());
-            list.EmployeeOfficeList.Departments = context.Departments.Select(d => d.ToDTO());
-            list.ContactTypes = context.ContactTypes.Select(d => d.ToDTO());
-            list.FoundationDocuments = context.FoundationDocuments.Select(d => d.ToDTO());
-            list.EducationStudyForms = context.EducationStudyForms.Select(d => d.ToDTO());
+            try
+            {
+                list.AddressList = AddressList.CreateAddressList(context);
+                list.EmployeeLanguageList = EmployeeLanguageList.CreateEmployeeLanguageList(context);
+
+                list.EmployeeOfficeList = new EmployeeOfficeList();
+
+                list.EmployeeOfficeList.Offices = context.Offices.ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Professions = context.Professions.ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Departments = context.Departments.ToList().Select(d => d.ToDTO());
+
+                list.ContactTypes = context.ContactTypes.ToList().Select(d => d.ToDTO());
+                list.FoundationDocuments = context.FoundationDocuments.ToList().Select(d => d.ToDTO());
+                list.EducationStudyForms = context.EducationStudyForms.ToList().Select(d => d.ToDTO());
+            }
+            catch (Exception e)
+            {
+                string mes = e.Message;
+            }
             return list;
         }
 

@@ -65,9 +65,9 @@ namespace GTIWebAPI.Controllers
                     Size = 1000,
                     Value = registrationNumber
                 };
-                IEnumerable<OrganizationGTIDTO> gtis = 
+                List<OrganizationGTIDTO> gtis =
                     unitOfWork.SQLQuery<OrganizationGTI>("exec SearchOrganizationGTI @OfficeIds, @RegistrationNumber", pOffices, pRegistrationNumber)
-                    .Select(d => d.ToDTO());
+                    .Select(d => d.ToDTO()).ToList();
                 foreach (var item in gtis)
                 {
                     item.Office = unitOfWork.OfficesRepository.Get(d => d.Id == item.OfficeId).FirstOrDefault().ToDTO();

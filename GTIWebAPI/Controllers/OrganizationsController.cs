@@ -203,24 +203,30 @@ namespace GTIWebAPI.Controllers
 
 
                 //Properties
-                IEnumerable<OrganizationProperty> properties = unitOfWork.OrganizationPropertiesRepository
-                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias");
+                List<OrganizationProperty> properties = unitOfWork.OrganizationPropertiesRepository
+                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias").ToList();
 
-                IEnumerable<int> popertyTypeIds = properties
-                    .Select(d => d.OrganizationPropertyTypeId)
-                    .Distinct();
+
+               IEnumerable<OrganizationPropertyType> types = properties.Select(d => d.OrganizationPropertyType).Distinct();
+
+
+
+                //IEnumerable<int> popertyTypeIds = properties
+                //    .Select(d => d.OrganizationPropertyTypeId)
+                //    .Distinct();
+
                 List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
-                foreach (int value in popertyTypeIds)
+
+                foreach (var value in types)
                 {
                     List<OrganizationProperty> propertiesByType =
                     properties
-                    .Where(d => d.OrganizationPropertyTypeId == value)
+                    .Where(d => d.OrganizationPropertyTypeId == value.Id)
                     .ToList();
-
                     propertiesDTO.Add(new OrganizationPropertyTreeView
                     {
-                        OrganizationPropertyTypeId = value,
-                        PropertiesById = propertiesByType.Select(d => d.ToDTO())
+                        OrganizationPropertyType = value.ToDTO(),
+                        PropertiesByType = propertiesByType.Select(d => d.ToTreeViewDTO())
                     });
                 }
                 organization.OrganizationProperties = propertiesDTO;
@@ -233,7 +239,7 @@ namespace GTIWebAPI.Controllers
 
                 //Language names 
                 organization.OrganizationLanguageNames = unitOfWork.OrganizationLanguageNamesRepository
-                    .Get(d => d.Deleted != true && d.OrganizationId == id).Select(d => d.ToDTO());
+                    .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "Language").Select(d => d.ToDTO());
                 return Ok(organization);
             }
             catch (NotFoundException nfe)

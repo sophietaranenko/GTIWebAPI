@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Account
     {
         public Guid Id { get; set; }
 
-        public bool IsProfilePicture { get; set; }
+        public bool? IsProfilePicture { get; set; }
 
         public DateTime UploadDate { get; set; }
 

@@ -196,8 +196,6 @@ namespace GTIWebAPI.Controllers
 
             List<UserRightOfficeDTO> rights =
                 unitOfWork.SQLQuery<UserRightOfficeDTO>("exec UpdateAspNetUserRights @UserId, @OfficeId, @Actions", pUserIdIn, pOfficeIdIn, actions).ToList();
-
-
             return Ok(ToTreeView(rights));
         }
 

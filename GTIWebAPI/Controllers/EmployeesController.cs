@@ -321,7 +321,7 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        //убрать дикую чушь (в репозитории) 
+    //    [GTIFilter]
         [HttpGet]
         [Route("GetLists")]
         [ResponseType(typeof(EmployeeList))]
@@ -330,7 +330,8 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                return Ok(unitOfWork.CreateEmployeeList());
+                EmployeeList list = unitOfWork.CreateEmployeeList();
+                return Ok(list);
             }
             catch (NotFoundException nfe)
             {

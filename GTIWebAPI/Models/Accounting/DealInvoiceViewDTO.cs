@@ -46,6 +46,8 @@ namespace GTIWebAPI.Models.Accounting
 
         public string Status { get; set; }
 
+        public int StatusInt { get; set; }
+
         public decimal? DebtUSD { get; set; }
 
         public decimal? DebtCurrency { get; set; }
