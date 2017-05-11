@@ -152,16 +152,16 @@ namespace GTIWebAPI.Controllers
                 .Get(d => d.Deleted != true && d.EmployeeId == id);
 
                 employee.EmployeeFoundationDocuments = unitOfWork.EmployeeFoundationDocumentsRepository
-                .Get(d => d.Deleted != true && d.EmployeeId == id);
+                .Get(d => d.Deleted != true && d.EmployeeId == id, includeProperties: "FoundationDocument");
 
                 employee.EmployeeEducations = unitOfWork.EmployeeEducationsRepository
-                .Get(d => d.Deleted != true && d.EmployeeId == id);
+                .Get(d => d.Deleted != true && d.EmployeeId == id, includeProperties: "EducationStudyForm");
 
                 employee.EmployeeDrivingLicenses = unitOfWork.EmployeeDrivingLicensesRepository
                 .Get(d => d.Deleted != true && d.EmployeeId == id);
 
                 employee.EmployeeContacts = unitOfWork.EmployeeContactsRepository
-                .Get(d => d.Deleted != true && d.EmployeeId == id);
+                .Get(d => d.Deleted != true && d.EmployeeId == id, includeProperties: "ContactType");
 
                 employee.EmployeeCars = unitOfWork.EmployeeCarsRepository
                 .Get(d => d.Deleted != true && d.EmployeeId == id);
@@ -233,8 +233,10 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.AddressesRepository.Update(employee.Address);
                 unitOfWork.EmployeesRepository.Update(employee);
                 unitOfWork.Save();
+
                 EmployeeEditDTO dto = unitOfWork.EmployeesRepository
                 .Get(d => d.Id == id, includeProperties: "Address,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage,Address.Country")
                 .FirstOrDefault().ToDTOEdit();

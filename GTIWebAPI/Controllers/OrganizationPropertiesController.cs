@@ -3,6 +3,7 @@ using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Repository;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,12 @@ namespace GTIWebAPI.Controllers
     public class OrganizationPropertiesController : ApiController
     {
         private IDbContextFactory factory;
+         //    private static Logger logger = LogManager.GetCurrentClassLogger();
 
         public OrganizationPropertiesController()
         {
             factory = new DbContextFactory();
+            
         }
 
         public OrganizationPropertiesController(IDbContextFactory factory)
@@ -35,9 +38,12 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOFWork = new UnitOfWork(factory);
+
                 IEnumerable<OrganizationPropertyDTO> properties = unitOFWork.OrganizationPropertiesRepository
                     .Get(d => d.Deleted != true && d.OrganizationId == organizationId, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
                     .Select(d => d.ToDTO());
+                //string name = this.ControllerContext.RouteData.Values["action"].ToString();
+             //   logger.Log(LogLevel.Info, "sss", User.Identity.Name, DateTime.Now, organizationId);
                 return Ok(properties);
             }
             catch (NotFoundException nfe)
@@ -68,6 +74,9 @@ namespace GTIWebAPI.Controllers
                     .Get(d => d.Id == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
                     .FirstOrDefault()
                     .ToDTO();
+              //  logger.Log(LogLevel.Info, "how to pass obkects", null, id, property);
+
+                //logger.Log<int>(LogLevel.Debug, id);
                 return Ok(property);
             }
             catch (NotFoundException nfe)
@@ -115,10 +124,12 @@ namespace GTIWebAPI.Controllers
                 }
                 unitOfWork.OrganizationPropertiesRepository.Update(organizationProperty);
                 unitOfWork.Save();
+               // logger.Log(LogLevel.Info, "how to pass objects");
                 OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
-                    .Get(d => d.Id == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                    .Get(d => d.Id == id)
                     .FirstOrDefault()
                     .ToDTO();
+                property.OrganizationPropertyType = null;
                 return Ok(property);
             }
             catch (NotFoundException nfe)
@@ -165,11 +176,12 @@ namespace GTIWebAPI.Controllers
                 organizationProperty.Id = organizationProperty.NewId(unitOfWork);
                 unitOfWork.OrganizationPropertiesRepository.Insert(organizationProperty);
                 unitOfWork.Save();
-
+              //  logger.Log(LogLevel.Info, "how to pass objects");
                 OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
-                         .Get(d => d.Id == organizationProperty.Id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                         .Get(d => d.Id == organizationProperty.Id)
                          .FirstOrDefault()
                          .ToDTO();
+                property.OrganizationPropertyType = null;
                 return CreatedAtRoute("GetOrganizationProperty", new { id = property.Id }, property);
             }
             catch (NotFoundException nfe)
@@ -233,10 +245,10 @@ namespace GTIWebAPI.Controllers
                     unitOfWork.Save();
 
                     OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
-                         .Get(d => d.Id == organizationProperty.Id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias")
+                         .Get(d => d.Id == organizationProperty.Id)
                          .FirstOrDefault()
                          .ToDTO();
-
+                    property.OrganizationPropertyType = null;
                     propertiesToReturn.Add(property);
                 }
             }

@@ -142,7 +142,7 @@ namespace GTIWebAPI.Controllers
                 unitOfWork.EmployeePassportsRepository.Update(employeePassport);
                 unitOfWork.Save();
                 EmployeePassportDTO passport = unitOfWork.EmployeePassportsRepository
-                   .Get(d => d.EmployeeId == id,
+                   .Get(d => d.Id == id,
                    includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault().ToDTO();
                 return Ok(passport);
             }

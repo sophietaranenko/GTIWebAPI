@@ -81,7 +81,7 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<EmployeeFoundationDocumentDTO> dtos = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId).Select(d => d.ToDTO());
+                IEnumerable<EmployeeFoundationDocumentDTO> dtos = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Deleted != true && d.EmployeeId == employeeId, includeProperties: "FoundationDocument").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)

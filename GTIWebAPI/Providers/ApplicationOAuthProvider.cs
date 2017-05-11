@@ -16,6 +16,7 @@ using Microsoft.Owin;
 using System.Net;
 using GTIWebAPI.Models.Security;
 using System.Web.Http.Cors;
+using NLog;
 
 namespace GTIWebAPI.Providers
 {
@@ -47,6 +48,8 @@ namespace GTIWebAPI.Providers
         private readonly string _publicClientId;
         private INovellManager novell;
 
+      //  private static Logger logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Ctor of oAuth provider
         /// </summary>
@@ -77,24 +80,28 @@ namespace GTIWebAPI.Providers
             ApplicationUser user = null;
             if (novell.CredentialsCorrect(context.UserName, context.Password))
             {
+             //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
                 try
                 {
                     user = userManager.Find(context.UserName, context.Password);
+                //    logger.Log(LogLevel.Info, "Find user in User Store", user);
                 }
                 catch (Exception e)
                 {
                     string excMes = e.Message;
+                   // logger.Error(e, "Error finding user");
                 }
-                    if (user == null)
+                if (user == null)
                 {
+                    
                     user = userManager.FindByName(context.UserName);
+                   
                     if (user != null)
                     {
+                     //   logger.Log(LogLevel.Info, "User found in UserStore, found in Novell. Creating new password for user from Novell Store", context.UserName, context.Password);
                         String userId = user.Id;
                         String newPassword = context.Password;
-
                         String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
-
                         UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
                         await store.SetPasswordHashAsync(user, hashedNewPassword);
                     }
@@ -103,11 +110,12 @@ namespace GTIWebAPI.Providers
                 //but in database to local users only DBA can grant rights 
                 if (user == null)
                 {
+                   // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
                     bool dbResult = false;
                     using (ApplicationDbContext db = new ApplicationDbContext())
                     {
                         dbResult = db.CreateHoldingUser(context.UserName, context.Password);
-                            //CreateHoldingUser(context.UserName, context.Password);
+                     //   logger.Log(LogLevel.Info, "Creating user in database");
                     }
                     if (dbResult == true)
                     {
@@ -123,6 +131,7 @@ namespace GTIWebAPI.Providers
             }
             if (user == null)
             {
+              //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;

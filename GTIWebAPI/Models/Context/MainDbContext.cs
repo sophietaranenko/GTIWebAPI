@@ -39,6 +39,7 @@ namespace GTIWebAPI.Models.Context
 
         public IEnumerable<T> ExecuteStoredProcedure<T>(string query, params object[] parameters)
         {
+            this.Database.CommandTimeout = 180;
             return this.Database.SqlQuery<T>(query, parameters).ToList();
         }
 

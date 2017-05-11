@@ -325,14 +325,32 @@ namespace GTIWebAPI.Controllers
             {
                 if (identityHelper.GetUserTableName(User) == "Employee")
                 {
+                    if (organization.CountryId == null || organization.CountryId == 0)
+                    {
+                        return BadRequest("Empty CountryId");
+                    }
                     organization.EmployeeId = identityHelper.GetUserTableId(User);
                     UnitOfWork unitOfWork = new UnitOfWork(factory);
                     organization.Id = organization.NewId(unitOfWork);
                     unitOfWork.OrganizationsRepository.Insert(organization);
+
+                    //contant types 
+                    List<OrganizationPropertyType> types = unitOfWork.OrganizationPropertyTypesRepository.Get(d => d.Constant == true && d.CountryId == organization.CountryId).ToList();
+                    foreach (var type in types)
+                    {
+                        OrganizationProperty property = new OrganizationProperty();
+                        property.Id = property.NewId(unitOfWork);
+                        property.OrganizationPropertyTypeId = type.Id;
+                        property.OrganizationId = organization.Id;
+                        unitOfWork.OrganizationPropertiesRepository.Insert(property);
+                    }
                     unitOfWork.Save();
                     OrganizationEditDTO dto = unitOfWork.OrganizationsRepository
                         .Get(d => d.Id == organization.Id, includeProperties: "Country,OrganizationLegalForm")
                     .FirstOrDefault().MapToEdit();
+
+                    
+
                     return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
                 }
             }
