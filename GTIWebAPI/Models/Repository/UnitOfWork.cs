@@ -5,6 +5,7 @@ using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Models.Reports.ProductivityReport;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Service;
 using System;
@@ -343,6 +344,45 @@ namespace GTIWebAPI.Models.Repository
                     this.departmentsRepository = new GenericRepository<Department>(context);
                 }
                 return departmentsRepository;
+            }
+        }
+
+        private GenericRepository<KPIValue> kPIValuesRepository;
+        public GenericRepository<KPIValue> KPIValuesRepository
+        {
+            get
+            {
+                if (this.kPIValuesRepository == null)
+                {
+                    this.kPIValuesRepository = new GenericRepository<KPIValue>(context);
+                }
+                return kPIValuesRepository;
+            }
+        }
+
+        private GenericRepository<KPIParameter> kPIParametersRepository;
+        public GenericRepository<KPIParameter> KPIParametersRepository
+        {
+            get
+            {
+                if (this.kPIParametersRepository == null)
+                {
+                    this.kPIParametersRepository = new GenericRepository<KPIParameter>(context);
+                }
+                return kPIParametersRepository;
+            }
+        }
+
+        private GenericRepository<KPIPeriod> kPIPeriodsRepository;
+        public GenericRepository<KPIPeriod> KPIPeriodsRepository
+        {
+            get
+            {
+                if (this.kPIPeriodsRepository == null)
+                {
+                    this.kPIPeriodsRepository = new GenericRepository<KPIPeriod>(context);
+                }
+                return kPIPeriodsRepository;
             }
         }
 

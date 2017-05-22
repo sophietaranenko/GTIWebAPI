@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Web;
 using GTIWebAPI.Models.Account;
 using System.Data.Entity.Infrastructure;
+using GTIWebAPI.Models.Reports.ProductivityReport;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -154,6 +155,13 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<UserImage> UserImages { get; set; }
 
+        public virtual DbSet<KPIParameter> KPIParameter { get; set; }
+
+        public virtual DbSet<KPIPeriod> KPIPeriod { get; set; }
+
+        public virtual DbSet<KPIValue> KPIValue { get; set; }
+
+
 
 
         /// <summary>
@@ -290,6 +298,20 @@ namespace GTIWebAPI.Models.Context
                 .HasMany(r => r.Addresses)
                 .WithOptional(r => r.AddressLocality)
                 .HasForeignKey(r => r.LocalityId);
+
+            modelBuilder.Entity<KPIParameter>()
+               .HasMany(e => e.KPIValue)
+               .WithRequired(e => e.KPIParameter)
+               .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<KPIPeriod>()
+                .HasMany(e => e.KPIValue)
+                .WithRequired(e => e.KPIPeriod)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<KPIValue>()
+                .Property(e => e.Value)
+                .HasPrecision(12, 2);
         }
 
         public bool CreateOrganization(string email, string password)

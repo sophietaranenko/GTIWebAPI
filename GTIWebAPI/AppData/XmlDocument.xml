@@ -655,6 +655,35 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:GTIWebAPI.Controllers.KPIValuesController.GetKPIValue(System.Int32)">
+            <summary>
+            Get one car for view by car id
+            </summary>
+            <param name="id">KPIValue id</param>
+            <returns>KPIValueEditDTO object</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.KPIValuesController.PutKPIValue(System.Int32,GTIWebAPI.Models.Reports.ProductivityReport.KPIValue)">
+            <summary>
+            Update employee car
+            </summary>
+            <param name="id">Car id</param>
+            <param name="employeeCar">KPIValue object</param>
+            <returns>204 - No content</returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.KPIValuesController.PostKPIValue(GTIWebAPI.Models.Reports.ProductivityReport.KPIValue)">
+            <summary>
+            Insert new employee car
+            </summary>
+            <param name="KPIvalue">KPIValue object</param>
+            <returns></returns>
+        </member>
+        <member name="M:GTIWebAPI.Controllers.KPIValuesController.DeleteKPIValue(System.Int32)">
+            <summary>
+            Delete car
+            </summary>
+            <param name="id">Car Id</param>
+            <returns>200</returns>
+        </member>
         <member name="T:GTIWebAPI.Controllers.OrganizationAddressesController">
             <summary>
             Physic addresses of organization 
