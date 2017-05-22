@@ -238,6 +238,33 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetList")]
+        public IHttpActionResult GetList()
+        {
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<KPIParameterDTO> parameters = unitOfWork.KPIParametersRepository.Get().Select(d => d.ToDTO());
+                IEnumerable<KPIPeriodDTO> periods = unitOfWork.KPIPeriodsRepository.Get().Select(d => d.ToDTO());
+
+                return Ok(new { parameters, periods});
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
