@@ -93,12 +93,9 @@ namespace GTIWebAPI.Providers
                 }
                 if (user == null)
                 {
-                    
                     user = userManager.FindByName(context.UserName);
-                   
                     if (user != null)
                     {
-                     //   logger.Log(LogLevel.Info, "User found in UserStore, found in Novell. Creating new password for user from Novell Store", context.UserName, context.Password);
                         String userId = user.Id;
                         String newPassword = context.Password;
                         String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
@@ -106,8 +103,10 @@ namespace GTIWebAPI.Providers
                         await store.SetPasswordHashAsync(user, hashedNewPassword);
                     }
                 }
+
                 //if found in eDirectory but not found in ApplicationUsers - then create employee user 
                 //but in database to local users only DBA can grant rights 
+
                 if (user == null)
                 {
                    // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
@@ -121,7 +120,11 @@ namespace GTIWebAPI.Providers
                     {
                         user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
                         userManager.AddToRole(user.Id, "Personnel");
-                        bool rightsResult = UserRightsManager.GrantStandardPersonnelRights(user.Id);
+                        bool rightsResult = false;
+                        using (ApplicationDbContext db = new ApplicationDbContext())
+                        {
+                            rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
+                        }  
                     }
                 }
             }

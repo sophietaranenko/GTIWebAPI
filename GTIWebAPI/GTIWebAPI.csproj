@@ -449,6 +449,7 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\OrganizationsGTIController.cs" />
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
+    <Compile Include="Controllers\ProductivityReportController.cs" />
     <Compile Include="Controllers\UserRightMaskController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Exceptions\ConflictException.cs" />
@@ -487,6 +488,18 @@
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\ContactMonth.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\ContactWeek.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\KPIValueMonth.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\KPIValueWeek.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\OrganizationStatus.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\ReportMonth.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\ReportWeek.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\SalesMonth.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\SalesWeek.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\WorkMonth.cs" />
+    <Compile Include="Models\Reports\ProductivityReport\WorkWeek.cs" />
+    <Compile Include="Models\Reports\ValueTimePoint.cs" />
     <Compile Include="Models\Repository\GenericRepository.cs" />
     <Compile Include="Models\Organizations\OrganizationContactPersonView.cs" />
     <Compile Include="Models\Organizations\OrganizationLanguageName.cs" />

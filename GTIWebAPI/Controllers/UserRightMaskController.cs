@@ -249,7 +249,12 @@ namespace GTIWebAPI.Controllers
                 ParameterName = "@Name",
                 Value = mask.Name
             };
-            IEnumerable<int> actionIds = mask.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Select(a => a.Id)));
+            IEnumerable<int> actionIds = mask.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Where(a => a.Value == true).Select(a => a.Id)));
+            if (actionIds.Count() == 0)
+            {
+                return BadRequest("Empty mask");
+            }
+
             DataTable dataTable = new DataTable();
             dataTable.Clear();
             dataTable.Columns.Add("ActionId");
@@ -328,7 +333,14 @@ namespace GTIWebAPI.Controllers
                 ParameterName = "@Name",
                 Value = mask.Name
             };
-            IEnumerable<int> actionIds = mask.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Select(a => a.Id)));
+            IEnumerable<int> actionIds = mask.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Where(a => a.Value == true).Select(a => a.Id)));
+
+            if (actionIds.Count() == 0)
+            {
+                return BadRequest("Empty mask");
+            }
+
+
             DataTable dataTable = new DataTable();
             dataTable.Clear();
             dataTable.Columns.Add("ActionId");

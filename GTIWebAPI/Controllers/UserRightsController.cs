@@ -174,7 +174,7 @@ namespace GTIWebAPI.Controllers
             IEnumerable<int> actionIds = new List<int>();
             if (tree.Boxes != null)
             { 
-                actionIds = tree.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Select(a => a.Id)));
+                actionIds = tree.Boxes.SelectMany(d => d.Controllers.SelectMany(c => c.Actions.Where(g => g.Value == true).Select(a => a.Id)));
             }
             DataTable dataTable = new DataTable();
             dataTable.Clear();

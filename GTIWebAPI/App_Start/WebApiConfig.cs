@@ -7,6 +7,7 @@ using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using GTIWebAPI.Filters;
 using System.Web.Http.Cors;
+using Newtonsoft.Json.Converters;
 
 namespace GTIWebAPI
 {
@@ -33,6 +34,14 @@ namespace GTIWebAPI
 
             // Web API routes
             config.MapHttpAttributeRoutes();
+
+           
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(
+            //    new IsoDateTimeConverter()
+            //    {
+            //       // DateTimeFormat = "yyyy-MM-dd"
+            //       DateTimeFormat = "dd/MM/yyyy"
+            //    });
 
             //origins: "http://gtiweb.formag-group.com",
             // config.EnableCors(new EnableCorsAttribute(origins: "", headers: "Authorization, Content-Type", methods: "GET, PUT, POST, DELETE, OPTIONS"));

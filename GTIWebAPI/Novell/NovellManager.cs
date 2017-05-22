@@ -331,6 +331,7 @@ namespace GTIWebAPI.Novell
                     {
                         nextEntry = lsc.next();
                     }
+                    
                 }
                 catch (LdapException e)
                 {
