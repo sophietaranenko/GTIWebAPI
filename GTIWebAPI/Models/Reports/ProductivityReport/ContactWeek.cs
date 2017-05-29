@@ -27,5 +27,15 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
         public int Meeting { get; set; }
 
         public int Agreement { get; set; }
+
+        public decimal AddedToDBKPI { get; set; }
+
+        public decimal CommercialOfferKPI { get; set; }
+
+        public decimal RejectionKPI { get; set; }
+
+        public decimal MeetingKPI { get; set; }
+
+        public decimal AgreementKPI { get; set; }
     }
 }

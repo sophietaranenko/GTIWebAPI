@@ -373,7 +373,7 @@ namespace GTIWebAPI.Controllers
                 };
 
                 IEnumerable<ContactMonth> list =
-                    unitOfWork.SQLQuery<ContactMonth>("exec ProductivityReportContactMonth @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
+                    unitOfWork.SQLQuery<ContactMonth>("exec ProductivityReportContactWithKPIMonth @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }
@@ -455,7 +455,7 @@ namespace GTIWebAPI.Controllers
                 };
 
                 IEnumerable<ContactWeek> list =
-                    unitOfWork.SQLQuery<ContactWeek>("exec ProductivityReportContactWeek @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
+                    unitOfWork.SQLQuery<ContactWeek>("exec ProductivityReportContactWithKPIWeek @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }
@@ -806,7 +806,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetStatuses")]
-        [ResponseType(typeof(OrganizationStatus))]
+        [ResponseType(typeof(OrganizationStatusDTO))]
         public IHttpActionResult GetStatuses(int employeeId, int officeId)
         {
             if (employeeId == 0)
@@ -834,8 +834,8 @@ namespace GTIWebAPI.Controllers
                 };
 
                 IEnumerable<OrganizationStatus> list =
-                    unitOfWork.SQLQuery<OrganizationStatus>("exec ProductivityReportSalesMonth @EmployeeId, @OfficeId", parEmployee, parOffice);
-                return Ok(list.FirstOrDefault());
+                    unitOfWork.SQLQuery<OrganizationStatus>("exec ProductivityReportStatus @EmployeeId, @OfficeId", parEmployee, parOffice);
+                return Ok(new OrganizationStatusDTO(list.ToList()));
             }
             catch (NullReferenceException nre)
             {
