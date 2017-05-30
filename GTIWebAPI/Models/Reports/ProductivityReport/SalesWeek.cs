@@ -27,5 +27,7 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
         public decimal SalesProfitPercent { get; set; }
 
         public decimal CompanyProfitPercent { get; set; }
+
+        public decimal PercentProfitSalesKPI { get; set; }
     }
 }
