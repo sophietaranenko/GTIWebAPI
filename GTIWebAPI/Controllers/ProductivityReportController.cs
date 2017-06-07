@@ -835,7 +835,18 @@ namespace GTIWebAPI.Controllers
 
                 IEnumerable<OrganizationStatus> list =
                     unitOfWork.SQLQuery<OrganizationStatus>("exec ProductivityReportStatus @EmployeeId, @OfficeId", parEmployee, parOffice);
-                return Ok(new OrganizationStatusDTO(list.ToList()));
+
+                OrganizationStatusDTO dto = new OrganizationStatusDTO(list.ToList());
+                return Ok(
+                    new
+                    {
+                        ActiveStatus = new { StatusName = "Active", Items = dto.Active },
+                        PotentialStatus = new { StatusName = "Potential", Items = dto.Potential},
+                        EmptyStatus = new { StatusName = "Empty Status", Items = dto.EmptyStatus},
+                        QuarantineStatus = new { StatusName = "Quarantine", ItemsNoDeals = dto.QuarantineNoDeals, ItemsWithDeals = dto.QuarantineWithDeals},
+                        LostStatus = new { StatusName = "Lost", Items = dto.Lost},
+                        UnattendedStatus = new { StatusName = "Unattended", Items = dto.Unattended }
+                    });
             }
             catch (NullReferenceException nre)
             {

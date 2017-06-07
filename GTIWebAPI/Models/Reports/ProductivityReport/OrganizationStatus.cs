@@ -61,6 +61,7 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
         public IEnumerable<OrganizationStatusEntityDTO> Unattended { get; set; }
     }
 
+
     public class OrganizationStatusEntityDTO
     {
         public int Id { get; set; }
