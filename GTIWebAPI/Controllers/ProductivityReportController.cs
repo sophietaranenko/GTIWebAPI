@@ -90,7 +90,7 @@ namespace GTIWebAPI.Controllers
                 };
 
                 IEnumerable<ReportMonth> list =
-                    unitOfWork.SQLQuery<ReportMonth>("exec ProductivityReportAllMonth @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
+                    unitOfWork.SQLQuery<ReportMonth>("exec ProductivityReportAllWithKPIMonth @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }
@@ -171,7 +171,7 @@ namespace GTIWebAPI.Controllers
                 };
 
                 IEnumerable<ReportWeek> list =
-                    unitOfWork.SQLQuery<ReportWeek>("exec ProductivityReportAllWeek @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
+                    unitOfWork.SQLQuery<ReportWeek>("exec ProductivityReportAllWithKPIWeek @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }

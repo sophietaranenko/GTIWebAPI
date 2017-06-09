@@ -52,5 +52,17 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
 
         public decimal PlannedProfit { get; set; }
 
+        public decimal AddedToDBKPI { get; set; }
+
+        public decimal CommercialOfferKPI { get; set; }
+
+        public decimal RejectionKPI { get; set; }
+
+        public decimal MeetingKPI { get; set; }
+
+        public decimal AgreementKPI { get; set; }
+
+        public decimal PercentProfitSalesKPI { get; set; }
+
     }
 }
