@@ -198,7 +198,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetKPIByMonths")]
         [ResponseType(typeof(IEnumerable<KPIValueMonth>))]
-        public IHttpActionResult GetKPIByMonths(DateTime? dateBegin, DateTime? dateEnd)
+        public IHttpActionResult GetKPIByMonths(int officeId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -215,6 +215,14 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parOffice = new SqlParameter
+                {
+                    ParameterName = "@OfficeId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = officeId
+                };
                 SqlParameter parBegin = new SqlParameter
                 {
                     ParameterName = "@DateBegin",
@@ -232,7 +240,7 @@ namespace GTIWebAPI.Controllers
                     Value = modDateEnd
                 };
                 IEnumerable<KPIValueMonth> list =
-                    unitOfWork.SQLQuery<KPIValueMonth>("exec AllKPIValuesByMonth @DateBegin, @DateEnd", parBegin, parEnd);
+                    unitOfWork.SQLQuery<KPIValueMonth>("exec AllKPIValuesByMonth @OfficeId, @DateBegin, @DateEnd", parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }
@@ -258,7 +266,7 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetKPIByWeeks")]
         [ResponseType(typeof(IEnumerable<KPIValueMonth>))]
-        public IHttpActionResult GetKPIByWeeks(DateTime? dateBegin, DateTime? dateEnd)
+        public IHttpActionResult GetKPIByWeeks(int officeId, DateTime? dateBegin, DateTime? dateEnd)
         {
             if (dateBegin == null)
             {
@@ -275,6 +283,14 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parOffice = new SqlParameter
+                {
+                    ParameterName = "@OfficeId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.Int32,
+                    Value = officeId
+                };
                 SqlParameter parBegin = new SqlParameter
                 {
                     ParameterName = "@DateBegin",
@@ -292,7 +308,7 @@ namespace GTIWebAPI.Controllers
                     Value = modDateEnd
                 };
                 IEnumerable<KPIValueMonth> list =
-                    unitOfWork.SQLQuery<KPIValueMonth>("exec AllKPIValuesByWeek @DateBegin, @DateEnd", parBegin, parEnd);
+                    unitOfWork.SQLQuery<KPIValueMonth>("exec AllKPIValuesByWeek @OfficeId, @DateBegin, @DateEnd", parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
                 return Ok(list);
             }

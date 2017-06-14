@@ -32,13 +32,13 @@ namespace GTIWebAPI.Controllers
         [HttpGet]
         [Route("GetAll")]
         [ResponseType(typeof(IEnumerable<KPIValueDTO>))]
-        public IHttpActionResult GetKPIValuesAll()
+        public IHttpActionResult GetKPIValuesAll(int officeId)
         {
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 IEnumerable<KPIValueDTO> dtos =
-                    unitOfWork.KPIValuesRepository.Get(d => d.Deleted != true, includeProperties: "KPIParameter,KPIPeriod").Select(d => d.ToDTO());
+                    unitOfWork.KPIValuesRepository.Get(d => d.Deleted != true && d.OfficeId == officeId, includeProperties: "KPIParameter,KPIPeriod,Office").Select(d => d.ToDTO());
                 return Ok(dtos);
             }
             catch (NotFoundException nfe)
@@ -53,7 +53,7 @@ namespace GTIWebAPI.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
+        }       
 
         [GTIFilter]
         [HttpGet]
@@ -65,7 +65,7 @@ namespace GTIWebAPI.Controllers
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 IEnumerable<KPIValue> cs = unitOfWork.KPIValuesRepository.
-                    Get(d => d.Deleted != true && d.KPIParameterId == parameterId, includeProperties: "KPIParameter,KPIPeriod");
+                    Get(d => d.Deleted != true && d.KPIParameterId == parameterId, includeProperties: "KPIParameter,KPIPeriod,Office");
                 IEnumerable<KPIValueDTO> dtos = cs.Select(d => d.ToDTO());
                 return Ok(dtos);
             }
@@ -97,7 +97,7 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                KPIValueDTO dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod").FirstOrDefault().ToDTO();
+                KPIValueDTO dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
                 if (dto == null)
                 {
                     return NotFound();
@@ -143,9 +143,8 @@ namespace GTIWebAPI.Controllers
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 unitOfWork.KPIValuesRepository.Update(KPIvalue);
                 unitOfWork.Save();
-
                 //cos there are no included object-properies we need to load, then just ToDTO call  
-                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod").FirstOrDefault().ToDTO();
+                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -181,11 +180,10 @@ namespace GTIWebAPI.Controllers
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 unitOfWork.KPIValuesRepository.Insert(KPIvalue);
-                
                 unitOfWork.Save();
                 int newId = KPIvalue.Id;
                 //cos there are no included object-properies we need to load, then just ToDTO call  
-                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == newId, includeProperties: "KPIParameter,KPIPeriod").FirstOrDefault().ToDTO();
+                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == newId, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetKPIValue", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
@@ -216,12 +214,11 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-
                 KPIValue KPIvalue = unitOfWork.KPIValuesRepository.GetByID(id);
                 KPIvalue.Deleted = true;
                 unitOfWork.KPIValuesRepository.Update(KPIvalue);
                 unitOfWork.Save();
-                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod").FirstOrDefault().ToDTO();
+                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -248,7 +245,6 @@ namespace GTIWebAPI.Controllers
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 IEnumerable<KPIParameterDTO> parameters = unitOfWork.KPIParametersRepository.Get().Select(d => d.ToDTO());
                 IEnumerable<KPIPeriodDTO> periods = unitOfWork.KPIPeriodsRepository.Get().Select(d => d.ToDTO());
-
                 return Ok(new { parameters, periods});
             }
             catch (NotFoundException nfe)

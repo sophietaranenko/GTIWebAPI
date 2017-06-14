@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Reports.ProductivityReport
 {
+    using Dictionary;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -21,6 +22,8 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
 
         public int KPIParameterId { get; set; }
 
+        public int OfficeId { get; set; }
+
         [Column(TypeName = "numeric")]
         public decimal? Value { get; set; }
 
@@ -29,6 +32,8 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
         public virtual KPIParameter KPIParameter { get; set; }
 
         public virtual KPIPeriod KPIPeriod { get; set; }
+
+        public virtual Office Office { get; set; }
 
         public KPIValueDTO ToDTO()
         {
@@ -39,8 +44,11 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
                 DateEnd = this.DateEnd,
                 KPIPeriodId = this.KPIPeriodId,
                 KPIParameterId = this.KPIParameterId,
+                OfficeId = this.OfficeId,
+                Value = this.Value,
                 KPIParameter = this.KPIParameter == null ? null : this.KPIParameter.ToDTO(),
-                KPIPeriod = this.KPIPeriod == null ? null : this.KPIPeriod.ToDTO()
+                KPIPeriod = this.KPIPeriod == null ? null : this.KPIPeriod.ToDTO(),
+                Office = this.Office == null ? null : this.Office.ToDTO()
             };
         }
     }
@@ -54,12 +62,18 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
 
         public DateTime? DateEnd { get; set; }
 
+        public decimal? Value { get; set; }
+
         public int KPIPeriodId { get; set; }
 
         public int KPIParameterId { get; set; }
 
+        public int OfficeId { get; set; }
+
         public  KPIParameterDTO KPIParameter { get; set; }
 
         public  KPIPeriodDTO KPIPeriod { get; set; }
+
+        public OfficeDTO Office { get; set; }
     }
 }
