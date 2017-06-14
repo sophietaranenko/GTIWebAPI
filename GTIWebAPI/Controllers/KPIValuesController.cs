@@ -37,9 +37,16 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<KPIValueDTO> dtos =
-                    unitOfWork.KPIValuesRepository.Get(d => d.Deleted != true && d.OfficeId == officeId, includeProperties: "KPIParameter,KPIPeriod,Office").Select(d => d.ToDTO());
-                return Ok(dtos);
+                  List<KPIValueDTO> dtos =
+                      unitOfWork.KPIValuesRepository.Get(d => d.Deleted != true && d.OfficeId == officeId, includeProperties: "KPIParameter,KPIPeriod,Office").Select(d => d.ToDTO()).ToList();
+                //list list'ов 
+                IEnumerable<int> parameterIds = dtos.Select(d => d.KPIParameterId).Distinct().ToList();
+                List<List<KPIValueDTO>> dtosSeparated = new List<List<KPIValueDTO>>();
+                foreach (int parameterId in parameterIds)
+                {
+                    dtosSeparated.Add(dtos.Where(d => d.KPIParameterId == parameterId).OrderBy(d => d.DateBegin).ToList());
+                }
+                return Ok(dtosSeparated);
             }
             catch (NotFoundException nfe)
             {
