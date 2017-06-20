@@ -1,8 +1,12 @@
 ﻿using GTIWebAPI.Models.Account;
+using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Models.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -34,12 +38,32 @@ namespace GTIWebAPI.Filters
 
             try
             {
-                ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                UserRight right = user.UserRights.Where(r => r.Action.Controller.Name == cName && r.Action.Name == aName).FirstOrDefault();
-                if (right != null)
+                UnitOfWork unitOfWork = new UnitOfWork(new DbContextFactory());
+                SqlParameter parAction = new SqlParameter
                 {
-                    allow = true;
-                }
+                    ParameterName = "@ActionName",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Value = aName
+                };
+                SqlParameter parController = new SqlParameter
+                {
+                    ParameterName = "@ControllerName",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Value = cName
+                };
+                SqlParameter parUser = new SqlParameter
+                {
+                    ParameterName = "@UserId",
+                    IsNullable = false,
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    Value = userId
+                };
+                allow = unitOfWork.SQLQuery<bool>("exec WebAPIFilter @UserId, @ActionName, @ControllerName", parUser, parAction, parController).FirstOrDefault();
             }
             catch (Exception e)
             {

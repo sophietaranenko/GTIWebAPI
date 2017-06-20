@@ -4,6 +4,7 @@ using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -24,6 +25,8 @@ namespace GTIWebAPI.Models.Context
         DbEntityEntry Entry(object entity);
 
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+
+        Task<IEnumerable<TEntity>> ExecuteStoredProcedureAsync<TEntity>(string query, params object[] parameters) where TEntity : class;
 
         int SaveChanges();
 
@@ -118,6 +121,8 @@ namespace GTIWebAPI.Models.Context
         DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
         DbSet<UserImage> UserImages { get; set; }
+
+        DbSet<UserRightOff> UserRigths { get; set; }
 
         bool CreateOrganization(string email, string password);
 

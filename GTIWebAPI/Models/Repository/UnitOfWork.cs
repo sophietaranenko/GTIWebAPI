@@ -43,20 +43,20 @@ namespace GTIWebAPI.Models.Repository
         }
 
 
-        //UserRights Block
+        ////UserRights Block
 
-        private GenericRepository<UserRight> userRightsRepository;
-        public GenericRepository<UserRight> UserRightsRepository
-        {
-            get
-            {
-                if (this.userRightsRepository == null)
-                {
-                    this.userRightsRepository = new GenericRepository<UserRight>(context);
-                }
-                return userRightsRepository;
-            }
-        }
+        //private GenericRepository<UserRight> userRightsRepository;
+        //public GenericRepository<UserRight> UserRightsRepository
+        //{
+        //    get
+        //    {
+        //        if (this.userRightsRepository == null)
+        //        {
+        //            this.userRightsRepository = new GenericRepository<UserRight>(context);
+        //        }
+        //        return userRightsRepository;
+        //    }
+        //}
 
 
         private GenericRepository<UserRightMask> userRightMasksRepository;
@@ -386,6 +386,19 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
+        private GenericRepository<UserRightOff> userRightsRepository;
+        public GenericRepository<UserRightOff> UserRightsRepository
+        {
+            get
+            {
+                if (this.userRightsRepository == null)
+                {
+                    this.userRightsRepository = new GenericRepository<UserRightOff>(context);
+                }
+                return userRightsRepository;
+            }
+        }
+
         //все данные для, например, EmployeeList будут должго грузится - будут создаваться репозитории
         //надо как-то объединить эти вещи, либо раздавать непосредственно из UnitOfWork, что тоже не очень гуд 
         //сначала сделать правильно, потестить производительность, потом уже что-то решать 
@@ -574,6 +587,11 @@ namespace GTIWebAPI.Models.Repository
         public IEnumerable<T> SQLQuery<T>(string sql, params object[] parameters)
         {
             return context.ExecuteStoredProcedure<T>(sql, parameters);
+        }
+
+        public Task<IEnumerable<T>> SQLQueryAsync<T>(string sql, params object[] parameters) where T : class
+        {
+            return context.ExecuteStoredProcedureAsync<T>(sql, parameters);
         }
 
         /// <summary>

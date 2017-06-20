@@ -43,7 +43,6 @@ namespace GTIWebAPI.Models.Account
         public List<UserRightDTO>  GetUserRightsDTO()
         {
             List<UserRightDTO> dtos = new List<UserRightDTO>();
-            
             try
             {
                 if (UserRights != null)
@@ -343,8 +342,6 @@ namespace GTIWebAPI.Models.Account
         }
 
     }
-
-
 
     public class EmailService : IIdentityMessageService
     {

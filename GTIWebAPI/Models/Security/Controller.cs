@@ -52,6 +52,8 @@ namespace GTIWebAPI.Models.Security
 
         public virtual ICollection<RightControllerAction> Actions { get; set; }
 
+        public virtual RightControllerBoxDTO ControllerBox { get; set; }
+
         protected override string TableName { get { return "RightController"; } }
 
         public RightControllerDTO ToDTO()
@@ -94,7 +96,7 @@ namespace GTIWebAPI.Models.Security
     //public class RightControllerMask
 
 
-    public class ControllerDTO
+    public class ControllerDTO : IEquatable<ControllerDTO>
     {
         [Key]
         public int Id { get; set; }
@@ -102,5 +104,15 @@ namespace GTIWebAPI.Models.Security
         public string ControllerName { get; set; }
 
         public List<ActionDTO> Actions { get; set; }
+
+        public bool Equals(ControllerDTO other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

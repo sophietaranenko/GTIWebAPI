@@ -10,6 +10,7 @@ using GTIWebAPI.Models.Repository;
 using GTIWebAPI.Exceptions;
 using GTIWebAPI.Models.Context;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace GTIWebAPI.Controllers
 {
@@ -34,8 +35,8 @@ namespace GTIWebAPI.Controllers
         [GTIOfficeFilter]
         [HttpGet]
         [Route("GetAll")]
-        [ResponseType(typeof(IEnumerable<EmployeeViewDTO>))]
-        public IHttpActionResult GetEmployeeAll(string officeIds)
+        [ResponseType(typeof(IEnumerable<EmployeeView>))]
+        public async Task<IHttpActionResult> GetEmployeeAll(string officeIds)
         {
             List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
             DataTable dataTable = new DataTable();
@@ -57,19 +58,13 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<EmployeeView> employees = unitOfWork.SQLQuery<EmployeeView>("exec EmployeeByOfficeIds @OfficeIds", parameter);
+                IEnumerable<EmployeeView> employees = await unitOfWork.SQLQueryAsync<EmployeeView>("exec EmployeeByOfficeIds @OfficeIds", parameter);
                 if (employees == null)
                 {
                     return NotFound();
-                }
-
-                foreach (var item in employees)
-                {
-                    item.EmployeeContacts =
-                        unitOfWork.EmployeeContactsRepository.Get(d => d.Deleted != true && d.EmployeeId == item.Id, includeProperties: "ContactType").Select(d => d.ToDTO());
-                }
-                IEnumerable<EmployeeViewDTO> dtos = employees.Select(d => d.ToDTO());
-                return Ok(dtos);
+                }                
+             //   IEnumerable<EmployeeViewDTO> dtos = employees.Select(d => d.ToDTO());
+                return Ok(employees);
             }
             catch (NotFoundException nfe)
             {

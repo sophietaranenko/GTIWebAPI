@@ -17,6 +17,8 @@ using System.Web;
 using GTIWebAPI.Models.Account;
 using System.Data.Entity.Infrastructure;
 using GTIWebAPI.Models.Reports.ProductivityReport;
+using System.Threading.Tasks;
+using GTIWebAPI.Models.Security;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -44,6 +46,11 @@ namespace GTIWebAPI.Models.Context
             return this.Database.SqlQuery<T>(query, parameters).ToList();
         }
 
+        public async Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, params object[] parameters) where T : class
+        {
+            this.Database.CommandTimeout = 180;
+            return await this.Database.SqlQuery<T>(query, parameters).ToListAsync();
+        }
 
         /// <summary>
         /// Addresses block
@@ -160,6 +167,8 @@ namespace GTIWebAPI.Models.Context
         public virtual DbSet<KPIPeriod> KPIPeriod { get; set; }
 
         public virtual DbSet<KPIValue> KPIValue { get; set; }
+
+        public virtual DbSet<UserRightOff> UserRigths { get; set; }
 
 
 

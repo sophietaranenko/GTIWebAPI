@@ -80,8 +80,8 @@ namespace GTIWebAPI.Models.Employees
             }
         }
 
-        [NotMapped]
-        public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
+      //  [NotMapped]
+     //   public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
 
         public EmployeeViewDTO ToDTO()
         {
@@ -99,7 +99,7 @@ namespace GTIWebAPI.Models.Employees
                 ShortAddress = this.ShortAddress,
                 Surname = this.Surname,
                 UserName = this.UserName,
-                EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts,
+          //      EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts,
                 Email = this.Email,
                 PhotoPath = this.PhotoPath,
                 UserId = this.UserId 
@@ -135,7 +135,7 @@ namespace GTIWebAPI.Models.Employees
 
         public IEnumerable<String> PositionLines { get; set; }
 
-        public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
+   //     public IEnumerable<EmployeeContactDTO> EmployeeContacts { get; set; }
 
         public string PhotoPath { get; set; }
 

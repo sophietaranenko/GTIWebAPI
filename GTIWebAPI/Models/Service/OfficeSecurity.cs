@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace GTIWebAPI.Models.Service
 {
     [Table("Office")]
-    public class OfficeSecurity
+    public class OfficeSecurity : IEquatable<OfficeSecurity>
     {
 
         public OfficeSecurity()
@@ -29,5 +29,15 @@ namespace GTIWebAPI.Models.Service
         public string EnglishName { get; set; }
 
         public string DealIndex { get; set; }
+
+        public bool Equals(OfficeSecurity other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

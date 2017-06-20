@@ -42,6 +42,7 @@ namespace GTIWebAPI.Models.Security
         public RightControllerAction()
         {
             UserRightMaskRights = new HashSet<UserRightMaskRight>();
+            UserRights = new HashSet<UserRightOff>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -56,6 +57,8 @@ namespace GTIWebAPI.Models.Security
         public string LongName { get; set; }
 
         public virtual ICollection<UserRightMaskRight> UserRightMaskRights { get; set; }
+
+        public virtual ICollection<UserRightOff> UserRights { get; set; }
 
         protected override string TableName { get { return "RightControllerAction"; } }
 
@@ -93,7 +96,7 @@ namespace GTIWebAPI.Models.Security
         }
     }
 
-    public class ActionDTO
+    public class ActionDTO : IEquatable<ActionDTO>
     {
         [Key]
         public int Id { get; set; }
@@ -101,5 +104,15 @@ namespace GTIWebAPI.Models.Security
         public string ActionName { get; set; }
 
         public string ActionLongName { get; set; }
+
+        public bool Equals(ActionDTO other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

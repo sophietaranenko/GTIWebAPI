@@ -64,7 +64,7 @@ namespace GTIWebAPI.Tests.TestControllers
             appDbContext.Setup(d => d.GetFullUserName(It.IsAny<string>())).Returns("Full Test User Name");
 
             var controller = new AccountController(dbFactory.Object, appDbContext.Object, identityHelper.Object);
-            var result = await controller.GetUserInfo() as UserInfoViewModel;
+            var result = controller.GetUserInfo() as UserInfoViewModel;
             Assert.IsNotNull(result);
             Assert.AreEqual("Full Test User Name", result.FullUserName);
             Assert.AreEqual("SomeTestEmail@Test.Test", result.Email);

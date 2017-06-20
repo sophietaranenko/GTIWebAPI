@@ -14,6 +14,7 @@ namespace GTIWebAPI.Models.Dictionary
         public Office()
         {
             Masks = new HashSet<UserRightMask>();
+            UserRights = new HashSet<UserRightOff>();
         }
 
         public int Id { get; set; }
@@ -28,6 +29,8 @@ namespace GTIWebAPI.Models.Dictionary
 
         public virtual ICollection<UserRightMask> Masks { get; set; }
 
+        public virtual ICollection<UserRightOff> UserRights { get; set; }
+
         public OfficeDTO ToDTO()
         {
             OfficeDTO dto = new OfficeDTO
@@ -37,6 +40,7 @@ namespace GTIWebAPI.Models.Dictionary
             };
             return dto;
         }
+
     }
 
     public class OfficeDTO : IEquatable<OfficeDTO>
