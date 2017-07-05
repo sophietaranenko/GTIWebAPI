@@ -169,14 +169,14 @@ namespace GTIWebAPI.Controllers
                 };
                 dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter3);
 
-                IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
-                if (dto.DocumentScans != null && types != null)
-                {
-                    foreach (var item in dto.DocumentScans)
-                    {
-                        item.DocumentScanType = types.Where(d => d.Id == item.DocumentScanTypeId).FirstOrDefault();
-                    }
-                }
+             //   IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
+              //  if (dto.DocumentScans != null)
+              //  {
+               //     foreach (var item in dto.DocumentScans)
+               //     {
+               //         item.DocumentScanType = item.DocumentScanTypeId == null ? null : new DocumentScanTypeDTO { Id = item.DocumentScanTypeId.GetValueOrDefault(), FullName = item.DocumentScanTypeName };
+               //     }
+              //  }
                 return Ok(dto);
             }
             catch (NotFoundException nfe)

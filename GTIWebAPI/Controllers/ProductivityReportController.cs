@@ -92,6 +92,10 @@ namespace GTIWebAPI.Controllers
                 IEnumerable<ReportMonth> list =
                     unitOfWork.SQLQuery<ReportMonth>("exec ProductivityReportAllWithKPIMonth @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
                 list = list.OrderBy(d => d.DateBegin);
+                if (list.Count() == 0)
+                {
+                    return BadRequest("Employee Id not found");
+                }
                 return Ok(list);
             }
             catch (NullReferenceException nre)
@@ -172,7 +176,12 @@ namespace GTIWebAPI.Controllers
 
                 IEnumerable<ReportWeek> list =
                     unitOfWork.SQLQuery<ReportWeek>("exec ProductivityReportAllWithKPIWeek @EmployeeId, @OfficeId, @DateBegin, @DateEnd", parEmployee, parOffice, parBegin, parEnd);
+                if (list.Count() == 0)
+                {
+                    return BadRequest("Employee Id not found");
+                }
                 list = list.OrderBy(d => d.DateBegin);
+               
                 return Ok(list);
             }
             catch (NullReferenceException nre)

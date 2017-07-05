@@ -11,7 +11,5 @@ namespace GTIWebAPI.Models.Accounting
         public Int16 Id { get; set; }
 
         public string FullName { get; set; }
-
-        public string ShortName { get; set; }
     }
 }

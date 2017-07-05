@@ -13,6 +13,7 @@ namespace GTIWebAPI.Models.Context
 
         public SecureEmployeeCreatorDbContext() : base("name=DbSecureEmployeeCreator")
         {
+            Database.SetInitializer<MainDbContext>(null);
         }
 
         public int CreateEmployee()

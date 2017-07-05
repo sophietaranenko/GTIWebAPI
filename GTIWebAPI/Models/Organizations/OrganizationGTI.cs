@@ -47,8 +47,6 @@ namespace GTIWebAPI.Models.Organizations
         [Column("office")]
         public int OfficeId { get; set; }
 
-        public string OfficeShortName { get; set; }
-
         public Office Office { get; set; }
 
         public OrganizationGTIDTO ToDTO()
@@ -67,8 +65,7 @@ namespace GTIWebAPI.Models.Organizations
                 Office = this.Office == null ? null : this.Office.ToDTO(),
                 OfficeId = this.OfficeId,
                 Phone = this.Phone,
-                ShortName = this.ShortName,
-                OfficeShortName = this.OfficeShortName
+                ShortName = this.ShortName
             };
             return dto;
         }
@@ -100,8 +97,6 @@ namespace GTIWebAPI.Models.Organizations
         public string TaxNumber { get; set; }
 
         public int OfficeId { get; set; }
-
-        public string OfficeShortName { get; set; }
 
         public OfficeDTO Office { get; set; }
     }

@@ -132,7 +132,8 @@ namespace GTIWebAPI.Controllers
         {
             string UserId = identityHelper.GetUserId(User);
 
-            UnitOfWork unitOfWork = new UnitOfWork(factory);
+             UnitOfWork unitOfWork = new UnitOfWork(factory);
+
             SqlParameter parUser = new SqlParameter
             {
                 ParameterName = "@UserId",
@@ -142,7 +143,19 @@ namespace GTIWebAPI.Controllers
                 Value = UserId
             };
 
-            UserInfoViewModel userInfoModel = unitOfWork.SQLQuery<UserInfoViewModel>("exec UserInfo @UserId", parUser).FirstOrDefault();
+
+            UserInfoViewModel userInfoViewModel = unitOfWork.SQLQuery<UserInfoViewModel>("exec UserInfo @UserId", parUser).FirstOrDefault();
+
+            //Task<List<UserRightDTO>> tRights = GetUserRights(UserId);
+            //Task<UserInfoViewModel> tModel = GetUserInfoViewModel(UserId);
+
+
+            //await Task.WhenAll(tModel, tRights);
+
+            //UserInfoViewModel userInfoViewModel = tModel.Result;
+            //userInfoViewModel.UserRights = tRights.Result;
+            //return userInfoViewModel;
+
 
             //i don't know why but they need another parameter 
 
@@ -155,11 +168,7 @@ namespace GTIWebAPI.Controllers
                 Value = UserId
             };
 
-        //   List<UserRightOff> rights = unitOfWork.UserRightsRepository.Get(d => d.AspNetUserId == UserId, includeProperties: "Action,Office").ToList();
-
             IEnumerable<UserRightOfficeDTO> rightsString = unitOfWork.SQLQuery<UserRightOfficeDTO>("exec UserRights @UserId", parUser1);
-
-
             List<UserRightDTO> dtos = new List<UserRightDTO>();
             try
             {
@@ -179,7 +188,7 @@ namespace GTIWebAPI.Controllers
                                 List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
                                 var bList = rightsString
                                     .Where(d => d.OfficeId == item.Id)
-                                    .Select(d => new ControllerBoxDTO { Id = d.BoxId.GetValueOrDefault(), Name = d.BoxName } )
+                                    .Select(d => new ControllerBoxDTO { Id = d.BoxId.GetValueOrDefault(), Name = d.BoxName })
                                     .Distinct()
                                     .ToList();
 
@@ -194,7 +203,7 @@ namespace GTIWebAPI.Controllers
 
                                         List<ControllerDTO> controllerList = new List<ControllerDTO>();
                                         var cList = rightsString.Where(r => r.OfficeId == item.Id && r.BoxId == box.Id)
-                                            .Select(r => new ControllerDTO { Id = r.ControllerId.GetValueOrDefault(), ControllerName = r.ControllerName})
+                                            .Select(r => new ControllerDTO { Id = r.ControllerId.GetValueOrDefault(), ControllerName = r.ControllerName })
                                             .Distinct().ToList();
 
                                         if (cList != null)
@@ -207,7 +216,7 @@ namespace GTIWebAPI.Controllers
 
                                                 List<ActionDTO> actionList = new List<ActionDTO>();
                                                 var aList = rightsString.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id)
-                                                    .Select(r => new ActionDTO { Id = r.ActionId.GetValueOrDefault(), ActionName = r.ActionName , ActionLongName = r.ActionLongName })
+                                                    .Select(r => new ActionDTO { Id = r.ActionId.GetValueOrDefault(), ActionName = r.ActionName, ActionLongName = r.ActionLongName })
                                                     .Distinct().ToList();
                                                 if (aList != null)
                                                 {
@@ -241,60 +250,123 @@ namespace GTIWebAPI.Controllers
                 string m = e.Message;
             }
 
-            userInfoModel.UserRights = dtos;
+            userInfoViewModel.UserRights = dtos;
 
-            return userInfoModel;
-
-          //  bool isEmployeeInformationFilled = false;
-          //  //if (user.TableName == "Employee")
-          //  //{
-          //  //    SqlParameter parameter = new SqlParameter
-          //  //    {
-          //  //        ParameterName = "@EmployeeId",
-          //  //        IsNullable = true,
-          //  //        Direction = ParameterDirection.Input,
-          //  //        DbType = DbType.String,
-          //  //        Size = 1000,
-          //  //        Value = user.TableId
-          //  //    };
-          //  //    isEmployeeInformationFilled = unitOfWork.SQLQuery<bool>("exec IsEmployeeInformationFilled @EmployeeId", parameter).FirstOrDefault();
-          //  //}
-
-          //  int organizationRelatedToContactPersonId = 0;
-
-          //  //if (user.TableName == "OrganizationContactPerson")
-          //  //{
-          //  //    organizationRelatedToContactPersonId = unitOfWork.OrganizationContactPersonsRepository
-          //  //        .Get(d => d.Id == user.TableId).Select(d => d.OrganizationId).FirstOrDefault().GetValueOrDefault();
-          //  //}
-
-          //  string profilePicturePath = "";
-          //  //UserImage image = unitOfWork.UserImagesRepository
-          //  //    .Get(d => d.UserId == UserId && d.IsProfilePicture == true)
-          //  //    .FirstOrDefault();
-          //  //if (image != null)
-          //  //{
-          //  //    profilePicturePath = image.ImageName;
-          //  //}
-          //  UserRightDTO dtos  = UserRightDTO.TransferToDTO()
+            return userInfoViewModel;
 
 
-
-          //  UserInfoViewModel model = new UserInfoViewModel()
-          //  {
-          //      Email = user.Email,
-          //      UserName = user.UserName,
-          //      TableId = user.TableId,
-          //      TableName = user.TableName,
-          //      UserRights = user.GetUserRightsDTO(),
-          //      ProfilePicturePath = profilePicturePath,
-          ////      FullUserName = context.GetFullUserName(UserId),
-          //      EmployeeInformation = isEmployeeInformationFilled,
-          //      OrganizationId = organizationRelatedToContactPersonId
-          //  };
 
         }
 
+        private async Task<UserInfoViewModel> GetUserInfoViewModel(string userId)
+        {
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            SqlParameter parUser = new SqlParameter
+            {
+                ParameterName = "@UserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
+
+            return unitOfWork.SQLQuery<UserInfoViewModel>("exec UserInfo @UserId", parUser).FirstOrDefault();
+        }
+
+        private async Task<List<UserRightDTO>> GetUserRights(string userId)
+        {
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            SqlParameter parUser1 = new SqlParameter
+            {
+                ParameterName = "@UserId",
+                IsNullable = false,
+                Direction = ParameterDirection.Input,
+                DbType = DbType.String,
+                Value = userId
+            };
+            IEnumerable<UserRightOfficeDTO> rightsString = unitOfWork.SQLQuery<UserRightOfficeDTO>("exec UserRights @UserId", parUser1);
+            List<UserRightDTO> dtos = new List<UserRightDTO>();
+            try
+            {
+                if (rightsString != null)
+                {
+                    if (rightsString.Count() != 0)
+                    {
+                        var result = rightsString.Select(r => new OfficeSecurity { Id = r.OfficeId.GetValueOrDefault(), ShortName = r.OfficeShortName }).Distinct().ToList();
+                        if (result != null)
+                        {
+                            foreach (var item in result)
+                            {
+                                UserRightDTO dto = new UserRightDTO();
+                                dto.OfficeId = item.Id;
+                                dto.OfficeName = item.ShortName;
+
+                                List<ControllerBoxDTO> boxesList = new List<ControllerBoxDTO>();
+                                var bList = rightsString
+                                    .Where(d => d.OfficeId == item.Id)
+                                    .Select(d => new ControllerBoxDTO { Id = d.BoxId.GetValueOrDefault(), Name = d.BoxName })
+                                    .Distinct()
+                                    .ToList();
+
+                                if (bList != null)
+                                {
+                                    foreach (var box in bList)
+                                    {
+
+                                        ControllerBoxDTO boxDTO = new ControllerBoxDTO();
+                                        boxDTO.Name = box.Name;
+                                        boxDTO.Id = box.Id;
+
+                                        List<ControllerDTO> controllerList = new List<ControllerDTO>();
+                                        var cList = rightsString.Where(r => r.OfficeId == item.Id && r.BoxId == box.Id)
+                                            .Select(r => new ControllerDTO { Id = r.ControllerId.GetValueOrDefault(), ControllerName = r.ControllerName })
+                                            .Distinct().ToList();
+
+                                        if (cList != null)
+                                        {
+                                            foreach (var c in cList)
+                                            {
+                                                ControllerDTO cDto = new ControllerDTO();
+                                                cDto.ControllerName = c.ControllerName;
+                                                cDto.Id = c.Id;
+
+                                                List<ActionDTO> actionList = new List<ActionDTO>();
+                                                var aList = rightsString.Where(r => r.OfficeId == item.Id && r.ControllerId == c.Id)
+                                                    .Select(r => new ActionDTO { Id = r.ActionId.GetValueOrDefault(), ActionName = r.ActionName, ActionLongName = r.ActionLongName })
+                                                    .Distinct().ToList();
+                                                if (aList != null)
+                                                {
+                                                    foreach (var a in aList)
+                                                    {
+                                                        ActionDTO aDto = new ActionDTO();
+                                                        aDto.Id = a.Id;
+                                                        aDto.ActionLongName = a.ActionLongName == null ? "" : a.ActionLongName;
+                                                        aDto.ActionName = a.ActionName == null ? "" : a.ActionName;
+                                                        actionList.Add(aDto);
+                                                    }
+                                                }
+                                                cDto.Actions = actionList;
+                                                controllerList.Add(cDto);
+                                            }
+                                        }
+
+                                        boxDTO.Controllers = controllerList;
+                                        boxesList.Add(boxDTO);
+                                    }
+                                }
+                                dto.Boxes = boxesList;
+                                dtos.Add(dto);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                string m = e.Message;
+            }
+            return dtos;
+        }
 
 
 

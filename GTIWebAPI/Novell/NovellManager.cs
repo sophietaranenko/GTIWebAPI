@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 
 using Novell.Directory.Ldap;
+using Novell;
 using System.Security.Cryptography.X509Certificates;
 using Mono.Security;
 using Mono.Security.Cryptography;
@@ -23,6 +24,11 @@ namespace GTIWebAPI.Novell
         public NovellManager()
         {
             ServerAddresses = Properties.Settings.Default.NovellIPAddresses;
+        }
+
+        public void DoSomething()
+        {
+            
         }
 
         public string GenerateLogin(string login)
@@ -149,6 +155,7 @@ namespace GTIWebAPI.Novell
                 {
                     using (NovellProvider novell = new NovellProvider(serverAddress))
                     {
+                        
                         //bind with gtildap
                         novell.Bind();
                         //search if LdapEntry with such email exists 
@@ -219,10 +226,16 @@ namespace GTIWebAPI.Novell
                 bHowToProceed = true;
                 ldapConn.UserDefinedServerCertValidationDelegate += new CertificateValidationCallback(MySSLHandler);
                 bindCount = 0;
-                ldapConn.Connect(serverAddress, 636);
+                try
+                {
+                    ldapConn.Connect(serverAddress, 636);
+                }
+                catch (System.Net.Sockets.SocketException e)
+                {
+                    string mes = e.Message;
+                }
             }
 
-            //public void Bind(string LdapServer = "192.168.0.1", string DN = "cn=gtildap,ou=Tech,ou=ALL,o=World", string Password = "wemayont")
             public void Bind()
             {
                 string DN = Properties.Settings.Default.NovellDN; 

@@ -161,6 +161,7 @@ namespace GTIWebAPI.Models.Account
         public ApplicationDbContext()
             :base("name=DbUsers", throwIfV1Schema: false)
         {
+            Database.SetInitializer<MainDbContext>(null);
         }
 
         public static ApplicationDbContext Create()

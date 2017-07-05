@@ -70,7 +70,7 @@ namespace GTIWebAPI.Controllers
                     .Select(d => d.ToDTO()).ToList();
                 foreach (var item in gtis)
                 {
-                    item.Office = new Models.Dictionary.OfficeDTO { ShortName = item.OfficeShortName, Id = item.OfficeId };
+                    item.Office = new Models.Dictionary.OfficeDTO { ShortName = item.ShortName, Id = item.OfficeId };
                 }
                 return Ok(gtis);
             }

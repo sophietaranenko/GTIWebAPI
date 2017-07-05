@@ -76,20 +76,93 @@ namespace GTIWebAPI.Providers
         /// <returns></returns>
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
+            //var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+            //ApplicationUser user = null;
+            //if (novell.CredentialsCorrect(context.UserName, context.Password))
+            //{
+            // //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
+            //    try
+            //    {
+            //        user = userManager.Find(context.UserName, context.Password);
+            //    //    logger.Log(LogLevel.Info, "Find user in User Store", user);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string excMes = e.Message;
+            //       // logger.Error(e, "Error finding user");
+            //    }
+            //    if (user == null)
+            //    {
+            //        user = userManager.FindByName(context.UserName);
+            //        if (user != null)
+            //        {
+            //            String userId = user.Id;
+            //            String newPassword = context.Password;
+            //            String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
+            //            UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
+            //            await store.SetPasswordHashAsync(user, hashedNewPassword);
+            //        }
+            //    }
+
+            //    //if found in eDirectory but not found in ApplicationUsers - then create employee user 
+            //    //but in database to local users only DBA can grant rights 
+
+            //    if (user == null)
+            //    {
+            //       // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
+            //        bool dbResult = false;
+            //        using (ApplicationDbContext db = new ApplicationDbContext())
+            //        {
+            //            dbResult = db.CreateHoldingUser(context.UserName, context.Password);
+            //         //   logger.Log(LogLevel.Info, "Creating user in database");
+            //        }
+            //        if (dbResult == true)
+            //        {
+            //            user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
+            //            userManager.AddToRole(user.Id, "Personnel");
+            //            bool rightsResult = false;
+            //            using (ApplicationDbContext db = new ApplicationDbContext())
+            //            {
+            //                rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
+            //            }  
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    user = null;
+            //}
+            //if (user == null)
+            //{
+            //  //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
+            //    context.SetError("invalid_grant", "The user name or password is incorrect.");
+            //    context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+            //    return;
+            //}
+            //ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
+            //   OAuthDefaults.AuthenticationType);
+            //ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
+            //    CookieAuthenticationDefaults.AuthenticationType);
+            //AuthenticationProperties properties = CreateProperties(user.UserName);
+            //AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
+            //context.Validated(ticket);
+            //context.Request.Context.Authentication.SignIn(cookiesIdentity);
+
+
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
             ApplicationUser user = null;
-            if (novell.CredentialsCorrect(context.UserName, context.Password))
+           if (novell.CredentialsCorrect(context.UserName, context.Password))
             {
-             //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
+                //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
                 try
                 {
                     user = userManager.Find(context.UserName, context.Password);
-                //    logger.Log(LogLevel.Info, "Find user in User Store", user);
+                    //    logger.Log(LogLevel.Info, "Find user in User Store", user);
                 }
                 catch (Exception e)
                 {
                     string excMes = e.Message;
-                   // logger.Error(e, "Error finding user");
+                    // logger.Error(e, "Error finding user");
                 }
                 if (user == null)
                 {
@@ -109,12 +182,12 @@ namespace GTIWebAPI.Providers
 
                 if (user == null)
                 {
-                   // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
+                    // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
                     bool dbResult = false;
                     using (ApplicationDbContext db = new ApplicationDbContext())
                     {
                         dbResult = db.CreateHoldingUser(context.UserName, context.Password);
-                     //   logger.Log(LogLevel.Info, "Creating user in database");
+                        //   logger.Log(LogLevel.Info, "Creating user in database");
                     }
                     if (dbResult == true)
                     {
@@ -124,9 +197,9 @@ namespace GTIWebAPI.Providers
                         using (ApplicationDbContext db = new ApplicationDbContext())
                         {
                             rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
-                        }  
+                        }
                     }
-                }
+               }
             }
             else
             {
@@ -134,7 +207,7 @@ namespace GTIWebAPI.Providers
             }
             if (user == null)
             {
-              //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
+                //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;
@@ -147,6 +220,7 @@ namespace GTIWebAPI.Providers
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
+
         }
 
         private ApplicationUser CreateEmployeeApplicationUser(string username, string password, ApplicationUserManager userManager)

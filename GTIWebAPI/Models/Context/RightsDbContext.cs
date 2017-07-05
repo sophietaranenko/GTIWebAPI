@@ -13,6 +13,7 @@ namespace GTIWebAPI.Models.Context
 
         public RightsDbContext() : base("name=DbRights")
         {
+            Database.SetInitializer<MainDbContext>(null);
         }
 
         public bool GrantRightsToOrganization(string userId)

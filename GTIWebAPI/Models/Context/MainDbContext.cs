@@ -28,11 +28,13 @@ namespace GTIWebAPI.Models.Context
         public MainDbContext() : base("name=DbPersonnel")
         {
             this.Configuration.LazyLoadingEnabled = false;
+            Database.SetInitializer<MainDbContext>(null);
         }
 
         public MainDbContext(string connectionString) : base(connectionString)
         {
             this.Configuration.LazyLoadingEnabled = false;
+            Database.SetInitializer<MainDbContext>(null);
         }
 
         public void MarkAsModified(object entity)

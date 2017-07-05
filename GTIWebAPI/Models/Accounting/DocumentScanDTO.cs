@@ -47,6 +47,8 @@ namespace GTIWebAPI.Models.Accounting
 
         public Int16? DocumentScanTypeId { get; set; }
 
+        public string DocumentScanTypeName { get; set; }
+
         public DocumentScanTypeDTO DocumentScanType { get; set; }
 
        
