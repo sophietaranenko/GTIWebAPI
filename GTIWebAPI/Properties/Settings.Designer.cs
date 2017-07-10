@@ -82,5 +82,15 @@ namespace GTIWebAPI.Properties {
                 return ((string)(this["SMTPEmailPassword"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:7191")]
+        public string GTIWebAPI_WebReference_GroupwiseService {
+            get {
+                return ((string)(this["GTIWebAPI_WebReference_GroupwiseService"]));
+            }
+        }
     }
 }

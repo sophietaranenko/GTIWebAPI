@@ -26,5 +26,8 @@
     <Setting Name="SMTPEmailPassword" Type="System.String" Scope="Application">
       <Value Profile="(Default)">aluqdong</Value>
     </Setting>
+    <Setting Name="GTIWebAPI_WebReference_GroupwiseService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:7191</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

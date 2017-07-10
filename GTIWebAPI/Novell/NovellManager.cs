@@ -152,31 +152,69 @@ namespace GTIWebAPI.Novell
             bool result = false;
 
             //connect to Novell with one of server addresses 
-            foreach (string serverAddress in ServerAddresses)
-            {
+        //    foreach (string serverAddress in ServerAddresses)
+        //    {
+
+
+                WebReference.loginRequest req = new WebReference.loginRequest();
+                WebReference.loginResponse resp = new WebReference.loginResponse();
+                WebReference.GroupWiseBinding ws = new WebReference.GroupWiseBinding();
+                WebReference.GroupWiseEventsBinding es = new WebReference.GroupWiseEventsBinding();
+
+
+
+                    String str = "http://192.168.0.9:7191/soap";
+                    ws.Url = str;
+                    es.Url = str;
+
+                    WebReference.PlainText pt = new WebReference.PlainText();
+                    pt.username = login;
+                    pt.password = password;
+
+                    req.auth = pt;
+
+                    req.userid = true;
+                    req.useridSpecified = true;
+
                 try
                 {
-                    using (NovellProvider novell = new NovellProvider(serverAddress))
+                    resp = ws.loginRequest(req);
+                    if (0 == resp.status.code)
                     {
-                        
-                        //bind with gtildap
-                        novell.Bind();
-                        //search if LdapEntry with such email exists 
-                       bool entryExist = novell.EntryExists(login);
-                       if (entryExist)
-                        {
-                            //verify password
-                            result = novell.VerifyPassword(login, password);
-                            break;
-                        }
+                        result = true;
+           //             break;
+                    }
+                    else
+                    {
+                        result = false;
+                      //  break;
+                        //lblDesc.Text = resp.status.description;
                     }
                 }
                 catch (Exception e)
                 {
-                    continue;
+                  //  continue;
                 }
+               
+                        
+                    //old code 
+                    //using (NovellProvider novell = new NovellProvider(serverAddress))
+                    //{
+                        
+                    //    //bind with gtildap
+                    //    novell.Bind();
+                    //    //search if LdapEntry with such email exists 
+                    //   bool entryExist = novell.EntryExists(login);
+                    //   if (entryExist)
+                    //    {
+                    //        //verify password
+                    //        result = novell.VerifyPassword(login, password);
+                    //        break;
+                    //    }
+                    //}
 
-            }
+
+         //   }
             //if Connect Error happened, restart with another server address 
             return result;
         }
