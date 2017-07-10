@@ -40,6 +40,8 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
 
         public int Agreement { get; set; }
 
+        public int OtherContacts { get; set; }
+
         public int DealsCount { get; set; }
 
         public int Count20 { get; set; }

@@ -72,6 +72,7 @@ namespace GTIWebAPI.Novell
                         //bind with gtildap
                         novell.Bind();
                         office = novell.FindOffice(username);
+                        break;
                     }
                 }
                 catch (Exception e)
@@ -98,6 +99,7 @@ namespace GTIWebAPI.Novell
                         //bind with gtildap
                         novell.Bind();
                         email = novell.FindEmail(username);
+                        break;
                     }
                 }
                 catch (Exception e)
@@ -130,6 +132,7 @@ namespace GTIWebAPI.Novell
                         //bind with gtildap
                         novell.Bind();
                         result = novell.GenerateLogin(login);
+                        break;
                     }
                 }
                 catch (Exception e)
@@ -159,8 +162,8 @@ namespace GTIWebAPI.Novell
                         //bind with gtildap
                         novell.Bind();
                         //search if LdapEntry with such email exists 
-                        bool entryExist = novell.EntryExists(login);
-                        if (entryExist)
+                       bool entryExist = novell.EntryExists(login);
+                       if (entryExist)
                         {
                             //verify password
                             result = novell.VerifyPassword(login, password);

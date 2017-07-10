@@ -133,7 +133,8 @@ namespace GTIWebAPI.Controllers
                     DbType = DbType.Guid,
                     Value = id
                 };
-                DealFullViewDTO dto = unitOfWork.SQLQuery<DealFullViewDTO>("exec DealInfo @DealId", parameter).FirstOrDefault();
+                //  DealFullViewDTO dto = unitOfWork.SQLQuery<DealFullViewDTO>("exec DealInfo @DealId", parameter).FirstOrDefault();
+                DealFullViewDTO dto = unitOfWork.SQLQuery<DealFullViewDTO>("exec DealInfo2 @DealId", parameter).FirstOrDefault();
                 if (dto == null)
                 {
                     return NotFound();
@@ -147,7 +148,8 @@ namespace GTIWebAPI.Controllers
                     DbType = DbType.Guid,
                     Value = id
                 };
-                dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec DealContainersList @DealId", parameter1);
+                //dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec DealContainersList @DealId", parameter1);
+                dto.Containers = unitOfWork.SQLQuery<DealContainerViewDTO>("exec PR_DealContainersList @DealId", parameter1);
 
                 SqlParameter parameter2 = new SqlParameter
                 {
@@ -157,7 +159,9 @@ namespace GTIWebAPI.Controllers
                     DbType = DbType.Guid,
                     Value = id
                 };
-                dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList @DealId", parameter2);
+
+                //dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList @DealId", parameter2);
+                dto.Invoices = unitOfWork.SQLQuery<DealInvoiceViewDTO>("exec DealInvoicesList2 @DealId", parameter2);
 
                 SqlParameter parameter3 = new SqlParameter
                 {
@@ -167,16 +171,17 @@ namespace GTIWebAPI.Controllers
                     DbType = DbType.Guid,
                     Value = id
                 };
-                dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter3);
+                //  dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec GetDocumentScanByDeal @DealId", parameter3);
+                dto.DocumentScans = unitOfWork.SQLQuery<DocumentScanDTO>("exec PR_DocumentScanByDeal @DealId", parameter3);
 
-             //   IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
-              //  if (dto.DocumentScans != null)
-              //  {
-               //     foreach (var item in dto.DocumentScans)
-               //     {
-               //         item.DocumentScanType = item.DocumentScanTypeId == null ? null : new DocumentScanTypeDTO { Id = item.DocumentScanTypeId.GetValueOrDefault(), FullName = item.DocumentScanTypeName };
-               //     }
-              //  }
+                //   IEnumerable<DocumentScanTypeDTO> types = unitOfWork.SQLQuery<DocumentScanTypeDTO>("exec GetDocumentScanTypes");
+                //  if (dto.DocumentScans != null)
+                //  {
+                //     foreach (var item in dto.DocumentScans)
+                //     {
+                //         item.DocumentScanType = item.DocumentScanTypeId == null ? null : new DocumentScanTypeDTO { Id = item.DocumentScanTypeId.GetValueOrDefault(), FullName = item.DocumentScanTypeName };
+                //     }
+                //  }
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
