@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using GTIWebAPI.Models.Account;
 
 namespace GTIWebAPI.Models.Context
 {
@@ -42,6 +43,16 @@ namespace GTIWebAPI.Models.Context
             }
         }
 
+        public string GetPostOffice()
+        {
+            return HttpContext.Current.User.Identity.GetPostOfficeAddress();
+        }
+
+        public string GetSessionId()
+        {
+            return HttpContext.Current.User.Identity.GetSessionId();
+        }
+
         public string GetUserName()
         {
             return HttpContext.Current.User.Identity.Name;
@@ -51,5 +62,7 @@ namespace GTIWebAPI.Models.Context
         {
             return HttpContext.Current.User.IsInRole(roleName);
         }
+
+        
     }
 }

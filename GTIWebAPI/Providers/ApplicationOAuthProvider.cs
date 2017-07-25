@@ -10,13 +10,15 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using GTIWebAPI.Models.Account;
-using GTIWebAPI.Novell;
+using GTIWebAPI.NovelleDirectory;
 using GTIWebAPI.Models.Context;
 using Microsoft.Owin;
 using System.Net;
 using GTIWebAPI.Models.Security;
 using System.Web.Http.Cors;
 using NLog;
+using GTIWebAPI.NovellGroupWiseSOAP;
+using GTIWebAPI.Exceptions;
 
 namespace GTIWebAPI.Providers
 {
@@ -46,9 +48,16 @@ namespace GTIWebAPI.Providers
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
         private readonly string _publicClientId;
-        private INovellManager novell;
+        private INovelleDirectory novell;
+        private INovellGroupWise novellGroupWise;
 
-      //  private static Logger logger = LogManager.GetCurrentClassLogger();
+        //если вернемся к теме логгирования 
+        //инициализация 
+        //private static Logger logger = LogManager.GetCurrentClassLogger();
+        //лог 
+        //logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
+
+
 
         /// <summary>
         /// Ctor of oAuth provider
@@ -61,12 +70,14 @@ namespace GTIWebAPI.Providers
                 throw new ArgumentNullException("publicClientId");
             }
             _publicClientId = publicClientId;
-            novell = new NovellManager();
+            novell = new NovelleDirectory.NovelleDirectory();
+            novellGroupWise = new NovellGroupWise();
         }
 
-        public ApplicationOAuthProvider(INovellManager novell)
+        public ApplicationOAuthProvider(INovelleDirectory novell, INovellGroupWise novellGroupWise)
         {
             this.novell = novell;
+            this.novellGroupWise = novellGroupWise;
         }
 
         /// <summary>
@@ -76,178 +87,140 @@ namespace GTIWebAPI.Providers
         /// <returns></returns>
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            //var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-            //ApplicationUser user = null;
-            //if (novell.CredentialsCorrect(context.UserName, context.Password))
-            //{
-            // //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
-            //    try
-            //    {
-            //        user = userManager.Find(context.UserName, context.Password);
-            //    //    logger.Log(LogLevel.Info, "Find user in User Store", user);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        string excMes = e.Message;
-            //       // logger.Error(e, "Error finding user");
-            //    }
-            //    if (user == null)
-            //    {
-            //        user = userManager.FindByName(context.UserName);
-            //        if (user != null)
-            //        {
-            //            String userId = user.Id;
-            //            String newPassword = context.Password;
-            //            String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
-            //            UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
-            //            await store.SetPasswordHashAsync(user, hashedNewPassword);
-            //        }
-            //    }
-
-            //    //if found in eDirectory but not found in ApplicationUsers - then create employee user 
-            //    //but in database to local users only DBA can grant rights 
-
-            //    if (user == null)
-            //    {
-            //       // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
-            //        bool dbResult = false;
-            //        using (ApplicationDbContext db = new ApplicationDbContext())
-            //        {
-            //            dbResult = db.CreateHoldingUser(context.UserName, context.Password);
-            //         //   logger.Log(LogLevel.Info, "Creating user in database");
-            //        }
-            //        if (dbResult == true)
-            //        {
-            //            user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
-            //            userManager.AddToRole(user.Id, "Personnel");
-            //            bool rightsResult = false;
-            //            using (ApplicationDbContext db = new ApplicationDbContext())
-            //            {
-            //                rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
-            //            }  
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    user = null;
-            //}
-            //if (user == null)
-            //{
-            //  //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
-            //    context.SetError("invalid_grant", "The user name or password is incorrect.");
-            //    context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
-            //    return;
-            //}
-            //ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
-            //   OAuthDefaults.AuthenticationType);
-            //ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
-            //    CookieAuthenticationDefaults.AuthenticationType);
-            //AuthenticationProperties properties = CreateProperties(user.UserName);
-            //AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
-            //context.Validated(ticket);
-            //context.Request.Context.Authentication.SignIn(cookiesIdentity);
-
-
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-            ApplicationUser user = null;
-           if (novell.CredentialsCorrect(context.UserName, context.Password))
+            try
             {
-                //   logger.Log(LogLevel.Info, "Credentials correct in Novell", context.UserName, context.Password);
-                try
+                NovellUser novelleDirectoryUser = novell.Connect(context.UserName.Trim(), context.Password.Trim());
+                ApplicationUser applicationUser = userManager.Find(context.UserName.Trim(), context.Password.Trim());
+                //Особенности нашего обращения с Novell, ничего не попишешь 
+                if (applicationUser == null)
                 {
-                    user = userManager.Find(context.UserName, context.Password);
-                    //    logger.Log(LogLevel.Info, "Find user in User Store", user);
+                    //на случай, если пароль поменяли 
+                    applicationUser = await ChangePassword(context.UserName.Trim(), context.Password.Trim(), userManager);
                 }
-                catch (Exception e)
+                if (applicationUser == null)
                 {
-                    string excMes = e.Message;
-                    // logger.Error(e, "Error finding user");
-                }
-                if (user == null)
-                {
-                    user = userManager.FindByName(context.UserName);
-                    if (user != null)
-                    {
-                        String userId = user.Id;
-                        String newPassword = context.Password;
-                        String hashedNewPassword = userManager.PasswordHasher.HashPassword(newPassword);
-                        UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
-                        await store.SetPasswordHashAsync(user, hashedNewPassword);
-                    }
+                    //если человек есть в Novell eDirectory, но нет в AspNetUSers 
+                    applicationUser = CreateUser(context.UserName.Trim(), context.Password.Trim(), novelleDirectoryUser, userManager);
                 }
 
-                //if found in eDirectory but not found in ApplicationUsers - then create employee user 
-                //but in database to local users only DBA can grant rights 
-
-                if (user == null)
+                if (!novelleDirectoryUser.IsAlien)
                 {
-                    // logger.Log(LogLevel.Info, "User not found in UserStore, but found in Novell. Creating user from Novell", context.UserName, context.Password);
-                    bool dbResult = false;
-                    using (ApplicationDbContext db = new ApplicationDbContext())
-                    {
-                        dbResult = db.CreateHoldingUser(context.UserName, context.Password);
-                        //   logger.Log(LogLevel.Info, "Creating user in database");
-                    }
-                    if (dbResult == true)
-                    {
-                        user = CreateEmployeeApplicationUser(context.UserName, context.Password, userManager);
-                        userManager.AddToRole(user.Id, "Personnel");
-                        bool rightsResult = false;
-                        using (ApplicationDbContext db = new ApplicationDbContext())
-                        {
-                            rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
-                        }
-                    }
-               }
+                    NovellGroupWisePostOfficeConnection postOfficeConnection = novellGroupWise.Connect(context.UserName.Trim(), context.Password.Trim());
+                    applicationUser.PostOfficeAddress = postOfficeConnection.PostOffice;
+                    applicationUser.GroupWiseSessionId = postOfficeConnection.SessionId;
+                }
+
+                ClaimsIdentity oAuthIdentity = await applicationUser.GenerateUserIdentityAsync(userManager,
+               OAuthDefaults.AuthenticationType);
+                ClaimsIdentity cookiesIdentity = await applicationUser.GenerateUserIdentityAsync(userManager,
+                    CookieAuthenticationDefaults.AuthenticationType);
+
+
+                AuthenticationProperties properties = CreateProperties(applicationUser.UserName);
+                AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
+                context.Validated(ticket);
+                context.Request.Context.Authentication.SignIn(cookiesIdentity);
             }
-            else
+            catch (NovelleDirectoryException nede)
             {
-                user = null;
-            }
-            if (user == null)
-            {
-                //  logger.Log(LogLevel.Info, "User not found", context.UserName, context.Password);
+                //если человека нет в Novell - это и только это показатель того, что его никуда не надо пускать 
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;
             }
-            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
-               OAuthDefaults.AuthenticationType);
-            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
-                CookieAuthenticationDefaults.AuthenticationType);
-            AuthenticationProperties properties = CreateProperties(user.UserName);
-            AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
-            context.Validated(ticket);
-            context.Request.Context.Authentication.SignIn(cookiesIdentity);
+            catch (NovellGroupWiseException ngwe)
+            {
+                context.SetError("invalid_grant", ngwe.Message);
+                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+            }
+            catch (FailedDatabaseConnectionException fdce)
+            {
+                context.SetError("invalid_grant", fdce.Message);
+                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+            }
+            catch (Exception e)
+            {
+                context.SetError("invalid_grant", e.Message);
+                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+            }
 
         }
 
-        private ApplicationUser CreateEmployeeApplicationUser(string username, string password, ApplicationUserManager userManager)
+        private ApplicationUser CreateEmployeeApplicationUser(ApplicationUserManager userManager, string username, string password, string email)
         {
             int employeeId = CreateEmployee();
-            if (employeeId != 0)
+            ApplicationUser newUser = new ApplicationUser
             {
-                ApplicationUser newUser = new ApplicationUser
-                {
-                    UserName = username,
-                    Email = novell.FindEmail(username),
-                    //LDAPou = novell.FindOffice(username),
-                    TableName = "Employee",
-                    TableId = employeeId
-                };
+                UserName = username,
+                Email = email,
+                TableName = "Employee",
+                TableId = employeeId
+            };
+            try
+            { 
                 userManager.Create(newUser, password);
-                return newUser;
             }
-            return null;
+            catch (Exception e)
+            {
+                throw new FailedDatabaseConnectionException("Cannot create application user");
+            }
+            return newUser;
+        }
+
+        private async Task<ApplicationUser> ChangePassword(string username, string password, ApplicationUserManager userManager)
+        {
+            ApplicationUser user = userManager.FindByName(username);
+            if (user != null)
+            {
+                String userId = user.Id;
+                String hashedNewPassword = userManager.PasswordHasher.HashPassword(password);
+                UserStore<ApplicationUser> store = new UserStore<ApplicationUser>();
+                await store.SetPasswordHashAsync(user, hashedNewPassword);
+            }
+            return user;
+        }
+
+        private ApplicationUser CreateUser(string username, string password, NovellUser novellUser, ApplicationUserManager userManager)
+        {
+
+            bool dbResult = false;
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                dbResult = db.CreateHoldingUser(username, password);
+                if (!dbResult)
+                { 
+                throw new FailedDatabaseConnectionException("Cannot create database login");
+                }
+            }
+
+            ApplicationUser user = CreateEmployeeApplicationUser(userManager, username, password, novellUser.Attributes["mail"][0]);
+            userManager.AddToRole(user.Id, "Personnel");
+            bool rightsResult = false;
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                rightsResult = db.GrantStandardRightsToPersonnel(user.Id);
+            }
+            if (!rightsResult)
+            {
+                throw new FailedDatabaseConnectionException("Cannot create user rights");
+            }
+            return user;
         }
 
         private int CreateEmployee()
         {
             int employeeId = 0;
-            using (SecureEmployeeCreatorDbContext db = new SecureEmployeeCreatorDbContext())
+            try
             {
-                employeeId = db.CreateEmployee();
+                using (SecureEmployeeCreatorDbContext db = new SecureEmployeeCreatorDbContext())
+                {
+                    employeeId = db.CreateEmployee();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new FailedDatabaseConnectionException("Cannot create employee");
             }
             return employeeId;
         }

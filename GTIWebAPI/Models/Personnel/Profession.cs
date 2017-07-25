@@ -1,5 +1,7 @@
 namespace GTIWebAPI.Models.Personnel
 {
+    using Dictionary;
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +9,7 @@ namespace GTIWebAPI.Models.Personnel
     using System.Data.Entity.Spatial;
 
     [Table("profession")]
-    public partial class Profession 
+    public partial class Profession : GTITable
     {
         [Key]
         [Column("id")]
@@ -31,14 +33,27 @@ namespace GTIWebAPI.Models.Personnel
 
         public bool? Deleted { get; set; }
 
+        public int CountryId { get; set; }
+
+        public virtual Country Country { get; set; }
+
         public ProfessionDTO ToDTO()
         {
             ProfessionDTO dto = new ProfessionDTO
             {
                 Id = this.Id,
-                Name = this.Name
+                Name = this.Name,
+                Country = this.Country == null ? null : this.Country.ToDTO()
             };
             return dto;
+        }
+
+        protected override string TableName
+        {
+            get
+            {
+                return "Profession";
+            }
         }
 
     }
@@ -46,6 +61,9 @@ namespace GTIWebAPI.Models.Personnel
     public class ProfessionDTO
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
+
+        public CountryDTO Country { get; set; }
     }
 }

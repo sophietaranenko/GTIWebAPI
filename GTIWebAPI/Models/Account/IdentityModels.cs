@@ -18,6 +18,8 @@ using System.Web;
 using System.Data.SqlClient;
 using System.Data;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.NovelleDirectory;
+using System.Security.Principal;
 
 namespace GTIWebAPI.Models.Account
 {
@@ -32,15 +34,29 @@ namespace GTIWebAPI.Models.Account
             UserRights = new List<UserRight>();
         }
 
+        //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
+        //{
+        //    // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+        //    var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+        //    // Add custom user claims here
+        //    userIdentity.AddClaim(new Claim("GroupWiseSessionId", this.GroupWiseSessionId));
+
+        //    return userIdentity;
+        //}
+
         public string TableName { get; set; }
 
         public int TableId { get; set; }
 
-        public string LDAPou { get; set; }
+        [NotMapped]
+        public string GroupWiseSessionId { get; set; }
+
+        [NotMapped]
+        public string PostOfficeAddress { get; set; }
 
         public virtual ICollection<UserRight> UserRights { get; set; }
 
-        public List<UserRightDTO>  GetUserRightsDTO()
+        public List<UserRightDTO> GetUserRightsDTO()
         {
             List<UserRightDTO> dtos = new List<UserRightDTO>();
             try
@@ -121,8 +137,6 @@ namespace GTIWebAPI.Models.Account
             return dtos;
         }
 
-        
-
         /// <summary>
         /// method that creates a new Claims Identity 
         /// </summary>
@@ -134,9 +148,33 @@ namespace GTIWebAPI.Models.Account
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
             // Add custom user claims here
+            if (this.GroupWiseSessionId != null)
+            {
+                userIdentity.AddClaim(new Claim("GroupWiseSessionId", this.GroupWiseSessionId));
+            }
+            if (this.PostOfficeAddress != null)
+            {
+                userIdentity.AddClaim(new Claim("PostOfficeAddress", this.PostOfficeAddress));
+            }
             return userIdentity;
         }
     }
+
+    public static class IdentityExtensions
+    {
+        public static string GetSessionId(this IIdentity identity)
+        {
+            var claim = ((ClaimsIdentity)identity).FindFirst("GroupWiseSessionId");
+            return (claim != null) ? claim.Value : string.Empty;
+        }
+
+        public static string GetPostOfficeAddress(this IIdentity identity)
+        {
+            var claim = ((ClaimsIdentity)identity).FindFirst("PostOfficeAddress");
+            return (claim != null) ? claim.Value : string.Empty;
+        }
+    }
+
 
     public interface IApplicationDbContext : IDisposable
     {
@@ -148,7 +186,7 @@ namespace GTIWebAPI.Models.Account
         bool CreateHoldingUser(string email, string password);
 
         bool CreateOrganization(string email, string password);
-        
+
         string GetFullUserName(string userId);
 
         bool GrantRightsToOrganization(string userId);
@@ -156,10 +194,10 @@ namespace GTIWebAPI.Models.Account
         bool GrantStandardRightsToPersonnel(string userId);
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> , IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
         public ApplicationDbContext()
-            :base("name=DbUsers", throwIfV1Schema: false)
+            : base("name=DbUsers", throwIfV1Schema: false)
         {
             Database.SetInitializer<MainDbContext>(null);
         }
@@ -178,7 +216,7 @@ namespace GTIWebAPI.Models.Account
 
         public DbSet<Security.Action> Actions { get; set; }
 
-      
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

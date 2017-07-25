@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTIWebAPI.NovelleDirectory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,9 @@ namespace GTIWebAPI.Models.Context
         string GetUserName();
 
         bool IsInRole(string roleName);
+
+        string GetPostOffice();
+
+        string GetSessionId();
     }
 }

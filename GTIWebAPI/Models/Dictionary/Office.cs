@@ -27,6 +27,10 @@ namespace GTIWebAPI.Models.Dictionary
 
         public string DealIndex { get; set; }
 
+        public int CountryId { get; set; }
+
+        public virtual Country Country { get; set; }
+
         public virtual ICollection<UserRightMask> Masks { get; set; }
 
         public virtual ICollection<UserRightOff> UserRights { get; set; }
@@ -36,7 +40,8 @@ namespace GTIWebAPI.Models.Dictionary
             OfficeDTO dto = new OfficeDTO
             {
                 Id = this.Id,
-                ShortName = this.ShortName 
+                ShortName = this.ShortName, 
+                Country = this.Country == null ? null : Country.ToDTO()
             };
             return dto;
         }
@@ -50,6 +55,8 @@ namespace GTIWebAPI.Models.Dictionary
         public string ShortName { get; set; }
 
         public string DealIndex { get; set; }
+
+        public CountryDTO Country { get; set; }
 
         public Office FromDTO()
         {

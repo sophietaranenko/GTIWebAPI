@@ -21,6 +21,7 @@ using GTIWebAPI.Exceptions;
 using GTIWebAPI.Models.Repository;
 using System.Web.Http.Controllers;
 using System.Security.Principal;
+using GTIWebAPI.NovelleDirectory;
 
 namespace GTIWebAPI.Controllers
 {

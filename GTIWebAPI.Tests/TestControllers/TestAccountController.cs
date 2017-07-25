@@ -4,7 +4,7 @@ using GTIWebAPI.Models.Context;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Service;
-using GTIWebAPI.Novell;
+using GTIWebAPI.NovelleDirectory;
 using GTIWebAPI.Tests.TestContext;
 using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -367,9 +367,15 @@ namespace GTIWebAPI.Tests.TestControllers
             request.Setup(d => d.Collection()).Returns(new List<string> { "one.jpg" });
             request.Setup(d => d.AppPath()).Returns("C://Projects//GTIWebAPI//GTIWebAPI//");
 
-            var novell = new Mock<INovellManager>();
-            novell.Setup(d => d.GenerateLogin(It.IsAny<string>())).Returns<string>((login) => { return login; });
-            novell.Setup(d => d.CreateOrganization(It.IsAny<INovellOrganizationContactPerson>())).Returns(true);
+            var novell = new Mock<INovelleDirectory>();
+            //  novell.Setup(d => d.GenerateLogin(It.IsAny<string>())).Returns<string>((login) => { return login; });
+            OrganizationContactPersonView contactPerson = new OrganizationContactPersonView()
+            {
+                FirstName = "Sofia",
+                LastName = "Viazovsky",
+                Email = "sophytaranenko@gmail.com"
+            };
+            novell.Setup(d => d.CreateOrganization(It.IsAny<INovellOrganizationContactPerson>())).Returns(new NovellOrganizationContactPerson(contactPerson));
 
             var context = new Mock<IApplicationDbContext>();
             context.Setup(d => d.CreateOrganization(It.IsAny<string>(), It.IsAny<string>())).Returns(true);

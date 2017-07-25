@@ -30,6 +30,7 @@ namespace GTIWebAPI.Models.Service
 
     public class Request : IRequest
     {
+
         public List<string> Collection()
         {
             List<string> list = new List<string>();

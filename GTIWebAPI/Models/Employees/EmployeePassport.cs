@@ -26,31 +26,31 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Passport Seria
         /// </summary>
-        [StringLength(5)]
+        [StringLength(10)]
         public string Seria { get; set; }
 
         /// <summary>
         /// Number of passport
         /// </summary>
-        [StringLength(25)]
+        [StringLength(50)]
         public string Number { get; set; }
 
         /// <summary>
         /// Employee first name specified in passport
         /// </summary>
-        [StringLength(20)]
+        [StringLength(50)]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Employee second name specified in passport
         /// </summary>
-        [StringLength(20)]
+        [StringLength(50)]
         public string SecondName { get; set; }
 
         /// <summary>
         /// Employee surname specified in passport
         /// </summary>
-        [StringLength(20)]
+        [StringLength(50)]
         public string Surname { get; set; }
 
 
@@ -65,7 +65,7 @@ namespace GTIWebAPI.Models.Employees
         /// <summary>
         /// Government place where passport was issued to employee
         /// </summary>
-        [StringLength(100)]
+        [StringLength(250)]
         public string IssuedBy { get; set; }
 
         /// <summary>

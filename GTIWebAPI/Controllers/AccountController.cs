@@ -17,7 +17,7 @@ using GTIWebAPI.Models.Account;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Filters;
-using GTIWebAPI.Novell;
+using GTIWebAPI.NovelleDirectory;
 using GTIWebAPI.Exceptions;
 using System.IO;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace GTIWebAPI.Controllers
 
         private IApplicationDbContext context;
 
-        private INovellManager novell;  
+        private INovelleDirectory novell;  
 
         private IDbContextFactory factory;
 
@@ -54,7 +54,7 @@ namespace GTIWebAPI.Controllers
 
         public AccountController()
         {
-            novell = new NovellManager();
+            novell = new NovelleDirectory.NovelleDirectory();
             factory = new DbContextFactory();
             context = new ApplicationDbContext();
             identityHelper = new IdentityHelper();
@@ -67,7 +67,7 @@ namespace GTIWebAPI.Controllers
             this.UserManager = userManager;
             this.AccessTokenFormat = accessTokenFormat;
 
-            novell = new NovellManager();
+            novell = new NovelleDirectory.NovelleDirectory();
             factory = new DbContextFactory();
             context = new ApplicationDbContext();
             identityHelper = new IdentityHelper();
@@ -75,7 +75,7 @@ namespace GTIWebAPI.Controllers
         }
 
 
-        public AccountController(IDbContextFactory factory, IApplicationDbContext context, IRequest request, IIdentityHelper identityHelper, INovellManager novell, ApplicationUserManager userManager)
+        public AccountController(IDbContextFactory factory, IApplicationDbContext context, IRequest request, IIdentityHelper identityHelper, INovelleDirectory novell, ApplicationUserManager userManager)
         {
             this.novell = novell;
             this.factory = factory;
@@ -92,7 +92,7 @@ namespace GTIWebAPI.Controllers
             this.context = context;
 
             request = new Request();
-            novell = new NovellManager();
+            novell = new NovelleDirectory.NovelleDirectory();
             identityHelper = new IdentityHelper();
         }
 
@@ -103,7 +103,7 @@ namespace GTIWebAPI.Controllers
             this.request = request;
 
             context = new ApplicationDbContext();
-            novell = new NovellManager();
+            novell = new NovelleDirectory.NovelleDirectory();
             identityHelper = new IdentityHelper();
         }
 
@@ -567,15 +567,15 @@ namespace GTIWebAPI.Controllers
                 try
                 {
                     novellPerson = new NovellOrganizationContactPerson(person);
-                    novellPerson.Login = novell.GenerateLogin(novellPerson.Login);
+                   // novellPerson.Login = novell.GenerateLogin(novellPerson.Login);
                 }
                 catch (Exception e)
                 {
                     return BadRequest(e.Message);
                 }
 
-                bool novellResult = novell.CreateOrganization(novellPerson);
-                if (novellResult)
+                INovellOrganizationContactPerson personCreated = novell.CreateOrganization(novellPerson);
+                if (personCreated != null)
                 {
                     bool dbResult = context.CreateOrganization(novellPerson.Login, novellPerson.Password);
                     if (dbResult)

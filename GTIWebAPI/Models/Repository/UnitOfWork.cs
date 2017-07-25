@@ -577,6 +577,8 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
+
+
         /// <summary>
         /// For using Stored Procedures throw UnitOfWork
         /// </summary>

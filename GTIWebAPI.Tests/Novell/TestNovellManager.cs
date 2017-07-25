@@ -1,4 +1,4 @@
-﻿using GTIWebAPI.Novell;
+﻿using GTIWebAPI.NovelleDirectory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,31 +7,16 @@ using System.Threading.Tasks;
 
 namespace GTIWebAPI.Tests.Novell
 {
-    public class TestNovellManager : INovellManager
+    public class TestNovellManager : INovelleDirectory
     {
-        public bool CreateOrganization(INovellOrganizationContactPerson person)
+        INovellOrganizationContactPerson INovelleDirectory.CreateOrganization(INovellOrganizationContactPerson person)
         {
-            return true;
+            throw new NotImplementedException();
         }
 
-        public bool CredentialsCorrect(string username, string password)
+        public NovellUser Connect(string login, string password)
         {
-            return true;
-        }
-
-        public string FindEmail(string username)
-        {
-            return "testemail@testemail.test";
-        }
-
-        public string GenerateLogin(string login)
-        {
-            return login.Replace(" ", "");
-        }
-
-        public string FindOffice(string username)
-        {
-            return "Formag odessa";
+            throw new NotImplementedException();
         }
     }
 }

@@ -248,6 +248,9 @@
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.0.0\lib\portable-net45+win8+wpa81\System.Diagnostics.DiagnosticSource.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.DirectoryServices.Protocols" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IO.Compression" />
@@ -427,6 +430,7 @@
     <Compile Include="Controllers\ContainersController.cs" />
     <Compile Include="Controllers\DealDocumentScansController.cs" />
     <Compile Include="Controllers\KPIValuesController.cs" />
+    <Compile Include="Controllers\NovellEmailController.cs" />
     <Compile Include="Controllers\OrganizationAddressesController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonContactsController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonsController.cs" />
@@ -453,11 +457,14 @@
     <Compile Include="Controllers\OrganizationsGTIController.cs" />
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
     <Compile Include="Controllers\ProductivityReportController.cs" />
+    <Compile Include="Controllers\ProfessionsController.cs" />
     <Compile Include="Controllers\UserRightMaskController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Exceptions\ConflictException.cs" />
     <Compile Include="Exceptions\FailedDatabaseConnectionException.cs" />
     <Compile Include="Exceptions\NotFoundException.cs" />
+    <Compile Include="Exceptions\NovelleDirectoryException.cs" />
+    <Compile Include="Exceptions\NovellGroupWiseException.cs" />
     <Compile Include="Exceptions\WrongDatabaseLoginException.cs" />
     <Compile Include="Filters\GTIFilter.cs" />
     <Compile Include="Filters\GTIOfficeFilter.cs" />
@@ -590,11 +597,20 @@
     <Compile Include="Models\Accounting\ShippingLine.cs" />
     <Compile Include="Models\Accounting\Terminal.cs" />
     <Compile Include="Models\Accounting\Vessel.cs" />
-    <Compile Include="Novell\INovellManager.cs" />
-    <Compile Include="Novell\INovellOrganizationContactPerson.cs" />
-    <Compile Include="Novell\NovellManager.cs" />
-    <Compile Include="Novell\NovellOrganizationContactPerson.cs" />
-    <Compile Include="Novell\NovellEntry.cs" />
+    <Compile Include="NovelleDirectory\GroupWiseFolder.cs" />
+    <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseContact.cs" />
+    <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseFactory.cs" />
+    <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseMail.cs" />
+    <Compile Include="NovelleDirectory\GroupWiseMailBox.cs" />
+    <Compile Include="NovelleDirectory\INovellManager.cs" />
+    <Compile Include="NovelleDirectory\INovellOrganizationContactPerson.cs" />
+    <Compile Include="NovelleDirectory\LDAPCommon.cs" />
+    <Compile Include="NovelleDirectory\NovellManager.cs" />
+    <Compile Include="NovelleDirectory\NovellOrganizationContactPerson.cs" />
+    <Compile Include="NovelleDirectory\NovellEntry.cs" />
+    <Compile Include="NovelleDirectory\NovellUser.cs" />
+    <Compile Include="NovellGroupWiseSOAP\NovellGroupWise.cs" />
+    <Compile Include="NovellGroupWiseSOAP\NovellGroupWisePostOfficeConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -651,6 +667,20 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NovellGroupWiseSOAP\archive.wsdl" />
+    <None Include="NovellGroupWiseSOAP\archive.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NovellGroupWiseSOAP\events.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NovellGroupWiseSOAP\groupwise.wsdl" />
+    <None Include="NovellGroupWiseSOAP\methods.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NovellGroupWiseSOAP\types.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\PublishProfiles\MyProfile.pubxml" />
@@ -927,10 +957,10 @@
     <Content Include="Web References\WebReference\readCursorResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
-    <Content Include="Web References\WebReference\Reference.map">
+    <None Include="Web References\WebReference\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
     <Content Include="Web References\WebReference\removeCustomDefinitionResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
