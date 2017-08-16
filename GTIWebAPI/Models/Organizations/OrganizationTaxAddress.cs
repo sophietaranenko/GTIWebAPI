@@ -67,5 +67,18 @@ namespace GTIWebAPI.Models.Organizations
         public DateTime? DateEnd { get; set; }
 
         public AddressDTO Address { get; set; }
+
+        public OrganizationTaxAddress FromDTO()
+        {
+            return new OrganizationTaxAddress()
+            {
+                Address = this.Address.FromDTO(),
+                AddressId = this.AddressId,
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Id = this.Id,
+                OrganizationId = this.OrganizationId
+            };
+        }
     }
 }

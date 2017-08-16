@@ -6,11 +6,14 @@ using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
 using GTIWebAPI.Models.Reports.ProductivityReport;
+using GTIWebAPI.Models.Sales;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Service;
+using GTIWebAPI.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
@@ -28,6 +31,14 @@ namespace GTIWebAPI.Models.Repository
             this.context = factory.CreateDbContext();
         }
 
+
+        public string GetChanges(object myObject)
+        {
+            return context.GetChanges(myObject);
+
+        }
+
+
         //UserImages 
         private GenericRepository<UserImage> userImagesRepository;
         public GenericRepository<UserImage> UserImagesRepository
@@ -41,6 +52,7 @@ namespace GTIWebAPI.Models.Repository
                 return userImagesRepository;
             }
         }
+
 
 
         ////UserRights Block
@@ -413,11 +425,11 @@ namespace GTIWebAPI.Models.Repository
                 list.EmployeeOfficeList = new EmployeeOfficeList();
 
                 list.EmployeeOfficeList.Offices = context.Offices.ToList().Select(d => d.ToDTO());
-                list.EmployeeOfficeList.Professions = context.Professions.ToList().Select(d => d.ToDTO());
-                list.EmployeeOfficeList.Departments = context.Departments.ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Professions = context.Professions.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Departments = context.Departments.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
 
-                list.ContactTypes = context.ContactTypes.ToList().Select(d => d.ToDTO());
-                list.FoundationDocuments = context.FoundationDocuments.ToList().Select(d => d.ToDTO());
+                list.ContactTypes = context.ContactTypes.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+                list.FoundationDocuments = context.FoundationDocuments.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
                 list.EducationStudyForms = context.EducationStudyForms.ToList().Select(d => d.ToDTO());
             }
             catch (Exception e)
@@ -579,6 +591,208 @@ namespace GTIWebAPI.Models.Repository
 
 
 
+
+        private GenericRepository<Organizations.OrganizationOwner> organizationOwnersRepository;
+        public GenericRepository<Organizations.OrganizationOwner> OrganizationOwnersRepository
+        {
+            get
+            {
+                if (this.organizationOwnersRepository == null)
+                {
+                    this.organizationOwnersRepository = new GenericRepository<Organizations.OrganizationOwner>(context);
+                }
+                return organizationOwnersRepository;
+            }
+        }
+
+        //Sales 
+
+        private GenericRepository<Act> actsRepository;
+        public GenericRepository<Act> ActsRepository
+        {
+            get
+            {
+                if (this.actsRepository == null)
+                {
+                    this.actsRepository = new GenericRepository<Act>(context);
+                }
+                return actsRepository;
+            }
+        }
+
+        private GenericRepository<Interaction> interactionsRepository;
+        public GenericRepository<Interaction> InteractionsRepository
+        {
+            get
+            {
+                if (this.interactionsRepository == null)
+                {
+                    this.interactionsRepository = new GenericRepository<Interaction>(context);
+                }
+                return interactionsRepository;
+            }
+        }
+
+        private GenericRepository<InteractionAct> interactionActsRepository;
+        public GenericRepository<InteractionAct> InteractionActsRepository
+        {
+            get
+            {
+                if (this.interactionActsRepository == null)
+                {
+                    this.interactionActsRepository = new GenericRepository<InteractionAct>(context);
+                }
+                return interactionActsRepository;
+            }
+        }
+
+        private GenericRepository<InteractionActMember> interactionActMembersRepository;
+        public GenericRepository<InteractionActMember> InteractionActMembersRepository
+        {
+            get
+            {
+                if (this.interactionActMembersRepository == null)
+                {
+                    this.interactionActMembersRepository = new GenericRepository<InteractionActMember>(context);
+                }
+                return interactionActMembersRepository;
+            }
+        }
+
+        private GenericRepository<InteractionMember> interactionMembersRepository;
+        public GenericRepository<InteractionMember> InteractionMembersRepository
+        {
+            get
+            {
+                if (this.interactionMembersRepository == null)
+                {
+                    this.interactionMembersRepository = new GenericRepository<InteractionMember>(context);
+                }
+                return interactionMembersRepository;
+            }
+        }
+
+        private GenericRepository<InteractionActOrganizationMember> interactionActOrganizationMembersRepository;
+        public GenericRepository<InteractionActOrganizationMember> InteractionActOrganizationMembersRepository
+        {
+            get
+            {
+                if (this.interactionActOrganizationMembersRepository == null)
+                {
+                    this.interactionActOrganizationMembersRepository = new GenericRepository<InteractionActOrganizationMember>(context);
+                }
+                return interactionActOrganizationMembersRepository;
+            }
+        }
+
+        private GenericRepository<Sales.Task> tasksRepository;
+        public GenericRepository<Sales.Task> TasksRepository
+        {
+            get
+            {
+                if (this.tasksRepository == null)
+                {
+                    this.tasksRepository = new GenericRepository<Sales.Task>(context);
+                }
+                return tasksRepository;
+            }
+        }
+
+        private GenericRepository<TaskMember> taskMembersRepository;
+        public GenericRepository<TaskMember> TaskMembersRepository
+        {
+            get
+            {
+                if (this.taskMembersRepository == null)
+                {
+                    this.taskMembersRepository = new GenericRepository<TaskMember>(context);
+                }
+                return taskMembersRepository;
+            }
+        }
+
+        private GenericRepository<TaskMemberRole> taskMemberRolesRepository;
+        public GenericRepository<TaskMemberRole> TaskMemberRolesRepository
+        {
+            get
+            {
+                if (this.taskMemberRolesRepository == null)
+                {
+                    this.taskMemberRolesRepository = new GenericRepository<TaskMemberRole>(context);
+                }
+                return taskMemberRolesRepository;
+            }
+        }
+
+        private GenericRepository<Country> countriesRepository;
+        public GenericRepository<Country> CountriesRepository
+        {
+            get
+            {
+                if (this.countriesRepository == null)
+                {
+                    this.countriesRepository = new GenericRepository<Country>(context);
+                }
+                return countriesRepository;
+            }
+        }
+
+        private GenericRepository<InteractionStatusMovement> interactionStatusMovementsRepository;
+        public GenericRepository<InteractionStatusMovement> InteractionStatusMovementsRepository
+        {
+            get
+            {
+                if (this.interactionStatusMovementsRepository == null)
+                {
+                    this.interactionStatusMovementsRepository = new GenericRepository<InteractionStatusMovement>(context);
+                }
+                return interactionStatusMovementsRepository;
+            }
+        }
+
+        private GenericRepository<EmployeeInsurance> employeeInsurancesRepository;
+        public GenericRepository<EmployeeInsurance> EmployeeInsurancesRepository
+        {
+            get
+            {
+                if (this.employeeInsurancesRepository == null)
+                {
+                    this.employeeInsurancesRepository = new GenericRepository<EmployeeInsurance>(context);
+                }
+                return employeeInsurancesRepository;
+            }
+        }
+
+        private GenericRepository<Notification> notificationsRepository;
+        public GenericRepository<Notification> NotificationsRepository
+        {
+            get
+            {
+                if (this.notificationsRepository == null)
+                {
+                    this.notificationsRepository = new GenericRepository<Notification>(context);
+                }
+                return notificationsRepository;
+            }
+        }
+
+        private GenericRepository<NotificationRecipient> notificationRecipientsRepository;
+        public GenericRepository<NotificationRecipient> NotificationRecipientsRepository
+        {
+            get
+            {
+                if (this.notificationRecipientsRepository == null)
+                {
+                    this.notificationRecipientsRepository = new GenericRepository<NotificationRecipient>(context);
+                }
+                return notificationRecipientsRepository;
+            }
+        }
+
+
+
+
+
         /// <summary>
         /// For using Stored Procedures throw UnitOfWork
         /// </summary>
@@ -594,6 +808,11 @@ namespace GTIWebAPI.Models.Repository
         public Task<IEnumerable<T>> SQLQueryAsync<T>(string sql, params object[] parameters) where T : class
         {
             return context.ExecuteStoredProcedureAsync<T>(sql, parameters);
+        }
+
+        public void DoSomething()
+        {
+            //  var myObjectState = 
         }
 
         /// <summary>

@@ -118,7 +118,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeGun(int id, EmployeeGun employeeGun)
+        public IHttpActionResult PutEmployeeGun(int id, EmployeeGunDTO employeeGun)
         {
             if (employeeGun == null || !ModelState.IsValid)
             {
@@ -130,11 +130,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeGun gun = employeeGun.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeGunsRepository.Update(employeeGun);
+                unitOfWork.EmployeeGunsRepository.Update(gun);
                 unitOfWork.Save();
-                EmployeeGunDTO gun = employeeGun.ToDTO();
-                return Ok(gun);
+                EmployeeGunDTO dto = gun.ToDTO();
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {
@@ -154,7 +155,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeGunDTO))]
-        public IHttpActionResult PostEmployeeGun(EmployeeGun employeeGun)
+        public IHttpActionResult PostEmployeeGun(EmployeeGunDTO employeeGun)
         {
             if (employeeGun == null || !ModelState.IsValid)
             {
@@ -162,12 +163,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeGun gun = employeeGun.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeGun.Id = employeeGun.NewId(unitOfWork);
-                unitOfWork.EmployeeGunsRepository.Insert(employeeGun);
+                gun.Id = gun.NewId(unitOfWork);
+                unitOfWork.EmployeeGunsRepository.Insert(gun);
                 unitOfWork.Save();
-                EmployeeGunDTO gun = employeeGun.ToDTO();
-                return CreatedAtRoute("GetEmployeeGun", new { id = gun.Id }, gun);
+                EmployeeGunDTO dto = gun.ToDTO();
+                return CreatedAtRoute("GetEmployeeGun", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
             {

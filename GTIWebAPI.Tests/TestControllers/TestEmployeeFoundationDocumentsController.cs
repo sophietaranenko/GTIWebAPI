@@ -100,7 +100,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeFoundationDocument license = new EmployeeFoundationDocument { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
             var controller = new EmployeeFoundationDocumentsController(factory.Object);
-            var result = controller.PutEmployeeFoundationDocument(3, license) as OkNegotiatedContentResult<EmployeeFoundationDocumentDTO>;
+            var result = controller.PutEmployeeFoundationDocument(3, license.ToDTO()) as OkNegotiatedContentResult<EmployeeFoundationDocumentDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -149,7 +149,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeFoundationDocument license = new EmployeeFoundationDocument { Id = 0, EmployeeId = 3,  IssuedBy = "Wow" };
             var controller = new EmployeeFoundationDocumentsController(factory.Object);
-            var result = controller.PostEmployeeFoundationDocument(license) as CreatedAtRouteNegotiatedContentResult<EmployeeFoundationDocumentDTO>;
+            var result = controller.PostEmployeeFoundationDocument(license.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeFoundationDocumentDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);

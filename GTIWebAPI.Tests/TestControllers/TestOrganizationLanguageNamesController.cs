@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             OrganizationLanguageName passport = new OrganizationLanguageName { Id = 3, OrganizationId = 3 };
             var controller = new OrganizationLanguageNamesController(factory.Object);
-            var result = controller.PutOrganizationLanguageName(3, passport) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
+            var result = controller.PutOrganizationLanguageName(3, passport.ToDTO()) as OkNegotiatedContentResult<OrganizationLanguageNameDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -131,7 +131,7 @@ namespace GTIWebAPI.Tests.TestControllers
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             OrganizationLanguageName passport = new OrganizationLanguageName { Id = 0, OrganizationId = 3 };
             var controller = new OrganizationLanguageNamesController(factory.Object);
-            var result = controller.PostOrganizationLanguageName(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationLanguageNameDTO>;
+            var result = controller.PostOrganizationLanguageName(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<OrganizationLanguageNameDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(3, result.Content.OrganizationId);

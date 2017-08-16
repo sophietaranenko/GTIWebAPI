@@ -106,11 +106,17 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                 {
                     return Connect(login, password, resp.redirectToHost[0].ipAddress);
                 }
+                else if (53505 == resp.status.code)
+                {
+                    throw new NotOnPostOfficeException("User not on post office");
+                }
             }
             catch (Exception e)
             {
                 throw new NovellGroupWiseException("Cannot connect to Post Office");
             }
+
+          //  NovellUser user = 
             return connection;
         }
 

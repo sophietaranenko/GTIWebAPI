@@ -114,7 +114,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeDrivingLicense(int id, EmployeeDrivingLicense employeeDrivingLicense)
+        public IHttpActionResult PutEmployeeDrivingLicense(int id, EmployeeDrivingLicenseDTO employeeDrivingLicense)
         {
             if (employeeDrivingLicense == null || !ModelState.IsValid)
             {
@@ -126,8 +126,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeDrivingLicense license = employeeDrivingLicense.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeDrivingLicensesRepository.Update(employeeDrivingLicense);
+                unitOfWork.EmployeeDrivingLicensesRepository.Update(license);
                 unitOfWork.Save();
                 EmployeeDrivingLicenseDTO dto = unitOfWork.EmployeeDrivingLicensesRepository.GetByID(id).ToDTO();
                 return Ok(dto);
@@ -150,7 +151,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeDrivingLicenseDTO))]
-        public IHttpActionResult PostEmployeeDrivingLicense(EmployeeDrivingLicense employeeDrivingLicense)
+        public IHttpActionResult PostEmployeeDrivingLicense(EmployeeDrivingLicenseDTO employeeDrivingLicense)
         {
             if (employeeDrivingLicense == null)
             {
@@ -162,11 +163,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeDrivingLicense license = employeeDrivingLicense.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeDrivingLicense.Id = employeeDrivingLicense.NewId(unitOfWork);
-                unitOfWork.EmployeeDrivingLicensesRepository.Insert(employeeDrivingLicense);
+                license.Id = license.NewId(unitOfWork);
+                unitOfWork.EmployeeDrivingLicensesRepository.Insert(license);
                 unitOfWork.Save();
-                EmployeeDrivingLicenseDTO dto = employeeDrivingLicense.ToDTO();
+                EmployeeDrivingLicenseDTO dto = license.ToDTO();
                 return CreatedAtRoute("GetDrivingLicense", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

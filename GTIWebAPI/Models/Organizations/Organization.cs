@@ -30,7 +30,8 @@ namespace GTIWebAPI.Models.Organizations
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int? EmployeeId { get; set; }
+        //now this information is stored in OrganizationOwner 
+       // public int? EmployeeId { get; set; }
 
         [StringLength(500)]
         public string NativeName { get; set; }
@@ -105,7 +106,8 @@ namespace GTIWebAPI.Models.Organizations
                 ShortName = this.ShortName,
                 Skype = this.Skype,
                 Email = this.Email,
-                EmployeeId = this.EmployeeId,
+                //now this information is stored in OrganizationOwner 
+                //  EmployeeId = this.EmployeeId,
                 FaxNumber = this.FaxNumber,
                 OrganizationLegalFormId = this.OrganizationLegalFormId,
                 Id = this.Id,
@@ -127,7 +129,8 @@ namespace GTIWebAPI.Models.Organizations
                 ShortName = this.ShortName,
                 Skype = this.Skype,
                 Email = this.Email,
-                EmployeeId = this.EmployeeId,
+                //now this information is stored in OrganizationOwner 
+                // EmployeeId = this.EmployeeId,
                 FaxNumber = this.FaxNumber,
                 OrganizationLegalFormId = this.OrganizationLegalFormId,
                 Id = this.Id,
@@ -154,7 +157,8 @@ namespace GTIWebAPI.Models.Organizations
     {
         public int Id { get; set; }
 
-        public int? EmployeeId { get; set; }
+        //now this information is stored in OrganizationOwner 
+       // public int? EmployeeId { get; set; }
 
         public string NativeName { get; set; }
 
@@ -201,7 +205,8 @@ namespace GTIWebAPI.Models.Organizations
     {
         public int Id { get; set; }
 
-        public int? EmployeeId { get; set; }
+        ////now this information is stored in OrganizationOwner 
+     //   public int? EmployeeId { get; set; }
 
         public string NativeName { get; set; }
 
@@ -227,6 +232,24 @@ namespace GTIWebAPI.Models.Organizations
 
         public OrganizationLegalFormDTO OrganizationLegalForm { get; set; }
 
+        public Organization FromDTO()
+        {
+            return new Organization()
+            {
+                CountryId = this.CountryId,
+                Email = this.Email,
+                FaxNumber = this.FaxNumber,
+                Id = this.Id,
+                NativeName = this.NativeName,
+                ParentOrganizationId = this.ParentOrganizationId,
+                PhoneNumber = this.PhoneNumber,
+                ShortName = this.ShortName,
+                Skype = this.Skype,
+                Website = this.Website
+            };
+
+        }
+
 
     }
 
@@ -251,6 +274,7 @@ namespace GTIWebAPI.Models.Organizations
     {
         public int Id { get; set; }
 
+        //owner is taken from OrganizationOwner (look into procedures) 
         public int? EmployeeId { get; set; }
 
         public string NativeName { get; set; }
@@ -280,5 +304,9 @@ namespace GTIWebAPI.Models.Organizations
         public string OrganizationRegistrationCountryName { get; set; }
 
         public string CreatorShortName { get; set; }
+
+        public int DealsCount { get; set;}
     }
+
+
 }

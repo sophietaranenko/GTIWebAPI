@@ -84,7 +84,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(OrganizationLanguageNameDTO))]
-        public IHttpActionResult PutOrganizationLanguageName(int id, OrganizationLanguageName organizationLanguageName)
+        public IHttpActionResult PutOrganizationLanguageName(int id, OrganizationLanguageNameDTO organizationLanguageName)
         {
             if (organizationLanguageName == null)
             {
@@ -100,8 +100,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationLanguageName name = organizationLanguageName.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.OrganizationLanguageNamesRepository.Update(organizationLanguageName);
+                unitOfWork.OrganizationLanguageNamesRepository.Update(name);
                 unitOfWork.Save();
                 OrganizationLanguageNameDTO dto = unitOfWork.OrganizationLanguageNamesRepository
                     .Get(d => d.Id == id, includeProperties: "Language").FirstOrDefault().ToDTO();
@@ -125,7 +126,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationLanguageNameDTO))]
-        public IHttpActionResult PostOrganizationLanguageName(OrganizationLanguageName organizationLanguageName)
+        public IHttpActionResult PostOrganizationLanguageName(OrganizationLanguageNameDTO organizationLanguageName)
         {
             if (organizationLanguageName == null)
             {
@@ -133,12 +134,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationLanguageName name = organizationLanguageName.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                organizationLanguageName.Id = organizationLanguageName.NewId(unitOfWork);
-                unitOfWork.OrganizationLanguageNamesRepository.Insert(organizationLanguageName);
+                name.Id = name.NewId(unitOfWork);
+                unitOfWork.OrganizationLanguageNamesRepository.Insert(name);
                 unitOfWork.Save();
                 OrganizationLanguageNameDTO dto = unitOfWork.OrganizationLanguageNamesRepository
-                    .Get(d => d.Id == organizationLanguageName.Id, includeProperties: "Language").FirstOrDefault().ToDTO();
+                    .Get(d => d.Id == name.Id, includeProperties: "Language").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetOrganizationLanguageName", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

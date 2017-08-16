@@ -91,7 +91,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(OrganizationTaxAddressDTO))]
-        public IHttpActionResult PutOrganizationTaxAddress(int id, OrganizationTaxAddress organizationTaxAddress)
+        public IHttpActionResult PutOrganizationTaxAddress(int id, OrganizationTaxAddressDTO organizationTaxAddress)
         {
             if (organizationTaxAddress == null || !ModelState.IsValid)
             {
@@ -103,8 +103,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationTaxAddress address = organizationTaxAddress.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.OrganizationTaxAddressesRepository.Update(organizationTaxAddress);
+                unitOfWork.OrganizationTaxAddressesRepository.Update(address);
                 unitOfWork.Save();
                 OrganizationTaxAddressDTO dto = unitOfWork.OrganizationTaxAddressesRepository
                     .Get(d => d.Id == id, includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
@@ -130,7 +131,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationTaxAddressDTO))]
-        public IHttpActionResult PostOrganizationTaxAddress(OrganizationTaxAddress organizationTaxAddress)
+        public IHttpActionResult PostOrganizationTaxAddress(OrganizationTaxAddressDTO organizationTaxAddress)
         {
             if (organizationTaxAddress == null)
             {
@@ -138,15 +139,16 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationTaxAddress address = organizationTaxAddress.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                organizationTaxAddress.Id = organizationTaxAddress.NewId(unitOfWork);
-                organizationTaxAddress.Address.Id = organizationTaxAddress.Address.NewId(unitOfWork);
-                organizationTaxAddress.AddressId = organizationTaxAddress.Address.Id;
-                unitOfWork.OrganizationTaxAddressesRepository.Insert(organizationTaxAddress);
+               address.Id = address.NewId(unitOfWork);
+                address.Address.Id = address.Address.NewId(unitOfWork);
+                address.AddressId = address.Address.Id;
+                unitOfWork.OrganizationTaxAddressesRepository.Insert(address);
                 unitOfWork.Save();
 
                 OrganizationTaxAddressDTO dto = unitOfWork.OrganizationTaxAddressesRepository
-                    .Get(d => d.Id == organizationTaxAddress.Id, includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+                    .Get(d => d.Id == address.Id, includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
                     .FirstOrDefault().ToDTO();
 
                 return CreatedAtRoute("GetOrganizationTaxAddress", new { id = dto.Id }, dto);

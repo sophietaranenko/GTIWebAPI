@@ -44,6 +44,9 @@ namespace GTIWebAPI.Models.Account
         //    return userIdentity;
         //}
 
+
+
+
         public string TableName { get; set; }
 
         public int TableId { get; set; }
@@ -156,6 +159,10 @@ namespace GTIWebAPI.Models.Account
             {
                 userIdentity.AddClaim(new Claim("PostOfficeAddress", this.PostOfficeAddress));
             }
+            //if (this.PostOfficeAddress != null)
+            //{
+            //    userIdentity.AddClaim(new Claim("Id", this.Id));
+            //}
             return userIdentity;
         }
     }
@@ -173,6 +180,11 @@ namespace GTIWebAPI.Models.Account
             var claim = ((ClaimsIdentity)identity).FindFirst("PostOfficeAddress");
             return (claim != null) ? claim.Value : string.Empty;
         }
+
+        //public static string GetUserId(this IIdentity identity)
+        //{
+        //    return identity.GetUserId();
+        //}
     }
 
 

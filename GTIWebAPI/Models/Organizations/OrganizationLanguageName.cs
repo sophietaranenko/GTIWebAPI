@@ -76,5 +76,19 @@ namespace GTIWebAPI.Models.Organizations
         public string Name { get; set; }
 
         public LanguageDTO Language { get; set; }
+
+        public OrganizationLanguageName FromDTO()
+        {
+            return new OrganizationLanguageName()
+            {
+                Id = this.Id,
+                LanguageId = this.LanguageId,
+                LegalFormName = this.LegalFormName,
+                LegalFormShortName = this.LegalFormShortName,
+                Name = this.Name,
+                OrganizationId = this.OrganizationId,
+                ShortName = this.ShortName
+            };
+        }
     }
 }

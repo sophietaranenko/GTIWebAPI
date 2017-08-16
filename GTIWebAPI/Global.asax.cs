@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using GTIWebAPI.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,6 +22,13 @@ namespace GTIWebAPI
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        //protected void Session_Start(object sender, EventArgs e)
+        //{
+          //  Session["NotificationStore"] = new NotificationStore();
+          //  NotificationManager notificationManager = new NotificationManager(Session["NotificationStore"] as NotificationStore);
+          //  GlobalConfiguration.Configuration.DependencyResolver = new WebApiDependencyResolver(notificationManager);
+        //}
 
     }
 }

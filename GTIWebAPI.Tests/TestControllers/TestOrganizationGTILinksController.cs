@@ -162,14 +162,14 @@ namespace GTIWebAPI.Tests.TestControllers
 
 
             var identityHelper = new Mock<IIdentityHelper>();
-            identityHelper.Setup(d => d.GetUserTableName(It.IsAny<IPrincipal>())).Returns("Employee");
-            identityHelper.Setup(d => d.GetUserTableId(It.IsAny<IPrincipal>())).Returns(11);
+           // identityHelper.Setup(d => d.GetUserTableName(It.IsAny<IPrincipal>())).Returns("Employee");
+           // identityHelper.Setup(d => d.GetUserTableId(It.IsAny<IPrincipal>())).Returns(11);
 
 
 
             var controller = new OrganizationGTILinksController(factory.Object, identityHelper.Object);
 
-            var result = controller.PostOrganizationGTILink(link) as CreatedAtRouteNegotiatedContentResult<OrganizationGTILinkDTO>;
+            var result = controller.PostOrganizationGTILink(link.ToDTO()) as CreatedAtRouteNegotiatedContentResult<OrganizationGTILinkDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(55, result.Content.OrganizationId);

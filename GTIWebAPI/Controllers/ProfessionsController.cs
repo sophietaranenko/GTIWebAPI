@@ -1,6 +1,7 @@
 ﻿using GTIWebAPI.Exceptions;
 using GTIWebAPI.Filters;
 using GTIWebAPI.Models.Context;
+using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Personnel;
 using GTIWebAPI.Models.Repository;
 using System;
@@ -149,7 +150,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(ProfessionDTO))]
-        public IHttpActionResult PutProfession(int id, Profession profession)
+        public IHttpActionResult PutProfession(int id, ProfessionDTO profession)
         {
             if (profession == null || !ModelState.IsValid)
             {
@@ -161,8 +162,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                Profession prof = profession.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.ProfessionsRepository.Update(profession);
+                unitOfWork.ProfessionsRepository.Update(prof);
                 unitOfWork.Save();
                 ProfessionDTO dto = unitOfWork.ProfessionsRepository
                .Get(d => d.Id == id, includeProperties: "Country")
@@ -187,7 +189,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(ProfessionDTO))]
-        public IHttpActionResult PostProfession(Profession profession)
+        public IHttpActionResult PostProfession(ProfessionDTO profession)
         {
             if (profession == null)
             {
@@ -195,12 +197,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                Profession prof = profession.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                profession.Id = profession.NewId(unitOfWork);
-                unitOfWork.ProfessionsRepository.Insert(profession);
+                prof.Id = prof.NewId(unitOfWork);
+                unitOfWork.ProfessionsRepository.Insert(prof);
                 unitOfWork.Save();
                 ProfessionDTO dto = unitOfWork.ProfessionsRepository
-                    .Get(d => d.Id == profession.Id, includeProperties: "Country")
+                    .Get(d => d.Id == prof.Id, includeProperties: "Country")
                     .FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetProfession", new { id = dto.Id }, dto);
             }
@@ -250,6 +253,30 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetCountries")]
+        [ResponseType(typeof(IEnumerable<CountryDTO>))]
+        public IHttpActionResult GetCountriesForProfession()
+        {
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<CountryDTO> dtos = unitOfWork.CountriesRepository.Get().Select(d => d.ToDTO()).ToList();
+                return Ok(dtos);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
     }
 }

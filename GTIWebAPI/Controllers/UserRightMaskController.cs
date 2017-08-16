@@ -311,16 +311,33 @@ namespace GTIWebAPI.Controllers
             }
             string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
             ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-            if (user == null || user.TableName != "Employee")
+
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            int? tableId = 0;
+            tableId = unitOfWork.EmployeesRepository
+                .Get(d => d.AspNetUserId == User.Identity.GetUserId())
+                .Select(d => d.Id)
+                .FirstOrDefault();
+
+            if (tableId == null || tableId == 0)
             {
                 return BadRequest("User is not employee");
             }
+
+            //if (user == null || user.TableName != "Employee")
+            //{
+            //    return BadRequest("User is not employee");
+            //}
+
+
             SqlParameter creator = new SqlParameter()
             {
                 DbType = System.Data.DbType.Int32,
                 ParameterName = "@CreatorId",
-                Value = user.TableId
+                Value = tableId
             };
+
+
             SqlParameter office = new SqlParameter()
             {
                 DbType = System.Data.DbType.Int32,
@@ -360,7 +377,7 @@ namespace GTIWebAPI.Controllers
             };
             try
             {
-                UnitOfWork unitOfWork = new UnitOfWork(factory);
+               // UnitOfWork unitOfWork = new UnitOfWork(factory);
                 IEnumerable<UserRightMaskDTO> officeUserRightMask =
                     unitOfWork.SQLQuery<UserRightMaskDTO>("exec CreateAspNetUserRightMask @Name, @OfficeId, @CreatorId, @Actions", name, office, creator, actions);
                 UserRightMaskTreeView createdMask = ToTreeView(officeUserRightMask);

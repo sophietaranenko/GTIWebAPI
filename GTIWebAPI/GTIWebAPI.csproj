@@ -49,6 +49,14 @@
       <HintPath>..\packages\AutoMapper.5.2.0\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.Authorization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Authorization.1.0.0\lib\net451\Microsoft.AspNetCore.Authorization.dll</HintPath>
       <Private>True</Private>
@@ -121,7 +129,9 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.DotNet.InternalAbstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.DotNet.InternalAbstractions.1.0.0\lib\net451\Microsoft.DotNet.InternalAbstractions.dll</HintPath>
       <Private>True</Private>
@@ -229,12 +239,16 @@
       <HintPath>..\packages\Swashbuckle.Core.5.5.3\lib\net40\Swashbuckle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.0.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Composition">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ComponentModel.Primitives, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Primitives.4.1.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
       <Private>True</Private>
@@ -243,59 +257,105 @@
       <HintPath>..\packages\System.ComponentModel.TypeConverter.4.1.0\lib\net45\System.ComponentModel.TypeConverter.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Data" />
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.0.0\lib\portable-net45+win8+wpa81\System.Diagnostics.DiagnosticSource.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
-    <Reference Include="System.DirectoryServices.Protocols" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.EnterpriseServices" />
-    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.DirectoryServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.DirectoryServices.AccountManagement">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.DirectoryServices.Protocols">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.EnterpriseServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Transactions" />
+    <Reference Include="System.Transactions">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Entity">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Routing" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Services">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Abstractions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Configuration">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -429,7 +489,13 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ContainersController.cs" />
     <Compile Include="Controllers\DealDocumentScansController.cs" />
+    <Compile Include="Controllers\InteractionActMembersController.cs" />
+    <Compile Include="Controllers\InteractionActOrganizationMembersController.cs" />
+    <Compile Include="Controllers\InteractionActsController.cs" />
+    <Compile Include="Controllers\InteractionMembersController.cs" />
+    <Compile Include="Controllers\InteractionsController.cs" />
     <Compile Include="Controllers\KPIValuesController.cs" />
+    <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\NovellEmailController.cs" />
     <Compile Include="Controllers\OrganizationAddressesController.cs" />
     <Compile Include="Controllers\OrganizationContactPersonContactsController.cs" />
@@ -474,6 +540,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Notifications\ChatHub.cs" />
+    <Compile Include="Notifications\INotifiable.cs" />
+    <Compile Include="Notifications\Notification.cs" />
+    <Compile Include="Notifications\NotificationHub.cs" />
+    <Compile Include="Notifications\NotificationRecipient.cs" />
+    <Compile Include="Notifications\Notifier.cs" />
+    <Compile Include="Notifications\NotificationUser.cs" />
     <Compile Include="Models\Accounting\DealContainerViewDTO.cs" />
     <Compile Include="Models\Accounting\DealFullViewDTO.cs" />
     <Compile Include="Models\Accounting\DealViewDTO.cs" />
@@ -498,6 +571,7 @@
     <Compile Include="Models\Context\IDbContextAddress.cs" />
     <Compile Include="Models\Context\IDbContextEmployeeLanguage.cs" />
     <Compile Include="Models\Context\IDbContextOrganization.cs" />
+    <Compile Include="Models\Employees\EmployeeInsurance.cs" />
     <Compile Include="Models\Reports\ProductivityReport\ContactMonth.cs" />
     <Compile Include="Models\Reports\ProductivityReport\ContactWeek.cs" />
     <Compile Include="Models\Reports\ProductivityReport\KPIParameter.cs" />
@@ -541,6 +615,17 @@
     <Compile Include="Models\Organizations\OrganizationGTILink.cs" />
     <Compile Include="Models\Employees\EmployeeList.cs" />
     <Compile Include="Models\Repository\UnitOfWork.cs" />
+    <Compile Include="Models\Sales\Act.cs" />
+    <Compile Include="Models\Sales\Interaction.cs" />
+    <Compile Include="Models\Sales\InteractionAct.cs" />
+    <Compile Include="Models\Sales\InteractionActMember.cs" />
+    <Compile Include="Models\Organizations\OrganizationOwner.cs" />
+    <Compile Include="Models\Sales\InteractionMember.cs" />
+    <Compile Include="Models\Sales\InteractionStatus.cs" />
+    <Compile Include="Models\Sales\InteractionStatusMovement.cs" />
+    <Compile Include="Models\Sales\Task.cs" />
+    <Compile Include="Models\Sales\TaskMember.cs" />
+    <Compile Include="Models\Sales\TaskMemberRole.cs" />
     <Compile Include="Models\Security\ControllerBox.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightList.cs" />
@@ -598,6 +683,10 @@
     <Compile Include="Models\Accounting\Terminal.cs" />
     <Compile Include="Models\Accounting\Vessel.cs" />
     <Compile Include="NovelleDirectory\GroupWiseFolder.cs" />
+    <Compile Include="NovelleDirectory\InteractiveSSL.cs" />
+    <Compile Include="NovelleDirectory\Search.cs" />
+    <Compile Include="NovelleDirectory\SecureBind.cs" />
+    <Compile Include="NovelleDirectory\VerifyPassword.cs" />
     <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseContact.cs" />
     <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseFactory.cs" />
     <Compile Include="NovellGroupWiseSOAP\NovellGroupWiseMail.cs" />
@@ -630,7 +719,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\XmlDocument.xml">
+    <Content Include="AppData\App_Data\XmlDocument.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -692,6 +781,8 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -699,6 +790,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\util.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1071,6 +1163,17 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>GTIWebAPI_WebReference_GroupwiseService</CachedSettingsPropName>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="CertCOMLib">
+      <Guid>{179B730B-9F8B-4E78-92AF-5F788A047EBD}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

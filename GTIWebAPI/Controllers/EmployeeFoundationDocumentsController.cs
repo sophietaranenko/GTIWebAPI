@@ -139,7 +139,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeFoundationDocument(int id, EmployeeFoundationDocument employeeFoundationDoc)
+        public IHttpActionResult PutEmployeeFoundationDocument(int id, EmployeeFoundationDocumentDTO employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null || !ModelState.IsValid)
             {
@@ -151,8 +151,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeFoundationDocument doc = employeeFoundationDoc.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeFoundationDocumentsRepository.Update(employeeFoundationDoc);
+                unitOfWork.EmployeeFoundationDocumentsRepository.Update(doc);
                 unitOfWork.Save();
                 EmployeeFoundationDocumentDTO dto = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
                 return Ok(dto);
@@ -180,7 +181,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeFoundationDocumentDTO))]
-        public IHttpActionResult PostEmployeeFoundationDocument(EmployeeFoundationDocument employeeFoundationDoc)
+        public IHttpActionResult PostEmployeeFoundationDocument(EmployeeFoundationDocumentDTO employeeFoundationDoc)
         {
             if (employeeFoundationDoc == null)
             {
@@ -193,11 +194,12 @@ namespace GTIWebAPI.Controllers
 
             try
             {
+                EmployeeFoundationDocument doc = employeeFoundationDoc.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeFoundationDoc.Id = employeeFoundationDoc.NewId(unitOfWork);
-                unitOfWork.EmployeeFoundationDocumentsRepository.Insert(employeeFoundationDoc);
+                doc.Id = doc.NewId(unitOfWork);
+                unitOfWork.EmployeeFoundationDocumentsRepository.Insert(doc);
                 unitOfWork.Save();
-                EmployeeFoundationDocumentDTO dto = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == employeeFoundationDoc.Id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
+                EmployeeFoundationDocumentDTO dto = unitOfWork.EmployeeFoundationDocumentsRepository.Get(d => d.Id == doc.Id, includeProperties: "FoundationDocument").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeFoundationDocument", new { id = dto.Id }, dto);
             }
             catch (Exception e)

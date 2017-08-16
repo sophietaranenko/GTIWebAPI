@@ -126,7 +126,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeePassport(int id, EmployeePassport employeePassport)
+        public IHttpActionResult PutEmployeePassport(int id, EmployeePassportDTO employeePassport)
         {
             if (employeePassport == null || !ModelState.IsValid)
             {
@@ -138,13 +138,14 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeePassport passport = employeePassport.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeePassportsRepository.Update(employeePassport);
+                unitOfWork.EmployeePassportsRepository.Update(passport);
                 unitOfWork.Save();
-                EmployeePassportDTO passport = unitOfWork.EmployeePassportsRepository
+                EmployeePassportDTO dto = unitOfWork.EmployeePassportsRepository
                    .Get(d => d.Id == id,
                    includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault().ToDTO();
-                return Ok(passport);
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {
@@ -164,7 +165,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeePassportDTO))]
-        public IHttpActionResult PostEmployeePassport(EmployeePassport employeePassport)
+        public IHttpActionResult PostEmployeePassport(EmployeePassportDTO employeePassport)
         {
             if (employeePassport == null)
             {
@@ -172,14 +173,15 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeePassport passport = employeePassport.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeePassport.Address.Id = employeePassport.Address.NewId(unitOfWork);
-                employeePassport.AddressId = employeePassport.Address.Id;
-                employeePassport.Id = employeePassport.NewId(unitOfWork);
-                unitOfWork.EmployeePassportsRepository.Insert(employeePassport);
+                passport.Address.Id = passport.Address.NewId(unitOfWork);
+                passport.AddressId = passport.Address.Id;
+                passport.Id = passport.NewId(unitOfWork);
+                unitOfWork.EmployeePassportsRepository.Insert(passport);
                 unitOfWork.Save();
                 EmployeePassportDTO dto = unitOfWork.EmployeePassportsRepository
-                   .Get(d => d.Id == employeePassport.Id,
+                   .Get(d => d.Id == passport.Id,
                    includeProperties: "Address,Address.Country,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeePassport", new { id = dto.Id }, dto);
             }

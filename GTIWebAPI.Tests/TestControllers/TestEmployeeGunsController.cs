@@ -101,7 +101,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeGun license = new EmployeeGun { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
             var controller = new EmployeeGunsController(factory.Object);
-            var result = controller.PutEmployeeGun(3, license) as OkNegotiatedContentResult<EmployeeGunDTO>;
+            var result = controller.PutEmployeeGun(3, license.ToDTO()) as OkNegotiatedContentResult<EmployeeGunDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -150,7 +150,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeGun license = new EmployeeGun { Id = 0, EmployeeId = 3, IssuedBy = "Wow" };
             var controller = new EmployeeGunsController(factory.Object);
-            var result = controller.PostEmployeeGun(license) as CreatedAtRouteNegotiatedContentResult<EmployeeGunDTO>;
+            var result = controller.PostEmployeeGun(license.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeGunDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);

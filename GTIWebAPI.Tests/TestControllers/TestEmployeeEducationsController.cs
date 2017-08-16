@@ -113,7 +113,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeEducation car = new EmployeeEducation { Id = 3, Deleted = null, EmployeeId = 3 };
 
-            var result = controller.PutEmployeeEducation(3, car) as OkNegotiatedContentResult<EmployeeEducationDTO>;
+            var result = controller.PutEmployeeEducation(3, car.ToDTO()) as OkNegotiatedContentResult<EmployeeEducationDTO>;
        
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -139,7 +139,7 @@ namespace GTIWebAPI.Tests.TestControllers
             var controller = new EmployeeEducationsController(fac);
 
             EmployeeEducation car = new EmployeeEducation { Id = 1, Deleted = null, EmployeeId = 1 };
-            var badresult = controller.PutEmployeeEducation(999, car);
+            var badresult = controller.PutEmployeeEducation(999, car.ToDTO());
             Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
         }
 
@@ -187,7 +187,7 @@ namespace GTIWebAPI.Tests.TestControllers
             var controller = new EmployeeEducationsController(fac);
 
             EmployeeEducation item = new EmployeeEducation { Id = 0, Deleted = null, EmployeeId = 3 };
-            var result = controller.PostEmployeeEducation(item) as CreatedAtRouteNegotiatedContentResult<EmployeeEducationDTO>;
+            var result = controller.PostEmployeeEducation(item.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeEducationDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.RouteName, "GetEmployeeEducation");
             Assert.AreEqual(result.RouteValues["id"], result.Content.Id);

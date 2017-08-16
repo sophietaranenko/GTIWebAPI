@@ -86,6 +86,19 @@ namespace GTIWebAPI.Models.Organizations
         public DateTime? DateEnd { get; set; }
 
         public OrganizationPropertyTypeDTO OrganizationPropertyType { get; set; }
+
+        public OrganizationProperty FromDTO()
+        {
+            return new OrganizationProperty()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Id = this.Id,
+                OrganizationId = this.OrganizationId,
+                OrganizationPropertyTypeId = this.OrganizationPropertyTypeId,
+                Value = this.Value
+            };
+        }
     }
 
     public class OrganizationPropertyConstant

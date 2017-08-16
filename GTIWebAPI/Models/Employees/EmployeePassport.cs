@@ -12,80 +12,42 @@ namespace GTIWebAPI.Models.Employees
     [Table("EmployeePassport")]
     public partial class EmployeePassport : GTITable
     {
-        /// <summary>
-        /// Passport Id
-        /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee owner Id
-        /// </summary>
         public int? EmployeeId { get; set; }
 
-        /// <summary>
-        /// Passport Seria
-        /// </summary>
         [StringLength(10)]
         public string Seria { get; set; }
 
-        /// <summary>
-        /// Number of passport
-        /// </summary>
         [StringLength(50)]
         public string Number { get; set; }
 
-        /// <summary>
-        /// Employee first name specified in passport
-        /// </summary>
         [StringLength(50)]
         public string FirstName { get; set; }
 
-        /// <summary>
-        /// Employee second name specified in passport
-        /// </summary>
         [StringLength(50)]
         public string SecondName { get; set; }
 
-        /// <summary>
-        /// Employee surname specified in passport
-        /// </summary>
         [StringLength(50)]
         public string Surname { get; set; }
 
-
-        /// <summary>
-        /// Date when passport was issued to employee 
-        /// </summary>
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? IssuedWhen { get; set; }
 
-        /// <summary>
-        /// Government place where passport was issued to employee
-        /// </summary>
         [StringLength(250)]
         public string IssuedBy { get; set; }
 
-        /// <summary>
-        /// Address of employee registration in passport
-        /// </summary>
         public int? AddressId { get; set; }
         
-        /// <summary>
-        /// Address object
-        /// </summary>
         public virtual Address Address { get; set; }
 
-        /// <summary>
-        /// Delete mark
-        /// </summary>
+        public virtual Employee Employee { get; set; }
+
         public bool? Deleted { get; set; }
 
-        /// <summary>
-        /// Short name construcred from passport (С.Э. Тараненко) 
-        /// </summary>
         public string ShortName
         {
             get
@@ -144,64 +106,46 @@ namespace GTIWebAPI.Models.Employees
 
     public class EmployeePassportDTO
     {
-        /// <summary>
-        /// EmployeePassport Id
-        /// </summary>
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee owner Id
-        /// </summary>
         public int? EmployeeId { get; set; }
 
-        /// <summary>
-        /// Passport seria
-        /// </summary>
         public string Seria { get; set; }
 
-        /// <summary>
-        /// Passport number
-        /// </summary>
         public string Number { get; set; }
 
-        /// <summary>
-        /// Employee First Name specified in Passport
-        /// </summary>
         public string FirstName { get; set; }
 
-        /// <summary>
-        /// Employee second name specified in Passport
-        /// </summary>
         public string SecondName { get; set; }
 
-        /// <summary>
-        /// Employee surname specified in Passport
-        /// </summary>
         public string Surname { get; set; }
 
-        /// <summary>
-        /// Short format of employee name "С.Э. Тараненко" 
-        /// </summary>
         public string ShortName { get; set; }
 
-        /// <summary>
-        /// Date when passport was issued to Employee
-        /// </summary>
         public DateTime? IssuedWhen { get; set; }
 
-        /// <summary>
-        /// Government organization that issued Passport to Employee
-        /// </summary>
         public string IssuedBy { get; set; }
 
-        /// <summary>
-        /// Id of registration Id specified in Passport 
-        /// </summary>
         public int? AddressId { get; set; }
 
-        /// <summary>
-        /// AddressDTO from registration Address
-        /// </summary>
         public AddressDTO Address { get; set; }
+
+        public EmployeePassport FromDTO()
+        {
+            return new EmployeePassport()
+            {
+                AddressId = this.AddressId,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                FirstName = this.FirstName,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number,
+                SecondName = this.SecondName,
+                Seria = this.Seria,
+                Surname = this.Surname,
+                Address = this.Address == null ? null : this.Address.FromDTO()
+            };
+        }
     }
 }

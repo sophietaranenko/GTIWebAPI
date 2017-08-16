@@ -112,7 +112,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeEducation(int id, EmployeeEducation employeeEducation)
+        public IHttpActionResult PutEmployeeEducation(int id, EmployeeEducationDTO employeeEducation)
         {
             if (!ModelState.IsValid)
             {
@@ -124,8 +124,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeEducation education = employeeEducation.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeEducationsRepository.Update(employeeEducation);
+                unitOfWork.EmployeeEducationsRepository.Update(education);
                 unitOfWork.Save();
                 EmployeeEducationDTO dto = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
                 return Ok(dto);
@@ -148,15 +149,16 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeEducationDTO))]
-        public IHttpActionResult PostEmployeeEducation(EmployeeEducation employeeEducation)
+        public IHttpActionResult PostEmployeeEducation(EmployeeEducationDTO employeeEducation)
         {
             try
             {
+                EmployeeEducation education = employeeEducation.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeEducation.Id = employeeEducation.NewId(unitOfWork);
-                unitOfWork.EmployeeEducationsRepository.Insert(employeeEducation);
+                education.Id = education.NewId(unitOfWork);
+                unitOfWork.EmployeeEducationsRepository.Insert(education);
                 unitOfWork.Save();
-                EmployeeEducationDTO dto = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == employeeEducation.Id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
+                EmployeeEducationDTO dto = unitOfWork.EmployeeEducationsRepository.Get(d => d.Id == education.Id, includeProperties: "EducationStudyForm").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeEducation", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

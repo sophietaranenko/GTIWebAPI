@@ -92,5 +92,20 @@ namespace GTIWebAPI.Models.Employees
         public LanguageDTO Language { get; set; }
 
         public EmployeeLanguageTypeDTO EmployeeLanguageType { get; set; }
+
+        public EmployeeLanguage FromDTO()
+        {
+            return new EmployeeLanguage()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Definition = this.Definition,
+                EmployeeId = this.EmployeeId,
+                EmployeeLanguageTypeId = this.EmployeeLanguageTypeId,
+                Id = this.Id,
+                LanguageId = this.LanguageId,
+                Remark = this.Remark
+            };
+        }
     }
 }

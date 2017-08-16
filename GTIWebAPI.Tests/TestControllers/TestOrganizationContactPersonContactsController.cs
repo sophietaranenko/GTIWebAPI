@@ -80,7 +80,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             OrganizationContactPersonContact passport = new OrganizationContactPersonContact { Id = 3, OrganizationContactPersonId = 3 };
             var controller = new OrganizationContactPersonContactsController(factory.Object);
-            var result = controller.PutOrganizationContactPersonContact(3, passport) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+            var result = controller.PutOrganizationContactPersonContact(3, passport.ToDTO()) as OkNegotiatedContentResult<OrganizationContactPersonContactDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -128,7 +128,7 @@ namespace GTIWebAPI.Tests.TestControllers
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             OrganizationContactPersonContact passport = new OrganizationContactPersonContact { Id = 0, OrganizationContactPersonId = 3 };
             var controller = new OrganizationContactPersonContactsController(factory.Object);
-            var result = controller.PostOrganizationContactPersonContact(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationContactPersonContactDTO>;
+            var result = controller.PostOrganizationContactPersonContact(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<OrganizationContactPersonContactDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(3, result.Content.OrganizationContactPersonId);

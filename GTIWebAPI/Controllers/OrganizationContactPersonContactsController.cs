@@ -105,7 +105,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(OrganizationContactPersonContactDTO))]
-        public IHttpActionResult PutOrganizationContactPersonContact(int id, OrganizationContactPersonContact organizationContactPersonContact)
+        public IHttpActionResult PutOrganizationContactPersonContact(int id, OrganizationContactPersonContactDTO organizationContactPersonContact)
         {
             if (organizationContactPersonContact == null || !ModelState.IsValid)
             {
@@ -117,8 +117,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationContactPersonContact contact = organizationContactPersonContact.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.OrganizationContactPersonContactsRepository.Update(organizationContactPersonContact);
+                unitOfWork.OrganizationContactPersonContactsRepository.Update(contact);
                 unitOfWork.Save();
                 OrganizationContactPersonContactDTO dto = unitOfWork.OrganizationContactPersonContactsRepository
                     .Get(d => d.Id == id, includeProperties: "ContactType")
@@ -149,7 +150,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationContactPersonContactDTO))]
-        public IHttpActionResult PostOrganizationContactPersonContact(OrganizationContactPersonContact organizationContactPersonContact)
+        public IHttpActionResult PostOrganizationContactPersonContact(OrganizationContactPersonContactDTO organizationContactPersonContact)
         {
             if (organizationContactPersonContact == null)
             {
@@ -157,12 +158,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationContactPersonContact contact = organizationContactPersonContact.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                organizationContactPersonContact.Id = organizationContactPersonContact.NewId(unitOfWork);
-                unitOfWork.OrganizationContactPersonContactsRepository.Insert(organizationContactPersonContact);
+                contact.Id = contact.NewId(unitOfWork);
+                unitOfWork.OrganizationContactPersonContactsRepository.Insert(contact);
                 unitOfWork.Save();
                 OrganizationContactPersonContact c = unitOfWork.OrganizationContactPersonContactsRepository
-                    .Get(d => d.Id == organizationContactPersonContact.Id, includeProperties: "ContactType").FirstOrDefault();
+                    .Get(d => d.Id == contact.Id, includeProperties: "ContactType").FirstOrDefault();
                 OrganizationContactPersonContactDTO dto = c.ToDTO();
                 return CreatedAtRoute("GetOrganizationContactPersonContact", new { id = dto.Id }, dto);
             }

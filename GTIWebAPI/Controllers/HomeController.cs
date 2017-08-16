@@ -15,5 +15,14 @@ namespace GTIWebAPI.Controllers
             ViewBag.Title = "Home Page";
             return View();
         }
+
+        //private void SendMessage(string message)
+        //{
+        //    // Получаем контекст хаба
+        //    var context =
+        //        Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+        //    // отправляем сообщение
+        //    context.Clients.All.displayMessage(message);
+        //}
     }
 }

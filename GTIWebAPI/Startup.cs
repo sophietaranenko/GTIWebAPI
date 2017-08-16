@@ -14,8 +14,11 @@ namespace GTIWebAPI
         {
             //при добавлении новых контроллеров / методов разблокировать
             //код заполнит БД контроллерами и соответствующими действиями
-           // Security.Security.InitializeClass();
+            //Security.Security.InitializeClass();
+
+            
             ConfigureAuth(app);
+            app.MapSignalR();
         }
     }
 }

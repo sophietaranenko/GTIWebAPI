@@ -64,5 +64,17 @@ namespace GTIWebAPI.Models.Organizations
         public AddressDTO Address { get; set; }
 
         public OrganizationAddressTypeDTO OrganizationAddressType { get; set; }
+
+        public OrganizationAddress FromDTO()
+        {
+            return new OrganizationAddress()
+            {
+                AddressId = this.AddressId,
+                Address = this.Address.FromDTO(),
+                Id = this.Id,
+                OrganizationAddressTypeId = this.OrganizationAddressTypeId,
+                OrganizationId = this.OrganizationId
+            };
+        }
     }
 }

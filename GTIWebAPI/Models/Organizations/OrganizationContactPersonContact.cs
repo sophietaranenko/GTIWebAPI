@@ -60,5 +60,16 @@ namespace GTIWebAPI.Models.Organizations
         public ContactTypeDTO ContactType { get; set; }
 
         public string Value { get; set; }
+
+        public OrganizationContactPersonContact FromDTO()
+        {
+            return new OrganizationContactPersonContact()
+            {
+                ContactTypeId = this.ContactTypeId,
+                Id = this.Id,
+                OrganizationContactPersonId = this.OrganizationContactPersonId,
+                Value = this.Value
+            };
+        }
     }
 }

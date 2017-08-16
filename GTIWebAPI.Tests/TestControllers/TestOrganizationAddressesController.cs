@@ -131,7 +131,7 @@ namespace GTIWebAPI.Tests.TestControllers
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             OrganizationAddress passport = new OrganizationAddress { Id = 0, OrganizationId = 3, Address = new Address { Apartment = "3", BuildingNumber = 45 } };
             var controller = new OrganizationAddressesController(factory.Object);
-            var result = controller.PostOrganizationAddress(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationAddressDTO>;
+            var result = controller.PostOrganizationAddress(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<OrganizationAddressDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(3, result.Content.OrganizationId);

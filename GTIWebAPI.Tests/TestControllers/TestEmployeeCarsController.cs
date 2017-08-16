@@ -112,7 +112,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeCar car = new EmployeeCar { Id = 4, Capacity = 33, Deleted = null, EmployeeId = 1 };
 
-            var result = controller.PutEmployeeCar(4, car) as OkNegotiatedContentResult<EmployeeCarDTO>;
+            var result = controller.PutEmployeeCar(4, car.ToDTO()) as OkNegotiatedContentResult<EmployeeCarDTO>;
             // EmployeeCarDTO dto = result.Content;
           
             Assert.IsNotNull(result);
@@ -141,7 +141,7 @@ namespace GTIWebAPI.Tests.TestControllers
             var controller = new EmployeeCarsController(fac);
 
             EmployeeCar car = new EmployeeCar { Id = 1, Capacity = 333, Deleted = null, EmployeeId = 1 };
-            var badresult = controller.PutEmployeeCar(999, car);
+            var badresult = controller.PutEmployeeCar(999, car.ToDTO());
             Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
         }
 
@@ -167,7 +167,7 @@ namespace GTIWebAPI.Tests.TestControllers
             var controller = new EmployeeCarsController(fac);
 
             EmployeeCar item = new EmployeeCar { Id = 0, Capacity = 333, Deleted = null, EmployeeId = 3 };
-            var result = controller.PostEmployeeCar(item) as CreatedAtRouteNegotiatedContentResult<EmployeeCarDTO>;
+            var result = controller.PostEmployeeCar(item.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeCarDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.RouteName, "GetEmployeeCar");
             Assert.AreEqual(result.RouteValues["id"], result.Content.Id);

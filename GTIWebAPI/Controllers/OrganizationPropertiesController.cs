@@ -97,7 +97,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(OrganizationPropertyDTO))]
-        public IHttpActionResult PutOrganizationProperty(int id, OrganizationProperty organizationProperty)
+        public IHttpActionResult PutOrganizationProperty(int id, OrganizationPropertyDTO organizationProperty)
         {
             if (organizationProperty == null || !ModelState.IsValid)
             {
@@ -109,28 +109,29 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationProperty property = organizationProperty.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 int? propertyCountryId = unitOfWork.OrganizationPropertyTypesRepository
-                .Get(d => d.Id == organizationProperty.OrganizationPropertyTypeId)
+                .Get(d => d.Id == property.OrganizationPropertyTypeId)
                     .Select(d => d.CountryId)
                     .FirstOrDefault();
                 int? organizationCountryId = unitOfWork.OrganizationsRepository
-                .Get(d => d.Id == organizationProperty.OrganizationId)
+                .Get(d => d.Id == property.OrganizationId)
                     .Select(d => d.CountryId)
                     .FirstOrDefault();
                 if (propertyCountryId != organizationCountryId)
                 {
                     return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
                 }
-                unitOfWork.OrganizationPropertiesRepository.Update(organizationProperty);
+                unitOfWork.OrganizationPropertiesRepository.Update(property);
                 unitOfWork.Save();
                // logger.Log(LogLevel.Info, "how to pass objects");
-                OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
+                OrganizationPropertyDTO dto = unitOfWork.OrganizationPropertiesRepository
                     .Get(d => d.Id == id)
                     .FirstOrDefault()
                     .ToDTO();
-                property.OrganizationPropertyType = null;
-                return Ok(property);
+                dto.OrganizationPropertyType = null;
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {
@@ -150,7 +151,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationPropertyDTO))]
-        public IHttpActionResult PostOrganizationProperty(OrganizationProperty organizationProperty)
+        public IHttpActionResult PostOrganizationProperty(OrganizationPropertyDTO organizationProperty)
         {
             if (organizationProperty == null)
             {
@@ -158,13 +159,14 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationProperty property = organizationProperty.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 int? propertyCountryId = unitOfWork.OrganizationPropertyTypesRepository
-                .Get(d => d.Id == organizationProperty.OrganizationPropertyTypeId)
+                .Get(d => d.Id == property.OrganizationPropertyTypeId)
                     .Select(d => d.CountryId)
                     .FirstOrDefault();
                 int? organizationCountryId = unitOfWork.OrganizationsRepository
-                .Get(d => d.Id == organizationProperty.OrganizationId)
+                .Get(d => d.Id == property.OrganizationId)
                     .Select(d => d.CountryId)
                     .FirstOrDefault();
 
@@ -173,16 +175,16 @@ namespace GTIWebAPI.Controllers
                     return BadRequest("Country that property belogs to, doesn't match the Organization registration country");
                 }
 
-                organizationProperty.Id = organizationProperty.NewId(unitOfWork);
-                unitOfWork.OrganizationPropertiesRepository.Insert(organizationProperty);
+                property.Id = property.NewId(unitOfWork);
+                unitOfWork.OrganizationPropertiesRepository.Insert(property);
                 unitOfWork.Save();
               //  logger.Log(LogLevel.Info, "how to pass objects");
-                OrganizationPropertyDTO property = unitOfWork.OrganizationPropertiesRepository
-                         .Get(d => d.Id == organizationProperty.Id)
+                OrganizationPropertyDTO dto = unitOfWork.OrganizationPropertiesRepository
+                         .Get(d => d.Id == property.Id)
                          .FirstOrDefault()
                          .ToDTO();
-                property.OrganizationPropertyType = null;
-                return CreatedAtRoute("GetOrganizationProperty", new { id = property.Id }, property);
+                dto.OrganizationPropertyType = null;
+                return CreatedAtRoute("GetOrganizationProperty", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)
             {

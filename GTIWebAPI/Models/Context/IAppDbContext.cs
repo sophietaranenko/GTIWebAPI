@@ -4,10 +4,12 @@ using GTIWebAPI.Models.Dictionary;
 using GTIWebAPI.Models.Employees;
 using GTIWebAPI.Models.Organizations;
 using GTIWebAPI.Models.Personnel;
+using GTIWebAPI.Models.Sales;
 using GTIWebAPI.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Security.Principal;
@@ -74,6 +76,8 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<EmployeeGun> EmployeeGuns { get; set; }
 
+        DbSet<EmployeeInsurance> EmployeeInsurances { get; set; }
+
         DbSet<Language> Languages { get; set; }
 
         DbSet<OrganizationGTI> GTIOrganizations { get; set; }
@@ -120,16 +124,33 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<OrganizationLanguageName> OrganizationLanguageNames { get; set; }
 
+        DbSet<OrganizationOwner> OrganizationOwners { get; set; }
+
         DbSet<UserImage> UserImages { get; set; }
 
         DbSet<UserRightOff> UserRigths { get; set; }
 
         bool CreateOrganization(string email, string password);
 
-
         bool CreateHoldingUser(string email, string password);
 
+        string GetChanges(object obj);
 
+        //Sales
 
+        DbSet<Act> Act { get; set; }
+
+        DbSet<Interaction> Interaction { get; set; }
+
+        DbSet<InteractionAct> InteractionAct { get; set; }
+
+        DbSet<InteractionActMember> InteractionActMember { get; set; }
+
+        DbSet<Sales.Task> Task { get; set; }
+
+        DbSet<TaskMember> TaskMember { get; set; }
+
+        DbSet<TaskMemberRole> TaskMemberRole { get; set; }
+        ObjectStateManager ObjectStateManager { get; set; }
     }
 }

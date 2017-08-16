@@ -39,6 +39,8 @@ namespace GTIWebAPI.Models.Employees
 
         public int? EmployeeId { get; set; }
 
+        public virtual Employee Employee { get; set; }
+
         public bool? Deleted { get; set; }
 
         public EmployeeOfficeDTO ToDTO()
@@ -92,6 +94,21 @@ namespace GTIWebAPI.Models.Employees
         public int? DepartmentId { get; set; }
 
         public int? ProfessionId { get; set; }
+
+        public EmployeeOffice FromDTO()
+        {
+            return new EmployeeOffice()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                DepartmentId = this.DepartmentId,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                OfficeId = this.OfficeId,
+                ProfessionId = this.ProfessionId,
+                Remark = this.Remark
+            };
+        }
 
     }
 }

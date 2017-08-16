@@ -132,7 +132,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeCar(int id, EmployeeCar employeeCar)
+        public IHttpActionResult PutEmployeeCar(int id, EmployeeCarDTO employeeCar)
         {
             if (employeeCar == null || !ModelState.IsValid)
             {
@@ -144,11 +144,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeCar car = employeeCar.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeCarsRepository.Update(employeeCar);
+                unitOfWork.EmployeeCarsRepository.Update(car);
                 unitOfWork.Save();
                 //cos there are no included object-properies we need to load, then just ToDTO call  
-                EmployeeCarDTO dto = employeeCar.ToDTO();
+                EmployeeCarDTO dto = car.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -174,7 +175,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeCarDTO))]
-        public IHttpActionResult PostEmployeeCar(EmployeeCar employeeCar)
+        public IHttpActionResult PostEmployeeCar(EmployeeCarDTO employeeCar)
         {
             if (employeeCar == null || !ModelState.IsValid)
             {
@@ -182,12 +183,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeCar car = employeeCar.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeCar.Id = employeeCar.NewId(unitOfWork);
-                unitOfWork.EmployeeCarsRepository.Insert(employeeCar);
+                employeeCar.Id = car.NewId(unitOfWork);
+                unitOfWork.EmployeeCarsRepository.Insert(car);
                 unitOfWork.Save();
                 //cos there are no included object-properies we need to load, then just ToDTO call  
-                EmployeeCarDTO dto = employeeCar.ToDTO();
+                EmployeeCarDTO dto = car.ToDTO();
                 return CreatedAtRoute("GetEmployeeCar", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

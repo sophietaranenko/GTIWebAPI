@@ -104,7 +104,7 @@ namespace GTIWebAPI.Tests
 
             EmployeePassport passport = new EmployeePassport { Id = 3, EmployeeId = 3 };
             var controller = new EmployeePassportsController(factory.Object);
-            var result = controller.PutEmployeePassport(3, passport) as OkNegotiatedContentResult<EmployeePassportDTO>;
+            var result = controller.PutEmployeePassport(3, passport.ToDTO()) as OkNegotiatedContentResult<EmployeePassportDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -152,7 +152,7 @@ namespace GTIWebAPI.Tests
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             EmployeePassport passport = new EmployeePassport { Id = 0, EmployeeId = 3 , Address = new Address { Apartment = "3", BuildingNumber = 45}  };
             var controller = new EmployeePassportsController(factory.Object);
-            var result = controller.PostEmployeePassport(passport) as CreatedAtRouteNegotiatedContentResult<EmployeePassportDTO>;
+            var result = controller.PostEmployeePassport(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeePassportDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(3, result.Content.EmployeeId);

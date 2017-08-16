@@ -81,5 +81,20 @@ namespace GTIWebAPI.Models.Employees
         public DateTime? IssuedWhen { get; set; }
 
         public DateTime? DateEnd { get; set; }
+
+        public EmployeeGun FromDTO()
+        {
+            return new EmployeeGun()
+            {
+                DateEnd = this.DateEnd,
+                Description = this.Description,
+                EmployeeId = this.EmployeeId,
+                Seria = this.Seria,
+                Id = this.Id,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number
+            };
+        }
     }
 }

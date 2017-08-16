@@ -35,7 +35,7 @@ namespace GTIWebAPI.Models.Organizations
             list.AddressList = AddressList.CreateAddressList(db);
 
             List<ContactType> types = db.ContactTypes.ToList();
-            list.ContactTypes = types.Select(c => c.ToDTO()).ToList();
+            list.ContactTypes = types.Where(d => d.Deleted != true).Select(c => c.ToDTO()).ToList();
 
             List<OrganizationAddressType> aTypes = db.OrganizationAddressTypes.ToList();
             list.OrganizationAddressTypes = aTypes.Select(a => a.ToDTO()).ToList();

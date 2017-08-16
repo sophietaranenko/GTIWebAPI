@@ -101,7 +101,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeMilitaryCard passport = new EmployeeMilitaryCard { Id = 3, EmployeeId = 3 };
             var controller = new EmployeeMilitaryCardsController(factory.Object);
-            var result = controller.PutEmployeeMilitaryCard(3, passport) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+            var result = controller.PutEmployeeMilitaryCard(3, passport.ToDTO()) as OkNegotiatedContentResult<EmployeeMilitaryCardDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -150,7 +150,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeMilitaryCard passport = new EmployeeMilitaryCard { Id = 0, EmployeeId = 3 };
             var controller = new EmployeeMilitaryCardsController(factory.Object);
-            var result = controller.PostEmployeeMilitaryCard(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeMilitaryCardDTO>;
+            var result = controller.PostEmployeeMilitaryCard(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeMilitaryCardDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);

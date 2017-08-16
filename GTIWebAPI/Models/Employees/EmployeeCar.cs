@@ -178,5 +178,35 @@ namespace GTIWebAPI.Models.Employees
         public string GivenName { get; set; }
 
         public string IssuedBy { get; set; }
+
+        public EmployeeCar FromDTO()
+        {
+            return new EmployeeCar()
+            {
+                Capacity = this.Capacity,
+                Colour = this.Colour,
+                Seria = this.Seria,
+                MassInService = this.MassInService,
+                NumberOfSeats = this.NumberOfSeats,
+                Description = this.Description,
+                EmployeeId = this.EmployeeId,
+                FuelType = this.FuelType,
+                GivenName = this.GivenName,
+                Id = this.Id,
+                IdentificationNumber = this.IdentificationNumber,
+                IssuedBy = this.IssuedBy,
+                Make = this.Make,
+                MassMax = this.MassMax,
+                Number = this.Number,
+                Owner = this.Owner,
+                Ownership = this.Ownership,
+                PeriodOfValidity = this.PeriodOfValidity,
+                RegistrationDate = this.RegistrationDate,
+                RegistrationNumber = this.RegistrationNumber,
+                RegistrationYear = this.RegistrationYear,
+                Type = this.Type,
+                VehicleCategory = this.VehicleCategory 
+            };
+        }
     }
 }

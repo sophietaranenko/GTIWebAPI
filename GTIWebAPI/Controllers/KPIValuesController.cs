@@ -135,7 +135,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutKPIValue(int id, KPIValue KPIvalue)
+        public IHttpActionResult PutKPIValue(int id, KPIValueDTO KPIvalue)
         {
             if (KPIvalue == null || !ModelState.IsValid)
             {
@@ -147,8 +147,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                KPIValue value = KPIvalue.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.KPIValuesRepository.Update(KPIvalue);
+                unitOfWork.KPIValuesRepository.Update(value);
                 unitOfWork.Save();
                 //cos there are no included object-properies we need to load, then just ToDTO call  
                 KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == id, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
@@ -177,7 +178,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(KPIValueDTO))]
-        public IHttpActionResult PostKPIValue(KPIValue KPIvalue)
+        public IHttpActionResult PostKPIValue(KPIValueDTO KPIvalue)
         {
             if (KPIvalue == null || !ModelState.IsValid)
             {
@@ -185,12 +186,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                KPIValue value = KPIvalue.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.KPIValuesRepository.Insert(KPIvalue);
+                unitOfWork.KPIValuesRepository.Insert(value);
                 unitOfWork.Save();
-                int newId = KPIvalue.Id;
                 //cos there are no included object-properies we need to load, then just ToDTO call  
-                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == newId, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
+                KPIValueDTO dto = dto = unitOfWork.KPIValuesRepository.Get(d => d.Id == value.Id, includeProperties: "KPIParameter,KPIPeriod,Office").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetKPIValue", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

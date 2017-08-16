@@ -149,7 +149,7 @@ namespace GTIWebAPI.Tests.TestControllers
             IDbContextFactory fac = factory.Object;
             var controller = new GTIWebAPI.Controllers.EmployeeContactsController(fac);
             EmployeeContact contact = new EmployeeContact { Id = 3, EmployeeId = 25 };
-            var result = controller.PutEmployeeContact(3, contact) as OkNegotiatedContentResult<EmployeeContactDTO>;
+            var result = controller.PutEmployeeContact(3, contact.ToDTO()) as OkNegotiatedContentResult<EmployeeContactDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
         }
@@ -172,7 +172,7 @@ namespace GTIWebAPI.Tests.TestControllers
             IDbContextFactory fac = factory.Object;
             var controller = new EmployeeContactsController(fac);
             EmployeeContact contact = new EmployeeContact { Id = 4, EmployeeId = 25 };
-            var badresult = controller.PutEmployeeContact(999, contact);
+            var badresult = controller.PutEmployeeContact(999, contact.ToDTO());
             Assert.IsInstanceOfType(badresult, typeof(BadRequestResult));
         }
 
@@ -220,7 +220,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             var controller = new EmployeeContactsController(fac);
             var item = new EmployeeContact { Id = 4, EmployeeId = 25, ContactTypeId = 3 };
-            var result = controller.PostEmployeeContact(item) as CreatedAtRouteNegotiatedContentResult<EmployeeContactDTO>;
+            var result = controller.PostEmployeeContact(item.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeContactDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result.RouteName, "GetEmployeeContact");

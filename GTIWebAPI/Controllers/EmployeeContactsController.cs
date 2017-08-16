@@ -131,7 +131,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeContact(int id, EmployeeContact employeeContact)
+        public IHttpActionResult PutEmployeeContact(int id, EmployeeContactDTO employeeContact)
         {
             if (employeeContact == null || !ModelState.IsValid)
             {
@@ -143,8 +143,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeContact contact = employeeContact.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeContactsRepository.Update(employeeContact);
+                unitOfWork.EmployeeContactsRepository.Update(contact);
                 unitOfWork.Save();
                 EmployeeContactDTO dto = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
                 return Ok(dto);
@@ -171,7 +172,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeContactDTO))]
-        public IHttpActionResult PostEmployeeContact(EmployeeContact employeeContact)
+        public IHttpActionResult PostEmployeeContact(EmployeeContactDTO employeeContact)
         {
             if (employeeContact == null || !ModelState.IsValid)
             {
@@ -179,12 +180,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeContact contact = employeeContact.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeContact.Id = employeeContact.NewId(unitOfWork);
-                unitOfWork.EmployeeContactsRepository.Insert(employeeContact);
+                contact.Id = contact.NewId(unitOfWork);
+                unitOfWork.EmployeeContactsRepository.Insert(contact);
                 unitOfWork.Save();
 
-                EmployeeContactDTO dto = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == employeeContact.Id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
+                EmployeeContactDTO dto = unitOfWork.EmployeeContactsRepository.Get(d => d.Id == contact.Id, includeProperties: "ContactType").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeContact", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

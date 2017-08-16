@@ -115,7 +115,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeMilitaryCard(int id, EmployeeMilitaryCard employeeMilitaryCard)
+        public IHttpActionResult PutEmployeeMilitaryCard(int id, EmployeeMilitaryCardDTO employeeMilitaryCard)
         {
             if (employeeMilitaryCard == null || !ModelState.IsValid)
             {
@@ -127,10 +127,11 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeMilitaryCard card = employeeMilitaryCard.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeMilitaryCardsRepository.Update(employeeMilitaryCard);
+                unitOfWork.EmployeeMilitaryCardsRepository.Update(card);
                 unitOfWork.Save();
-                EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
+                EmployeeMilitaryCardDTO dto = card.ToDTO();
                 return Ok(dto);
             }
             catch (NotFoundException nfe)
@@ -151,7 +152,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeMilitaryCardDTO))]
-        public IHttpActionResult PostEmployeeMilitaryCard(EmployeeMilitaryCard employeeMilitaryCard)
+        public IHttpActionResult PostEmployeeMilitaryCard(EmployeeMilitaryCardDTO employeeMilitaryCard)
         {
             if (employeeMilitaryCard == null || !ModelState.IsValid)
             {
@@ -159,11 +160,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeMilitaryCard card = employeeMilitaryCard.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeMilitaryCard.Id = employeeMilitaryCard.NewId(unitOfWork);
-                unitOfWork.EmployeeMilitaryCardsRepository.Insert(employeeMilitaryCard);
+                card.Id = card.NewId(unitOfWork);
+                unitOfWork.EmployeeMilitaryCardsRepository.Insert(card);
                 unitOfWork.Save();
-                EmployeeMilitaryCardDTO dto = employeeMilitaryCard.ToDTO();
+                EmployeeMilitaryCardDTO dto = card.ToDTO();
                 return CreatedAtRoute("GetEmployeeMilitaryCard", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

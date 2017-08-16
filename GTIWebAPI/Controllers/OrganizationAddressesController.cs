@@ -149,7 +149,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationAddressDTO))]
-        public IHttpActionResult PostOrganizationAddress(OrganizationAddress organizationAddress)
+        public IHttpActionResult PostOrganizationAddress(OrganizationAddressDTO organizationAddress)
         {
             if (organizationAddress == null)
             {
@@ -157,14 +157,15 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                OrganizationAddress address = organizationAddress.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                organizationAddress.Id = organizationAddress.NewId(unitOfWork);
-                organizationAddress.Address.Id = organizationAddress.Address.NewId(unitOfWork);
-                organizationAddress.AddressId = organizationAddress.Address.Id;
-                unitOfWork.OrganizationAddressesRepository.Insert(organizationAddress);
+                address.Id = address.NewId(unitOfWork);
+                address.Address.Id = address.Address.NewId(unitOfWork);
+                address.AddressId = address.Address.Id;
+                unitOfWork.OrganizationAddressesRepository.Insert(address);
                 unitOfWork.Save();
                 OrganizationAddressDTO dto = unitOfWork.OrganizationAddressesRepository
-                    .Get(d => d.Id == organizationAddress.Id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
+                    .Get(d => d.Id == address.Id, includeProperties: "Address,Address.Country,OrganizationAddressType,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage")
                     .FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetOrganizationAddress", new { id = dto.Id }, dto);
             }

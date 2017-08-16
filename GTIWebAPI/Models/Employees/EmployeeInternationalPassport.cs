@@ -110,5 +110,25 @@ namespace GTIWebAPI.Models.Employees
         public string IssuedBy { get; set; }
 
         public DateTime? DateOfExpiry { get; set; }
+
+        public EmployeeInternationalPassport FromDTO()
+        {
+            return new EmployeeInternationalPassport()
+            {
+                Seria = this.Seria,
+                CountryCode = this.CountryCode,
+                DateOfExpiry = this.DateOfExpiry,
+                EmployeeId = this.EmployeeId,
+                GivenNames = this.GivenNames,
+                Id = this.Id,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Nationality = this.Nationality,
+                Number = this.Number,
+                PersonalNo = this.PersonalNo,
+                Surname = this.Surname,
+                Type = this.Type
+            };
+        }
     }
 }

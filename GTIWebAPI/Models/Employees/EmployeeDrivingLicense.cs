@@ -85,5 +85,20 @@ namespace GTIWebAPI.Models.Employees
 
         public string Category { get; set; }
 
+        public EmployeeDrivingLicense FromDTO()
+        {
+            return new EmployeeDrivingLicense()
+            {
+                Category = this.Category,
+                EmployeeId = this.EmployeeId,
+                ExpiryDate = this.ExpiryDate,
+                Id = this.Id,
+                IssuedBy = this.IssuedBy,
+                IssuedWhen = this.IssuedWhen,
+                Number = this.Number,
+                Seria = this.Seria
+            };
+        }
+
     }
 }

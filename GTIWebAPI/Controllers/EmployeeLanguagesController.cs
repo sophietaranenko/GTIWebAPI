@@ -119,7 +119,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeLanguage(int id, EmployeeLanguage employeeLanguage)
+        public IHttpActionResult PutEmployeeLanguage(int id, EmployeeLanguageDTO employeeLanguage)
         {
             if (employeeLanguage == null || !ModelState.IsValid)
             {
@@ -131,8 +131,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeLanguage language = employeeLanguage.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeLanguagesRepository.Update(employeeLanguage);
+                unitOfWork.EmployeeLanguagesRepository.Update(language);
                 unitOfWork.Save();
                 EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
                 return Ok(dto);
@@ -155,7 +156,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeLanguageDTO))]
-        public IHttpActionResult PostEmployeeLanguage(EmployeeLanguage employeeLanguage)
+        public IHttpActionResult PostEmployeeLanguage(EmployeeLanguageDTO employeeLanguage)
         {
             if (employeeLanguage == null || !ModelState.IsValid)
             {
@@ -163,11 +164,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeLanguage language = employeeLanguage.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeLanguage.Id = employeeLanguage.NewId(unitOfWork);
-                unitOfWork.EmployeeLanguagesRepository.Insert(employeeLanguage);
+                language.Id = language.NewId(unitOfWork);
+                unitOfWork.EmployeeLanguagesRepository.Insert(language);
                 unitOfWork.Save();
-                EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == employeeLanguage.Id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
+                EmployeeLanguageDTO dto = unitOfWork.EmployeeLanguagesRepository.Get(d => d.Id == language.Id, includeProperties: "Language,EmployeeLanguageType").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeLanguage", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

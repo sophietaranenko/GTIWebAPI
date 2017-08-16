@@ -1,6 +1,8 @@
 ﻿namespace GTIWebAPI.Models.Employees
 {
     using Dictionary;
+    using Notifications;
+    using Sales;
     using Security;
     using Service;
     using System;
@@ -16,7 +18,21 @@
     {
         public Employee()
         {
-            Masks = new HashSet<UserRightMask>();
+            EmployeePassports = new HashSet<EmployeePassport>();
+            EmployeeOffices = new HashSet<EmployeeOffice>();
+            EmployeeMilitaryCards = new HashSet<EmployeeMilitaryCard>();
+            EmployeeLanguages = new HashSet<EmployeeLanguage>();
+            EmployeeInternationalPassports = new HashSet<EmployeeInternationalPassport>();
+            EmployeeGuns = new HashSet<EmployeeGun>();
+            EmployeeFoundationDocuments = new HashSet<EmployeeFoundationDocument>();
+            EmployeeEducations = new HashSet<EmployeeEducation>();
+            EmployeeDrivingLicenses = new HashSet<EmployeeDrivingLicense>();
+            EmployeeContacts = new HashSet<EmployeeContact>();
+            EmployeeCars = new HashSet<EmployeeCar>();
+            InteractionActMembers = new HashSet<InteractionActMember>();
+            InteractionMembers = new HashSet<InteractionMember>();
+            Notifications = new HashSet<Notification>();
+            NotificationRecipients = new HashSet<NotificationRecipient>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -39,44 +55,53 @@
 
         public Age Age
         {
-            get { return new Age(DateOfBirth); }
+            get
+            {
+                return new Age(DateOfBirth);
+            }
         }
 
-        /// <summary>
-        /// Does not update
-        /// </summary>
         [NotMapped]
         public string ProfilePicture { get; set; }
 
-        /// <summary>
-        /// Does not update
-        /// </summary>
         [NotMapped]
         public string FullUserName { get; set; }
 
-        public virtual IEnumerable<EmployeeOffice> EmployeeOffices { get; set; }
+        public string AspNetUserId { get; set; }
+ 
+        public virtual ICollection<EmployeeOffice> EmployeeOffices { get; set; }
 
-        public virtual IEnumerable<EmployeePassport> EmployeePassports { get; set; }
+        public virtual ICollection<EmployeePassport> EmployeePassports { get; set; }
 
-        public virtual IEnumerable<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
+        public virtual ICollection<EmployeeMilitaryCard> EmployeeMilitaryCards { get; set; }
 
-        public virtual IEnumerable<EmployeeLanguage> EmployeeLanguages { get; set; }
+        public virtual ICollection<EmployeeLanguage> EmployeeLanguages { get; set; }
 
-        public virtual IEnumerable<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
+        public virtual ICollection<EmployeeInternationalPassport> EmployeeInternationalPassports { get; set; }
 
-        public virtual IEnumerable<EmployeeGun> EmployeeGuns { get; set; }
+        public virtual ICollection<EmployeeGun> EmployeeGuns { get; set; }
 
-        public virtual IEnumerable<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
+        public virtual ICollection<EmployeeFoundationDocument> EmployeeFoundationDocuments { get; set; }
 
-        public virtual IEnumerable<EmployeeEducation> EmployeeEducations { get; set; }
+        public virtual ICollection<EmployeeEducation> EmployeeEducations { get; set; }
 
-        public virtual IEnumerable<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
+        public virtual ICollection<EmployeeDrivingLicense> EmployeeDrivingLicenses { get; set; }
 
-        public virtual IEnumerable<EmployeeContact> EmployeeContacts { get; set; }
+        public virtual ICollection<EmployeeContact> EmployeeContacts { get; set; }
 
-        public virtual IEnumerable<EmployeeCar> EmployeeCars { get; set; }
+        public virtual ICollection<EmployeeCar> EmployeeCars { get; set; }
 
-        public virtual IEnumerable<UserRightMask> Masks { get; set; }
+        public virtual ICollection<InteractionActMember> InteractionActMembers { get; set; }
+
+        public virtual ICollection<InteractionMember> InteractionMembers { get; set; }
+
+        public virtual ICollection<Notification> Notifications { get; set; }
+        
+        public virtual ICollection<NotificationRecipient> NotificationRecipients { get; set; }
+
+        public int? EmployeeInsuranceId { get; set; }
+
+        public virtual EmployeeInsurance EmployeeInsurance { get; set; }
 
         protected override string TableName
         {
@@ -108,8 +133,11 @@
                 EmployeeEducations = this.EmployeeEducations == null ? null : this.EmployeeEducations.Select(d => d.ToDTO()).ToList(),
                 EmployeeDrivingLicenses = this.EmployeeDrivingLicenses == null ? null : this.EmployeeDrivingLicenses.Select(d => d.ToDTO()).ToList(),
                 EmployeeContacts = this.EmployeeContacts == null ? null : this.EmployeeContacts.Select(d => d.ToDTO()).ToList(),
+                EmployeeInsurance = this.EmployeeInsurance == null ? null : this.EmployeeInsurance.ToDTO(),
+                EmployeeInsuranceId = this.EmployeeInsuranceId,
                 ProfilePicture = this.ProfilePicture,
-                FullUserName = this.FullUserName
+                FullUserName = this.FullUserName,
+                AspNetUserId = this.AspNetUserId
             };
             return dto;
         }
@@ -124,9 +152,25 @@
                 DateOfBirth = this.DateOfBirth,
                 Id = this.Id,
                 IdentityCode = this.IdentityCode,
-                Address = this.Address == null ? null : this.Address.ToDTO()
+                Address = this.Address == null ? null : this.Address.ToDTO(),
+                EmployeeInsurance = this.EmployeeInsurance == null ? null : this.EmployeeInsurance.ToDTO(),
+                EmployeeInsuranceId = this.EmployeeInsuranceId,
+                AspNetUserId = this.AspNetUserId
             };
             return dto;
+        }
+
+        public EmployeeShortForm ToShortForm()
+        {
+            EmployeePassport passport = this.EmployeePassports.OrderByDescending(d => d.IssuedWhen).FirstOrDefault();
+            EmployeeShortForm form = new EmployeeShortForm() { Id = this.Id, AspNetUserId = this.AspNetUserId};
+            if (passport != null)
+            {
+                form.FirstName = passport.FirstName;
+                form.SecondName = passport.SecondName;
+                form.Surname = passport.Surname;
+            }
+            return form;
         }
 
         public string SexString
@@ -158,15 +202,15 @@
 
         public string Age { get; set; }
 
-        /// <summary>
-        /// Does not update
-        /// </summary>
         public string ProfilePicture { get; set; }
 
-        /// <summary>
-        /// Does not update
-        /// </summary>
         public string FullUserName { get; set; }
+
+        public int? EmployeeInsuranceId { get; set; }
+
+        public string AspNetUserId { get; set; }
+
+        public EmployeeInsuranceDTO EmployeeInsurance { get; set; }
 
         public IEnumerable<EmployeePassportDTO> EmployeePassports { get; set; }
 
@@ -204,6 +248,57 @@
         public int? AddressId { get; set; }
 
         public AddressDTO Address { get; set; }
+
+        public int? EmployeeInsuranceId { get; set; }
+
+        public string AspNetUserId { get; set; }
+
+        public EmployeeInsuranceDTO EmployeeInsurance { get; set; }
+
+        public Employee FromDTO()
+        {
+            return new Employee()
+            {
+                Address = this.Address.FromDTO(),
+                AddressId = this.AddressId,
+                DateOfBirth = this.DateOfBirth,
+                Id = this.Id,
+                IdentityCode = this.IdentityCode,
+                Sex = this.Sex,
+                EmployeeInsurance = this.EmployeeInsurance == null ? null : this.EmployeeInsurance.FromDTO(),
+                EmployeeInsuranceId = this.EmployeeInsuranceId
+            };
+        }
+
+    }
+
+
+    public interface INotificationAuthor
+    {
+        int Id { get; set; }
+
+        string FirstName { get; set; }
+
+        string SecondName { get; set; }
+
+        string Surname { get; set; }
+
+        string AspNetUserId { get; set; }
+
+    }
+
+
+    public class EmployeeShortForm : INotificationAuthor 
+    {
+        public int Id { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string SecondName { get; set; }
+
+        public string Surname { get; set; }
+
+        public string AspNetUserId { get; set; }
 
     }
 }

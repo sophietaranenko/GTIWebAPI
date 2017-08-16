@@ -118,7 +118,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeOffice(int id, EmployeeOffice employeeOffice)
+        public IHttpActionResult PutEmployeeOffice(int id, EmployeeOfficeDTO employeeOffice)
         {
             if (!ModelState.IsValid)
             {
@@ -130,8 +130,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeOffice office = employeeOffice.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeOfficesRepository.Update(employeeOffice);
+                unitOfWork.EmployeeOfficesRepository.Update(office);
                 unitOfWork.Save();
                 EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
                 return Ok(dto);
@@ -154,7 +155,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeOfficeDTO))]
-        public IHttpActionResult PostEmployeeOffice(EmployeeOffice employeeOffice)
+        public IHttpActionResult PostEmployeeOffice(EmployeeOfficeDTO employeeOffice)
         {
             if (employeeOffice == null || !ModelState.IsValid)
             {
@@ -162,11 +163,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeOffice office = employeeOffice.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeOffice.Id = employeeOffice.NewId(unitOfWork);
-                unitOfWork.EmployeeOfficesRepository.Insert(employeeOffice);
+                office.Id = office.NewId(unitOfWork);
+                unitOfWork.EmployeeOfficesRepository.Insert(office);
                 unitOfWork.Save();
-                EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == employeeOffice.Id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
+                EmployeeOfficeDTO dto = unitOfWork.EmployeeOfficesRepository.Get(d => d.Id == office.Id, includeProperties: "Office,Department,Profession").FirstOrDefault().ToDTO();
                 return CreatedAtRoute("GetEmployeeOffice", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

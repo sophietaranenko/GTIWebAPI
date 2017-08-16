@@ -66,6 +66,17 @@ namespace GTIWebAPI.Models.Organizations
 
         public OrganizationGTIDTO OrganizationGTI { get; set; }
 
+        public OrganizationGTILink FromDTO()
+        {
+            return new OrganizationGTILink()
+            {
+                EmployeeId = this.EmployeeId,
+                GTIId = this.GTIId,
+                Id = this.Id,
+                OrganizationId = this.OrganizationId
+            };
+        }
+
     }
 
 

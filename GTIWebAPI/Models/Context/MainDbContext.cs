@@ -19,12 +19,18 @@ using System.Data.Entity.Infrastructure;
 using GTIWebAPI.Models.Reports.ProductivityReport;
 using System.Threading.Tasks;
 using GTIWebAPI.Models.Security;
+using GTIWebAPI.Models.Sales;
+using System.Data.Entity.Core.Objects;
 
 namespace GTIWebAPI.Models.Context
 {
 
-    internal class MainDbContext: DbContext, IAppDbContext
+    internal class MainDbContext : DbContext, IAppDbContext
     {
+
+
+
+
         public MainDbContext() : base("name=DbPersonnel")
         {
             this.Configuration.LazyLoadingEnabled = false;
@@ -126,6 +132,8 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<EmployeeLanguageType> EmployeeLanguageTypes { get; set; }
 
+        public virtual DbSet<EmployeeInsurance> EmployeeInsurances { get; set; }
+
 
 
 
@@ -172,13 +180,24 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<UserRightOff> UserRigths { get; set; }
 
+        public virtual DbSet<OrganizationOwner> OrganizationOwners { get; set; }
 
+        public virtual DbSet<Act> Act { get; set; }
 
+        public virtual DbSet<Interaction> Interaction { get; set; }
 
-        /// <summary>
-        /// Procedure call that returns unique number to name photo with
-        /// </summary>
-        /// <returns></returns>
+        public virtual DbSet<InteractionAct> InteractionAct { get; set; }
+
+        public virtual DbSet<InteractionActMember> InteractionActMember { get; set; }
+
+        public virtual DbSet<Sales.Task> Task { get; set; }
+
+        public virtual DbSet<TaskMember> TaskMember { get; set; }
+
+        public virtual DbSet<TaskMemberRole> TaskMemberRole { get; set; }
+
+        public ObjectStateManager ObjectStateManager { get; set; }
+
         public virtual int FileNameUnique()
         {
             string tableName = "FileNameUnique";
@@ -203,7 +222,7 @@ namespace GTIWebAPI.Models.Context
             }
             return result;
         }
-        //Organizations - for woth with new Organization table and OrganizationGTI - synonym of klient
+
         /// <summary>
         /// Stored procedure call that filters organization view by text filter (filter parameters separated by space symbols) 
         /// </summary>
@@ -272,12 +291,12 @@ namespace GTIWebAPI.Models.Context
 
 
 
-        
 
 
-        
 
-        
+
+
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContactType>()
@@ -323,6 +342,7 @@ namespace GTIWebAPI.Models.Context
             modelBuilder.Entity<KPIValue>()
                 .Property(e => e.Value)
                 .HasPrecision(12, 2);
+
         }
 
         public bool CreateOrganization(string email, string password)
@@ -406,7 +426,29 @@ namespace GTIWebAPI.Models.Context
             return methodResult;
         }
 
-        
+        public string GetChanges(object myObject)
+        {
+            string res = "";
+            if (ObjectStateManager != null)
+            {
+                var myObjectState = ObjectStateManager.GetObjectStateEntry(myObject);
+                if (myObjectState != null)
+                {
+                    var modifiedProperties = myObjectState.GetModifiedProperties();
+                    if (modifiedProperties != null)
+                    {
+                        foreach (var propName in modifiedProperties)
+                        {
+                            res += String.Format("Property {0} changed from {1} to {2}",
+                                 propName,
+                                 myObjectState.OriginalValues[propName],
+                                 myObjectState.CurrentValues[propName]);
+                        }
+                    }
+                }
+            }
+            return res;
+        }
     }
 
 

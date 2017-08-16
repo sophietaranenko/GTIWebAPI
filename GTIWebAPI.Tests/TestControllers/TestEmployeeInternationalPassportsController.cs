@@ -101,7 +101,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeInternationalPassport passport = new EmployeeInternationalPassport { Id = 3, EmployeeId = 3, IssuedBy = "Wow" };
             var controller = new EmployeeInternationalPassportsController(factory.Object);
-            var result = controller.PutEmployeeInternationalPassport(3, passport) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+            var result = controller.PutEmployeeInternationalPassport(3, passport.ToDTO()) as OkNegotiatedContentResult<EmployeeInternationalPassportDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -150,7 +150,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             EmployeeInternationalPassport passport = new EmployeeInternationalPassport { Id = 0, EmployeeId = 3, IssuedBy = "Wow" };
             var controller = new EmployeeInternationalPassportsController(factory.Object);
-            var result = controller.PostEmployeeInternationalPassport(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeInternationalPassportDTO>;
+            var result = controller.PostEmployeeInternationalPassport(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<EmployeeInternationalPassportDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);

@@ -103,53 +103,40 @@ namespace GTIWebAPI.Models.Employees
 
     public class EmployeeEducationDTO
     {
-        /// <summary>
-        /// Education id
-        /// </summary>
         public int Id { get; set; }
 
-        /// <summary>
-        /// Employee id
-        /// </summary>
-        public int? EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
 
-        /// <summary>
-        /// Education document seria
-        /// </summary>
         public string Seria { get; set; }
 
-        /// <summary>
-        /// Education document number
-        /// </summary>
         public string Number { get; set; }
 
-        /// <summary>
-        /// Year of education end
-        /// </summary>
         public int? Year { get; set; }
 
-        /// <summary>
-        /// Study form
-        /// </summary>
         public int? StudyFormId { get; set; }
 
         public virtual EducationStudyFormDTO EducationStudyForm { get; set; }
 
-        /// <summary>
-        /// Institution name 
-        /// </summary>
         public string Institution { get; set; }
 
-        /// <summary>
-        /// Specialty name
-        /// </summary>
         public string Specialty { get; set; }
 
-        /// <summary>
-        /// Qualification
-        /// </summary>
         public string Qualification { get; set; }
 
-
+        public EmployeeEducation FromDTO()
+        {
+            return new EmployeeEducation()
+            {
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Institution = this.Institution,
+                Number = this.Number,
+                Qualification = this.Qualification,
+                Seria = this.Seria,
+                Specialty = this.Specialty,
+                StudyFormId = this.StudyFormId,
+                Year = this.Year
+            };
+        }
     }
 }

@@ -145,6 +145,83 @@ namespace GTIWebAPI.Controllers
         }
 
 
+        [GTIOfficeFilter]
+        [HttpGet]
+        [Route("GetAllLead")]
+        [ResponseType(typeof(IEnumerable<OrganizationView>))]
+        public IHttpActionResult GetOrganizationLeadByOfficeIds(string officeIds)
+        {
+            List<int> OfficeIds = QueryParser.Parse(officeIds, ',');
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                DataTable dataTable = new DataTable();
+                dataTable.Clear();
+                dataTable.Columns.Add("Value");
+                foreach (var id in OfficeIds)
+                {
+                    DataRow row = dataTable.NewRow();
+                    row["Value"] = id;
+                    dataTable.Rows.Add(row);
+                }
+                SqlParameter parameter = new SqlParameter
+                {
+                    ParameterName = "@OfficeIds",
+                    TypeName = "ut_IntList",
+                    Value = dataTable,
+                    SqlDbType = SqlDbType.Structured
+                };
+                IEnumerable<OrganizationView> orgs = unitOfWork.SQLQuery<OrganizationView>("exec OrganizationLeadByOfficeIds @OfficeIds", parameter);
+                return Ok(orgs);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [GTIOfficeFilter]
+        [HttpGet]
+        [Route("GetByEmployeeId")]
+        [ResponseType(typeof(IEnumerable<OrganizationView>))]
+        public IHttpActionResult GetOrganizationsByEmployeeId(int employeeId)
+        {
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                SqlParameter parameter = new SqlParameter
+                {
+                    ParameterName = "@EmployeeId",
+                    DbType = DbType.Int32,
+                    Value = employeeId
+                };
+                IEnumerable<OrganizationView> orgs = unitOfWork.SQLQuery<OrganizationView>("exec OrganizationByOwner @EmployeeId", parameter);
+                return Ok(orgs);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+
         /// <summary>
         /// Get one organization by organization Id
         /// </summary>
@@ -208,12 +285,6 @@ namespace GTIWebAPI.Controllers
 
 
                IEnumerable<OrganizationPropertyType> types = properties.Select(d => d.OrganizationPropertyType).Distinct();
-
-
-
-                //IEnumerable<int> popertyTypeIds = properties
-                //    .Select(d => d.OrganizationPropertyTypeId)
-                //    .Distinct();
 
                 List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
 
@@ -280,7 +351,7 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpPut]
         [Route("Put")]
-        public IHttpActionResult PutOrganization(int id, Organization organization)
+        public IHttpActionResult PutOrganization(int id, OrganizationEditDTO organization)
         {
             if (!ModelState.IsValid)
             {
@@ -292,8 +363,9 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                Organization org = organization.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.OrganizationsRepository.Update(organization);
+                unitOfWork.OrganizationsRepository.Update(org);
                 unitOfWork.Save();
                 OrganizationEditDTO dto = unitOfWork.OrganizationsRepository
                     .Get(d => d.Id == id, includeProperties: "Country,OrganizationLegalForm")
@@ -316,10 +388,48 @@ namespace GTIWebAPI.Controllers
 
 
         [GTIFilter]
+        [HttpPut]
+        [Route("ChangeOwner")]
+        public IHttpActionResult ChangeOrganizationOwner(int organizationId, int ownerId)
+        {
+            if (organizationId == 0 && ownerId == 0)
+            {
+                return BadRequest("Empty organization or owner!");
+            }
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                unitOfWork.OrganizationOwnersRepository.Insert(
+                    new OrganizationOwner()
+                    {
+                        EmployeeId = ownerId,
+                        OrganizationId = organizationId,
+                        DateBegin = DateTime.Now
+                    }
+                    );
+                unitOfWork.Save();
+                return Ok();
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        //мы знаем страну??? или нет???
+        [GTIFilter]
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationEditDTO))]
-        public IHttpActionResult PostOrganization(Organization organization)
+        public IHttpActionResult PostOrganization(OrganizationEditDTO organization)
         {
             try
             {
@@ -329,27 +439,36 @@ namespace GTIWebAPI.Controllers
                     {
                         return BadRequest("Empty CountryId");
                     }
-                    organization.EmployeeId = identityHelper.GetUserTableId(User);
-                    UnitOfWork unitOfWork = new UnitOfWork(factory);
-                    organization.Id = organization.NewId(unitOfWork);
-                    unitOfWork.OrganizationsRepository.Insert(organization);
 
-                    //contant types 
-                    List<OrganizationPropertyType> types = unitOfWork.OrganizationPropertyTypesRepository.Get(d => d.Constant == true && d.CountryId == organization.CountryId).ToList();
+                    Organization org = organization.FromDTO();
+                    //now this information is stored in OrganizationOwner (we do not need this anymore) 
+                    //  organization.EmployeeId = identityHelper.GetUserTableId(User);
+                    UnitOfWork unitOfWork = new UnitOfWork(factory);
+                    org.Id = org.NewId(unitOfWork);
+                    unitOfWork.OrganizationsRepository.Insert(org);
+
+                    unitOfWork.OrganizationOwnersRepository.Insert(
+                          new OrganizationOwner()
+                          {
+                              DateBegin = DateTime.Now,
+                              EmployeeId = identityHelper.GetUserTableId(User),
+                              OrganizationId = org.Id
+                          });
+
+                    //constant types 
+                    List<OrganizationPropertyType> types = unitOfWork.OrganizationPropertyTypesRepository.Get(d => d.Constant == true && d.CountryId == org.CountryId).ToList();
                     foreach (var type in types)
                     {
                         OrganizationProperty property = new OrganizationProperty();
                         property.Id = property.NewId(unitOfWork);
                         property.OrganizationPropertyTypeId = type.Id;
-                        property.OrganizationId = organization.Id;
+                        property.OrganizationId = org.Id;
                         unitOfWork.OrganizationPropertiesRepository.Insert(property);
                     }
                     unitOfWork.Save();
                     OrganizationEditDTO dto = unitOfWork.OrganizationsRepository
-                        .Get(d => d.Id == organization.Id, includeProperties: "Country,OrganizationLegalForm")
+                        .Get(d => d.Id == org.Id, includeProperties: "Country,OrganizationLegalForm")
                     .FirstOrDefault().MapToEdit();
-
-                    
 
                     return CreatedAtRoute("GetOrganizationEdit", new { id = dto.Id }, dto);
                 }

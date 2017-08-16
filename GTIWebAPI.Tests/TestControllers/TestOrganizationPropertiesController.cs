@@ -109,7 +109,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             OrganizationProperty passport = new OrganizationProperty { Id = 3, OrganizationId = 3 };
             var controller = new OrganizationPropertiesController(factory.Object);
-            var result = controller.PutOrganizationProperty(3, passport) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
+            var result = controller.PutOrganizationProperty(3, passport.ToDTO()) as OkNegotiatedContentResult<OrganizationPropertyDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -181,7 +181,7 @@ namespace GTIWebAPI.Tests.TestControllers
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             OrganizationProperty passport = new OrganizationProperty { Id = 0, OrganizationId = 3 };
             var controller = new OrganizationPropertiesController(factory.Object);
-            var result = controller.PostOrganizationProperty(passport) as CreatedAtRouteNegotiatedContentResult<OrganizationPropertyDTO>;
+            var result = controller.PostOrganizationProperty(passport.ToDTO()) as CreatedAtRouteNegotiatedContentResult<OrganizationPropertyDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
             Assert.AreEqual(3, result.Content.OrganizationId);

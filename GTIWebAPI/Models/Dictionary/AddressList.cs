@@ -31,7 +31,7 @@ namespace GTIWebAPI.Models.Dictionary
             AddressList.AddressVillages = villages.Select(c => c.ToDTO()).ToList();
 
             List<Country> countries = db.Countries.ToList();
-            AddressList.Countries = countries.Select(c => c.ToDTO()).ToList();
+            AddressList.Countries = countries.Where(d => d.Deleted != true).Select(c => c.ToDTO()).ToList();
 
             return AddressList;
         }

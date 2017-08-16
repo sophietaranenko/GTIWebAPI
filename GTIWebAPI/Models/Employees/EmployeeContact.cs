@@ -63,5 +63,16 @@
 
         public string Value { get; set; }
 
+        public EmployeeContact FromDTO()
+        {
+            return new EmployeeContact()
+            {
+                ContactTypeId = this.ContactTypeId,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Value = this.Value
+            };
+        }
+
     }
 }

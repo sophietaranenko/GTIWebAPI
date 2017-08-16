@@ -75,5 +75,19 @@ namespace GTIWebAPI.Models.Reports.ProductivityReport
         public  KPIPeriodDTO KPIPeriod { get; set; }
 
         public OfficeDTO Office { get; set; }
+
+        public KPIValue FromDTO()
+        {
+            return new KPIValue()
+            {
+                DateBegin = this.DateBegin,
+                DateEnd = this.DateEnd,
+                Id = this.Id,
+                KPIParameterId = this.KPIParameterId,
+                KPIPeriodId = this.KPIPeriodId,
+                OfficeId = this.OfficeId,
+                Value = this.Value
+            };
+        }
     }
 }

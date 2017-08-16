@@ -584,8 +584,8 @@ namespace GTIWebAPI.Controllers
                         {
                             UserName = novellPerson.Login,
                             Email = novellPerson.Email,
-                            TableName = "OrganizationContactPerson",
-                            TableId = organizationContactPersonId
+                            //TableName = "OrganizationContactPerson",
+                            //TableId = organizationContactPersonId
                         };
                         try
                         {

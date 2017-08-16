@@ -19,6 +19,7 @@ using System.Web.Http.Cors;
 using NLog;
 using GTIWebAPI.NovellGroupWiseSOAP;
 using GTIWebAPI.Exceptions;
+using GTIWebAPI.Notifications;
 
 namespace GTIWebAPI.Providers
 {
@@ -50,6 +51,7 @@ namespace GTIWebAPI.Providers
         private readonly string _publicClientId;
         private INovelleDirectory novell;
         private INovellGroupWise novellGroupWise;
+        
 
         //если вернемся к теме логгирования 
         //инициализация 
@@ -87,6 +89,7 @@ namespace GTIWebAPI.Providers
         /// <returns></returns>
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
+
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
             try
             {
@@ -111,6 +114,8 @@ namespace GTIWebAPI.Providers
                     applicationUser.GroupWiseSessionId = postOfficeConnection.SessionId;
                 }
 
+
+
                 ClaimsIdentity oAuthIdentity = await applicationUser.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookiesIdentity = await applicationUser.GenerateUserIdentityAsync(userManager,
@@ -122,18 +127,20 @@ namespace GTIWebAPI.Providers
                 context.Validated(ticket);
                 context.Request.Context.Authentication.SignIn(cookiesIdentity);
             }
+            catch (NovellGroupWiseException ngwe)
+            {
+                context.SetError("invalid_grant", "Username or password is incorrect");
+                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
+            }
+
             catch (NovelleDirectoryException nede)
             {
                 //если человека нет в Novell - это и только это показатель того, что его никуда не надо пускать 
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                context.SetError("invalid_grant", "Username or password is incorrect");
                 context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
                 return;
             }
-            catch (NovellGroupWiseException ngwe)
-            {
-                context.SetError("invalid_grant", ngwe.Message);
-                context.Response.Headers.Add(Constants.OwinChallengeFlag, new[] { ((int)HttpStatusCode.Unauthorized).ToString() });
-            }
+            
             catch (FailedDatabaseConnectionException fdce)
             {
                 context.SetError("invalid_grant", fdce.Message);
@@ -157,15 +164,25 @@ namespace GTIWebAPI.Providers
                 TableName = "Employee",
                 TableId = employeeId
             };
+            
             try
             { 
                 userManager.Create(newUser, password);
+                UpdateEmployee(employeeId, newUser.Id);
             }
             catch (Exception e)
             {
                 throw new FailedDatabaseConnectionException("Cannot create application user");
             }
             return newUser;
+        }
+
+        private void UpdateEmployee(int employeeId, string userId)
+        {
+            using (SecureEmployeeCreatorDbContext db = new SecureEmployeeCreatorDbContext())
+            {
+                employeeId = db.UpdateEmployee(employeeId, userId);
+            }
         }
 
         private async Task<ApplicationUser> ChangePassword(string username, string password, ApplicationUserManager userManager)
@@ -183,7 +200,7 @@ namespace GTIWebAPI.Providers
 
         private ApplicationUser CreateUser(string username, string password, NovellUser novellUser, ApplicationUserManager userManager)
         {
-
+            //замена внешних ключей из одной таблицы в другую ... :)
             bool dbResult = false;
             using (ApplicationDbContext db = new ApplicationDbContext())
             {

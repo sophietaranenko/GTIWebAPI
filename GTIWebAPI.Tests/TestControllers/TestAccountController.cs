@@ -34,8 +34,8 @@ namespace GTIWebAPI.Tests.TestControllers
                     {
                         Id = userId,
                         Email = "SomeTestEmail@Test.Test",
-                        TableId = 1,
-                        TableName = "Employee",
+                        //TableId = 1,
+                        //TableName = "Employee",
                         UserName = "testuser"
                     };
                     return user;
@@ -83,13 +83,13 @@ namespace GTIWebAPI.Tests.TestControllers
                     {
                         Id = userId,
                         Email = "SomeTestEmail@Test.Test",
-                        TableId = 1,
-                        TableName = "Employee",
+                        //TableId = 1,
+                        //TableName = "Employee",
                         UserName = "testuser"
                     };
                     return user;
                 });
-            identityHelper.Setup(d => d.GetUserId(It.IsAny<IPrincipal>())).Returns(Guid.NewGuid().ToString());
+          identityHelper.Setup(d => d.GetUserId(It.IsAny<IPrincipal>())).Returns(Guid.NewGuid().ToString());
 
             var dbContext = new Mock<IAppDbContext>();
             dbContext.Setup(d => d.ExecuteStoredProcedure<bool>(It.IsAny<string>(), It.IsAny<object[]>()))
@@ -136,8 +136,8 @@ namespace GTIWebAPI.Tests.TestControllers
                     {
                         Id = userId,
                         Email = "SomeTestEmail@Test.Test",
-                        TableId = 1,
-                        TableName = "Employee",
+                        //TableId = 1,
+                        //TableName = "Employee",
                         UserName = "testuser"
                     };
                     return user;
@@ -195,8 +195,8 @@ namespace GTIWebAPI.Tests.TestControllers
                     {
                         Id = userId,
                         Email = "SomeTestEmail@Test.Test",
-                        TableId = 1,
-                        TableName = "Employee",
+                        //TableId = 1,
+                        //TableName = "Employee",
                         UserName = "testuser",
                         UserRights = new List<UserRight>
                         {
@@ -330,8 +330,8 @@ namespace GTIWebAPI.Tests.TestControllers
                     {
                         Id = userId,
                         Email = "SomeTestEmail@Test.Test",
-                        TableId = 1,
-                        TableName = "Employee",
+                        //TableId = 1,
+                        //TableName = "Employee",
                         UserName = "testuser"
                     };
                     return user;

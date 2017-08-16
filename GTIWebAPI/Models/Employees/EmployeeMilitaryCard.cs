@@ -15,6 +15,9 @@ namespace GTIWebAPI.Models.Employees
 
         public int? EmployeeId { get; set; }
 
+        public virtual Employee Employee { get; set; }
+
+
         [StringLength(25)]
         public string Number { get; set; }
 
@@ -102,6 +105,25 @@ namespace GTIWebAPI.Models.Employees
         public string SpecialtyNumber { get; set; }
 
         public string Office { get; set; }
+
+        public EmployeeMilitaryCard FromDTO()
+        {
+            return new EmployeeMilitaryCard()
+            {
+                Category = this.Category,
+                Corps = this.Corps,
+                EmployeeId = this.EmployeeId,
+                Id = this.Id,
+                Number = this.Number,
+                Office = this.Office,
+                OfficeDate = this.OfficeDate,
+                Rank = this.Rank,
+                Seria = this.Seria,
+                Specialty = this.Specialty,
+                SpecialtyNumber = this.SpecialtyNumber,
+                TypeGroup = this.TypeGroup
+            };
+        }
 
     }
 }

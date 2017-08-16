@@ -22,4 +22,21 @@ namespace GTIWebAPI.Exceptions
         {
         }
     }
+
+    public class NotOnPostOfficeException : Exception
+    {
+        public NotOnPostOfficeException()
+        {
+        }
+
+        public NotOnPostOfficeException(string message)
+        : base(message)
+        {
+        }
+
+        public NotOnPostOfficeException(string message, Exception inner)
+        : base(message, inner)
+        {
+        }
+    }
 }

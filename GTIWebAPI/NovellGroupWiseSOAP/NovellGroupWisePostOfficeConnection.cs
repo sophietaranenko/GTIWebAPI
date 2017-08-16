@@ -11,5 +11,7 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
         public string PostOffice { get; set; }
 
         public string SessionId { get; set; }
+
+        public string Email { get; set; }
     }
 }

@@ -8,53 +8,18 @@ using Newtonsoft.Json.Serialization;
 using GTIWebAPI.Filters;
 using System.Web.Http.Cors;
 using Newtonsoft.Json.Converters;
-
 namespace GTIWebAPI
 {
-    /// <summary>
-    /// Class with WebAPI configuration 
-    /// </summary>
     public static class WebApiConfig
     {
-        //public static string UrlPrefix { get { return "api"; } }
-        //public static string UrlPrefixRelative { get { return "~/api"; } }
-
-        /// <summary>
-        /// Register roures method
-        /// </summary>
-        /// <param name="config"></param>
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
-            // Configure Web API to use only bearer token authentication.
             config.SuppressDefaultHostAuthentication();
             config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 
             config.Filters.Add(new RequireHttpsAttribute());
 
-            // Web API routes
             config.MapHttpAttributeRoutes();
-
-           
-            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(
-            //    new IsoDateTimeConverter()
-            //    {
-            //       // DateTimeFormat = "yyyy-MM-dd"
-            //       DateTimeFormat = "dd/MM/yyyy"
-            //    });
-
-            //origins: "http://gtiweb.formag-group.com",
-            // config.EnableCors(new EnableCorsAttribute(origins: "", headers: "Authorization, Content-Type", methods: "GET, PUT, POST, DELETE, OPTIONS"));
-            // var cors = new EnableCorsAttribute("*", "*", "*");
-            // config.EnableCors(cors);
-
-
-
-            //config.Routes.MapHttpRoute(
-            //    name: "ActionApi",
-            //    routeTemplate: "api/{controller}/{action}/{id}",
-            //    defaults: new { action="GetAll", id = RouteParameter.Optional }
-            //);
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
@@ -64,6 +29,4 @@ namespace GTIWebAPI
             );
         }
     }
-
-    
 }

@@ -106,7 +106,7 @@ namespace GTIWebAPI.Controllers
         [HttpPut]
         [Route("Put")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployeeInternationalPassport(int id, EmployeeInternationalPassport employeeInternationalPassport)
+        public IHttpActionResult PutEmployeeInternationalPassport(int id, EmployeeInternationalPassportDTO employeeInternationalPassport)
         {
             if (employeeInternationalPassport == null || !ModelState.IsValid)
             {
@@ -118,11 +118,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeInternationalPassport passport = employeeInternationalPassport.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.EmployeeInternationalPassportsRepository.Update(employeeInternationalPassport);
+                unitOfWork.EmployeeInternationalPassportsRepository.Update(passport);
                 unitOfWork.Save();
-                EmployeeInternationalPassportDTO passport = employeeInternationalPassport.ToDTO();
-                return Ok(passport);
+                EmployeeInternationalPassportDTO dto = passport.ToDTO();
+                return Ok(dto);
             }
             catch (NotFoundException nfe)
             {
@@ -142,7 +143,7 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(EmployeeInternationalPassportDTO))]
-        public IHttpActionResult PostEmployeeInternationalPassport(EmployeeInternationalPassport employeeInternationalPassport)
+        public IHttpActionResult PostEmployeeInternationalPassport(EmployeeInternationalPassportDTO employeeInternationalPassport)
         {
             if (employeeInternationalPassport == null || !ModelState.IsValid)
             {
@@ -150,11 +151,12 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
+                EmployeeInternationalPassport passport = employeeInternationalPassport.FromDTO();
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                employeeInternationalPassport.Id = employeeInternationalPassport.NewId(unitOfWork);
-                unitOfWork.EmployeeInternationalPassportsRepository.Insert(employeeInternationalPassport);
+                passport.Id = passport.NewId(unitOfWork);
+                unitOfWork.EmployeeInternationalPassportsRepository.Insert(passport);
                 unitOfWork.Save();
-                EmployeeInternationalPassportDTO dto = employeeInternationalPassport.ToDTO();
+                EmployeeInternationalPassportDTO dto = passport.ToDTO();
                 return CreatedAtRoute("GetEmployeeInternationalPassport", new { id = dto.Id }, dto);
             }
             catch (NotFoundException nfe)

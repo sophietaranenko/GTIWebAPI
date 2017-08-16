@@ -25,7 +25,7 @@ namespace GTIWebAPI.Models.Personnel
         public string Code { get; set; }
 
         [StringLength(10)]
-        public string code2 { get; set; }
+        public string Code2 { get; set; }
 
         public int? code3 { get; set; }
 
@@ -43,7 +43,9 @@ namespace GTIWebAPI.Models.Personnel
             {
                 Id = this.Id,
                 Name = this.Name,
-                Country = this.Country == null ? null : this.Country.ToDTO()
+                Country = this.Country == null ? null : this.Country.ToDTO(),
+                Code = this.Code,
+                Code2 = this.Code2
             };
             return dto;
         }
@@ -63,7 +65,25 @@ namespace GTIWebAPI.Models.Personnel
         public int Id { get; set; }
 
         public string Name { get; set; }
+        
+        public int CountryId { get; set; }
 
         public CountryDTO Country { get; set; }
+
+        public string Code { get; set; }
+
+        public string Code2 { get; set; }
+
+        public Profession FromDTO()
+        {
+            return new Profession()
+            {
+                Code = this.Code,
+                Code2 = this.Code2,
+                Id = this.Id,
+                Name = this.Name,
+                CountryId = this.CountryId
+            };
+        }
     }
 }

@@ -68,17 +68,20 @@ namespace GTIWebAPI.Controllers
 
         public int GetUserTableId(IPrincipal p)
         {
-            return FindUserById(GetUserId(p)).TableId;
+            return 0;
+        //    return FindUserById(GetUserId(p)).TableId;
         }
 
         public string GetUserTableName(HttpActionContext context)
         {
-            return FindUserById(GetUserId(context)).TableName;
+            return "";
+          //  return FindUserById(GetUserId(context)).TableName;
         }
 
         public string GetUserTableName(IPrincipal p)
         {
-            return FindUserById(GetUserId(p)).TableName;
+            return "";
+           // return FindUserById(GetUserId(p)).TableName;
         }
 
     }
@@ -203,30 +206,29 @@ namespace GTIWebAPI.Controllers
         [HttpPost]
         [Route("Post")]
         [ResponseType(typeof(OrganizationGTILinkDTO))]
-        public IHttpActionResult PostOrganizationGTILink(OrganizationGTILink organizationGTILink)
+        public IHttpActionResult PostOrganizationGTILink(OrganizationGTILinkDTO organizationGTILink)
         {
-            OrganizationGTILinkDTO dto = new OrganizationGTILinkDTO();
             try
             {
+                
 
-                //   string userId = ActionContext.RequestContext.Principal.Identity.GetUserId();
-                //   ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-             //   ApplicationUser user = identityHelper.FindUserById(User.Identity.GetUserId());
+                if (organizationGTILink == null)
+                {
+                    return BadRequest(ModelState);
+                }
+
                 if (identityHelper.GetUserTableName(User) == "Employee")
                 {
+                    OrganizationGTILink link = organizationGTILink.FromDTO();
+
                     int EmployeeId = identityHelper.GetUserTableId(User);
-                    if (organizationGTILink == null)
-                    {
-                        return BadRequest(ModelState);
-                    }
-                    organizationGTILink.EmployeeId = EmployeeId;
+                    link.EmployeeId = EmployeeId;
+
+
 
                     UnitOfWork unitOfWork = new UnitOfWork(factory);
-
-
-
                     OrganizationGTILink existingLink = unitOfWork.OrganizationGTILinksRepository
-                        .Get(d => d.Deleted != true && d.GTIId == organizationGTILink.GTIId)
+                        .Get(d => d.Deleted != true && d.GTIId == link.GTIId)
                         .FirstOrDefault();
                     if (existingLink != null)
                     {
@@ -234,23 +236,28 @@ namespace GTIWebAPI.Controllers
                     }
 
 
-                    organizationGTILink.Id = organizationGTILink.NewId(unitOfWork);
-                    unitOfWork.OrganizationGTILinksRepository.Insert(organizationGTILink);
+
+
+                    link.Id = link.NewId(unitOfWork);
+                    unitOfWork.OrganizationGTILinksRepository.Insert(link);
                     unitOfWork.Save();
 
-                    OrganizationGTILinkDTO link = unitOfWork.OrganizationGTILinksRepository
-                    .Get(d => d.Id == organizationGTILink.Id).FirstOrDefault().ToDTO();
-                    if (link.GTIId != null)
+
+
+                    OrganizationGTILinkDTO dto = unitOfWork.OrganizationGTILinksRepository
+                    .Get(d => d.Id ==link.Id).FirstOrDefault().ToDTO();
+
+                    if (dto.GTIId != null)
                     {
-                        link.OrganizationGTI = unitOfWork.OrganizationGTIsRepository
-                        .Get(d => d.Id == link.GTIId).FirstOrDefault().ToDTO();
-                        if (link.OrganizationGTI != null)
+                        dto.OrganizationGTI = unitOfWork.OrganizationGTIsRepository
+                        .Get(d => d.Id == dto.GTIId).FirstOrDefault().ToDTO();
+                        if (dto.OrganizationGTI != null)
                         {
-                            link.OrganizationGTI.Office = unitOfWork.OfficesRepository
-                            .Get(d => d.Id == link.OrganizationGTI.OfficeId).FirstOrDefault().ToDTO();
+                            dto.OrganizationGTI.Office = unitOfWork.OfficesRepository
+                            .Get(d => d.Id == dto.OrganizationGTI.OfficeId).FirstOrDefault().ToDTO();
                         }
                     }
-                    return CreatedAtRoute("GetOrganizationGTILink", new { id = link.Id }, link);
+                    return CreatedAtRoute("GetOrganizationGTILink", new { id = dto.Id }, dto);
                 }
                 else
                 {

@@ -194,6 +194,27 @@
 
         public string Apartment { get; set; }
 
+        public Address FromDTO()
+        {
+            return new Address()
+            {
+                Apartment = this.Apartment,
+                BuildingNumber = this.BuildingNumber,
+                CountryId = this.CountryId,
+                Housing = this.Housing,
+                Id = this.Id,
+                LocalityId = this.LocalityId,
+                LocalityName = this.LocalityName,
+                PlaceId = this.PlaceId,
+                PlaceName = this.PlaceName,
+                PostIndex = this.PostIndex,
+                RegionId = this.RegionId,
+                RegionName = this.RegionName,
+                VillageId = this.VillageId,
+                VillageName = this.VillageName
+            };
+        }
+
 
     }
 }

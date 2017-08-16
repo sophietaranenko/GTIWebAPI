@@ -258,7 +258,7 @@ namespace GTIWebAPI.Tests.TestControllers
 
             Employee passport = new Employee { Id = 3};
             var controller = new EmployeesController(factory.Object);
-            var result = controller.PutEmployee(3, passport) as OkNegotiatedContentResult<EmployeeEditDTO>;
+            var result = controller.PutEmployee(3, passport.ToDTOEdit()) as OkNegotiatedContentResult<EmployeeEditDTO>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Content.Id);
@@ -306,7 +306,7 @@ namespace GTIWebAPI.Tests.TestControllers
             factory.Setup(m => m.CreateDbContext()).Returns(dbContext.Object);
             Employee passport = new Employee { Id = 0, Address = new Address { Apartment = "3", BuildingNumber = 45 } };
             var controller = new EmployeesController(factory.Object);
-            var result = controller.PostEmployee(passport) as CreatedAtRouteNegotiatedContentResult<EmployeeEditDTO>;
+            var result = controller.PostEmployee(passport.ToDTOEdit()) as CreatedAtRouteNegotiatedContentResult<EmployeeEditDTO>;
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.Id);
         }
