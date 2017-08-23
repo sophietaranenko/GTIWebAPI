@@ -220,7 +220,8 @@ namespace GTIWebAPI.Controllers
                 foreach (var item in notification.NotificationRecipients)
                 {
                     string employeeUserId = item.Employee.AspNetUserId;
-                    context.Clients.User(employeeUserId).displayMessage(notification.NotificationText, notification.LinkName, notification.LinkId, notification.NotificationDate);
+                    //context.Clients.User(employeeUserId).displayMessage(notification.NotificationText, notification.LinkName, notification.LinkId, notification.NotificationDate);
+                    context.Clients.All.displayMessage(notification.NotificationText, notification.LinkName, notification.LinkId, notification.NotificationDate);
                 }
 
                 InteractionDTO dto = toReturn.ToDTO();
@@ -275,10 +276,12 @@ namespace GTIWebAPI.Controllers
                 Notification notification = toReturn.ToEditingNotify(author);
                 unitOfWork.NotificationsRepository.Insert(notification);
                 unitOfWork.Save();
+
                 var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
                 foreach (var item in notification.NotificationRecipients)
                 {
                     string employeeUserId = item.Employee.AspNetUserId;
+                   // context.Clients.All.displayMessage(notification.NotificationText, notification.LinkName, notification.LinkId, notification.NotificationDate);
                     context.Clients.User(employeeUserId).displayMessage(notification.NotificationText, notification.LinkName, notification.LinkId, notification.NotificationDate);
                 }
 

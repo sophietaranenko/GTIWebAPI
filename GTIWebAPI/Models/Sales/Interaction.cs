@@ -76,7 +76,7 @@ namespace GTIWebAPI.Models.Sales
             notification.LinkName = "Interaction";
             notification.EmployeeId = author.Id;
             notification.NotificationText = String.Format(
-                "{0} {1} добавил(а) вас как участника в новое взаимодействие \"{2}\"",
+                "{0} {1} РґРѕР±Р°РІРёР»(Р°) РІР°СЃ РєР°Рє СѓС‡Р°СЃС‚РЅРёРєР° РІ РЅРѕРІРѕРµ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёРµ \"{2}\"",
                 author.FirstName,
                 author.Surname,
                 this.Name);
@@ -100,7 +100,7 @@ namespace GTIWebAPI.Models.Sales
             notification.LinkName = "Interaction";
             notification.EmployeeId = author.Id;
             notification.NotificationText = String.Format(
-                "{0} {1} изменил(а) взаимодействие \"{2}\", в котром вы учавствуете",
+                "{0} {1} РёР·РјРµРЅРёР»(Р°) РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёРµ \"{2}\", РІ РєРѕС‚СЂРѕРј РІС‹ СѓС‡Р°РІСЃС‚РІСѓРµС‚Рµ",
                 author.FirstName,
                 author.Surname,
                 this.Name);
@@ -124,7 +124,7 @@ namespace GTIWebAPI.Models.Sales
             notification.LinkName = "Interaction";
             notification.EmployeeId = author.Id;
             notification.NotificationText = String.Format(
-                "{0} {1} удалил(а) взаимодействие \"{2}\", в котром вы учавствуете",
+                "{0} {1} СѓРґР°Р»РёР»(Р°) РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёРµ \"{2}\", РІ РєРѕС‚СЂРѕРј РІС‹ СѓС‡Р°РІСЃС‚РІСѓРµС‚Рµ",
                 author.FirstName,
                 author.Surname,
                 this.Name);

@@ -146,11 +146,8 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<InteractionActMember> InteractionActMember { get; set; }
 
-        DbSet<Sales.Task> Task { get; set; }
+        DbSet<Tasks.Task> Task { get; set; }
 
-        DbSet<TaskMember> TaskMember { get; set; }
-
-        DbSet<TaskMemberRole> TaskMemberRole { get; set; }
         ObjectStateManager ObjectStateManager { get; set; }
     }
 }

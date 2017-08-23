@@ -250,7 +250,7 @@ namespace GTIWebAPI.Controllers
                 string m = e.Message;
             }
 
-            userInfoViewModel.UserRights = dtos;
+            userInfoViewModel.UserRights = dtos.OrderBy(d => d.OfficeName);
 
             return userInfoViewModel;
 

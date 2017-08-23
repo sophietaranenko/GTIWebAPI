@@ -524,6 +524,7 @@
     <Compile Include="Controllers\OrganizationTaxAddressesController.cs" />
     <Compile Include="Controllers\ProductivityReportController.cs" />
     <Compile Include="Controllers\ProfessionsController.cs" />
+    <Compile Include="Controllers\TasksController.cs" />
     <Compile Include="Controllers\UserRightMaskController.cs" />
     <Compile Include="Controllers\UserRightsController.cs" />
     <Compile Include="Exceptions\ConflictException.cs" />
@@ -623,9 +624,7 @@
     <Compile Include="Models\Sales\InteractionMember.cs" />
     <Compile Include="Models\Sales\InteractionStatus.cs" />
     <Compile Include="Models\Sales\InteractionStatusMovement.cs" />
-    <Compile Include="Models\Sales\Task.cs" />
-    <Compile Include="Models\Sales\TaskMember.cs" />
-    <Compile Include="Models\Sales\TaskMemberRole.cs" />
+    <Compile Include="Models\Tasks\Task.cs" />
     <Compile Include="Models\Security\ControllerBox.cs" />
     <Compile Include="Models\Security\UserRight.cs" />
     <Compile Include="Models\Security\UserRightList.cs" />

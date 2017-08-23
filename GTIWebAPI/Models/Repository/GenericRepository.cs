@@ -84,8 +84,22 @@ namespace GTIWebAPI.Models.Repository
 
         public virtual void Update(TEntity entityToUpdate)
         {
+
             dbSet.Attach(entityToUpdate);
             context.MarkAsModified(entityToUpdate);
+        }
+
+        public virtual void UpdateFields(TEntity entityToUpdate, string fieldsToUpdate)
+        {
+            dbSet.Attach(entityToUpdate);
+            var entry = context.Entry(entityToUpdate);
+            foreach (var item in fieldsToUpdate.Split(','))
+            {
+                entry.Property(item).IsModified = true;
+            }
+            //entry.Property(e => e.Age).IsModified = true;
+            //entry.Property(e => e.Address).IsModified = true;
+            //context.MarkAsModified(entityToUpdate);
         }
     }
 }

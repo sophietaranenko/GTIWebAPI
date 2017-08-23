@@ -424,7 +424,7 @@ namespace GTIWebAPI.Models.Repository
 
                 list.EmployeeOfficeList = new EmployeeOfficeList();
 
-                list.EmployeeOfficeList.Offices = context.Offices.ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Offices = context.Offices.ToList().Select(d => d.ToDTO()).OrderBy(d => d.ShortName);
                 list.EmployeeOfficeList.Professions = context.Professions.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
                 list.EmployeeOfficeList.Departments = context.Departments.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
 
@@ -685,42 +685,16 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
-        private GenericRepository<Sales.Task> tasksRepository;
-        public GenericRepository<Sales.Task> TasksRepository
+        private GenericRepository<Tasks.Task> tasksRepository;
+        public GenericRepository<Tasks.Task> TasksRepository
         {
             get
             {
                 if (this.tasksRepository == null)
                 {
-                    this.tasksRepository = new GenericRepository<Sales.Task>(context);
+                    this.tasksRepository = new GenericRepository<Tasks.Task>(context);
                 }
                 return tasksRepository;
-            }
-        }
-
-        private GenericRepository<TaskMember> taskMembersRepository;
-        public GenericRepository<TaskMember> TaskMembersRepository
-        {
-            get
-            {
-                if (this.taskMembersRepository == null)
-                {
-                    this.taskMembersRepository = new GenericRepository<TaskMember>(context);
-                }
-                return taskMembersRepository;
-            }
-        }
-
-        private GenericRepository<TaskMemberRole> taskMemberRolesRepository;
-        public GenericRepository<TaskMemberRole> TaskMemberRolesRepository
-        {
-            get
-            {
-                if (this.taskMemberRolesRepository == null)
-                {
-                    this.taskMemberRolesRepository = new GenericRepository<TaskMemberRole>(context);
-                }
-                return taskMemberRolesRepository;
             }
         }
 

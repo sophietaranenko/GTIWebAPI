@@ -45,7 +45,6 @@ namespace GTIWebAPI.Controllers
             var context =
                 Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
 
-
             List<string> userIds = new List<string>();
             userIds.Add(helper.GetUserId(User));
             //// отправляем сообщение

@@ -21,15 +21,13 @@ using System.Threading.Tasks;
 using GTIWebAPI.Models.Security;
 using GTIWebAPI.Models.Sales;
 using System.Data.Entity.Core.Objects;
+using GTIWebAPI.Models.Tasks;
 
 namespace GTIWebAPI.Models.Context
 {
 
     internal class MainDbContext : DbContext, IAppDbContext
     {
-
-
-
 
         public MainDbContext() : base("name=DbPersonnel")
         {
@@ -190,13 +188,9 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<InteractionActMember> InteractionActMember { get; set; }
 
-        public virtual DbSet<Sales.Task> Task { get; set; }
-
-        public virtual DbSet<TaskMember> TaskMember { get; set; }
-
-        public virtual DbSet<TaskMemberRole> TaskMemberRole { get; set; }
-
         public ObjectStateManager ObjectStateManager { get; set; }
+
+        public virtual DbSet<Tasks.Task> Task { get; set; }
 
         public virtual int FileNameUnique()
         {
@@ -205,8 +199,6 @@ namespace GTIWebAPI.Models.Context
             int result = this.Database.SqlQuery<int>("exec NewTableId @TableName", table).FirstOrDefault();
             return result;
         }
-
-
 
         public virtual int NewTableId(string tableName)
         {
@@ -289,14 +281,6 @@ namespace GTIWebAPI.Models.Context
             return organizationList;
         }
 
-
-
-
-
-
-
-
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContactType>()
@@ -342,6 +326,16 @@ namespace GTIWebAPI.Models.Context
             modelBuilder.Entity<KPIValue>()
                 .Property(e => e.Value)
                 .HasPrecision(12, 2);
+
+            modelBuilder.Entity<Employee>()
+                .HasMany(e => e.CreatorTasks)
+                .WithOptional(e => e.Creator)
+                .HasForeignKey(e => e.CreatorId);
+
+            modelBuilder.Entity<Employee>()
+                .HasMany(e => e.DoerTasks)
+                .WithOptional(e => e.Doer)
+                .HasForeignKey(e => e.DoerId);
 
         }
 

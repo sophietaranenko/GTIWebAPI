@@ -1,6 +1,7 @@
 ﻿namespace GTIWebAPI.Models.Employees
 {
     using Dictionary;
+    using Tasks;
     using Notifications;
     using Sales;
     using Security;
@@ -16,6 +17,7 @@
     [Table("Employee")]
     public partial class Employee : GTITable
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Employee()
         {
             EmployeePassports = new HashSet<EmployeePassport>();
@@ -33,6 +35,8 @@
             InteractionMembers = new HashSet<InteractionMember>();
             Notifications = new HashSet<Notification>();
             NotificationRecipients = new HashSet<NotificationRecipient>();
+            CreatorTasks = new HashSet<Task>();
+            DoerTasks = new HashSet<Task>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -99,6 +103,12 @@
         
         public virtual ICollection<NotificationRecipient> NotificationRecipients { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Task> CreatorTasks { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Task> DoerTasks { get; set; }
+
         public int? EmployeeInsuranceId { get; set; }
 
         public virtual EmployeeInsurance EmployeeInsurance { get; set; }
@@ -136,8 +146,7 @@
                 EmployeeInsurance = this.EmployeeInsurance == null ? null : this.EmployeeInsurance.ToDTO(),
                 EmployeeInsuranceId = this.EmployeeInsuranceId,
                 ProfilePicture = this.ProfilePicture,
-                FullUserName = this.FullUserName,
-                AspNetUserId = this.AspNetUserId
+                FullUserName = this.FullUserName
             };
             return dto;
         }
@@ -154,8 +163,7 @@
                 IdentityCode = this.IdentityCode,
                 Address = this.Address == null ? null : this.Address.ToDTO(),
                 EmployeeInsurance = this.EmployeeInsurance == null ? null : this.EmployeeInsurance.ToDTO(),
-                EmployeeInsuranceId = this.EmployeeInsuranceId,
-                AspNetUserId = this.AspNetUserId
+                EmployeeInsuranceId = this.EmployeeInsuranceId
             };
             return dto;
         }
@@ -208,8 +216,6 @@
 
         public int? EmployeeInsuranceId { get; set; }
 
-        public string AspNetUserId { get; set; }
-
         public EmployeeInsuranceDTO EmployeeInsurance { get; set; }
 
         public IEnumerable<EmployeePassportDTO> EmployeePassports { get; set; }
@@ -236,7 +242,7 @@
     }
 
     public class EmployeeEditDTO
-    {
+    { 
         public int Id { get; set; }
 
         public short? Sex { get; set; }
@@ -250,8 +256,6 @@
         public AddressDTO Address { get; set; }
 
         public int? EmployeeInsuranceId { get; set; }
-
-        public string AspNetUserId { get; set; }
 
         public EmployeeInsuranceDTO EmployeeInsurance { get; set; }
 

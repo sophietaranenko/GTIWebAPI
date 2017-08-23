@@ -245,12 +245,13 @@ namespace GTIWebAPI.Controllers
             }
             try
             {
-                Employee e = employee.FromDTO();
-                UnitOfWork unitOfWork = new UnitOfWork(factory);
-                unitOfWork.AddressesRepository.Update(e.Address);
-                unitOfWork.EmployeeInsurancesRepository.Update(e.EmployeeInsurance);
-                unitOfWork.EmployeesRepository.Update(e);
+                Employee empl = employee.FromDTO();
 
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+           
+                unitOfWork.AddressesRepository.Update(empl.Address);
+                unitOfWork.EmployeeInsurancesRepository.Update(empl.EmployeeInsurance);
+                unitOfWork.EmployeesRepository.UpdateFields(empl, "Id,Sex,IdentityCode,DateOfBirth,AddressId,EmployeeInsuranceId");
                 unitOfWork.Save();
 
                 EmployeeEditDTO dto = unitOfWork.EmployeesRepository
