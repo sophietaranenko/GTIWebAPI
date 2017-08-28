@@ -279,3 +279,4 @@ C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNet.SignalR.Core.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNet.SignalR.SystemWeb.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNet.SignalR.Core.xml
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csprojResolveAssemblyReference.cache

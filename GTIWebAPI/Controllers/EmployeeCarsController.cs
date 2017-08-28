@@ -145,9 +145,12 @@ namespace GTIWebAPI.Controllers
             try
             {
                 EmployeeCar car = employeeCar.FromDTO();
+
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 unitOfWork.EmployeeCarsRepository.Update(car);
                 unitOfWork.Save();
+                
+
                 //cos there are no included object-properies we need to load, then just ToDTO call  
                 EmployeeCarDTO dto = car.ToDTO();
                 return Ok(dto);
@@ -222,9 +225,11 @@ namespace GTIWebAPI.Controllers
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
 
                 EmployeeCar employeeCar = unitOfWork.EmployeeCarsRepository.GetByID(id);
+
                 employeeCar.Deleted = true;
                 unitOfWork.EmployeeCarsRepository.Update(employeeCar);
                 unitOfWork.Save();
+
                 EmployeeCarDTO dto = employeeCar.ToDTO();
                 return Ok(dto);
             }

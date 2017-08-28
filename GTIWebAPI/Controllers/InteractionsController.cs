@@ -197,9 +197,16 @@ namespace GTIWebAPI.Controllers
             try
             {
                 Interaction interaction = interactionDTO.FromDTO();
+
+
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 unitOfWork.InteractionsRepository.Insert(interaction);
                 unitOfWork.Save();
+
+
+
+
+
 
                 Interaction toReturn = unitOfWork.InteractionsRepository.Get(d => d.Id == interaction.Id,
                         includeProperties: @"InteractionMembers,InteractionMembers.Employee,InteractionMembers.Employee.EmployeePassports,
@@ -209,10 +216,12 @@ namespace GTIWebAPI.Controllers
                       ).FirstOrDefault();
 
                 string userId = User.Identity.GetUserId();
+
                 EmployeeShortForm author = unitOfWork.EmployeesRepository
                     .Get(d => d.AspNetUserId == userId, includeProperties: "EmployeePassports")
                     .FirstOrDefault()
                     .ToShortForm();
+
                 Notification notification = toReturn.ToAddingNotify(author);
                 unitOfWork.NotificationsRepository.Insert(notification);
                 unitOfWork.Save();
@@ -331,6 +340,8 @@ namespace GTIWebAPI.Controllers
                 Notification notification = toReturn.ToAddingNotify(author);
                 unitOfWork.NotificationsRepository.Insert(notification);
                 unitOfWork.Save();
+
+
                 var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
                 foreach (var item in notification.NotificationRecipients)
                 {

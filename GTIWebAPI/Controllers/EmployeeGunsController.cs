@@ -34,7 +34,7 @@ namespace GTIWebAPI.Controllers
         {
             this.factory = factory;
         }
-
+        
         [GTIFilter]
         [HttpGet]
         [Route("GetAll")]

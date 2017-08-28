@@ -194,6 +194,11 @@
         }
     }
 
+
+
+
+
+
     public class EmployeeDTO
     {
         public int Id { get; set; }
@@ -240,6 +245,11 @@
 
         public IEnumerable<EmployeeMilitaryCardDTO> EmployeeMilitaryCards { get; set; }
     }
+
+
+
+
+
 
     public class EmployeeEditDTO
     { 

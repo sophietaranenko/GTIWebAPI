@@ -13,7 +13,7 @@ namespace GTIWebAPI.Models.Employees
     public partial class EmployeeCar : GTITable
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-       // public int Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public int EmployeeId { get; set; }
