@@ -315,7 +315,9 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
             return incomingEmails;
         }
 
-
+        /// <summary>
+        /// Attachment should be with ABSOLUTE PATH (with AppPath()) 
+        /// </summary
         public void SendEmail(NovellGroupWiseMail mail)
         {
             WebReference.Mail mailToSend = new WebReference.Mail();
@@ -334,7 +336,7 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
             { 
             foreach(var attachment in mail.Attachments)
             { 
-                var fs = new FileStream(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"] + attachment, FileMode.OpenOrCreate);
+                var fs = new FileStream(attachment, FileMode.OpenOrCreate);
                 using (var binaryReader = new BinaryReader(fs))
                 {
                     att.data = binaryReader.ReadBytes((int)fs.Length);
