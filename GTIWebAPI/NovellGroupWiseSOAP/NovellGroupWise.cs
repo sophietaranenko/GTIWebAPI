@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GTIWebAPI.WebReference;
 using GTIWebAPI.Models.Service;
 using System.Web;
+using System.IO;
 
 namespace GTIWebAPI.NovellGroupWiseSOAP
 {
@@ -324,6 +325,28 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
             WebReference.sendItemRequest req;
             WebReference.sendItemResponse resp;
             mailToSend.subject = mail.Subject;
+
+            var att = new WebReference.AttachmentItemInfo();
+
+            List<AttachmentItemInfo> atts = new List<AttachmentItemInfo>();
+
+            if (mail.Attachments != null)
+            { 
+            foreach(var attachment in mail.Attachments)
+            { 
+                var fs = new FileStream(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"] + attachment, FileMode.OpenOrCreate);
+                using (var binaryReader = new BinaryReader(fs))
+                {
+                    att.data = binaryReader.ReadBytes((int)fs.Length);
+                }
+                att.name = System.IO.Path.GetFileName(attachment);
+                atts.Add(att);
+            }
+            }
+
+            mailToSend.attachments = atts.ToArray();
+            mailToSend.hasAttachment = true;
+
             if (0 != mail.Text.Length)
             {
                 part = new WebReference.MessagePart[1];
