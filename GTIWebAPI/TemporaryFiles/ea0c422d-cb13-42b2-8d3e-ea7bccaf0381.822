@@ -1,0 +1,121 @@
+Return-path: <sophytaranenko@gmail.com>
+Received: from mailgw1.gtinvest.com ([192.168.0.12])
+	by relay1.gtinvest.com with ESMTP (TLS encrypted); Tue, 29 Aug 2017 17:02:09 +0300
+Received: from mail-qk0-f180.google.com ([209.85.220.180])
+	by mailgw1.gtinvest.com with esmtps (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+	(Exim 4.86_2)
+	(envelope-from <sophytaranenko@gmail.com>)
+	id 1dmh5k-0004Kd-7w
+	for staranenko@verdeco.biz; Tue, 29 Aug 2017 17:02:08 +0300
+Received: by mail-qk0-f180.google.com with SMTP id k126so15413196qkb.4
+        for <staranenko@verdeco.biz>; Tue, 29 Aug 2017 07:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to;
+        bh=DgpTkIRkIun8KKrihYHqI3J1oVxav4BxQh1bIQwCUig=;
+        b=p9EumpHGFAQTWvfxyoHwbJqL7SCS2dgjrmF4jdGlRw/qWXpMkePx8WGivPWpdsQWlq
+         SDppGGeWQvmXXLLdZh6LV9x0HUymU5nnKekLY+w6wj/WqjE7wKuGFyfVcS8BRawV8RTB
+         HlitIGoZzyty+yHyle/G/rO7D01WGlUICpy6W+gSnLjUSkkH0SZvBPbZ8AgBPwFf5evI
+         JBp0JITcMdjrT7zFLC4KX5WYK3BXMip/B7ao87coSbCG0jbazNB8WUhXOrD+52rRcnAo
+         t/XWMfy+acaO4VfgULzmZ9rTI92cWH1arWxe+L+6Fkk8qSlzpnRecVa8wZ2YitWyWddE
+         nhrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to;
+        bh=DgpTkIRkIun8KKrihYHqI3J1oVxav4BxQh1bIQwCUig=;
+        b=R+zQerhjfRxpWgXHKtQ6iMQFHfQVQpi3XDzD7pkA54lNSxMab/zQ1XxO36jRuScvx6
+         BCmLprYHydGu5RiMyhviim4tr4VlrO6jN0VDBS8Z7Z3C0lU/d4OnSa1Af+ZDpUp3mPRp
+         j/HuK9dLJa9iuk3Kd92sDmNmbyntOTfbK0lJnxshzxTgnyblBxV6F/u/KJpcPXsDg+LE
+         PdG+tM06vKbYA0iVypzvsJWVa6srPjuNlK0CzNyJfup/v5VFtEe7Zxd9Mwu7EKmv7Auq
+         ekzNl/yh4epQ6ccxS1yKSru61faZ4QNLmcmWE5Z0U2/WNct2N4lyvnxNdewgOPuNNupy
+         ZLQQ==
+X-Gm-Message-State: AHYfb5gknAF/RMAfpp66Wxw7aZXbA2RUPlE7w7r0Yxdxds9lrblbxNIC
+	T+iZ3m35MTUrY6YvZVKxe9rjt77SZQ==
+X-Received: by 10.55.100.67 with SMTP id y64mr5649976qkb.36.1504015317084;
+ Tue, 29 Aug 2017 07:01:57 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.12.213.162 with HTTP; Tue, 29 Aug 2017 07:01:56 -0700 (PDT)
+In-Reply-To: <CAJjM+Ern3z3B6gjwjx385c7mFXeVK4ZD9G87Tmq4ErtJb8_BFA@mail.gmail.com>
+References: <59A55963020000F7000110F5@relay3.gtinvest.com> <CAJjM+Ern3z3B6gjwjx385c7mFXeVK4ZD9G87Tmq4ErtJb8_BFA@mail.gmail.com>
+From: Sophy Taranenko <sophytaranenko@gmail.com>
+Date: Tue, 29 Aug 2017 17:01:56 +0300
+Message-ID: <CAJjM+Er+x=WKaY2j1j+s=X+_7zSeewM76aPm=XL205Byi7yfvQ@mail.gmail.com>
+Subject: Re: Web API sending mails
+To: Sofia Taranenko <staranenko@verdeco.biz>
+Content-Type: multipart/alternative; boundary="001a11484618b62f320557e4daba"
+X-Spam_score: -1.5
+
+--001a11484618b62f320557e4daba
+Content-Type: text/plain; charset="UTF-8"
+
+ONCE AGAIN
+
+*HOW **TO** HOW TO *
+
+2017-08-29 12:14 GMT+03:00 Sophy Taranenko <sophytaranenko@gmail.com>:
+
+> WOW
+>
+>
+> 2017-08-29 12:09 GMT+03:00 Sofia Taranenko <staranenko@verdeco.biz>:
+>
+>> ssss
+>> *ss*
+>> *sss*
+>>
+>> ss
+>> s
+>> s
+>> s
+>>
+>> s
+>>
+>>
+>> ss
+>>
+>>
+>>
+>
+
+--001a11484618b62f320557e4daba
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><font size=3D"4">ONCE AGAIN</font><div><br></div><div><fon=
+t size=3D"4" color=3D"#a64d79"><b style=3D"background-color:rgb(230,145,56)=
+">HOW </b></font><i><u><font size=3D"1" color=3D"#e69138" style=3D"backgrou=
+nd-color:rgb(166,77,121)">TO</font></u></i><b><font size=3D"6" color=3D"#6a=
+a84f" style=3D"background-color:rgb(255,217,102)"> HOW TO=C2=A0</font></b><=
+/div></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">2017-0=
+8-29 12:14 GMT+03:00 Sophy Taranenko <span dir=3D"ltr">&lt;<a href=3D"mailt=
+o:sophytaranenko@gmail.com" target=3D"_blank">sophytaranenko@gmail.com</a>&=
+gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
+;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><blockquote =
+style=3D"margin:0 0 0 40px;border:none;padding:0px"><blockquote style=3D"ma=
+rgin:0 0 0 40px;border:none;padding:0px"><blockquote style=3D"margin:0 0 0 =
+40px;border:none;padding:0px"><blockquote class=3D"gmail_quote" style=3D"ma=
+rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
+1ex"><font size=3D"6" color=3D"#c27ba0" style=3D"background-color:rgb(255,0=
+,0)">W</font>OW=C2=A0</blockquote></blockquote></blockquote></blockquote><d=
+iv><div class=3D"h5"><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-08-29 12:09 GMT+03:00 Sofia Taranenko <span dir=3D"ltr">&lt;<a hre=
+f=3D"mailto:staranenko@verdeco.biz" target=3D"_blank">staranenko@verdeco.bi=
+z</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr">ssss<d=
+iv><i><u><b><font size=3D"6" color=3D"#a64d79">ss</font></b></u></i></div><=
+div><i><u><b><font size=3D"6" color=3D"#a64d79">sss</font></b></u></i></div=
+><div><br></div><div>ss</div><div>s</div><div><font color=3D"#fce5cd">s</fo=
+nt></div><div><font color=3D"#fce5cd">s</font></div><blockquote style=3D"ma=
+rgin:0 0 0 40px;border:none;padding:0px"><blockquote class=3D"gmail_quote" =
+style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
+dding-left:1ex"><font size=3D"4" color=3D"#3d85c6">s</font></blockquote></b=
+lockquote><div><br></div><blockquote style=3D"margin:0 0 0 40px;border:none=
+;padding:0px"><blockquote style=3D"margin:0 0 0 40px;border:none;padding:0p=
+x"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
+er-left:1px solid rgb(204,204,204);padding-left:1ex">ss</blockquote></block=
+quote></blockquote><div><br></div></div>
+</blockquote></div><br></div></div></div></div>
+</blockquote></div><br></div>
+
+--001a11484618b62f320557e4daba--

@@ -30,6 +30,8 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
 
         public string Text { get; set; }
 
+        public string HtmlText { get; set; }
+
         public List<GroupWiseMailRecipient> Recipients { get; set; }
 
         public List<string> Attachments { get; set; }

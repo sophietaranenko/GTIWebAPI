@@ -117,7 +117,7 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                 throw new NovellGroupWiseException("Cannot connect to Post Office");
             }
 
-          //  NovellUser user = 
+            //  NovellUser user = 
             return connection;
         }
 
@@ -332,30 +332,56 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
 
             List<AttachmentItemInfo> atts = new List<AttachmentItemInfo>();
 
-            if (mail.Attachments != null)
-            { 
-            foreach(var attachment in mail.Attachments)
-            { 
-                var fs = new FileStream(attachment, FileMode.OpenOrCreate);
-                using (var binaryReader = new BinaryReader(fs))
+
+
+            //сохранить html text в файл text.htm 
+            if (mail.HtmlText != null)
+            {
+                String path = HttpContext.Current.Server.MapPath("~/TemporaryFiles/") + Guid.NewGuid() + ".htm";
+                var fs = new FileStream(path, FileMode.Create);
+                using (var bw = new BinaryWriter(fs))
                 {
-                    att.data = binaryReader.ReadBytes((int)fs.Length);
+                    bw.Write(mail.HtmlText);
                 }
-                att.name = System.IO.Path.GetFileName(attachment);
+                fs.Close();
+
+                var fss = new FileStream(path, FileMode.OpenOrCreate);
+                using (var binaryReader = new BinaryReader(fss))
+                {
+                    att.data = binaryReader.ReadBytes((int)fss.Length);
+                }
+                fss.Close();
+                att.name = "text.htm";
                 atts.Add(att);
             }
+
+
+            if (mail.Attachments != null)
+            {
+                foreach (var attachment in mail.Attachments)
+                {
+                    var fs = new FileStream(attachment, FileMode.OpenOrCreate);
+                    using (var binaryReader = new BinaryReader(fs))
+                    {
+                        att.data = binaryReader.ReadBytes((int)fs.Length);
+                    }
+                    att.name = System.IO.Path.GetFileName(attachment);
+                    atts.Add(att);
+                    fs.Close();
+                }
             }
 
             mailToSend.attachments = atts.ToArray();
             mailToSend.hasAttachment = true;
 
-            if (0 != mail.Text.Length)
-            {
-                part = new WebReference.MessagePart[1];
-                part[0] = new WebReference.MessagePart();
-                part[0].Value = System.Text.UTF8Encoding.UTF8.GetBytes(mail.Text);
-                mailToSend.message = part;
-            }
+            //if (0 != mail.Text.Length)
+            //{
+            //    part = new WebReference.MessagePart[1];
+            //    part[0] = new WebReference.MessagePart();
+            //    part[0].Value = System.Text.UTF8Encoding.UTF8.GetBytes(mail.Text);
+            //    mailToSend.message = part;
+            //}
+
             recips = new WebReference.Recipient[mail.Recipients.Count];
             for (int i = 0; i < mail.Recipients.Count; i++)
             {
@@ -364,10 +390,13 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                 recips[i].email = mail.Recipients[i].Email;
                 recips[i].uuid = mail.Recipients[i].Id;
             }
+
             mailToSend.distribution = new WebReference.Distribution();
             mailToSend.distribution.recipients = recips;
+
             req = new WebReference.sendItemRequest();
             req.item = mailToSend;
+
             resp = ws.sendItemRequest(req);
         }
 
@@ -429,9 +458,9 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                     item = (WebReference.Mail)rresp.items.item[i];
                     //учитываем только письма, остальное не интересно 
                     //что бывает остальное - смотрим в Samples 
-                  //  if (item is WebReference.Mail || item is WebReference.PhoneMessage)
-                     if (item is WebReference.Mail )
-                        {
+                    //  if (item is WebReference.Mail || item is WebReference.PhoneMessage)
+                    if (item is WebReference.Mail)
+                    {
                         NovellGroupWiseMail mail = new NovellGroupWiseMail();
                         mail.Id = item.id;
                         //дата доставки письма 
@@ -551,7 +580,7 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
 
                     mail.Recipients = new List<GroupWiseMailRecipient>();
                     Recipient[] rec = item.distribution.recipients;
-                    for(int j = 0; j < rec.Count(); j++)
+                    for (int j = 0; j < rec.Count(); j++)
                     {
                         GroupWiseMailRecipient recipient = new GroupWiseMailRecipient
                         {
@@ -568,7 +597,7 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                     mail.BC = item.distribution.bc;
                     mail.CC = item.distribution.cc;
 
-               
+
 
                     String Text = str;
                     mail.HasAttachments = item.hasAttachment;
@@ -591,21 +620,32 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
                         System.Text.UTF8Encoding utf8 = new System.Text.UTF8Encoding();
                         mail.Text = utf8.GetString(part.Value);
                     }
-                    if (mail.HasAttachments)
+                    //   if (mail.HasAttachments)
+                    //    {
+                    WebReference.AttachmentItemInfo info;
+                    List<string> attachmentsArray = new List<string>();
+                    if (item.attachments != null)
+                    { 
+                    for (i = 0; i < item.attachments.Length; i++)
                     {
-                        WebReference.AttachmentItemInfo info;
-                        List<string> attachmentsArray = new List<string>();
-                        for (i = 0; i < item.attachments.Length; i++)
+                        info = (WebReference.AttachmentItemInfo)item.attachments.GetValue(i);
+                        if (null == info || info.id.itemReference)
                         {
-                            info = (WebReference.AttachmentItemInfo)item.attachments.GetValue(i);
-                            if (null == info || info.id.itemReference)
-                            {
-                                continue;
-                            }
-                            attachmentsArray.Add(exportData(info));
+                            continue;
                         }
-                        mail.Attachments = attachmentsArray;
+                        string fileName = exportData(info);
+                        if (info.name.ToLower() == "text.htm")
+                        {
+                            mail.HtmlText = File.ReadAllText(HttpContext.Current.Request.ServerVariables["APPL_PHYSICAL_PATH"]+ "//" + fileName);
+                        }
+                        else //if (info.name.ToLower() != "mime.822")
+                        {
+                            attachmentsArray.Add(fileName);
+                        }
                     }
+                    mail.Attachments = attachmentsArray;
+                    }
+                    //  }
                 }
             }
 

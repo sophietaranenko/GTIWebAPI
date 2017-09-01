@@ -343,6 +343,20 @@ namespace GTIWebAPI.Controllers
             }
         }
 
+
+        [GTIFilter]
+        [HttpGet]
+        [Route("GetStatistics")]
+        public IHttpActionResult GetEmployeeUserStatistic()
+        {
+            UnitOfWork unitOfWork = new UnitOfWork(factory);
+            List<EmployeeStatistic> statistics = unitOfWork.SQLQuery<EmployeeStatistic>("exec EmployeeStatistic").ToList();
+            return Ok(statistics);
+        }
+
+
+
+
     //    [GTIFilter]
         [HttpGet]
         [Route("GetLists")]
@@ -368,6 +382,8 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+
 
         protected override void Dispose(bool disposing)
         {

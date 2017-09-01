@@ -1,0 +1,61 @@
+Return-path: <sophytaranenko@gmail.com>
+Received: from mailgw1.gtinvest.com ([192.168.0.12])
+	by relay1.gtinvest.com with ESMTP (TLS encrypted); Tue, 29 Aug 2017 12:49:54 +0300
+Received: from mail-qk0-f178.google.com ([209.85.220.178])
+	by mailgw1.gtinvest.com with esmtps (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+	(Exim 4.86_2)
+	(envelope-from <sophytaranenko@gmail.com>)
+	id 1dmd9d-0002iv-8Q
+	for STaranenko@verdeco.biz; Tue, 29 Aug 2017 12:49:53 +0300
+Received: by mail-qk0-f178.google.com with SMTP id o63so12793684qkb.3
+        for <STaranenko@verdeco.biz>; Tue, 29 Aug 2017 02:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=oKaTsSxG47vEAPxaafDlCa7Mbp8OUXkTSfstlKYA5yw=;
+        b=RLWtE2v5tlPi84UeyhGAnDJ7KQf9s/5KZHTJre2x9qFBGikuj0Ij1ax70ypIusg3Mm
+         Ddm1EySHep2CyvdTEr5ug+NfAotiNDa5oTSDavMqBXz7kUJWXlz++1sX0y408Fzpz2uZ
+         PrEIwwKy0daFc4l4ASNZy6e12gXB5XEKJUH25xwXqHC+un8b2dqcEepV2kTL8FMy3Fi5
+         60RAggHWLbJkt9FwadgcFHBuuuLv9xojd1nu8K+e7kja27sEkPaBi2e35Hsav3S73H4r
+         XJ9oVfZPeY0MCQoTLPVyUoVNcIrJZA8iz0mOTudZoHTyov+P60Fl+9bIB/y0XDNpQ1OL
+         tqcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=oKaTsSxG47vEAPxaafDlCa7Mbp8OUXkTSfstlKYA5yw=;
+        b=IhjeUjXBgFZTO2fGnr3avOBINmawVsEt7O2Ty2hSIjXWqd+RlBAMKFiS6TeQFW2k6I
+         lVkp5xqU2ZTNbQX1H1o7oD9WvmYfA82Sg0ZyFdv7FpkSyXcKoyybqIQHSrZ2GHHxhRsT
+         0Ax3O/bo+ka2gRlVTB4qDZZm+oc4Na/jf+1YKyEetq/VHB0qBakdKSvJpM0rTaYKgWKz
+         MhcuvgqP9v18PddfcrVzA/bbYiJtSUbn5QBMLmrYjI+4CztKKvCoNlhwvpfu7nNu3Hca
+         2VEHqe2qeWn+phSFUWkaZtL9iK/q8khSwROhFC5Elaj+cCXV1j5MkD3LL7HROml/shKG
+         nlhQ==
+X-Gm-Message-State: AHYfb5in6BsuhU+mo6m6fpUdBeLkakffIkyAdiIYDX62kz2v1LdSUwzC
+	tUpgl/tK9a5/TXXoZEaFX5SRdIJpBA==
+X-Received: by 10.55.164.136 with SMTP id n130mr4481789qke.221.1504000186926;
+ Tue, 29 Aug 2017 02:49:46 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.12.213.162 with HTTP; Tue, 29 Aug 2017 02:49:46 -0700 (PDT)
+From: Sophy Taranenko <sophytaranenko@gmail.com>
+Date: Tue, 29 Aug 2017 12:49:46 +0300
+Message-ID: <CAJjM+EoV3f6Q5UR8=rE6NGREoTLQLeCU=Cpuc9ighw3xALLhvg@mail.gmail.com>
+Subject: sss
+To: Sofia Taranenko <STaranenko@verdeco.biz>
+Content-Type: multipart/alternative; boundary="001a114fa5e4e249b00557e154ae"
+X-Spam_score: -1.5
+
+--001a114fa5e4e249b00557e154ae
+Content-Type: text/plain; charset="UTF-8"
+
+sss
+sss
+sss
+
+ss?
+s
+
+--001a114fa5e4e249b00557e154ae
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr">sss<div>sss</div><div>sss</div><div><br></div><div>ss?</div><div>s</div></div>
+
+--001a114fa5e4e249b00557e154ae--

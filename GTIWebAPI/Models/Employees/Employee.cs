@@ -315,4 +315,34 @@
         public string AspNetUserId { get; set; }
 
     }
+
+    public class EmployeeStatistic
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public string EmployeeAddress { get; set; }
+        public string EmployeePositions { get; set; }
+        public string IdentityCode { get; set; }
+        public string IdentityCodeScan { get; set; }
+        public string EmployeePassport { get; set; }
+        public string EmployeePassportScan { get; set; }
+        public string EmployeeMilitaryCard { get; set; }
+        public string EmployeeMilitaryCardScan { get; set; }
+        public string EmployeeLanguage { get; set; }
+        public string EmployeeLanguageScan { get; set; }
+        public string EmployeeInternationalPassport { get; set; }
+        public string EmployeeInternationalPassportScan { get; set; }
+        public string EmployeeFoundationDocument { get; set; }
+        public string EmployeeFoundationDocumentScan { get; set; }
+        public string EmployeeEducation { get; set; }
+        public string EmployeeEducationScan { get; set; }
+        public string EmployeeDrivingLicense { get; set; }
+        public string EmployeeDrivingLicenseScan { get; set; }
+        public string EmployeeContact { get; set; }
+        public string EmployeeCar { get; set; }
+        public string EmployeeCarScan { get; set; }
+        public string EmployeeInsurance { get; set; }
+        public string EmployeeInsuranceScan { get; set; }
+
+    }
 }

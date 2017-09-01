@@ -1345,6 +1345,7 @@
             attribute of the entry using the Ldap compare function.
             
         </member>
+        <!-- Badly formed XML comment ignored for member "M:GTIWebAPI.NovellGroupWiseSOAP.NovellGroupWise.SendEmail(GTIWebAPI.NovellGroupWiseSOAP.NovellGroupWiseMail)" -->
         <member name="M:GTIWebAPI.Providers.ApplicationOAuthProvider.#ctor(System.String)">
             <summary>
             Ctor of oAuth provider
