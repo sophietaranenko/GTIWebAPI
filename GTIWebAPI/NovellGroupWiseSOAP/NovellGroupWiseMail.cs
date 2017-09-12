@@ -51,5 +51,4 @@ namespace GTIWebAPI.NovellGroupWiseSOAP
 
         public string DistributionType { get; set; }
     }
-
 }

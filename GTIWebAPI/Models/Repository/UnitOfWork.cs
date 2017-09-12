@@ -633,6 +633,61 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
+        private GenericRepository<InteractionBrokenReason> interactionBrokenReasonsRepository;
+        public GenericRepository<InteractionBrokenReason> InteractionBrokenReasonsRepository
+        {
+            get
+            {
+                if (this.interactionBrokenReasonsRepository == null)
+                {
+                    this.interactionBrokenReasonsRepository = new GenericRepository<InteractionBrokenReason>(context);
+                }
+                return interactionBrokenReasonsRepository;
+            }
+        }
+
+        private GenericRepository<InteractionBroken> interactionsBrokenRepository;
+        public GenericRepository<InteractionBroken> InteractionsBrokenRepository
+        {
+            get
+            {
+                if (this.interactionsBrokenRepository == null)
+                {
+                    this.interactionsBrokenRepository = new GenericRepository<InteractionBroken>(context);
+                }
+                return interactionsBrokenRepository;
+            }
+        }
+
+
+        private GenericRepository<InteractionSucceed> interactionsSucceedRepository;
+        public GenericRepository<InteractionSucceed> InteractionsSucceedRepository
+        {
+            get
+            {
+                if (this.interactionsSucceedRepository == null)
+                {
+                    this.interactionsSucceedRepository = new GenericRepository<InteractionSucceed>(context);
+                }
+                return interactionsSucceedRepository;
+            }
+        }
+
+
+        private GenericRepository<InteractionStatus> interactionStatusesRepository;
+        public GenericRepository<InteractionStatus> InteractionStatusesRepository
+        {
+            get
+            {
+                if (this.interactionStatusesRepository == null)
+                {
+                    this.interactionStatusesRepository = new GenericRepository<InteractionStatus>(context);
+                }
+                return interactionStatusesRepository;
+            }
+        }
+
+
         private GenericRepository<InteractionAct> interactionActsRepository;
         public GenericRepository<InteractionAct> InteractionActsRepository
         {
@@ -762,6 +817,8 @@ namespace GTIWebAPI.Models.Repository
                 return notificationRecipientsRepository;
             }
         }
+
+
 
 
 

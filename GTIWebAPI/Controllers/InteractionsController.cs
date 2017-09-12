@@ -26,7 +26,6 @@ namespace GTIWebAPI.Controllers
 
         private IDbContextFactory factory;
         private IIdentityHelper helper;
-        //private INotifier notifier; 
         
         public InteractionsController()
         {
@@ -49,11 +48,11 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<InteractionDTO> dtos = unitOfWork.InteractionsRepository.Get(
+                IEnumerable<InteractionDTO> dtos = unitOfWork.InteractionsRepository.Get(d => d.InteractionSucceedId == null && d.InteractionBrokenId == null, 
                      includeProperties: @"InteractionMembers,InteractionMembers.Employee,InteractionMembers.Employee.EmployeePassports,
-                  InteractionActs,InteractionActs.Act,InteractionActs.InteractionActMembers,InteractionActs.InteractionActMembers.Employee,InteractionActs.InteractionActMembers.Employee.EmployeePassports,
+                    InteractionActs,InteractionActs.Act,InteractionActs.InteractionActMembers,InteractionActs.InteractionActMembers.Employee,InteractionActs.InteractionActMembers.Employee.EmployeePassports,
                     InteractionActs.InteractionActOrganizationMembers,InteractionActs.InteractionActOrganizationMembers.OrganizationContactPerson,
-                InteractionStatusMovements,InteractionStatusMovements.Status"
+                    InteractionStatusMovements,InteractionStatusMovements.Status"
                 ).Select(d => d.ToDTO());
                 return Ok(dtos);
             }
@@ -160,7 +159,7 @@ namespace GTIWebAPI.Controllers
                     includeProperties: @"InteractionMembers,InteractionMembers.Employee,InteractionMembers.Employee.EmployeePassports,
                     InteractionActs,InteractionActs.Act,InteractionActs.InteractionActMembers,InteractionActs.InteractionActMembers.Employee,InteractionActs.InteractionActMembers.Employee.EmployeePassports,
                     InteractionActs.InteractionActOrganizationMembers,InteractionActs.InteractionActOrganizationMembers.OrganizationContactPerson,
-                    InteractionStatusMovements,InteractionStatusMovements.Status"
+                    InteractionStatusMovements,InteractionStatusMovements.Status,InteractionBroken,InteractionBroken.InteractionBrokenReason,InteractionSucceed,InteractionSucceed.Office"
                   ).FirstOrDefault().ToDTO();
                 return Ok(dto);
             }
@@ -202,10 +201,6 @@ namespace GTIWebAPI.Controllers
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
                 unitOfWork.InteractionsRepository.Insert(interaction);
                 unitOfWork.Save();
-
-
-
-
 
 
                 Interaction toReturn = unitOfWork.InteractionsRepository.Get(d => d.Id == interaction.Id,
@@ -366,6 +361,148 @@ namespace GTIWebAPI.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [GTIFilter]
+        [HttpPut]
+        [Route("MarkAsBroken")]
+        [ResponseType(typeof(IEnumerable<InteractionDTO>))]
+        public IHttpActionResult MarkInteractionAsBroken(int interactionId, InteractionBrokenDTO brokenDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                InteractionBroken broken = brokenDTO.FromDTO();
+                unitOfWork.InteractionsBrokenRepository.Insert(broken);
+                unitOfWork.Save();
+                Interaction interaction = unitOfWork.InteractionsRepository.Get(d => d.Id == interactionId).FirstOrDefault();
+                interaction.InteractionBrokenId = broken.Id;
+                unitOfWork.InteractionsRepository.Update(interaction);
+                unitOfWork.Save();
+
+                Interaction toReturn = unitOfWork.InteractionsRepository.Get(d => d.Id == interaction.Id,
+                        includeProperties: @"InteractionMembers,InteractionMembers.Employee,InteractionMembers.Employee.EmployeePassports,
+                        InteractionActs,InteractionActs.Act,InteractionActs.InteractionActMembers,InteractionActs.InteractionActMembers.Employee,InteractionActs.InteractionActMembers.Employee.EmployeePassports,
+                        InteractionActs.InteractionActOrganizationMembers,InteractionActs.InteractionActOrganizationMembers.OrganizationContactPerson,
+                        InteractionStatusMovements,InteractionStatusMovements.Status,InteractionBroken,InteractionBroken.InteractionBrokenReason"
+                      ).FirstOrDefault();
+                return Ok(toReturn.ToDTO());
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [GTIFilter]
+        [HttpPut]
+        [Route("MarkAsSucceed")]
+        [ResponseType(typeof(IEnumerable<InteractionDTO>))]
+        public IHttpActionResult MarkInteractionAsBroken(int interactionId, InteractionSucceedDTO succeedDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                InteractionSucceed succeed = succeedDTO.FromDTO();
+                unitOfWork.InteractionsSucceedRepository.Insert(succeed);
+                unitOfWork.Save();
+
+                Interaction interaction = unitOfWork.InteractionsRepository.Get(d => d.Id == interactionId).FirstOrDefault();
+                interaction.InteractionSucceedId = succeed.Id;
+                unitOfWork.InteractionsRepository.Update(interaction);
+                unitOfWork.Save();
+
+                Interaction toReturn = unitOfWork.InteractionsRepository.Get(d => d.Id == interaction.Id,
+                        includeProperties: @"InteractionMembers,InteractionMembers.Employee,InteractionMembers.Employee.EmployeePassports,
+                        InteractionActs,InteractionActs.Act,InteractionActs.InteractionActMembers,InteractionActs.InteractionActMembers.Employee,InteractionActs.InteractionActMembers.Employee.EmployeePassports,
+                        InteractionActs.InteractionActOrganizationMembers,InteractionActs.InteractionActOrganizationMembers.OrganizationContactPerson,
+                        InteractionStatusMovements,InteractionStatusMovements.Status,InteractionSucceed,InteractionSucceed.Office"
+                      ).FirstOrDefault();
+                return Ok(toReturn.ToDTO());
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetBrokenReason")]
+        [ResponseType(typeof(IEnumerable<InteractionDTO>))]
+        public IHttpActionResult GetInteractionBrokenReasons()
+        {
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<InteractionBrokenReasonDTO> dtos = unitOfWork.InteractionBrokenReasonsRepository.Get().Select(d => d.ToDTO());
+                return Ok(dtos);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetBrokenReason")]
+        [ResponseType(typeof(IEnumerable<InteractionDTO>))]
+        public IHttpActionResult GetInteractionStatuses()
+        {
+            try
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(factory);
+                IEnumerable<InteractionStatusDTO> dtos = unitOfWork.InteractionStatusesRepository.Get().Select(d => d.ToDTO());
+                return Ok(dtos);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound();
+            }
+            catch (ConflictException ce)
+            {
+                return Conflict();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+
 
     }
 

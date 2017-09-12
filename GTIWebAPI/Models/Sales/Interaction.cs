@@ -32,7 +32,15 @@ namespace GTIWebAPI.Models.Sales
 
         public int StatusId { get; set; }
 
+        public int? InteractionBrokenId { get; set; }
+
+        public int? InteractionSucceedId { get; set; }
+
         public virtual Organization Organization { get; set; }
+
+        public virtual InteractionBroken InteractionBroken { get; set; }
+
+        public virtual InteractionSucceed InteractionSucceed { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InteractionAct> InteractionActs { get; set; }
@@ -54,7 +62,11 @@ namespace GTIWebAPI.Models.Sales
                 InteractionActs = this.InteractionActs == null ? null : this.InteractionActs.Select(d => d.ToDTO()),
                 InteractionMembers = this.InteractionMembers == null ? null : this.InteractionMembers.Select(d => d.ToDTO()),
                 InteractionStatusMovements = this.InteractionStatusMovements == null ? null : this.InteractionStatusMovements.Select(d => d.ToDTO()),
-                StatusId = this.StatusId
+                StatusId = this.StatusId,
+                InteractionBrokenId = this.InteractionBrokenId,
+                InteractionSucceedId = this.InteractionSucceedId,
+                InteractionBroken = this.InteractionBroken == null ? null : this.InteractionBroken.ToDTO(),
+                InteractionSucceed = this.InteractionSucceed == null ? null : this.InteractionSucceed.ToDTO()
             };
         }
 
@@ -154,11 +166,19 @@ namespace GTIWebAPI.Models.Sales
 
         public string Name { get; set; }
 
+        public int? InteractionBrokenId { get; set; }
+
+        public int? InteractionSucceedId { get; set; }
+
         public IEnumerable<InteractionActDTO> InteractionActs { get; set; }
 
         public IEnumerable<InteractionMemberDTO> InteractionMembers { get; set; }
 
         public IEnumerable<InteractionStatusMovementDTO> InteractionStatusMovements { get; set; }
+
+        public InteractionBrokenDTO InteractionBroken { get; set; }
+
+        public InteractionSucceedDTO InteractionSucceed { get; set; }
 
         public Interaction FromDTO()
         {
@@ -171,7 +191,11 @@ namespace GTIWebAPI.Models.Sales
                 InteractionStatusMovements = this.InteractionStatusMovements == null ? null : this.InteractionStatusMovements.Select(d => d.FromDTO()).ToList(),
                 Name = this.Name,
                 OrganizationId = this.OrganizationId,
-                StatusId = this.StatusId
+                StatusId = this.StatusId,
+                InteractionBrokenId = this.InteractionBrokenId,
+                InteractionSucceedId = this.InteractionSucceedId,
+                InteractionBroken = this.InteractionBroken == null ? null : this.InteractionBroken.FromDTO(),
+                InteractionSucceed = this.InteractionSucceed == null ? null : this.InteractionSucceed.FromDTO()
             };
         }
 

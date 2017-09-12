@@ -1,4 +1,5 @@
-﻿using GTIWebAPI.Models.Security;
+﻿using GTIWebAPI.Models.Sales;
+using GTIWebAPI.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,6 +16,7 @@ namespace GTIWebAPI.Models.Dictionary
         {
             Masks = new HashSet<UserRightMask>();
             UserRights = new HashSet<UserRightOff>();
+            InteractionsSucceed = new HashSet<InteractionSucceed>();
         }
 
         public int Id { get; set; }
@@ -35,6 +37,8 @@ namespace GTIWebAPI.Models.Dictionary
 
         public virtual ICollection<UserRightOff> UserRights { get; set; }
 
+        public virtual ICollection<InteractionSucceed> InteractionsSucceed { get; set; }
+
         public OfficeDTO ToDTO()
         {
             OfficeDTO dto = new OfficeDTO
@@ -45,7 +49,6 @@ namespace GTIWebAPI.Models.Dictionary
             };
             return dto;
         }
-
     }
 
     public class OfficeDTO : IEquatable<OfficeDTO>
