@@ -62,8 +62,8 @@ namespace GTIWebAPI.Controllers
                 if (employees == null)
                 {
                     return NotFound();
-                }                
-             //   IEnumerable<EmployeeViewDTO> dtos = employees.Select(d => d.ToDTO());
+                }
+                //   IEnumerable<EmployeeViewDTO> dtos = employees.Select(d => d.ToDTO());
                 return Ok(employees);
             }
             catch (NotFoundException nfe)
@@ -98,7 +98,7 @@ namespace GTIWebAPI.Controllers
 
                 //Employee
                 //почему бы и нет? 
-                Employee employee = 
+                Employee employee =
                 employee = unitOfWork.EmployeesRepository
                 .Get(d => d.Id == id, includeProperties: @"Address,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage,Address.Country,
                                                     EmployeeOffices,EmployeeOffices.Department,EmployeeOffices.Office,EmployeeOffices.Profession,
@@ -150,7 +150,7 @@ namespace GTIWebAPI.Controllers
                 //employee.EmployeePassports = unitOfWork.EmployeePassportsRepository
                 //.Get(d => d.Deleted != true && d.EmployeeId == id, includeProperties: "Address,Address.AddressLocality,Address.AddressPlace,Address.AddressRegion,Address.AddressVillage,Address.Country").ToList() ;
 
-              //  employee.EmployeeMilitaryCards = unitOfWork.EmployeeMilitaryCardsRepository.Get(d => d.Deleted != true && d.EmployeeId == id);
+                //  employee.EmployeeMilitaryCards = unitOfWork.EmployeeMilitaryCardsRepository.Get(d => d.Deleted != true && d.EmployeeId == id);
 
                 //employee.EmployeeLanguages = unitOfWork.EmployeeLanguagesRepository
                 //    .Get(d => d.Deleted != true && d.EmployeeId == id, includeProperties: "EmployeeLanguageType,Language");
@@ -176,7 +176,7 @@ namespace GTIWebAPI.Controllers
                 //employee.EmployeeCars = unitOfWork.EmployeeCarsRepository
                 //.Get(d => d.Deleted != true && d.EmployeeId == id);
 
-                
+
 
 
                 EmployeeDTO dto = employee.ToDTOView();
@@ -248,7 +248,7 @@ namespace GTIWebAPI.Controllers
                 Employee empl = employee.FromDTO();
 
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-           
+
                 unitOfWork.AddressesRepository.Update(empl.Address);
                 unitOfWork.EmployeeInsurancesRepository.Update(empl.EmployeeInsurance);
                 unitOfWork.EmployeesRepository.UpdateFields(empl, "Id,Sex,IdentityCode,DateOfBirth,AddressId,EmployeeInsuranceId");
@@ -357,17 +357,40 @@ namespace GTIWebAPI.Controllers
 
 
 
-    //    [GTIFilter]
+        //    [GTIFilter]
         [HttpGet]
         [Route("GetLists")]
-        [ResponseType(typeof(EmployeeList))]
         public IHttpActionResult GetEmployeeLists()
         {
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                EmployeeList list = unitOfWork.CreateEmployeeList();
-                return Ok(list);
+                var anonymousObject = new
+                {
+                    AddressList = new
+                    {
+                        AddressLocalities = unitOfWork.GetAddressLocalities().ToList(),
+                        AddressPlaces = unitOfWork.GetAddressPlaces().ToList(),
+                        AddressRegions = unitOfWork.GetAddressRegions().ToList(),
+                        AddressVillages = unitOfWork.GetAddressVillages().ToList(),
+                        Countries = unitOfWork.GetCountries().ToList()
+                    },
+                    EmployeeLanguageList = new
+                    {
+                        EmployeeLanguageTypes = unitOfWork.GetEmployeeLanguageTypes().ToList(),
+                        Languages = unitOfWork.GetLanguages().ToList()
+                    },
+                    EmployeeOfficeList = new
+                    {
+                        Offices = unitOfWork.GetOffices().ToList(),
+                        Professions = unitOfWork.GetProfessions().ToList(),
+                        Departments = unitOfWork.GetDepartments().ToList()
+                    },
+                    ContactTypes = unitOfWork.GetContactTypes().ToList(),
+                    FoundationDocuments = unitOfWork.GetFoundationDocuments().ToList(),
+                    EducationStudyForms = unitOfWork.GetEducationStudyForms().ToList()
+                };
+                return Ok(anonymousObject);
             }
             catch (NotFoundException nfe)
             {

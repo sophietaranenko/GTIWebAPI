@@ -593,7 +593,6 @@
     <Compile Include="Models\Repository\GenericRepository.cs" />
     <Compile Include="Models\Organizations\OrganizationContactPersonView.cs" />
     <Compile Include="Models\Organizations\OrganizationLanguageName.cs" />
-    <Compile Include="Models\Organizations\OrganizationList.cs" />
     <Compile Include="Models\Organizations\OrganizationPropertyTypeAlias.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddress.cs" />
     <Compile Include="Models\Organizations\OrganizationTaxAddressType.cs" />
@@ -604,7 +603,6 @@
     <Compile Include="Models\Organizations\OrganizationProperty.cs" />
     <Compile Include="Models\Organizations\OrganizationPropertyType.cs" />
     <Compile Include="Models\Organizations\OrganizationLegalForm.cs" />
-    <Compile Include="Models\Dictionary\AddressList.cs" />
     <Compile Include="Models\Dictionary\AddressLocality.cs" />
     <Compile Include="Models\Dictionary\AddressPlace.cs" />
     <Compile Include="Models\Dictionary\AddressRegion.cs" />
@@ -617,7 +615,6 @@
     <Compile Include="Models\Employees\EmployeeOfficeList.cs" />
     <Compile Include="Models\Organizations\Organization.cs" />
     <Compile Include="Models\Organizations\OrganizationGTILink.cs" />
-    <Compile Include="Models\Employees\EmployeeList.cs" />
     <Compile Include="Models\Repository\UnitOfWork.cs" />
     <Compile Include="Models\Sales\Act.cs" />
     <Compile Include="Models\Sales\Interaction.cs" />

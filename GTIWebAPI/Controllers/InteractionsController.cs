@@ -452,15 +452,22 @@ namespace GTIWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetBrokenReason")]
+        [Route("GetLists")]
         [ResponseType(typeof(IEnumerable<InteractionDTO>))]
-        public IHttpActionResult GetInteractionBrokenReasons()
+        public IHttpActionResult GetInteractionLists()
         {
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<InteractionBrokenReasonDTO> dtos = unitOfWork.InteractionBrokenReasonsRepository.Get().Select(d => d.ToDTO());
-                return Ok(dtos);
+                return Ok(
+                    new
+                    {
+                        Statuses = unitOfWork.GetInteractionStatuses(),
+                        Reasons = unitOfWork.GetInteractionBrokenReasons(),
+                        Acts = unitOfWork.GetActs()
+                    }
+                  );
+                
             }
             catch (NotFoundException nfe)
             {
@@ -476,30 +483,7 @@ namespace GTIWebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetBrokenReason")]
-        [ResponseType(typeof(IEnumerable<InteractionDTO>))]
-        public IHttpActionResult GetInteractionStatuses()
-        {
-            try
-            {
-                UnitOfWork unitOfWork = new UnitOfWork(factory);
-                IEnumerable<InteractionStatusDTO> dtos = unitOfWork.InteractionStatusesRepository.Get().Select(d => d.ToDTO());
-                return Ok(dtos);
-            }
-            catch (NotFoundException nfe)
-            {
-                return NotFound();
-            }
-            catch (ConflictException ce)
-            {
-                return Conflict();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+
 
 
 
