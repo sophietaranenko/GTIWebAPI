@@ -10,6 +10,8 @@
     <WebStackScaffolding_DbContextTypeFullName>GTIWebAPI.Models.Context.DbPersonnel</WebStackScaffolding_DbContextTypeFullName>
     <ProjectView>ShowAllFiles</ProjectView>
     <NameOfLastUsedPublishProfile>MyProfile</NameOfLastUsedPublishProfile>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
