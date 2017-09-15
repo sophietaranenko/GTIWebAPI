@@ -109,6 +109,7 @@ C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Owin.Security.OAuth.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Owin.Security.Twitter.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.Web.Infrastructure.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\bin\Mono.Security.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Newtonsoft.Json.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Owin.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Net.Http.Formatting.dll
@@ -251,6 +252,7 @@ C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.Configuration.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.DirectoryServices.AccountManagement.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.DirectoryServices.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.DirectoryServices.Protocols.dll
+C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\Interop.CertCOMLib.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\obj\Debug\GTIWebAPI.csproj.ResolveComReference.cache
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\Microsoft.CSharp.dll
 C:\Projects\GTIWebAPI\GTIWebAPI\bin\System.ComponentModel.Composition.dll

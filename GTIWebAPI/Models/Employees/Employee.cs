@@ -13,7 +13,6 @@
     using System.Data.Entity.Spatial;
     using System.Linq;
     using System.Web.Mvc;
-    using Quiz;
 
     [Table("Employee")]
     public partial class Employee : GTITable
@@ -36,7 +35,6 @@
             InteractionMembers = new HashSet<InteractionMember>();
             Notifications = new HashSet<Notification>();
             NotificationRecipients = new HashSet<NotificationRecipient>();
-            QuizPassings = new HashSet<QuizPassingEmployeeLink>();
             CreatorTasks = new HashSet<Task>();
             DoerTasks = new HashSet<Task>();
         }
@@ -104,8 +102,6 @@
         public virtual ICollection<Notification> Notifications { get; set; }
         
         public virtual ICollection<NotificationRecipient> NotificationRecipients { get; set; }
-
-        public virtual ICollection<QuizPassingEmployeeLink> QuizPassings { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Task> CreatorTasks { get; set; }

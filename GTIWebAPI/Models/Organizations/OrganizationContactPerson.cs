@@ -1,6 +1,5 @@
 namespace GTIWebAPI.Models.Organizations
 {
-    using Quiz;
     using Sales;
     using Service;
     using System;
@@ -16,7 +15,6 @@ namespace GTIWebAPI.Models.Organizations
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OrganizationContactPerson()
         {
-            QuizPassings = new HashSet<QuizPassingOrganizationContactPersonLink>();
             OrganizationContactPersonContact = new HashSet<OrganizationContactPersonContact>();
             InteractionActOrganizationMembers = new HashSet<InteractionActOrganizationMember>();
         }
@@ -51,8 +49,6 @@ namespace GTIWebAPI.Models.Organizations
         public string AspNetUserId { get; set; }
 
         public virtual Organization Organization { get; set; }
-
-        public virtual ICollection<QuizPassingOrganizationContactPersonLink> QuizPassings { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationContactPersonContact> OrganizationContactPersonContact { get; set; }
