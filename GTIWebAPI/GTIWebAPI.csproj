@@ -541,9 +541,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Sales\InteractionBroken.cs" />
-    <Compile Include="Models\Sales\InteractionBrokenReason.cs" />
-    <Compile Include="Models\Sales\InteractionSucceed.cs" />
     <Compile Include="Notifications\ChatHub.cs" />
     <Compile Include="Notifications\INotifiable.cs" />
     <Compile Include="Notifications\Notification.cs" />
