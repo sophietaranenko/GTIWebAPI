@@ -1,5 +1,6 @@
 namespace GTIWebAPI.Models.Organizations
 {
+    using Quiz;
     using Sales;
     using Service;
     using System;
@@ -17,6 +18,7 @@ namespace GTIWebAPI.Models.Organizations
         {
             OrganizationContactPersonContact = new HashSet<OrganizationContactPersonContact>();
             InteractionActOrganizationMembers = new HashSet<InteractionActOrganizationMember>();
+            Passings = new HashSet<QuizPassingOrganizationContactPersonLink>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -49,6 +51,8 @@ namespace GTIWebAPI.Models.Organizations
         public string AspNetUserId { get; set; }
 
         public virtual Organization Organization { get; set; }
+
+        public virtual ICollection<QuizPassingOrganizationContactPersonLink> Passings { get; set; };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizationContactPersonContact> OrganizationContactPersonContact { get; set; }
