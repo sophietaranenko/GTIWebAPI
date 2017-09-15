@@ -96,12 +96,6 @@ namespace GTIWebAPI.Models.Context
 
         DbSet<EmployeeLanguageType> EmployeeLanguageTypes { get; set; }
 
-
-
-
-
-
-
         DbSet<Organization> Organizations { get; set; }
 
         DbSet<OrganizationAddress> OrganizationAddresses { get; set; }
@@ -151,10 +145,6 @@ namespace GTIWebAPI.Models.Context
         DbSet<InteractionAct> InteractionAct { get; set; }
 
         DbSet<InteractionActMember> InteractionActMember { get; set; }
-
-        DbSet<InteractionStatus> InteractionStatuses { get; set; }
-
-        DbSet<InteractionBrokenReason> InteractionBrokenReasons { get; set; }
 
         DbSet<Tasks.Task> Task { get; set; }
 

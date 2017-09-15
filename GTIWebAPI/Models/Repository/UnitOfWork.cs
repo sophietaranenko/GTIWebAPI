@@ -13,7 +13,6 @@ using GTIWebAPI.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
@@ -53,6 +52,23 @@ namespace GTIWebAPI.Models.Repository
                 return userImagesRepository;
             }
         }
+
+
+
+        ////UserRights Block
+
+        //private GenericRepository<UserRight> userRightsRepository;
+        //public GenericRepository<UserRight> UserRightsRepository
+        //{
+        //    get
+        //    {
+        //        if (this.userRightsRepository == null)
+        //        {
+        //            this.userRightsRepository = new GenericRepository<UserRight>(context);
+        //        }
+        //        return userRightsRepository;
+        //    }
+        //}
 
 
         private GenericRepository<UserRightMask> userRightMasksRepository;
@@ -395,6 +411,40 @@ namespace GTIWebAPI.Models.Repository
             }
         }
 
+        //все данные для, например, EmployeeList будут должго грузится - будут создаваться репозитории
+        //надо как-то объединить эти вещи, либо раздавать непосредственно из UnitOfWork, что тоже не очень гуд 
+        //сначала сделать правильно, потестить производительность, потом уже что-то решать 
+        public EmployeeList CreateEmployeeList()
+        {
+            EmployeeList list = new EmployeeList();
+            try
+            {
+                list.AddressList = AddressList.CreateAddressList(context);
+                list.EmployeeLanguageList = EmployeeLanguageList.CreateEmployeeLanguageList(context);
+
+                list.EmployeeOfficeList = new EmployeeOfficeList();
+
+                list.EmployeeOfficeList.Offices = context.Offices.ToList().Select(d => d.ToDTO()).OrderBy(d => d.ShortName);
+                list.EmployeeOfficeList.Professions = context.Professions.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+                list.EmployeeOfficeList.Departments = context.Departments.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+
+                list.ContactTypes = context.ContactTypes.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+                list.FoundationDocuments = context.FoundationDocuments.Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
+                list.EducationStudyForms = context.EducationStudyForms.ToList().Select(d => d.ToDTO());
+            }
+            catch (Exception e)
+            {
+                string mes = e.Message;
+            }
+            return list;
+        }
+
+        public OrganizationList CreateOrganizationList()
+        {
+            return OrganizationList.CreateOrganizationList(context);
+        }
+
+
         //Organization
         private GenericRepository<OrganizationAddress> organizationAddressesRepository;
         public GenericRepository<OrganizationAddress> OrganizationAddressesRepository
@@ -557,7 +607,18 @@ namespace GTIWebAPI.Models.Repository
 
         //Sales 
 
-        
+        private GenericRepository<Act> actsRepository;
+        public GenericRepository<Act> ActsRepository
+        {
+            get
+            {
+                if (this.actsRepository == null)
+                {
+                    this.actsRepository = new GenericRepository<Act>(context);
+                }
+                return actsRepository;
+            }
+        }
 
         private GenericRepository<Interaction> interactionsRepository;
         public GenericRepository<Interaction> InteractionsRepository
@@ -569,6 +630,19 @@ namespace GTIWebAPI.Models.Repository
                     this.interactionsRepository = new GenericRepository<Interaction>(context);
                 }
                 return interactionsRepository;
+            }
+        }
+
+        private GenericRepository<InteractionBrokenReason> interactionBrokenReasonsRepository;
+        public GenericRepository<InteractionBrokenReason> InteractionBrokenReasonsRepository
+        {
+            get
+            {
+                if (this.interactionBrokenReasonsRepository == null)
+                {
+                    this.interactionBrokenReasonsRepository = new GenericRepository<InteractionBrokenReason>(context);
+                }
+                return interactionBrokenReasonsRepository;
             }
         }
 
@@ -598,6 +672,21 @@ namespace GTIWebAPI.Models.Repository
                 return interactionsSucceedRepository;
             }
         }
+
+
+        private GenericRepository<InteractionStatus> interactionStatusesRepository;
+        public GenericRepository<InteractionStatus> InteractionStatusesRepository
+        {
+            get
+            {
+                if (this.interactionStatusesRepository == null)
+                {
+                    this.interactionStatusesRepository = new GenericRepository<InteractionStatus>(context);
+                }
+                return interactionStatusesRepository;
+            }
+        }
+
 
         private GenericRepository<InteractionAct> interactionActsRepository;
         public GenericRepository<InteractionAct> InteractionActsRepository
@@ -662,7 +751,33 @@ namespace GTIWebAPI.Models.Repository
                 }
                 return tasksRepository;
             }
-        }       
+        }
+
+        private GenericRepository<Country> countriesRepository;
+        public GenericRepository<Country> CountriesRepository
+        {
+            get
+            {
+                if (this.countriesRepository == null)
+                {
+                    this.countriesRepository = new GenericRepository<Country>(context);
+                }
+                return countriesRepository;
+            }
+        }
+
+        private GenericRepository<InteractionStatusMovement> interactionStatusMovementsRepository;
+        public GenericRepository<InteractionStatusMovement> InteractionStatusMovementsRepository
+        {
+            get
+            {
+                if (this.interactionStatusMovementsRepository == null)
+                {
+                    this.interactionStatusMovementsRepository = new GenericRepository<InteractionStatusMovement>(context);
+                }
+                return interactionStatusMovementsRepository;
+            }
+        }
 
         private GenericRepository<EmployeeInsurance> employeeInsurancesRepository;
         public GenericRepository<EmployeeInsurance> EmployeeInsurancesRepository
@@ -709,142 +824,6 @@ namespace GTIWebAPI.Models.Repository
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public IEnumerable<ProfessionDTO> GetProfessions()
-        {
-            return context.Professions.ToList().Where(d => d.Deleted != true).Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<InteractionStatusDTO> GetInteractionStatuses()
-        {
-            return context.InteractionStatuses.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<InteractionBrokenReasonDTO> GetInteractionBrokenReasons()
-        {
-            return context.InteractionBrokenReasons.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<AddressLocalityDTO> GetAddressLocalities()
-        {
-            return context.Localities.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<AddressPlaceDTO> GetAddressPlaces()
-        {
-            return context.Places.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<AddressRegionDTO> GetAddressRegions()
-        {
-            return context.Regions.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<AddressVillageDTO> GetAddressVillages()
-        {
-            return context.Villages.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<CountryDTO> GetCountries()
-        {
-            return context.Countries.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<EmployeeLanguageTypeDTO> GetEmployeeLanguageTypes()
-        {
-            return context.EmployeeLanguageTypes.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<LanguageDTO> GetLanguages()
-        {
-            return context.Languages.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OfficeDTO> GetOffices()
-        {
-            return context.Offices.ToList().Select(d => d.ToDTO()).OrderBy(d => d.ShortName);
-        }
-
-        public IEnumerable<DepartmentDTO> GetDepartments()
-        {
-            return context.Departments.ToList().Where(d => d.Deleted != true).Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<ContactTypeDTO> GetContactTypes()
-        {
-            return context.ContactTypes.ToList().Where(d => d.Deleted != true).Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<FoundationDocumentDTO> GetFoundationDocuments()
-        {
-            return context.FoundationDocuments.ToList().Where(d => d.Deleted != true).ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<EducationStudyFormDTO> GetEducationStudyForms()
-        {
-            return context.EducationStudyForms.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OrganizationAddressTypeDTO> GetOrganizationAddressTypes()
-        {
-            return context.OrganizationAddressTypes.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OrganizationTaxAddressTypeDTO> GetOrganizationTaxAddressTypes()
-        {
-            return context.OrganizationTaxAddressTypes.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OrganizationLegalFormDTO> GetOrganizationLegalForms()
-        {
-            return context.OrganizationLegalForms.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OrganizationPropertyTypeDTO> GetOrganizationPropertyTypes()
-        {
-            return context.OrganizationPropertyTypes.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<OrganizationPropertyTypeAliasDTO> GetOrganizationPropertyTypeAliases()
-        {
-            return context.OrganizationPropertyTypeAliases.ToList().Select(d => d.ToDTO());
-        }
-
-        public IEnumerable<ActDTO> GetActs()
-        {
-            return context.Act.ToList().Select(d => d.ToDTO());
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// For using Stored Procedures throw UnitOfWork
         /// </summary>
@@ -862,6 +841,10 @@ namespace GTIWebAPI.Models.Repository
             return context.ExecuteStoredProcedureAsync<T>(sql, parameters);
         }
 
+        public void DoSomething()
+        {
+            //  var myObjectState = 
+        }
 
         /// <summary>
         /// Stored Procedure call 

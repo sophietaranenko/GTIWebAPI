@@ -188,10 +188,6 @@ namespace GTIWebAPI.Models.Context
 
         public virtual DbSet<InteractionActMember> InteractionActMember { get; set; }
 
-        public virtual DbSet<InteractionStatus> InteractionStatuses { get; set; }
-
-        public virtual DbSet<InteractionBrokenReason> InteractionBrokenReasons { get; set; }
-
         public ObjectStateManager ObjectStateManager { get; set; }
 
         public virtual DbSet<Tasks.Task> Task { get; set; }

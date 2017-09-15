@@ -40,14 +40,5 @@ namespace GTIWebAPI.Models.Sales
         public int Id { get; set; }
 
         public string Name { get; set; }
-
-        public Act FromDTO()
-        {
-            return new Act()
-            {
-                Id = this.Id,
-                Name = this.Name
-            };
-        }
     }
 }

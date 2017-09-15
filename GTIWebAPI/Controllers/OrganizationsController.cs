@@ -284,7 +284,7 @@ namespace GTIWebAPI.Controllers
                     .Get(d => d.Deleted != true && d.OrganizationId == id, includeProperties: "OrganizationPropertyType,OrganizationPropertyType.OrganizationPropertyTypeAlias").ToList();
 
 
-                IEnumerable<OrganizationPropertyType> types = properties.Select(d => d.OrganizationPropertyType).Distinct();
+               IEnumerable<OrganizationPropertyType> types = properties.Select(d => d.OrganizationPropertyType).Distinct();
 
                 List<OrganizationPropertyTreeView> propertiesDTO = new List<OrganizationPropertyTreeView>();
 
@@ -527,32 +527,14 @@ namespace GTIWebAPI.Controllers
         [GTIFilter]
         [HttpGet]
         [Route("GetOrganizationList")]
+        [ResponseType(typeof(OrganizationList))]
         public IHttpActionResult GetOrganizationTypes()
         {
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-
-                var anonymousObject = new
-                {
-                    AddressList = new
-                    {
-                        AddressLocalities = unitOfWork.GetAddressLocalities(),
-                        AddressPlaces = unitOfWork.GetAddressPlaces(),
-                        AddressRegions = unitOfWork.GetAddressRegions(),
-                        AddressVillages = unitOfWork.GetAddressVillages(),
-                        Countries = unitOfWork.GetCountries()
-                    },
-                    ContactTypes = unitOfWork.GetContactTypes(),
-                    OrganizationAddressTypes = unitOfWork.GetOrganizationAddressTypes(),
-                    OrganizationTaxAddressTypes = unitOfWork.GetOrganizationTaxAddressTypes(),
-                    OrganizationLegalForms = unitOfWork.GetOrganizationLegalForms(),
-                    OrganizationPropertyTypes = unitOfWork.GetOrganizationPropertyTypes(),
-                    OrganizationPropertyTypeAliases = unitOfWork.GetOrganizationPropertyTypeAliases(),
-                    Languages = unitOfWork.GetLanguages()
-                };
-                return Ok(anonymousObject);
-
+                OrganizationList list = unitOfWork.CreateOrganizationList();
+                return Ok(list);
             }
             catch (NotFoundException nfe)
             {

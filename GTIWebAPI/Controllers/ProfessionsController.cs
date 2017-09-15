@@ -261,7 +261,8 @@ namespace GTIWebAPI.Controllers
             try
             {
                 UnitOfWork unitOfWork = new UnitOfWork(factory);
-                return Ok(unitOfWork.GetCountries());
+                IEnumerable<CountryDTO> dtos = unitOfWork.CountriesRepository.Get().Select(d => d.ToDTO()).ToList();
+                return Ok(dtos);
             }
             catch (NotFoundException nfe)
             {
